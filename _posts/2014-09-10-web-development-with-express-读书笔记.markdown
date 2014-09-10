@@ -5,8 +5,6 @@ date:   2014-09-10 19:21:32
 categories: nodejs express
 ---
 
-# 《Web Development With Node And Express》
-笔记
 ## ch3 start
 express中路由的顺序很重要，如果404handler放在routes之前，都会指向404页面。
 
@@ -139,7 +137,7 @@ app.use(function(err, req, res, next){
 
 ### 处理表单
 
-```javascript
+{% highlight javascript %}
 app.post('/process-contact', function(req, res){
     console.log('Received contact from ' + req.body.name +
         ' <' + req.body.email + '>');
@@ -154,7 +152,7 @@ app.post('/process-contact', function(req, res){
             res.redirect(303, '/database-error');
     }
 });
-```
+{% endhighlight %}
 
 ### 提供api
 Restful GET,POST,PUT,DELETE，类似rails
