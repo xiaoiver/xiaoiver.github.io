@@ -21,14 +21,14 @@ express中路由的顺序很重要，如果404handler放在routes之前，都会
 `git push -u origin master`
 
 package.json包含了依赖。npm install进行安装
-```javascript
+{% highlight javascript %}
 {
     "dependencies": {
     "express": "^4.0.0",
     "express3-handlebars": "^0.5.0"
     }
 }
-```
+{% endhighlight %}
 exports可以封装方法供外界调用。
 
 require加载路径`./`告诉node不去node_modules目录下查找
@@ -128,12 +128,12 @@ p61
 
 ### 展示内容
 即使没有用到next()，也要显式写出告诉Express这是错误处理
-```javascript
+{% highlight javascript %}
 app.use(function(err, req, res, next){
     console.error(err.stack);
     res.status(500).render('error');
 });
-```
+{% endhighlight %}
 
 ### 处理表单
 
@@ -181,7 +181,7 @@ Express[作者](http://jade-lang.com)
 
 ### 块
 
-```javascript
+{% highlight javascript %}
 {
     currency: {
         name: 'United States dollars',
@@ -194,10 +194,10 @@ Express[作者](http://jade-lang.com)
     specialsUrl: '/january-specials',
     currencies: [ 'USD', 'GBP', 'BTC' ],
 }
-```
+{% endhighlight %}
 使用`../`退回上一层上下文，`{{.}}`代表当前的上下文
 
-```javascript
+{% highlight javascript %}
 <ul>
     {{#each tours}}
         {{! I'm in a new block...and the context has changed }}
@@ -209,7 +209,7 @@ Express[作者](http://jade-lang.com)
         </li>
     {{/each}}
 </ul>
-```
+{% endhighlight %}
 if和each都有可选的else块。
 
 如果有一个helper叫foo，`{{foo}}`指向它，而`{{./foo}}`指向当前上下文的同名属性。
@@ -230,7 +230,7 @@ if和each都有可选的else块。
 ### sections
 handlebars中没有直接实现，但可以通过使用helper
 
-```javascript
+{% highlight javascript %}
 var handlebars = require('express3-handlebars').create({
     defaultLayout:'main',
     helpers: {
@@ -241,7 +241,7 @@ var handlebars = require('express3-handlebars').create({
         }
     }
 });
-```
+{% endhighlight %}
 
 ### 完善模板
 使用html5boilerplate
@@ -272,10 +272,10 @@ Handlebars.compile()将模板编译返回一个function，接受传入的参数
 `npm install --save formidable`
 
 files就是上传文件数组，fields是参数数组
-```javascript
+{% highlight javascript %}
 var form = new formidable.IncomingForm();
 form.parse(req, function(err, fields, files){});
-```
+{% endhighlight %}
 #### 使用jquery-file-upload上传
 依赖ImageMagick`apt-get install imagemagick`
 
@@ -283,7 +283,7 @@ form.parse(req, function(err, fields, files){});
 
 [更多配置](https://github.com/blueimp/jQuery-File-Upload/wiki)
 
-```javascript
+{% highlight javascript %}
 jqupload.fileHandler({
     uploadDir: function(){
         return __dirname + '/public/uploads/' + now;
@@ -292,7 +292,7 @@ jqupload.fileHandler({
         return '/uploads/' + now;
     },
 })(req, res, next);
-```
+{% endhighlight %}
 
 ## ch9 cookies&sessions
 
@@ -373,7 +373,7 @@ Error: Greeting never received
 ### 异常处理
 简单的异常可以通过定义在所有路由之后的中间件处理：
 
-```javascript
+{% highlight javascript %}
 app.get('/fail', function(req, res){
     throw new Error('Nope!');
 });
@@ -382,25 +382,25 @@ app.use(function(err, req, res, next){
     app.status(500).render('500');
 
 });
-```
+{% endhighlight %}
 
 但是异步抛出的异常如setTimeout(nextTick就是第二个参数为0的定时器)，当Node在空闲的时候才会处理。
 但是问题是此时该请求的上下文环境都没了，服务器只能关闭。
 
-```javascript
+{% highlight javascript %}
 app.get('/epic-fail', function(req, res){
     process.nextTick(function(){
         throw new Error('Kaboom!');
     });
 });
-```
+{% endhighlight %}
 
 使用cluster能解决这个问题，关闭一个worker会重启一个新的worker。
 
 #### 如何优雅地关闭？uncaughtException和domains
 推荐使用domains，位于所有路由和中间件之前
 
-```javascript
+{% highlight javascript %}
 app.use(function(req, res, next){
     // 创建domain
     var domain = require('domain').create();
@@ -442,7 +442,7 @@ app.use(function(req, res, next){
 var server = http.createServer(app).listen(app.get('port'), function(){
     console.log('Listening on port %d.', app.get('port'));
 });
-```
+{% endhighlight %}
 
 ### 压力测试
 
@@ -454,10 +454,10 @@ p136
 
 ### 文件系统持久化
 
-```javascript
+{% highlight javascript %}
 fs.mkdirSync(dir); //创建文件夹
 fs.renameSync(photo.path, path); //就是移动，formidable会将临时路径放在path中
-```
+{% endhighlight %}
 ### 数据库持久化
 
 NOSQL类型：文档，键值对
@@ -479,11 +479,11 @@ ODM 对象文档映射，类似ORM
 view model将model提炼转换成更适合view展示的对象
 
 find查询条件
-```javascript
+{% highlight javascript %}
 Vacation.find({ available: true }, function(err, vacations){
     
 });
-```
+{% endhighlight %}
 
 update()
 `{ upsert: true }`当文档存在时，就更新，不然就创建。
@@ -518,28 +518,28 @@ update test.sessions query: { sid: "WNBIQ-sJoUbiJ0rt1UDfu_hUJwb6ZFso" }
 ### 在module中生命路由
 返回由包含method和handler属性的对象组成的数组
 
-```javascript
+{% highlight javascript %}
 var routes = require('./routes.js')();
 routes.forEach(function(route){
     app[route.method](route.handler);
 })
-```
+{% endhighlight %}
 
 将所有路由移动到routes.js中
 
-```javascript
+{% highlight javascript %}
 module.exports = function(app){
     app.get('/', function(req,res){
         app.render('home');
     }))
     //...
 };
-```
+{% endhighlight %}
 
 在主文件中引入`require('./routes.js')(app);`
 
 进一步拆分，`/handlers/main.js`
-```javascript
+{% highlight javascript %}
 var fortune = require('../lib/fortune.js');
 exports.home = function(req, res){
     res.render('home');
@@ -550,20 +550,20 @@ exports.about = function(req, res){
         pageTestScript: '/qa/tests-about.js'
     } );
 };
-```
+{% endhighlight %}
 routes.js中引入
-```javascript
+{% highlight javascript %}
 var main = require('./handlers/main.js');
 module.exports = function(app){
     app.get('/', main.home);
     app.get('/about', main.about);
     //...
 };
-```
+{% endhighlight %}
 
 ### 自动显示view
 
-```javascript
+{% highlight javascript %}
 // 缓存
 var autoViews = {};
 var fs = require('fs');
@@ -577,7 +577,7 @@ app.use(function(req,res,next){
     }
     next();
 });
-```
+{% endhighlight %}
 
 ### 其他组织路由的方法
 
@@ -609,12 +609,12 @@ express-namespace express-resource
 `npm install --save connect-rest`
 
 api配置代码的位置要在rest.VERB之前，不然context不起作用
-```javascript
+{% highlight javascript %}
 var apiOptions = {
     context: '/api',
     domain: require('domain').create(),
 };
-```
+{% endhighlight %}
 
 p177这里代码有点小错误
 * findById回调函数中应为"a"而不是"attraction"
@@ -657,14 +657,14 @@ css预处理器 less
 `npm install --save-dev grunt-contrib-less`
 
 在less中使用自定义函数static
-```css
+{% endhighlight %}css
 body {
     background-image: static("/img/background.png");
 }
-```
+{% endhighlight %}
 
 需要在Gruntfile.js中配置less插件，增加自定义函数
-```javascript
+{% highlight javascript %}
 less: {
     development: {
         options: {
@@ -681,16 +681,16 @@ less: {
         }
     }
 }
-```
+{% endhighlight %}
 
 ### 在服务端脚本使中用静态资源
 `var static = require('./lib/static.js').map;`
 
 ### 在客户端脚本中使用静态资源
-```javascript
+{% highlight javascript %}
 var IMG_CART_EMPTY = '{{static '/img/shop/cart_empty.png'}}';
 var IMG_CART_FULL = '{{static '/img/shop/cart_full.png'}}';
-```
+{% endhighlight %}
 
 ### 浏览器缓存  请求头
 Expires/Cache-Control：缓存最大时间，前者更好。浏览器发现缓存中有并且还没过期的资源，是不会发送Get请求的。这大大提高了性能尤其在移动端。
@@ -721,10 +721,10 @@ grunt中任务是有顺序的，定义一个新任务处理静态资源
 `npm install connect-bundle --save`
 
 在主文件中设置js/css打包，可以增加属性`contextProperty = 'myBundles'`，默认在view中通过_bundles访问
-```javascript
+{% highlight javascript %}
 var bundler = require('connect-bundle')(require('./config.js'));
 app.use(bundler);
-```
+{% endhighlight %}
 
 css文件都放在`<head>`中，不用指定位置，js要，包括head，afterBodyOpen，afterBodyClose。
 
@@ -756,7 +756,7 @@ array.map()映射
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout meadowlark.pem -out meadowlark.crt
 
 ### 在express中使用
-```javascript
+{% highlight javascript %}
 var https = require('https');
 var options = {
     key: fs.readFileSync(__dirname + '/ssl/meadowlark.pem');
@@ -766,25 +766,25 @@ https.createServer(options, app).listen(app.get('port'), function(){
     console.log('Express started in ' + app.get('env') +
     ' mode on port ' + app.get('port') + '.');
 });
-```
+{% endhighlight %}
 
 ### CSRF跨站请求伪造
 确保请求来自自己的网站。通过向浏览器传递一个token，当提交表单时，服务端进行验证。
 
 使用csurf`npm install --save csurf`，必须在cookie-parser和connect-session这两个中间件引入之后
 
-```javascript
+{% highlight javascript %}
 app.use(require('csurf')());
 app.use(function(req, res, next){
     res.locals._csrfToken = req.csrfToken();
     next();
 });
-```
+{% endhighlight %}
 
 在表单或者ajax请求中，增加一个字段`_csrf`，中间件会验证，验证失败会抛出异常
-```html
+{% endhighlight %}html
 <input type="hidden" name="_csrf" value="{{_csrfToken}}">
-```
+{% endhighlight %}
 
 如果有api，不希望被csrf中间件干扰，可以将api在csrf中间件之前引入。
 
@@ -796,7 +796,7 @@ app.use(function(req, res, next){
 
 定义好serializeUser和deserializeUser方法，
 只要通过验证，在session中就能通过req.session.passport.user访问对应的User对象
-```javascript
+{% highlight javascript %}
 var User = require('../models/user.js'),
     passport = require('passport'),
     FacebookStrategy = require('passport-facebook').Strategy;
@@ -809,7 +809,7 @@ passport.deserializeUser(function(id, done){
         done(null, user);
     });
 });
-```
+{% endhighlight %}
 
 两个错误：
 * p225解序列化的user通过req.user访问，原文中req.session.passport.user只能访问到之前序列化存储的id
@@ -820,9 +820,9 @@ passport.deserializeUser(function(id, done){
 `next('route');`和`next()`的区别：
 一个route可以包含多个中间件：middleware1通过调用`next()`将控制权交给middleware2，而`next('route')`寻找下一个route
 
-```javascript
+{% highlight javascript %}
 app.get('',middleware1,middleware2,function(req,res,next){});
-```
+{% endhighlight %}
 
 ## ch19 集成第三方api
 
