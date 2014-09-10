@@ -77,16 +77,16 @@
 <code>git remote add origin git@github.com:xiaoiver/meadowlark.git</code>
 <code>git push -u origin master</code></p>
 
-<p>package.json包含了依赖。npm install进行安装
-<code>javascript
-{
-    "dependencies": {
-    "express": "^4.0.0",
-    "express3-handlebars": "^0.5.0"
-    }
-}
-</code>
-exports可以封装方法供外界调用。</p>
+<p>package.json包含了依赖。npm install进行安装</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">{</span>
+    <span class="s2">&quot;dependencies&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">&quot;express&quot;</span><span class="o">:</span> <span class="s2">&quot;^4.0.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;express3-handlebars&quot;</span><span class="o">:</span> <span class="s2">&quot;^0.5.0&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>exports可以封装方法供外界调用。</p>
 
 <p>require加载路径<code>./</code>告诉node不去node_modules目录下查找</p>
 
@@ -196,13 +196,12 @@ get请求没有请求体，post请求有</p>
 <p>p61</p>
 
 <h3 id="section-7">展示内容</h3>
-<p>即使没有用到next()，也要显式写出告诉Express这是错误处理
-<code>javascript
-app.use(function(err, req, res, next){
-    console.error(err.stack);
-    res.status(500).render('error');
-});
-</code></p>
+<p>即使没有用到next()，也要显式写出告诉Express这是错误处理</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">stack</span><span class="p">);</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mi">500</span><span class="p">).</span><span class="nx">render</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">);</span>
+<span class="p">});</span></code></pre></div>
 
 <h3 id="section-8">处理表单</h3>
 
@@ -248,36 +247,34 @@ app.use(function(err, req, res, next){
 
 <h3 id="section-10">块</h3>
 
-<p><code>javascript
-{
-    currency: {
-        name: 'United States dollars',
-        abbrev: 'USD',
-    },
-    tours: [
-        { name: 'Hood River', price: '$99.95' },
-        { name: 'Oregon Coast', price, '$159.95' },
-    ],
-    specialsUrl: '/january-specials',
-    currencies: [ 'USD', 'GBP', 'BTC' ],
-}
-</code>
-使用<code>../</code>退回上一层上下文，``代表当前的上下文</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">{</span>
+    <span class="nx">currency</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;United States dollars&#39;</span><span class="p">,</span>
+        <span class="nx">abbrev</span><span class="o">:</span> <span class="s1">&#39;USD&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="nx">tours</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Hood River&#39;</span><span class="p">,</span> <span class="nx">price</span><span class="o">:</span> <span class="s1">&#39;$99.95&#39;</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Oregon Coast&#39;</span><span class="p">,</span> <span class="nx">price</span><span class="p">,</span> <span class="s1">&#39;$159.95&#39;</span> <span class="p">},</span>
+    <span class="p">],</span>
+    <span class="nx">specialsUrl</span><span class="o">:</span> <span class="s1">&#39;/january-specials&#39;</span><span class="p">,</span>
+    <span class="nx">currencies</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;USD&#39;</span><span class="p">,</span> <span class="s1">&#39;GBP&#39;</span><span class="p">,</span> <span class="s1">&#39;BTC&#39;</span> <span class="p">],</span>
+<span class="p">}</span></code></pre></div>
 
-<p>```javascript</p>
-<ul>
+<p>使用<code>../</code>退回上一层上下文，``代表当前的上下文</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
     
         
-        <li>
-             - 
+        <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span>
+             <span class="o">-</span> 
             
-                ()
+                <span class="p">()</span>
             
-        </li>
+        <span class="o">&lt;</span><span class="err">/li&gt;</span>
     
-</ul>
-<p>```
-if和each都有可选的else块。</p>
+<span class="o">&lt;</span><span class="err">/ul&gt;</span></code></pre></div>
+
+<p>if和each都有可选的else块。</p>
 
 <p>如果有一个helper叫foo，<code>指向它，而</code>指向当前上下文的同名属性。</p>
 
@@ -297,18 +294,16 @@ if和each都有可选的else块。</p>
 <h3 id="sections">sections</h3>
 <p>handlebars中没有直接实现，但可以通过使用helper</p>
 
-<p><code>javascript
-var handlebars = require('express3-handlebars').create({
-    defaultLayout:'main',
-    helpers: {
-        section: function(name, options){
-            if(!this._sections) this._sections = {};
-            this._sections[name] = options.fn(this);
-            return null;
-        }
-    }
-});
-</code></p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">handlebars</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;express3-handlebars&#39;</span><span class="p">).</span><span class="nx">create</span><span class="p">({</span>
+    <span class="nx">defaultLayout</span><span class="o">:</span><span class="s1">&#39;main&#39;</span><span class="p">,</span>
+    <span class="nx">helpers</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">section</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">options</span><span class="p">){</span>
+            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">_sections</span><span class="p">)</span> <span class="k">this</span><span class="p">.</span><span class="nx">_sections</span> <span class="o">=</span> <span class="p">{};</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">_sections</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">fn</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">});</span></code></pre></div>
 
 <h3 id="section-12">完善模板</h3>
 <p>使用html5boilerplate</p>
@@ -338,28 +333,26 @@ var handlebars = require('express3-handlebars').create({
 <p>#### 使用Formidable，也可以使用ajax
 <code>npm install --save formidable</code></p>
 
-<p>files就是上传文件数组，fields是参数数组
-<code>javascript
-var form = new formidable.IncomingForm();
-form.parse(req, function(err, fields, files){});
-</code>
-#### 使用jquery-file-upload上传
-依赖ImageMagick<code>apt-get install imagemagick</code></p>
+<p>files就是上传文件数组，fields是参数数组</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">formidable</span><span class="p">.</span><span class="nx">IncomingForm</span><span class="p">();</span>
+<span class="nx">form</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fields</span><span class="p">,</span> <span class="nx">files</span><span class="p">){});</span></code></pre></div>
+
+<h4 id="jquery-file-upload">使用jquery-file-upload上传</h4>
+<p>依赖ImageMagick<code>apt-get install imagemagick</code></p>
 
 <p><a href="https://github.com/blueimp/jQuery-File-Upload/releases">下载</a></p>
 
 <p><a href="https://github.com/blueimp/jQuery-File-Upload/wiki">更多配置</a></p>
 
-<p><code>javascript
-jqupload.fileHandler({
-    uploadDir: function(){
-        return __dirname + '/public/uploads/' + now;
-    },
-    uploadUrl: function(){
-        return '/uploads/' + now;
-    },
-})(req, res, next);
-</code></p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">jqupload</span><span class="p">.</span><span class="nx">fileHandler</span><span class="p">({</span>
+    <span class="nx">uploadDir</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="k">return</span> <span class="nx">__dirname</span> <span class="o">+</span> <span class="s1">&#39;/public/uploads/&#39;</span> <span class="o">+</span> <span class="nx">now</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">uploadUrl</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="k">return</span> <span class="s1">&#39;/uploads/&#39;</span> <span class="o">+</span> <span class="nx">now</span><span class="p">;</span>
+    <span class="p">},</span>
+<span class="p">})(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">);</span></code></pre></div>
 
 <h2 id="ch9-cookiessessions">ch9 cookies&amp;sessions</h2>
 
@@ -442,76 +435,70 @@ options包括domain,path(包括子路径),maxAge(默认浏览器关闭就过期)
 <h3 id="section-16">异常处理</h3>
 <p>简单的异常可以通过定义在所有路由之后的中间件处理：</p>
 
-<p>```javascript
-app.get(‘/fail’, function(req, res){
-    throw new Error(‘Nope!’);
-});
-app.use(function(err, req, res, next){
-    console.error(err.stack);
-    app.status(500).render(‘500’);</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/fail&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Nope!&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">stack</span><span class="p">);</span>
+    <span class="nx">app</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mi">500</span><span class="p">).</span><span class="nx">render</span><span class="p">(</span><span class="s1">&#39;500&#39;</span><span class="p">);</span>
 
-<p>});
-```</p>
+<span class="p">});</span></code></pre></div>
 
 <p>但是异步抛出的异常如setTimeout(nextTick就是第二个参数为0的定时器)，当Node在空闲的时候才会处理。
 但是问题是此时该请求的上下文环境都没了，服务器只能关闭。</p>
 
-<p><code>javascript
-app.get('/epic-fail', function(req, res){
-    process.nextTick(function(){
-        throw new Error('Kaboom!');
-    });
-});
-</code></p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/epic-fail&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+    <span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Kaboom!&#39;</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span></code></pre></div>
 
 <p>使用cluster能解决这个问题，关闭一个worker会重启一个新的worker。</p>
 
 <h4 id="uncaughtexceptiondomains">如何优雅地关闭？uncaughtException和domains</h4>
 <p>推荐使用domains，位于所有路由和中间件之前</p>
 
-<p><code>javascript
-app.use(function(req, res, next){
-    // 创建domain
-    var domain = require('domain').create();
-    domain.on('error', function(err){
-        console.error('DOMAIN ERROR CAUGHT\n', err.stack);
-        try {
-            // 给服务器最后5秒钟响应正在处理的请求，然后关闭
-            setTimeout(function(){
-                console.error('Failsafe shutdown.');
-                process.exit(1);
-            }, 5000);
-            // 如果在集群中，退出，集群将不会分配请求
-            var worker = require('cluster').worker;
-            if(worker) worker.disconnect();
-            // 服务器不接受请求
-            server.close();
-            try {
-                // 使用错误处理器响应出错的请求
-                next(err);
-            } catch(err){
-                // 如果处理器抛出异常，使用Node的api响应
-                console.error('Express error mechanism failed.\n', err.stack);
-                res.statusCode = 500;
-                res.setHeader('content-type', 'text/plain');
-                res.end('Server error.');
-            }
-        } catch(err){
-            // 如果都没法处理，客户端最终超时，记录日志
-            console.error('Unable to send 500 response.\n', err.stack);
-        }
-    });
-    // 添加res和req到domain中，两个对象任何方法抛出的异常都会被domain捕获
-    domain.add(req);
-    domain.add(res);
-    // 在domain上下文中执行下一个中间件
-    domain.run(next);
-});
-// 其余中间件和路由
-var server = http.createServer(app).listen(app.get('port'), function(){
-    console.log('Listening on port %d.', app.get('port'));
-});
-</code></p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="c1">// 创建domain</span>
+    <span class="kd">var</span> <span class="nx">domain</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;domain&#39;</span><span class="p">).</span><span class="nx">create</span><span class="p">();</span>
+    <span class="nx">domain</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;DOMAIN ERROR CAUGHT\n&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nx">stack</span><span class="p">);</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="c1">// 给服务器最后5秒钟响应正在处理的请求，然后关闭</span>
+            <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+                <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Failsafe shutdown.&#39;</span><span class="p">);</span>
+                <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+            <span class="p">},</span> <span class="mi">5000</span><span class="p">);</span>
+            <span class="c1">// 如果在集群中，退出，集群将不会分配请求</span>
+            <span class="kd">var</span> <span class="nx">worker</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;cluster&#39;</span><span class="p">).</span><span class="nx">worker</span><span class="p">;</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">worker</span><span class="p">)</span> <span class="nx">worker</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
+            <span class="c1">// 服务器不接受请求</span>
+            <span class="nx">server</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+            <span class="k">try</span> <span class="p">{</span>
+                <span class="c1">// 使用错误处理器响应出错的请求</span>
+                <span class="nx">next</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+                <span class="c1">// 如果处理器抛出异常，使用Node的api响应</span>
+                <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Express error mechanism failed.\n&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nx">stack</span><span class="p">);</span>
+                <span class="nx">res</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+                <span class="nx">res</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">);</span>
+                <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="s1">&#39;Server error.&#39;</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+            <span class="c1">// 如果都没法处理，客户端最终超时，记录日志</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Unable to send 500 response.\n&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nx">stack</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">});</span>
+    <span class="c1">// 添加res和req到domain中，两个对象任何方法抛出的异常都会被domain捕获</span>
+    <span class="nx">domain</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">req</span><span class="p">);</span>
+    <span class="nx">domain</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">res</span><span class="p">);</span>
+    <span class="c1">// 在domain上下文中执行下一个中间件</span>
+    <span class="nx">domain</span><span class="p">.</span><span class="nx">run</span><span class="p">(</span><span class="nx">next</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="c1">// 其余中间件和路由</span>
+<span class="kd">var</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">app</span><span class="p">).</span><span class="nx">listen</span><span class="p">(</span><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">),</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Listening on port %d.&#39;</span><span class="p">,</span> <span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">));</span>
+<span class="p">});</span></code></pre></div>
 
 <h3 id="section-17">压力测试</h3>
 
@@ -523,11 +510,10 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 
 <h3 id="section-18">文件系统持久化</h3>
 
-<p><code>javascript
-fs.mkdirSync(dir); //创建文件夹
-fs.renameSync(photo.path, path); //就是移动，formidable会将临时路径放在path中
-</code>
-### 数据库持久化</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">fs</span><span class="p">.</span><span class="nx">mkdirSync</span><span class="p">(</span><span class="nx">dir</span><span class="p">);</span> <span class="c1">//创建文件夹</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">renameSync</span><span class="p">(</span><span class="nx">photo</span><span class="p">.</span><span class="nx">path</span><span class="p">,</span> <span class="nx">path</span><span class="p">);</span> <span class="c1">//就是移动，formidable会将临时路径放在path中</span></code></pre></div>
+
+<h3 id="section-19">数据库持久化</h3>
 
 <p>NOSQL类型：文档，键值对</p>
 
@@ -541,18 +527,17 @@ fs.renameSync(photo.path, path); //就是移动，formidable会将临时路径�
 <p>之前rails时配置的mongodb，默认的journal有2-3G
 <code>mongod --config /usr/local/MongoDB/mongod.conf --smallfiles</code></p>
 
-<h4 id="section-19">数据库连接</h4>
+<h4 id="section-20">数据库连接</h4>
 <p><code>mongoose.connect()</code></p>
 
 <h4 id="modelschema">创建Model和Schema</h4>
 <p>view model将model提炼转换成更适合view展示的对象</p>
 
-<p>find查询条件
-```javascript
-Vacation.find({ available: true }, function(err, vacations){</p>
+<p>find查询条件</p>
 
-<p>});
-```</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">Vacation</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">available</span><span class="o">:</span> <span class="kc">true</span> <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">vacations</span><span class="p">){</span>
+    
+<span class="p">});</span></code></pre></div>
 
 <p>update()
 <code>{ upsert: true }</code>当文档存在时，就更新，不然就创建。</p>
@@ -579,7 +564,7 @@ update test.sessions query: { sid: “WNBIQ-sJoUbiJ0rt1UDfu_hUJwb6ZFso” }</p>
 
 <p><code>app.get('/staff/:city/:name', function(req, res){}）;</code></p>
 
-<h3 id="section-20">组织路由规则</h3>
+<h3 id="section-21">组织路由规则</h3>
 
 <ul>
   <li>给路由处理器命名，不用inline的方式</li>
@@ -589,68 +574,61 @@ update test.sessions query: { sid: “WNBIQ-sJoUbiJ0rt1UDfu_hUJwb6ZFso” }</p>
 <h3 id="module">在module中生命路由</h3>
 <p>返回由包含method和handler属性的对象组成的数组</p>
 
-<p><code>javascript
-var routes = require('./routes.js')();
-routes.forEach(function(route){
-    app[route.method](route.handler);
-})
-</code></p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">routes</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./routes.js&#39;</span><span class="p">)();</span>
+<span class="nx">routes</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">route</span><span class="p">){</span>
+    <span class="nx">app</span><span class="p">[</span><span class="nx">route</span><span class="p">.</span><span class="nx">method</span><span class="p">](</span><span class="nx">route</span><span class="p">.</span><span class="nx">handler</span><span class="p">);</span>
+<span class="p">})</span></code></pre></div>
 
 <p>将所有路由移动到routes.js中</p>
 
-<p><code>javascript
-module.exports = function(app){
-    app.get('/', function(req,res){
-        app.render('home');
-    }))
-    //...
-};
-</code></p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">app</span><span class="p">){</span>
+    <span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="nx">res</span><span class="p">){</span>
+        <span class="nx">app</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">);</span>
+    <span class="p">}))</span>
+    <span class="c1">//...</span>
+<span class="p">};</span></code></pre></div>
 
 <p>在主文件中引入<code>require('./routes.js')(app);</code></p>
 
-<p>进一步拆分，<code>/handlers/main.js</code>
-<code>javascript
-var fortune = require('../lib/fortune.js');
-exports.home = function(req, res){
-    res.render('home');
-};
-exports.about = function(req, res){
-    res.render('about', {
-        fortune: fortune.getFortune(),
-        pageTestScript: '/qa/tests-about.js'
-    } );
-};
-</code>
-routes.js中引入
-<code>javascript
-var main = require('./handlers/main.js');
-module.exports = function(app){
-    app.get('/', main.home);
-    app.get('/about', main.about);
-    //...
-};
-</code></p>
+<p>进一步拆分，<code>/handlers/main.js</code></p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">fortune</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../lib/fortune.js&#39;</span><span class="p">);</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">home</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">);</span>
+<span class="p">};</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">about</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">&#39;about&#39;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="nx">fortune</span><span class="o">:</span> <span class="nx">fortune</span><span class="p">.</span><span class="nx">getFortune</span><span class="p">(),</span>
+        <span class="nx">pageTestScript</span><span class="o">:</span> <span class="s1">&#39;/qa/tests-about.js&#39;</span>
+    <span class="p">}</span> <span class="p">);</span>
+<span class="p">};</span></code></pre></div>
+
+<p>routes.js中引入</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">main</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./handlers/main.js&#39;</span><span class="p">);</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">app</span><span class="p">){</span>
+    <span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="nx">main</span><span class="p">.</span><span class="nx">home</span><span class="p">);</span>
+    <span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/about&#39;</span><span class="p">,</span> <span class="nx">main</span><span class="p">.</span><span class="nx">about</span><span class="p">);</span>
+    <span class="c1">//...</span>
+<span class="p">};</span></code></pre></div>
 
 <h3 id="view">自动显示view</h3>
 
-<p><code>javascript
-// 缓存
-var autoViews = {};
-var fs = require('fs');
-app.use(function(req,res,next){
-    var path = req.path.toLowerCase();
-    // 查看缓存
-    if(autoViews[path]) return res.render(autoViews[path]);
-    if(fs.existsSync(__dirname + '/views' + path + '.handlebars')){
-        autoViews[path] = path.replace(/^\//, ''); //去除头部的'/'
-        return res.render(autoViews[path]);
-    }
-    next();
-});
-</code></p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// 缓存</span>
+<span class="kd">var</span> <span class="nx">autoViews</span> <span class="o">=</span> <span class="p">{};</span>
+<span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="nx">res</span><span class="p">,</span><span class="nx">next</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">path</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+    <span class="c1">// 查看缓存</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">autoViews</span><span class="p">[</span><span class="nx">path</span><span class="p">])</span> <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">autoViews</span><span class="p">[</span><span class="nx">path</span><span class="p">]);</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">__dirname</span> <span class="o">+</span> <span class="s1">&#39;/views&#39;</span> <span class="o">+</span> <span class="nx">path</span> <span class="o">+</span> <span class="s1">&#39;.handlebars&#39;</span><span class="p">)){</span>
+        <span class="nx">autoViews</span><span class="p">[</span><span class="nx">path</span><span class="p">]</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^\//</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span> <span class="c1">//去除头部的&#39;/&#39;</span>
+        <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">autoViews</span><span class="p">[</span><span class="nx">path</span><span class="p">]);</span>
+    <span class="p">}</span>
+    <span class="nx">next</span><span class="p">();</span>
+<span class="p">});</span></code></pre></div>
 
-<h3 id="section-21">其他组织路由的方法</h3>
+<h3 id="section-22">其他组织路由的方法</h3>
 
 <blockquote>
   <p>The two most popular approaches to route organization are 
@@ -681,19 +659,18 @@ namespaced routing and resourceful routing.</p>
 <h3 id="restapi">使用REST插件提供api</h3>
 <p><code>npm install --save connect-rest</code></p>
 
-<p>api配置代码的位置要在rest.VERB之前，不然context不起作用
-<code>javascript
-var apiOptions = {
-    context: '/api',
-    domain: require('domain').create(),
-};
-</code></p>
+<p>api配置代码的位置要在rest.VERB之前，不然context不起作用</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">apiOptions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">context</span><span class="o">:</span> <span class="s1">&#39;/api&#39;</span><span class="p">,</span>
+    <span class="nx">domain</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;domain&#39;</span><span class="p">).</span><span class="nx">create</span><span class="p">(),</span>
+<span class="p">};</span></code></pre></div>
 
 <p>p177这里代码有点小错误
 * findById回调函数中应为”a”而不是”attraction”
 * 返回的对象中加入<code>id: a._id</code>，测试时要对比id</p>
 
-<h3 id="section-22">使用子域名</h3>
+<h3 id="section-23">使用子域名</h3>
 <p>使用子域名api.example.com最大程度区别站点和api</p>
 
 <p><code>npm install --save vhost</code></p>
@@ -711,7 +688,7 @@ var apiOptions = {
   <li>二进制文件下载</li>
 </ul>
 
-<h3 id="section-23">性能考虑</h3>
+<h3 id="section-24">性能考虑</h3>
 <p>减少请求次数或者减少内容大小，前者更关键，包括组合资源和浏览器缓存。</p>
 
 <p>组合资源：小的图片组合成单独的sprite，通过css设置展示的偏移。</p>
@@ -731,48 +708,45 @@ var apiOptions = {
 
 <p><code>npm install --save-dev grunt-contrib-less</code></p>
 
-<p>在less中使用自定义函数static
-<code>css
-body {
-    background-image: static("/img/background.png");
-}
-</code></p>
+<p>在less中使用自定义函数static</p>
 
-<p>需要在Gruntfile.js中配置less插件，增加自定义函数
-<code>javascript
-less: {
-    development: {
-        options: {
-            customFunctions: {
-                static: function(lessObject, name) {
-                    return 'url("' +
-                        require('./lib/static.js').map(name.value) +
-                        '")';
-                }
-            }
-        },
-        files: {
-            'public/css/main.css': 'less/main.less',
-        }
-    }
-}
-</code></p>
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">body</span> <span class="p">{</span>
+    <span class="k">background-image</span><span class="o">:</span> <span class="k">static</span><span class="p">(</span><span class="s2">&quot;/img/background.png&quot;</span><span class="p">);</span>
+<span class="p">}</span></code></pre></div>
 
-<h3 id="section-24">在服务端脚本使中用静态资源</h3>
+<p>需要在Gruntfile.js中配置less插件，增加自定义函数</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">less</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">development</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+            <span class="nx">customFunctions</span><span class="o">:</span> <span class="p">{</span>
+                <span class="kr">static</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">lessObject</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="s1">&#39;url(&quot;&#39;</span> <span class="o">+</span>
+                        <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/static.js&#39;</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">name</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="o">+</span>
+                        <span class="s1">&#39;&quot;)&#39;</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="nx">files</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s1">&#39;public/css/main.css&#39;</span><span class="o">:</span> <span class="s1">&#39;less/main.less&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<h3 id="section-25">在服务端脚本使中用静态资源</h3>
 <p><code>var static = require('./lib/static.js').map;</code></p>
 
-<h3 id="section-25">在客户端脚本中使用静态资源</h3>
-<p><code>javascript
-var IMG_CART_EMPTY = '';
-var IMG_CART_FULL = '';
-</code></p>
+<h3 id="section-26">在客户端脚本中使用静态资源</h3>
 
-<h3 id="section-26">浏览器缓存  请求头</h3>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">IMG_CART_EMPTY</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">IMG_CART_FULL</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span></code></pre></div>
+
+<h3 id="section-27">浏览器缓存  请求头</h3>
 <p>Expires/Cache-Control：缓存最大时间，前者更好。浏览器发现缓存中有并且还没过期的资源，是不会发送Get请求的。这大大提高了性能尤其在移动端。</p>
 
 <p>Last-Modified/ETag：浏览器发送get请求，如果etag不变则不会下载资源。</p>
 
-<h3 id="section-27">改变静态内容</h3>
+<h3 id="section-28">改变静态内容</h3>
 <p>使用版本号表示变更，即使浏览器缓存，也会强制下载新资源。</p>
 
 <h3 id="bundling-minification">bundling minification</h3>
@@ -795,11 +769,10 @@ var IMG_CART_FULL = '';
 
 <p><code>npm install connect-bundle --save</code></p>
 
-<p>在主文件中设置js/css打包，可以增加属性<code>contextProperty = 'myBundles'</code>，默认在view中通过_bundles访问
-<code>javascript
-var bundler = require('connect-bundle')(require('./config.js'));
-app.use(bundler);
-</code></p>
+<p>在主文件中设置js/css打包，可以增加属性<code>contextProperty = 'myBundles'</code>，默认在view中通过_bundles访问</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">bundler</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;connect-bundle&#39;</span><span class="p">)(</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./config.js&#39;</span><span class="p">));</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">bundler</span><span class="p">);</span></code></pre></div>
 
 <p>css文件都放在<code>&lt;head&gt;</code>中，不用指定位置，js要，包括head，afterBodyOpen，afterBodyClose。</p>
 
@@ -831,35 +804,31 @@ app.use(bundler);
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout meadowlark.pem -out meadowlark.crt</p>
 
 <h3 id="express-2">在express中使用</h3>
-<p><code>javascript
-var https = require('https');
-var options = {
-    key: fs.readFileSync(__dirname + '/ssl/meadowlark.pem');
-    cert: fs.readFileSync(__dirname + '/ssl/meadowlark.crt');
-};
-https.createServer(options, app).listen(app.get('port'), function(){
-    console.log('Express started in ' + app.get('env') +
-    ' mode on port ' + app.get('port') + '.');
-});
-</code></p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">https</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;https&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">key</span><span class="o">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">__dirname</span> <span class="o">+</span> <span class="s1">&#39;/ssl/meadowlark.pem&#39;</span><span class="p">);</span>
+    <span class="nx">cert</span><span class="o">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">__dirname</span> <span class="o">+</span> <span class="s1">&#39;/ssl/meadowlark.crt&#39;</span><span class="p">);</span>
+<span class="p">};</span>
+<span class="nx">https</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">app</span><span class="p">).</span><span class="nx">listen</span><span class="p">(</span><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">),</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Express started in &#39;</span> <span class="o">+</span> <span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;env&#39;</span><span class="p">)</span> <span class="o">+</span>
+    <span class="s1">&#39; mode on port &#39;</span> <span class="o">+</span> <span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span><span class="p">);</span>
+<span class="p">});</span></code></pre></div>
 
 <h3 id="csrf">CSRF跨站请求伪造</h3>
 <p>确保请求来自自己的网站。通过向浏览器传递一个token，当提交表单时，服务端进行验证。</p>
 
 <p>使用csurf<code>npm install --save csurf</code>，必须在cookie-parser和connect-session这两个中间件引入之后</p>
 
-<p><code>javascript
-app.use(require('csurf')());
-app.use(function(req, res, next){
-    res.locals._csrfToken = req.csrfToken();
-    next();
-});
-</code></p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;csurf&#39;</span><span class="p">)());</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">locals</span><span class="p">.</span><span class="nx">_csrfToken</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">csrfToken</span><span class="p">();</span>
+    <span class="nx">next</span><span class="p">();</span>
+<span class="p">});</span></code></pre></div>
 
-<p>在表单或者ajax请求中，增加一个字段<code>_csrf</code>，中间件会验证，验证失败会抛出异常
-<code>html
-&lt;input type="hidden" name="_csrf" value=""&gt;
-</code></p>
+<p>在表单或者ajax请求中，增加一个字段<code>_csrf</code>，中间件会验证，验证失败会抛出异常</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">name=</span><span class="s">&quot;_csrf&quot;</span> <span class="na">value=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span></code></pre></div>
 
 <p>如果有api，不希望被csrf中间件干扰，可以将api在csrf中间件之前引入。</p>
 
@@ -870,34 +839,31 @@ app.use(function(req, res, next){
 <p>本地验证策略</p>
 
 <p>定义好serializeUser和deserializeUser方法，
-只要通过验证，在session中就能通过req.session.passport.user访问对应的User对象
-<code>javascript
-var User = require('../models/user.js'),
-    passport = require('passport'),
-    FacebookStrategy = require('passport-facebook').Strategy;
-passport.serializeUser(function(user, done){
-    done(null, user._id);//将mongodb分配的'_id'保存在session中
-});
-passport.deserializeUser(function(id, done){
-    User.findById(id, function(err, user){
-        if(err || !user) return done(err, null);
-        done(null, user);
-    });
-});
-</code></p>
+只要通过验证，在session中就能通过req.session.passport.user访问对应的User对象</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">User</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../models/user.js&#39;</span><span class="p">),</span>
+    <span class="nx">passport</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;passport&#39;</span><span class="p">),</span>
+    <span class="nx">FacebookStrategy</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;passport-facebook&#39;</span><span class="p">).</span><span class="nx">Strategy</span><span class="p">;</span>
+<span class="nx">passport</span><span class="p">.</span><span class="nx">serializeUser</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">done</span><span class="p">){</span>
+    <span class="nx">done</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">user</span><span class="p">.</span><span class="nx">_id</span><span class="p">);</span><span class="c1">//将mongodb分配的&#39;_id&#39;保存在session中</span>
+<span class="p">});</span>
+<span class="nx">passport</span><span class="p">.</span><span class="nx">deserializeUser</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">done</span><span class="p">){</span>
+    <span class="nx">User</span><span class="p">.</span><span class="nx">findById</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">user</span><span class="p">){</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="o">!</span><span class="nx">user</span><span class="p">)</span> <span class="k">return</span> <span class="nx">done</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+        <span class="nx">done</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">user</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span></code></pre></div>
 
 <p>两个错误：
 * p225解序列化的user通过req.user访问，原文中req.session.passport.user只能访问到之前序列化存储的id
 * <code>callbackURL: '/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect)</code>此处有问题，当queryString中没有redirect时，encodeURIComponent会将undefined编码成“undefined”，这样验证通过重定向时会404。</p>
 
-<h3 id="section-28">基于角色的认证</h3>
+<h3 id="section-29">基于角色的认证</h3>
 
 <p><code>next('route');</code>和<code>next()</code>的区别：
 一个route可以包含多个中间件：middleware1通过调用<code>next()</code>将控制权交给middleware2，而<code>next('route')</code>寻找下一个route</p>
 
-<p><code>javascript
-app.get('',middleware1,middleware2,function(req,res,next){});
-</code></p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="nx">middleware1</span><span class="p">,</span><span class="nx">middleware2</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="nx">res</span><span class="p">,</span><span class="nx">next</span><span class="p">){});</span></code></pre></div>
 
 <h2 id="ch19-api">ch19 集成第三方api</h2>
 

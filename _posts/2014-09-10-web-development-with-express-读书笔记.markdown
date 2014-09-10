@@ -551,6 +551,7 @@ exports.about = function(req, res){
     } );
 };
 {% endhighlight %}
+
 routes.js中引入
 {% highlight javascript %}
 var main = require('./handlers/main.js');
@@ -657,7 +658,7 @@ css预处理器 less
 `npm install --save-dev grunt-contrib-less`
 
 在less中使用自定义函数static
-{% endhighlight %}css
+{% highlight css %}
 body {
     background-image: static("/img/background.png");
 }
@@ -782,7 +783,7 @@ app.use(function(req, res, next){
 {% endhighlight %}
 
 在表单或者ajax请求中，增加一个字段`_csrf`，中间件会验证，验证失败会抛出异常
-{% endhighlight %}html
+{% highlight html %}
 <input type="hidden" name="_csrf" value="{{_csrfToken}}">
 {% endhighlight %}
 
