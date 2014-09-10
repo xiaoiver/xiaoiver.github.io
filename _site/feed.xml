@@ -1,14 +1,867 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>xiaOp's Blog</title>
-    <description>记录读书笔记，碰到的问题
+    <title>xiaOp写东西的地方</title>
+    <description>读书笔记，碰到的问题
 </description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 10 Sep 2014 19:11:36 +0800</pubDate>
-    <lastBuildDate>Wed, 10 Sep 2014 19:11:36 +0800</lastBuildDate>
+    <pubDate>Wed, 10 Sep 2014 19:27:04 +0800</pubDate>
+    <lastBuildDate>Wed, 10 Sep 2014 19:27:04 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>《Web Development With Node And Express》读书笔记</title>
+        <description>&lt;h2 id=&quot;ch3-start&quot;&gt;ch3 start&lt;/h2&gt;
+&lt;p&gt;express中路由的顺序很重要，如果404handler放在routes之前，都会指向404页面。&lt;/p&gt;
+
+&lt;p&gt;配置静态资源目录
+&lt;code&gt;app.use(express.static(__dirname + '/public'));&lt;/code&gt;
+使用时，路径相对于public&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;git init&lt;/code&gt;创建一个新的repo
+.gitignore中的条目也适用于子目录，所以*~将忽略所有备份文件&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;git add&lt;/code&gt;命令只是增加改变而不是文件。&lt;code&gt;git add -A&lt;/code&gt;增加全部。
+&lt;code&gt;git commit -m &quot;message&quot;&lt;/code&gt;提交改变
+&lt;code&gt;git remote add origin git@github.com:xiaoiver/meadowlark.git&lt;/code&gt;
+&lt;code&gt;git push -u origin master&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;package.json包含了依赖。npm install进行安装
+&lt;code&gt;javascript
+{
+    &quot;dependencies&quot;: {
+    &quot;express&quot;: &quot;^4.0.0&quot;,
+    &quot;express3-handlebars&quot;: &quot;^0.5.0&quot;
+    }
+}
+&lt;/code&gt;
+exports可以封装方法供外界调用。&lt;/p&gt;
+
+&lt;p&gt;require加载路径&lt;code&gt;./&lt;/code&gt;告诉node不去node_modules目录下查找&lt;/p&gt;
+
+&lt;h2 id=&quot;ch5-qa&quot;&gt;ch5 qa&lt;/h2&gt;
+&lt;p&gt;测试框架mocha，第三方js和css放在public/vendor下
+assertion库chai&lt;/p&gt;
+
+&lt;p&gt;app.use中next()&lt;/p&gt;
+
+&lt;h3 id=&quot;section&quot;&gt;页面跳转测试&lt;/h3&gt;
+&lt;p&gt;headless browser PhantomJs,Zombie&lt;/p&gt;
+
+&lt;p&gt;zombie暂时还不支持windows平台&lt;/p&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;两个错误&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;mocha默认时间太短导致测试出错，通过&lt;code&gt;--timeout 15000&lt;/code&gt;&lt;a href=&quot;http://stackoverflow.com/questions/16607039/in-mocha-testing-while-calling-asynchronous-function-how-to-avoid-the-timeout-er&quot;&gt;增加时间&lt;/a&gt;，Gruntfile.js中添加在option属性中&lt;/li&gt;
+  &lt;li&gt;done()的位置，通知mocha我们的工作已经完成，否则会报timeout error&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;逻辑测试&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;npm install -g mocha&lt;/code&gt;全局安装&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;mocha -u tdd -R spec qa/tests-unit.js&lt;/code&gt;单元测试&lt;/p&gt;
+
+&lt;h3 id=&quot;section-3&quot;&gt;检验框架&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;npm install -g jshint&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;jshint meadowlark.js&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;if( app.thing == null ) console.log( 'bleat!' );&lt;/code&gt;会提示使用===代替==&lt;/p&gt;
+
+&lt;h3 id=&quot;section-4&quot;&gt;链接检测&lt;/h3&gt;
+&lt;p&gt;检测死链接，循环链接&lt;a href=&quot;http://wummel.github.io/linkchecker&quot;&gt;linkchecker&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;python setup.py build&lt;/code&gt;需要安装request&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;首先安装pip&lt;code&gt;sudo apt-get install python-pip&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;通过pip安装&lt;code&gt;pip install requests&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;python setup.py install&lt;/code&gt;时报错“python.h 没有那个文件或目录”&lt;/p&gt;
+
+&lt;p&gt;原因是没有安装Python的头文件和静态库包&lt;code&gt;sudo apt-get install python-dev&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;linkchecker http://localhost:3000&lt;/code&gt;检查&lt;/p&gt;
+
+&lt;h3 id=&quot;grunt&quot;&gt;Grunt自动运行测试任务&lt;/h3&gt;
+&lt;p&gt;安装grunt命令行&lt;code&gt;sudo npm install -g grunt-cli&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;安装grunt&lt;code&gt;npm install --save-dev grunt&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Grunt依赖插件完成工作如mocha,jshint和linkchecker。由于linkchecker没有对应插件
+使用通用插件exec执行命令行。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save-dev grunt-cafe-mocha&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save-dev grunt-contrib-jshint&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save-dev grunt-exec&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-5&quot;&gt;注意&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;grunt-contrib-jshint只允许包含文件，不想包含node_modules和public/vendor下的文件&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;/**/&lt;/code&gt;表示所有子文件夹下的文件&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;grunt.option()&lt;/code&gt;可以接收命令行传递的参数&lt;code&gt;grunt deploy --target=staging&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;grunt –force强制执行所有测试，不会中断&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;section-6&quot;&gt;持续集成&lt;/h3&gt;
+&lt;p&gt;Travis CI&lt;/p&gt;
+
+&lt;h2 id=&quot;ch6-req-res&quot;&gt;ch6 req res&lt;/h2&gt;
+&lt;p&gt;### 请求体
+get请求没有请求体，post请求有&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;application/x-www-form-urlencoded 编码后的键值对&lt;/li&gt;
+  &lt;li&gt;multipart/form-data 支持文件上传&lt;/li&gt;
+  &lt;li&gt;application/json ajax请求&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;request&quot;&gt;Request对象&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;req.query 包含querystring(GET参数)中的键值对。&lt;/li&gt;
+  &lt;li&gt;req.body 包含POST参数，之所以叫”body”是因为POST参数包含在请求体中。&lt;/li&gt;
+  &lt;li&gt;req.cookies/req.signedCookies 从客户端传来的cookie，需要中间件支持&lt;/li&gt;
+  &lt;li&gt;req.headers 请求头&lt;/li&gt;
+  &lt;li&gt;req.xhr 来自ajax请求就返回true&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;response&quot;&gt;Response对象&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;res.status(code) 状态码&lt;/li&gt;
+  &lt;li&gt;res.cookie(name, value, [options]), res.clearCookie(name, [options])&lt;/li&gt;
+  &lt;li&gt;res.redirect([status], url) 状态码默认302，永久转移301&lt;/li&gt;
+  &lt;li&gt;res.send(body), res.send(status, body)&lt;/li&gt;
+  &lt;li&gt;res.json(json), res.json(status, json)&lt;/li&gt;
+  &lt;li&gt;res.jsonp(json), res.jsonp(status, json)&lt;/li&gt;
+  &lt;li&gt;res.format(object) 根据请求头中Accept返回不同内容，通常用在API中&lt;/li&gt;
+  &lt;li&gt;res.attachment([filename]), res.download(path, [filename], [callback])两个方法都将响应头Content-Disposition设置成attachment，浏览器会下载而不是展示内容。两个方法区别是前者只是设置响应头，还需要继续发送内容到客户端&lt;/li&gt;
+  &lt;li&gt;res.locals, res.render(view, [locals], callback) ch7&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;express&quot;&gt;Express源码&lt;/h3&gt;
+&lt;p&gt;p61&lt;/p&gt;
+
+&lt;h3 id=&quot;section-7&quot;&gt;展示内容&lt;/h3&gt;
+&lt;p&gt;即使没有用到next()，也要显式写出告诉Express这是错误处理
+&lt;code&gt;javascript
+app.use(function(err, req, res, next){
+    console.error(err.stack);
+    res.status(500).render('error');
+});
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-8&quot;&gt;处理表单&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nx&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;/process-contact&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Received contact from &amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+        &lt;span class=&quot;s1&quot;&gt;&amp;#39; &amp;lt;&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;email&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// save to database....&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;xhr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;success&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;redirect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;303&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;/thank-you&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;xhr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;json&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Database error.&amp;#39;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;redirect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;303&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;/database-error&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;api&quot;&gt;提供api&lt;/h3&gt;
+&lt;p&gt;Restful GET,POST,PUT,DELETE，类似rails&lt;/p&gt;
+
+&lt;p&gt;app.get/post/put/del&lt;/p&gt;
+
+&lt;h2 id=&quot;ch7-handlebars&quot;&gt;ch7 handlebars&lt;/h2&gt;
+&lt;p&gt;js通过document.write生成html代码，但是存在问题
+* 字符转意问题
+* html代码中可能还包含js，让人抓狂
+* 编辑中代码高亮等功能无效
+* 可读性差&lt;/p&gt;
+
+&lt;h3 id=&quot;jade&quot;&gt;Jade&lt;/h3&gt;
+&lt;p&gt;Express&lt;a href=&quot;http://jade-lang.com&quot;&gt;作者&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;不需要闭合标签&lt;/p&gt;
+
+&lt;h3 id=&quot;handlebars&quot;&gt;Handlebars基础&lt;/h3&gt;
+&lt;p&gt;上下文对象&lt;code&gt;{ name: 'Buttercup' }&lt;/code&gt;，在模板中通过``就能得到值&lt;/p&gt;
+
+&lt;p&gt;如果想要传递的是html代码，需要使用&lt;code&gt;}&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-9&quot;&gt;注释&lt;/h3&gt;
+&lt;p&gt;``和&lt;!-- not-so-secret comment --&gt;的区别就是后者能通过查看源码看到。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-10&quot;&gt;块&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;javascript
+{
+    currency: {
+        name: 'United States dollars',
+        abbrev: 'USD',
+    },
+    tours: [
+        { name: 'Hood River', price: '$99.95' },
+        { name: 'Oregon Coast', price, '$159.95' },
+    ],
+    specialsUrl: '/january-specials',
+    currencies: [ 'USD', 'GBP', 'BTC' ],
+}
+&lt;/code&gt;
+使用&lt;code&gt;../&lt;/code&gt;退回上一层上下文，``代表当前的上下文&lt;/p&gt;
+
+&lt;p&gt;```javascript&lt;/p&gt;
+&lt;ul&gt;
+    
+        
+        &lt;li&gt;
+             - 
+            
+                ()
+            
+        &lt;/li&gt;
+    
+&lt;/ul&gt;
+&lt;p&gt;```
+if和each都有可选的else块。&lt;/p&gt;
+
+&lt;p&gt;如果有一个helper叫foo，&lt;code&gt;指向它，而&lt;/code&gt;指向当前上下文的同名属性。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-11&quot;&gt;服务端模板&lt;/h3&gt;
+
+&lt;p&gt;安装handlebars&lt;code&gt;npm install --save express3-handlebars&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;改变扩展名&lt;code&gt;require('express3-handlebars').create({ extname: '.hbs' })&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;默认view cache只在生产模式下打开，在开发模式下打开&lt;code&gt;app.set('view cache', true);&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;partials&quot;&gt;partials&lt;/h3&gt;
+&lt;p&gt;和rails中一样，存放在views/partials/文件夹下，也可以建立子文件夹。 &lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;&lt;/code&gt; ch10&lt;/p&gt;
+
+&lt;h3 id=&quot;sections&quot;&gt;sections&lt;/h3&gt;
+&lt;p&gt;handlebars中没有直接实现，但可以通过使用helper&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;javascript
+var handlebars = require('express3-handlebars').create({
+    defaultLayout:'main',
+    helpers: {
+        section: function(name, options){
+            if(!this._sections) this._sections = {};
+            this._sections[name] = options.fn(this);
+            return null;
+        }
+    }
+});
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-12&quot;&gt;完善模板&lt;/h3&gt;
+&lt;p&gt;使用html5boilerplate&lt;/p&gt;
+
+&lt;h3 id=&quot;handlebars-1&quot;&gt;客户端handlebars&lt;/h3&gt;
+&lt;p&gt;Handlebars.compile()将模板编译返回一个function，接受传入的参数&lt;/p&gt;
+
+&lt;h2 id=&quot;ch8-&quot;&gt;ch8 表单处理&lt;/h2&gt;
+&lt;p&gt;推荐使用303重定向而不是302响应表单提交&lt;/p&gt;
+
+&lt;p&gt;重定向到
+* 成功/失败页面，优点是易于统计，缺点是需要分配额外的url，用户需要导航到之前的页面
+* 当前页面，带有flash信息作为反馈
+* 新的页面，带有flash信息作为反馈&lt;/p&gt;
+
+&lt;h3 id=&quot;express-1&quot;&gt;使用Express处理表单&lt;/h3&gt;
+&lt;p&gt;安装&lt;code&gt;npm install --save body-parser&lt;/code&gt;来处理POST请求体&lt;/p&gt;
+
+&lt;p&gt;在这种情况下使用303（302），不能使用301永久。否则浏览器会缓存重定向目的地。当第二次提交表单时，浏览器会直接访问目的地，表单就得不到处理。&lt;/p&gt;
+
+&lt;h3 id=&quot;ajax&quot;&gt;处理ajax表单&lt;/h3&gt;
+&lt;p&gt;通过&lt;code&gt;req.xhr || req.accepts('json,html')==='json'&lt;/code&gt;判断ajax请求&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;res.send({success: true});&lt;/code&gt;返回信息&lt;/p&gt;
+
+&lt;h3 id=&quot;section-13&quot;&gt;文件上传&lt;/h3&gt;
+&lt;p&gt;#### 使用Formidable，也可以使用ajax
+&lt;code&gt;npm install --save formidable&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;files就是上传文件数组，fields是参数数组
+&lt;code&gt;javascript
+var form = new formidable.IncomingForm();
+form.parse(req, function(err, fields, files){});
+&lt;/code&gt;
+#### 使用jquery-file-upload上传
+依赖ImageMagick&lt;code&gt;apt-get install imagemagick&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/blueimp/jQuery-File-Upload/releases&quot;&gt;下载&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/blueimp/jQuery-File-Upload/wiki&quot;&gt;更多配置&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;javascript
+jqupload.fileHandler({
+    uploadDir: function(){
+        return __dirname + '/public/uploads/' + now;
+    },
+    uploadUrl: function(){
+        return '/uploads/' + now;
+    },
+})(req, res, next);
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;ch9-cookiessessions&quot;&gt;ch9 cookies&amp;amp;sessions&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save cookie-parser&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;res.cookie('signed_monster', 'nom nom', { signed: true });&lt;/code&gt;
+options包括domain,path(包括子路径),maxAge(默认浏览器关闭就过期),secure(通过https发送),httpOnly(只允许server修改cookie，防止xss攻击)&lt;/p&gt;
+
+&lt;p&gt;实现session两种方式
+* 都存放在cookie中
+* cookie中只存唯一的标识，其他存在服务端&lt;/p&gt;
+
+&lt;h3 id=&quot;session&quot;&gt;内存session&lt;/h3&gt;
+&lt;p&gt;简单但是缺点是服务器重启则丢失，多个服务器session存放位置不确定。ch13&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save express-session&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;接受options包括key(存放标识符的cookie名，默认是connect.sid),store(默认是MemoryStore),cookie&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;req.session.userName&lt;/code&gt;，通过delete删除，置为null并不会删除&lt;/p&gt;
+
+&lt;h3 id=&quot;sessionflash--message&quot;&gt;使用session实现flash  message&lt;/h3&gt;
+&lt;p&gt;通过在url中加入querystring也可以实现，但是丑陋而且会被加入书签保存。&lt;/p&gt;
+
+&lt;h2 id=&quot;ch10-&quot;&gt;ch10 中间件&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;app.VERB这样的路由处理器可以看成只处理一种http动词的中间件，反过来中间件也可以看成处理全部动词的处理器&lt;/li&gt;
+  &lt;li&gt;路由处理器需要path作为第一个参数，/*匹配全部path&lt;/li&gt;
+  &lt;li&gt;中间件可选path作为第一个参数，默认/*&lt;/li&gt;
+  &lt;li&gt;2参数req,res 3参数req,res,next 4参数error,req,res,next&lt;/li&gt;
+  &lt;li&gt;如果不调用next()，请求就会终止在这个中间件里，其他中间件和处理器不会得到调用。如果不通过res.send等方法返回客户端就会hang直到超时。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;app.use接受function作为参数，js中function返回一个function是很常见的
+&lt;code&gt;app.use(express.static(...));&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-14&quot;&gt;常用中间件&lt;/h3&gt;
+&lt;p&gt;Connect中body-parser被移出了，需要单独安装
+&lt;code&gt;npm install --save connect&lt;/code&gt;
+&lt;code&gt;var connect = require(connect);&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;body-parser包含json和urlencoded&lt;/p&gt;
+
+&lt;h2 id=&quot;ch11-email&quot;&gt;ch11 email&lt;/h2&gt;
+&lt;p&gt;### 接收邮件
+&lt;a href=&quot;http://bit.ly/simplesmtp&quot;&gt;SimpleSMTP&lt;/a&gt; &lt;a href=&quot;http://haraka.github.com&quot;&gt;Haraka&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;html&quot;&gt;html邮件&lt;/h3&gt;
+&lt;p&gt;阅读&lt;a href=&quot;http://bit.ly/writing_html_email&quot;&gt;html-email&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;简单&lt;a href=&quot;http://htmlemailboilerplate.com&quot;&gt;HTML Email Boilerplate&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;nodemailer&quot;&gt;Nodemailer&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;npm install --save nodemailer&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;默认使用smtp
+&lt;code&gt;npm install nodemailer-smtp-transport&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Error: Greeting never received&lt;/p&gt;
+
+&lt;h2 id=&quot;ch12-&quot;&gt;ch12 生产环境&lt;/h2&gt;
+
+&lt;h3 id=&quot;section-15&quot;&gt;日志&lt;/h3&gt;
+&lt;p&gt;开发阶段使用Morgan，色彩化输出&lt;code&gt;npm install --save morgan&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;生产环境使用express-logger，周期性记录日志&lt;code&gt;npm install --save express-logger&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;修改&lt;code&gt;node_modules/express-logger/logger.js&lt;/code&gt;中变量&lt;code&gt;defaultInterval&lt;/code&gt;改变日志周期&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;NODE_ENV=production node meadowlark.js&lt;/code&gt;启动时改变生产环境&lt;/p&gt;
+
+&lt;h3 id=&quot;app-clusterscaling-out&quot;&gt;使用app cluster进行scaling out&lt;/h3&gt;
+&lt;p&gt;每个cpu创建一个独立的server&lt;/p&gt;
+
+&lt;p&gt;如果script独立运行，&lt;code&gt;require.main === module&lt;/code&gt;返回true，如果被其他脚本文件通过require加载，则返回false&lt;/p&gt;
+
+&lt;p&gt;书中验证当前响应请求worker的代码有错误，缺少next()导致浏览器hang&lt;/p&gt;
+
+&lt;h3 id=&quot;section-16&quot;&gt;异常处理&lt;/h3&gt;
+&lt;p&gt;简单的异常可以通过定义在所有路由之后的中间件处理：&lt;/p&gt;
+
+&lt;p&gt;```javascript
+app.get(‘/fail’, function(req, res){
+    throw new Error(‘Nope!’);
+});
+app.use(function(err, req, res, next){
+    console.error(err.stack);
+    app.status(500).render(‘500’);&lt;/p&gt;
+
+&lt;p&gt;});
+```&lt;/p&gt;
+
+&lt;p&gt;但是异步抛出的异常如setTimeout(nextTick就是第二个参数为0的定时器)，当Node在空闲的时候才会处理。
+但是问题是此时该请求的上下文环境都没了，服务器只能关闭。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;javascript
+app.get('/epic-fail', function(req, res){
+    process.nextTick(function(){
+        throw new Error('Kaboom!');
+    });
+});
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;使用cluster能解决这个问题，关闭一个worker会重启一个新的worker。&lt;/p&gt;
+
+&lt;h4 id=&quot;uncaughtexceptiondomains&quot;&gt;如何优雅地关闭？uncaughtException和domains&lt;/h4&gt;
+&lt;p&gt;推荐使用domains，位于所有路由和中间件之前&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;javascript
+app.use(function(req, res, next){
+    // 创建domain
+    var domain = require('domain').create();
+    domain.on('error', function(err){
+        console.error('DOMAIN ERROR CAUGHT\n', err.stack);
+        try {
+            // 给服务器最后5秒钟响应正在处理的请求，然后关闭
+            setTimeout(function(){
+                console.error('Failsafe shutdown.');
+                process.exit(1);
+            }, 5000);
+            // 如果在集群中，退出，集群将不会分配请求
+            var worker = require('cluster').worker;
+            if(worker) worker.disconnect();
+            // 服务器不接受请求
+            server.close();
+            try {
+                // 使用错误处理器响应出错的请求
+                next(err);
+            } catch(err){
+                // 如果处理器抛出异常，使用Node的api响应
+                console.error('Express error mechanism failed.\n', err.stack);
+                res.statusCode = 500;
+                res.setHeader('content-type', 'text/plain');
+                res.end('Server error.');
+            }
+        } catch(err){
+            // 如果都没法处理，客户端最终超时，记录日志
+            console.error('Unable to send 500 response.\n', err.stack);
+        }
+    });
+    // 添加res和req到domain中，两个对象任何方法抛出的异常都会被domain捕获
+    domain.add(req);
+    domain.add(res);
+    // 在domain上下文中执行下一个中间件
+    domain.run(next);
+});
+// 其余中间件和路由
+var server = http.createServer(app).listen(app.get('port'), function(){
+    console.log('Listening on port %d.', app.get('port'));
+});
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-17&quot;&gt;压力测试&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save loadtest&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;p136&lt;/p&gt;
+
+&lt;h2 id=&quot;ch13-&quot;&gt;ch13 持久化&lt;/h2&gt;
+
+&lt;h3 id=&quot;section-18&quot;&gt;文件系统持久化&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;javascript
+fs.mkdirSync(dir); //创建文件夹
+fs.renameSync(photo.path, path); //就是移动，formidable会将临时路径放在path中
+&lt;/code&gt;
+### 数据库持久化&lt;/p&gt;
+
+&lt;p&gt;NOSQL类型：文档，键值对&lt;/p&gt;
+
+&lt;p&gt;使用MongoDB&lt;/p&gt;
+
+&lt;h4 id=&quot;mongoosehttpmongoosejscom&quot;&gt;&lt;a href=&quot;http://mongoosejs.com/&quot;&gt;Mongoose&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;ODM 对象文档映射，类似ORM&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save mongoose&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;之前rails时配置的mongodb，默认的journal有2-3G
+&lt;code&gt;mongod --config /usr/local/MongoDB/mongod.conf --smallfiles&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;section-19&quot;&gt;数据库连接&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;mongoose.connect()&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;modelschema&quot;&gt;创建Model和Schema&lt;/h4&gt;
+&lt;p&gt;view model将model提炼转换成更适合view展示的对象&lt;/p&gt;
+
+&lt;p&gt;find查询条件
+```javascript
+Vacation.find({ available: true }, function(err, vacations){&lt;/p&gt;
+
+&lt;p&gt;});
+```&lt;/p&gt;
+
+&lt;p&gt;update()
+&lt;code&gt;{ upsert: true }&lt;/code&gt;当文档存在时，就更新，不然就创建。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;{ $push: {}}&lt;/code&gt;表示添加进array&lt;/p&gt;
+
+&lt;h3 id=&quot;mongodbsession&quot;&gt;使用MongoDB存储session&lt;/h3&gt;
+&lt;p&gt;放弃使用session-mongoose&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save session-mongoose&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;使用&lt;a href=&quot;https://github.com/TheRealCharDev/mongoose-session&quot;&gt;mongoose-session&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save mongoose-session&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;在数据库中：
+update test.sessions query: { sid: “WNBIQ-sJoUbiJ0rt1UDfu_hUJwb6ZFso” }&lt;/p&gt;
+
+&lt;p&gt;使用Redis&lt;/p&gt;
+
+&lt;h2 id=&quot;ch14-&quot;&gt;ch14 路由&lt;/h2&gt;
+
+&lt;p&gt;路由中的路径会被转化成正则表达式&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;app.get('/staff/:city/:name', function(req, res){}）;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-20&quot;&gt;组织路由规则&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;给路由处理器命名，不用inline的方式&lt;/li&gt;
+  &lt;li&gt;全写在一个文件中，不断增长&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;module&quot;&gt;在module中生命路由&lt;/h3&gt;
+&lt;p&gt;返回由包含method和handler属性的对象组成的数组&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;javascript
+var routes = require('./routes.js')();
+routes.forEach(function(route){
+    app[route.method](route.handler);
+})
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;将所有路由移动到routes.js中&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;javascript
+module.exports = function(app){
+    app.get('/', function(req,res){
+        app.render('home');
+    }))
+    //...
+};
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;在主文件中引入&lt;code&gt;require('./routes.js')(app);&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;进一步拆分，&lt;code&gt;/handlers/main.js&lt;/code&gt;
+&lt;code&gt;javascript
+var fortune = require('../lib/fortune.js');
+exports.home = function(req, res){
+    res.render('home');
+};
+exports.about = function(req, res){
+    res.render('about', {
+        fortune: fortune.getFortune(),
+        pageTestScript: '/qa/tests-about.js'
+    } );
+};
+&lt;/code&gt;
+routes.js中引入
+&lt;code&gt;javascript
+var main = require('./handlers/main.js');
+module.exports = function(app){
+    app.get('/', main.home);
+    app.get('/about', main.about);
+    //...
+};
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;view&quot;&gt;自动显示view&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;javascript
+// 缓存
+var autoViews = {};
+var fs = require('fs');
+app.use(function(req,res,next){
+    var path = req.path.toLowerCase();
+    // 查看缓存
+    if(autoViews[path]) return res.render(autoViews[path]);
+    if(fs.existsSync(__dirname + '/views' + path + '.handlebars')){
+        autoViews[path] = path.replace(/^\//, ''); //去除头部的'/'
+        return res.render(autoViews[path]);
+    }
+    next();
+});
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-21&quot;&gt;其他组织路由的方法&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The two most popular approaches to route organization are 
+namespaced routing and resourceful routing.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;express-namespace express-resource&lt;/p&gt;
+
+&lt;h2 id=&quot;ch15-rest-api--json&quot;&gt;ch15 REST API &amp;amp; JSON&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;mocha -u tdd -R spec qa/tests-api.js&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;corshttpsgithubcomtroygoodenode-cors&quot;&gt;&lt;a href=&quot;https://github.com/troygoode/node-cors&quot;&gt;CORS&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;通过Access-Control-Allow-Origin请求头实现&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save cors&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;暴露api，
+&lt;code&gt;app.use('/api', require('cors')());&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;restler&quot;&gt;restler&lt;/h3&gt;
+&lt;p&gt;浏览器只知道如何处理get/post请求，在测试中使用，发出get/post请求
+&lt;code&gt;npm install --save-dev restler&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;expressapi&quot;&gt;使用Express提供api&lt;/h3&gt;
+&lt;p&gt;我放在&lt;code&gt;/handlers/attraction&lt;/code&gt;中&lt;/p&gt;
+
+&lt;h3 id=&quot;restapi&quot;&gt;使用REST插件提供api&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;npm install --save connect-rest&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;api配置代码的位置要在rest.VERB之前，不然context不起作用
+&lt;code&gt;javascript
+var apiOptions = {
+    context: '/api',
+    domain: require('domain').create(),
+};
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;p177这里代码有点小错误
+* findById回调函数中应为”a”而不是”attraction”
+* 返回的对象中加入&lt;code&gt;id: a._id&lt;/code&gt;，测试时要对比id&lt;/p&gt;
+
+&lt;h3 id=&quot;section-22&quot;&gt;使用子域名&lt;/h3&gt;
+&lt;p&gt;使用子域名api.example.com最大程度区别站点和api&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save vhost&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;在/etc/hosts中增加
+&lt;code&gt;127.0.1.2 api.xiaop&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;http://api.xiaop:3000/attraction/5405333a7e3566640f560f78&lt;/p&gt;
+
+&lt;h2 id=&quot;ch16-&quot;&gt;ch16 静态内容&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;多媒体内容，包括图片，音频/视频文件&lt;/li&gt;
+  &lt;li&gt;css&lt;/li&gt;
+  &lt;li&gt;js&lt;/li&gt;
+  &lt;li&gt;二进制文件下载&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;section-23&quot;&gt;性能考虑&lt;/h3&gt;
+&lt;p&gt;减少请求次数或者减少内容大小，前者更关键，包括组合资源和浏览器缓存。&lt;/p&gt;
+
+&lt;p&gt;组合资源：小的图片组合成单独的sprite，通过css设置展示的偏移。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://wearekiss.com/spritepad&quot;&gt;创建sprite&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;view-1&quot;&gt;在view中使用静态资源&lt;/h3&gt;
+
+&lt;p&gt;在handlebars中添加helpers，view中使用``&lt;/p&gt;
+
+&lt;p&gt;将来这些静态资源可以移到CDN上，只要在static.js中配置baseUrl即可&lt;/p&gt;
+
+&lt;h3 id=&quot;css&quot;&gt;在css中使用静态资源&lt;/h3&gt;
+&lt;p&gt;css预处理器 less&lt;/p&gt;
+
+&lt;p&gt;使用grunt自动运行任务，将less编译成css，运行&lt;code&gt;grunt less&lt;/code&gt;编译&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save-dev grunt-contrib-less&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;在less中使用自定义函数static
+&lt;code&gt;css
+body {
+    background-image: static(&quot;/img/background.png&quot;);
+}
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;需要在Gruntfile.js中配置less插件，增加自定义函数
+&lt;code&gt;javascript
+less: {
+    development: {
+        options: {
+            customFunctions: {
+                static: function(lessObject, name) {
+                    return 'url(&quot;' +
+                        require('./lib/static.js').map(name.value) +
+                        '&quot;)';
+                }
+            }
+        },
+        files: {
+            'public/css/main.css': 'less/main.less',
+        }
+    }
+}
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-24&quot;&gt;在服务端脚本使中用静态资源&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;var static = require('./lib/static.js').map;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-25&quot;&gt;在客户端脚本中使用静态资源&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;javascript
+var IMG_CART_EMPTY = '';
+var IMG_CART_FULL = '';
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-26&quot;&gt;浏览器缓存  请求头&lt;/h3&gt;
+&lt;p&gt;Expires/Cache-Control：缓存最大时间，前者更好。浏览器发现缓存中有并且还没过期的资源，是不会发送Get请求的。这大大提高了性能尤其在移动端。&lt;/p&gt;
+
+&lt;p&gt;Last-Modified/ETag：浏览器发送get请求，如果etag不变则不会下载资源。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-27&quot;&gt;改变静态内容&lt;/h3&gt;
+&lt;p&gt;使用版本号表示变更，即使浏览器缓存，也会强制下载新资源。&lt;/p&gt;
+
+&lt;h3 id=&quot;bundling-minification&quot;&gt;bundling minification&lt;/h3&gt;
+
+&lt;p&gt;合并压缩js&lt;code&gt;npm install --save-dev grunt-contrib-uglify&lt;/code&gt;，生成meadowlark.min.js&lt;/p&gt;
+
+&lt;p&gt;合并压缩css&lt;code&gt;npm install --save-dev grunt-contrib-cssmin&lt;/code&gt;，生成meadowlark.min.css&lt;/p&gt;
+
+&lt;p&gt;用于生成fingerprint&lt;code&gt;npm install --save-dev grunt-hashres&lt;/code&gt;，在meadowlark.min.js/css后增加一个版本号，并且会自动去main.handlebars中替换，这样浏览器就会强制下载新文件。&lt;/p&gt;
+
+&lt;p&gt;grunt中任务是有顺序的，定义一个新任务处理静态资源
+&lt;code&gt;grunt.registerTask('static', ['less', 'cssmin', 'uglify', 'hashres']);&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;运行&lt;code&gt;grunt static&lt;/code&gt;即可&lt;/p&gt;
+
+&lt;h3 id=&quot;bundlingminification&quot;&gt;在开发中跳过bundling和minification&lt;/h3&gt;
+&lt;p&gt;由于所有js和css文件都被压缩到了一个文件中，给debug带来不便。&lt;/p&gt;
+
+&lt;p&gt;使用&lt;a href=&quot;https://github.com/Jammerwoch/connect-bundle&quot;&gt;connect-bundle&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;npm install connect-bundle --save&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;在主文件中设置js/css打包，可以增加属性&lt;code&gt;contextProperty = 'myBundles'&lt;/code&gt;，默认在view中通过_bundles访问
+&lt;code&gt;javascript
+var bundler = require('connect-bundle')(require('./config.js'));
+app.use(bundler);
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;css文件都放在&lt;code&gt;&amp;lt;head&amp;gt;&lt;/code&gt;中，不用指定位置，js要，包括head，afterBodyOpen，afterBodyClose。&lt;/p&gt;
+
+&lt;p&gt;修改Gruntfile.js中hashres的目的地指向config.js，这样每次执行static任务，替换的是config.js中的文件名。&lt;/p&gt;
+
+&lt;p&gt;这样在开发模式下，view不会使用压缩的文件，只有在生产模式下会使用带版本号的js/css文件
+&lt;code&gt;NODE_ENV=production node meadowlark.js&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;qa-&quot;&gt;QA 检查未映射的静态资源&lt;/h3&gt;
+&lt;p&gt;在Gruntfile.js中注册插件，定义规则
+&lt;code&gt;npm install --save-dev grunt-lint-pattern&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;ch17-express-mvc&quot;&gt;ch17 Express MVC&lt;/h2&gt;
+
+&lt;h3 id=&quot;view-model&quot;&gt;view model&lt;/h3&gt;
+&lt;p&gt;使用underscore方便地从model转换到view model，删除不想暴露的属性(omit)，进行扩展(extend)&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save underscore&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;array.map()映射&lt;/p&gt;
+
+&lt;h3 id=&quot;controller&quot;&gt;controller&lt;/h3&gt;
+&lt;p&gt;和router的区别就是controller会分类相似的功能，其实前面将功能放在handlers文件夹下，routers.js负责路由就是做这样一件事。&lt;/p&gt;
+
+&lt;h2 id=&quot;ch18-&quot;&gt;ch18 安全性&lt;/h2&gt;
+
+&lt;h3 id=&quot;https&quot;&gt;使用https保证通信安全&lt;/h3&gt;
+&lt;p&gt;通过openssl生成私钥(pem)和认证(会被发送到客户端用于建立安全连接)
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout meadowlark.pem -out meadowlark.crt&lt;/p&gt;
+
+&lt;h3 id=&quot;express-2&quot;&gt;在express中使用&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;javascript
+var https = require('https');
+var options = {
+    key: fs.readFileSync(__dirname + '/ssl/meadowlark.pem');
+    cert: fs.readFileSync(__dirname + '/ssl/meadowlark.crt');
+};
+https.createServer(options, app).listen(app.get('port'), function(){
+    console.log('Express started in ' + app.get('env') +
+    ' mode on port ' + app.get('port') + '.');
+});
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;csrf&quot;&gt;CSRF跨站请求伪造&lt;/h3&gt;
+&lt;p&gt;确保请求来自自己的网站。通过向浏览器传递一个token，当提交表单时，服务端进行验证。&lt;/p&gt;
+
+&lt;p&gt;使用csurf&lt;code&gt;npm install --save csurf&lt;/code&gt;，必须在cookie-parser和connect-session这两个中间件引入之后&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;javascript
+app.use(require('csurf')());
+app.use(function(req, res, next){
+    res.locals._csrfToken = req.csrfToken();
+    next();
+});
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;在表单或者ajax请求中，增加一个字段&lt;code&gt;_csrf&lt;/code&gt;，中间件会验证，验证失败会抛出异常
+&lt;code&gt;html
+&amp;lt;input type=&quot;hidden&quot; name=&quot;_csrf&quot; value=&quot;&quot;&amp;gt;
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;如果有api，不希望被csrf中间件干扰，可以将api在csrf中间件之前引入。&lt;/p&gt;
+
+&lt;h3 id=&quot;passport&quot;&gt;Passport&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;npm install --save passport passport-github&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;本地验证策略&lt;/p&gt;
+
+&lt;p&gt;定义好serializeUser和deserializeUser方法，
+只要通过验证，在session中就能通过req.session.passport.user访问对应的User对象
+&lt;code&gt;javascript
+var User = require('../models/user.js'),
+    passport = require('passport'),
+    FacebookStrategy = require('passport-facebook').Strategy;
+passport.serializeUser(function(user, done){
+    done(null, user._id);//将mongodb分配的'_id'保存在session中
+});
+passport.deserializeUser(function(id, done){
+    User.findById(id, function(err, user){
+        if(err || !user) return done(err, null);
+        done(null, user);
+    });
+});
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;两个错误：
+* p225解序列化的user通过req.user访问，原文中req.session.passport.user只能访问到之前序列化存储的id
+* &lt;code&gt;callbackURL: '/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect)&lt;/code&gt;此处有问题，当queryString中没有redirect时，encodeURIComponent会将undefined编码成“undefined”，这样验证通过重定向时会404。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-28&quot;&gt;基于角色的认证&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;next('route');&lt;/code&gt;和&lt;code&gt;next()&lt;/code&gt;的区别：
+一个route可以包含多个中间件：middleware1通过调用&lt;code&gt;next()&lt;/code&gt;将控制权交给middleware2，而&lt;code&gt;next('route')&lt;/code&gt;寻找下一个route&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;javascript
+app.get('',middleware1,middleware2,function(req,res,next){});
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;ch19-api&quot;&gt;ch19 集成第三方api&lt;/h2&gt;
+
+</description>
+        <pubDate>Thu, 11 Sep 2014 03:21:32 +0800</pubDate>
+        <link>http://yourdomain.com/nodejs/express/2014/09/11/web-development-with-express-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/nodejs/express/2014/09/11/web-development-with-express-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0.html</guid>
+        
+        
+        <category>nodejs</category>
+        
+        <category>express</category>
+        
+      </item>
     
       <item>
         <title>Welcome to Jekyll!</title>
