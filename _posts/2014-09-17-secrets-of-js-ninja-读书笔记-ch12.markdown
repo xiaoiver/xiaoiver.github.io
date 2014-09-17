@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "《Secrets of JS Ninja》读书笔记 ch12 attr/prop/css"
-date:   2014-09-17 10:02:40
+date:   2014-09-17 11:05:40
 categories: js jquery
 ---
 
