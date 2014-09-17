@@ -6,8 +6,8 @@
 </description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 17 Sep 2014 10:10:32 +0800</pubDate>
-    <lastBuildDate>Wed, 17 Sep 2014 10:10:32 +0800</lastBuildDate>
+    <pubDate>Wed, 17 Sep 2014 10:15:41 +0800</pubDate>
+    <lastBuildDate>Wed, 17 Sep 2014 10:15:41 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -15,6 +15,7 @@
         <description>&lt;h2 id=&quot;ch3&quot;&gt;ch3&lt;/h2&gt;
 
 &lt;h3 id=&quot;first-class&quot;&gt;函数作为first-class对象&lt;/h3&gt;
+
 &lt;p&gt;对象有以下能力：&lt;/p&gt;
 
 &lt;ul&gt;
@@ -27,6 +28,7 @@
 &lt;p&gt;function都有，所以first-class object&lt;/p&gt;
 
 &lt;h3 id=&quot;section&quot;&gt;浏览器事件循环&lt;/h3&gt;
+
 &lt;p&gt;程序中编写事件处理器，但是事件出现的时间和顺序都是不确定的，所以叫做“异步”调用处理器。&lt;/p&gt;
 
 &lt;p&gt;事件类型：&lt;/p&gt;
@@ -42,6 +44,7 @@
 当然也可以使用&lt;code&gt;&amp;lt;body&amp;gt;&lt;/code&gt;的onload属性，但是这样违背了非侵入式js的原则。&lt;/p&gt;
 
 &lt;h3 id=&quot;section-1&quot;&gt;作用域和函数&lt;/h3&gt;
+
 &lt;p&gt;function可以在声明前引用,变量不可以&lt;/p&gt;
 
 &lt;p&gt;scope是由function定义的，而不是诸如if block

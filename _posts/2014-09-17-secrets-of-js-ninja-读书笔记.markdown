@@ -8,6 +8,7 @@ categories: js jquery
 ## ch3
 
 ### 函数作为first-class对象
+
 对象有以下能力：
 
 * 可以被分配给变量，数组的成员，其他对象的属性
@@ -18,6 +19,7 @@ categories: js jquery
 function都有，所以first-class object
 
 ### 浏览器事件循环
+
 程序中编写事件处理器，但是事件出现的时间和顺序都是不确定的，所以叫做“异步”调用处理器。
 
 事件类型：
@@ -31,6 +33,7 @@ function都有，所以first-class object
 当然也可以使用`<body>`的onload属性，但是这样违背了非侵入式js的原则。
 
 ### 作用域和函数
+
 function可以在声明前引用,变量不可以
 
 scope是由function定义的，而不是诸如if block
