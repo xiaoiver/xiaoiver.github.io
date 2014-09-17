@@ -161,8 +161,10 @@ assertion库chai</p>
 <p>Travis CI</p>
 
 <h2 id="ch6-req-res">ch6 req res</h2>
-<p>### 请求体
-get请求没有请求体，post请求有</p>
+
+<h3 id="section-7">请求体</h3>
+
+<p>get请求没有请求体，post请求有</p>
 
 <ul>
   <li>application/x-www-form-urlencoded 编码后的键值对</li>
@@ -195,7 +197,7 @@ get请求没有请求体，post请求有</p>
 <h3 id="express">Express源码</h3>
 <p>p61</p>
 
-<h3 id="section-7">展示内容</h3>
+<h3 id="section-8">展示内容</h3>
 <p>即使没有用到next()，也要显式写出告诉Express这是错误处理</p>
 
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
@@ -203,7 +205,7 @@ get请求没有请求体，post请求有</p>
     <span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mi">500</span><span class="p">).</span><span class="nx">render</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">);</span>
 <span class="p">});</span></code></pre></div>
 
-<h3 id="section-8">处理表单</h3>
+<h3 id="section-9">处理表单</h3>
 
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/process-contact&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Received contact from &#39;</span> <span class="o">+</span> <span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span>
@@ -242,10 +244,10 @@ get请求没有请求体，post请求有</p>
 
 <p>如果想要传递的是html代码，需要使用<code>}</code></p>
 
-<h3 id="section-9">注释</h3>
+<h3 id="section-10">注释</h3>
 <p>``和<!-- not-so-secret comment -->的区别就是后者能通过查看源码看到。</p>
 
-<h3 id="section-10">块</h3>
+<h3 id="section-11">块</h3>
 
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">{</span>
     <span class="nx">currency</span><span class="o">:</span> <span class="p">{</span>
@@ -278,7 +280,7 @@ get请求没有请求体，post请求有</p>
 
 <p>如果有一个helper叫foo，<code>指向它，而</code>指向当前上下文的同名属性。</p>
 
-<h3 id="section-11">服务端模板</h3>
+<h3 id="section-12">服务端模板</h3>
 
 <p>安装handlebars<code>npm install --save express3-handlebars</code></p>
 
@@ -305,7 +307,7 @@ get请求没有请求体，post请求有</p>
     <span class="p">}</span>
 <span class="p">});</span></code></pre></div>
 
-<h3 id="section-12">完善模板</h3>
+<h3 id="section-13">完善模板</h3>
 <p>使用html5boilerplate</p>
 
 <h3 id="handlebars-1">客户端handlebars</h3>
@@ -329,7 +331,7 @@ get请求没有请求体，post请求有</p>
 
 <p><code>res.send({success: true});</code>返回信息</p>
 
-<h3 id="section-13">文件上传</h3>
+<h3 id="section-14">文件上传</h3>
 <p>#### 使用Formidable，也可以使用ajax
 <code>npm install --save formidable</code></p>
 
@@ -390,7 +392,7 @@ options包括domain,path(包括子路径),maxAge(默认浏览器关闭就过期)
 <p>app.use接受function作为参数，js中function返回一个function是很常见的
 <code>app.use(express.static(...));</code></p>
 
-<h3 id="section-14">常用中间件</h3>
+<h3 id="section-15">常用中间件</h3>
 <p>Connect中body-parser被移出了，需要单独安装
 <code>npm install --save connect</code>
 <code>var connect = require(connect);</code></p>
@@ -416,7 +418,7 @@ options包括domain,path(包括子路径),maxAge(默认浏览器关闭就过期)
 
 <h2 id="ch12-">ch12 生产环境</h2>
 
-<h3 id="section-15">日志</h3>
+<h3 id="section-16">日志</h3>
 <p>开发阶段使用Morgan，色彩化输出<code>npm install --save morgan</code></p>
 
 <p>生产环境使用express-logger，周期性记录日志<code>npm install --save express-logger</code></p>
@@ -432,7 +434,7 @@ options包括domain,path(包括子路径),maxAge(默认浏览器关闭就过期)
 
 <p>书中验证当前响应请求worker的代码有错误，缺少next()导致浏览器hang</p>
 
-<h3 id="section-16">异常处理</h3>
+<h3 id="section-17">异常处理</h3>
 <p>简单的异常可以通过定义在所有路由之后的中间件处理：</p>
 
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/fail&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
@@ -500,7 +502,7 @@ options包括domain,path(包括子路径),maxAge(默认浏览器关闭就过期)
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Listening on port %d.&#39;</span><span class="p">,</span> <span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">));</span>
 <span class="p">});</span></code></pre></div>
 
-<h3 id="section-17">压力测试</h3>
+<h3 id="section-18">压力测试</h3>
 
 <p><code>npm install --save loadtest</code></p>
 
@@ -508,12 +510,12 @@ options包括domain,path(包括子路径),maxAge(默认浏览器关闭就过期)
 
 <h2 id="ch13-">ch13 持久化</h2>
 
-<h3 id="section-18">文件系统持久化</h3>
+<h3 id="section-19">文件系统持久化</h3>
 
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">fs</span><span class="p">.</span><span class="nx">mkdirSync</span><span class="p">(</span><span class="nx">dir</span><span class="p">);</span> <span class="c1">//创建文件夹</span>
 <span class="nx">fs</span><span class="p">.</span><span class="nx">renameSync</span><span class="p">(</span><span class="nx">photo</span><span class="p">.</span><span class="nx">path</span><span class="p">,</span> <span class="nx">path</span><span class="p">);</span> <span class="c1">//就是移动，formidable会将临时路径放在path中</span></code></pre></div>
 
-<h3 id="section-19">数据库持久化</h3>
+<h3 id="section-20">数据库持久化</h3>
 
 <p>NOSQL类型：文档，键值对</p>
 
@@ -527,7 +529,7 @@ options包括domain,path(包括子路径),maxAge(默认浏览器关闭就过期)
 <p>之前rails时配置的mongodb，默认的journal有2-3G
 <code>mongod --config /usr/local/MongoDB/mongod.conf --smallfiles</code></p>
 
-<h4 id="section-20">数据库连接</h4>
+<h4 id="section-21">数据库连接</h4>
 <p><code>mongoose.connect()</code></p>
 
 <h4 id="modelschema">创建Model和Schema</h4>
@@ -564,7 +566,7 @@ update test.sessions query: { sid: “WNBIQ-sJoUbiJ0rt1UDfu_hUJwb6ZFso” }</p>
 
 <p><code>app.get('/staff/:city/:name', function(req, res){}）;</code></p>
 
-<h3 id="section-21">组织路由规则</h3>
+<h3 id="section-22">组织路由规则</h3>
 
 <ul>
   <li>给路由处理器命名，不用inline的方式</li>
@@ -628,7 +630,7 @@ update test.sessions query: { sid: “WNBIQ-sJoUbiJ0rt1UDfu_hUJwb6ZFso” }</p>
     <span class="nx">next</span><span class="p">();</span>
 <span class="p">});</span></code></pre></div>
 
-<h3 id="section-22">其他组织路由的方法</h3>
+<h3 id="section-23">其他组织路由的方法</h3>
 
 <blockquote>
   <p>The two most popular approaches to route organization are 
@@ -670,7 +672,7 @@ namespaced routing and resourceful routing.</p>
 * findById回调函数中应为”a”而不是”attraction”
 * 返回的对象中加入<code>id: a._id</code>，测试时要对比id</p>
 
-<h3 id="section-23">使用子域名</h3>
+<h3 id="section-24">使用子域名</h3>
 <p>使用子域名api.example.com最大程度区别站点和api</p>
 
 <p><code>npm install --save vhost</code></p>
@@ -688,7 +690,7 @@ namespaced routing and resourceful routing.</p>
   <li>二进制文件下载</li>
 </ul>
 
-<h3 id="section-24">性能考虑</h3>
+<h3 id="section-25">性能考虑</h3>
 <p>减少请求次数或者减少内容大小，前者更关键，包括组合资源和浏览器缓存。</p>
 
 <p>组合资源：小的图片组合成单独的sprite，通过css设置展示的偏移。</p>
@@ -733,20 +735,20 @@ namespaced routing and resourceful routing.</p>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 
-<h3 id="section-25">在服务端脚本使中用静态资源</h3>
+<h3 id="section-26">在服务端脚本使中用静态资源</h3>
 <p><code>var static = require('./lib/static.js').map;</code></p>
 
-<h3 id="section-26">在客户端脚本中使用静态资源</h3>
+<h3 id="section-27">在客户端脚本中使用静态资源</h3>
 
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">IMG_CART_EMPTY</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
 <span class="kd">var</span> <span class="nx">IMG_CART_FULL</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span></code></pre></div>
 
-<h3 id="section-27">浏览器缓存  请求头</h3>
+<h3 id="section-28">浏览器缓存  请求头</h3>
 <p>Expires/Cache-Control：缓存最大时间，前者更好。浏览器发现缓存中有并且还没过期的资源，是不会发送Get请求的。这大大提高了性能尤其在移动端。</p>
 
 <p>Last-Modified/ETag：浏览器发送get请求，如果etag不变则不会下载资源。</p>
 
-<h3 id="section-28">改变静态内容</h3>
+<h3 id="section-29">改变静态内容</h3>
 <p>使用版本号表示变更，即使浏览器缓存，也会强制下载新资源。</p>
 
 <h3 id="bundling-minification">bundling minification</h3>
@@ -858,7 +860,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout meadowlark.pem -out 
 * p225解序列化的user通过req.user访问，原文中req.session.passport.user只能访问到之前序列化存储的id
 * <code>callbackURL: '/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect)</code>此处有问题，当queryString中没有redirect时，encodeURIComponent会将undefined编码成“undefined”，这样验证通过重定向时会404。</p>
 
-<h3 id="section-29">基于角色的认证</h3>
+<h3 id="section-30">基于角色的认证</h3>
 
 <p><code>next('route');</code>和<code>next()</code>的区别：
 一个route可以包含多个中间件：middleware1通过调用<code>next()</code>将控制权交给middleware2，而<code>next('route')</code>寻找下一个route</p>
