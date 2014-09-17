@@ -7,9 +7,9 @@ categories: js jquery
 
 # ch7正则表达式
 
-* ? 0/1
-* + >=1
-* * >=0
+* `? 0/1`
+* `+ >=1`
+* `* >=0`
 
 [jsbin](jsbin.com)
 

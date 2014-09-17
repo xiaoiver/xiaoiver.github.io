@@ -6,8 +6,8 @@
 </description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 17 Sep 2014 10:47:52 +0800</pubDate>
-    <lastBuildDate>Wed, 17 Sep 2014 10:47:52 +0800</lastBuildDate>
+    <pubDate>Wed, 17 Sep 2014 10:49:04 +0800</pubDate>
+    <lastBuildDate>Wed, 17 Sep 2014 10:49:04 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -15,25 +15,9 @@
         <description>&lt;h1 id=&quot;ch7&quot;&gt;ch7正则表达式&lt;/h1&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;? 0/1&lt;/li&gt;
-  &lt;li&gt;
-    &lt;ul&gt;
-      &lt;li&gt;
-        &lt;blockquote&gt;
-          &lt;p&gt;=1&lt;/p&gt;
-        &lt;/blockquote&gt;
-      &lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;ul&gt;
-      &lt;li&gt;
-        &lt;blockquote&gt;
-          &lt;p&gt;=0&lt;/p&gt;
-        &lt;/blockquote&gt;
-      &lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;? 0/1&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;+ &amp;gt;=1&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;* &amp;gt;=0&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;a href=&quot;jsbin.com&quot;&gt;jsbin&lt;/a&gt;&lt;/p&gt;
