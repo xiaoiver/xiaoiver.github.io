@@ -6,9 +6,261 @@
 </description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 17 Sep 2014 10:38:36 +0800</pubDate>
-    <lastBuildDate>Wed, 17 Sep 2014 10:38:36 +0800</lastBuildDate>
+    <pubDate>Wed, 17 Sep 2014 10:43:10 +0800</pubDate>
+    <lastBuildDate>Wed, 17 Sep 2014 10:43:10 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>《Secrets of JS Ninja》读书笔记 ch6</title>
+        <description>&lt;h1 id=&quot;ch6-oo-prototype&quot;&gt;ch6 OO prototype&lt;/h1&gt;
+
+&lt;p&gt;初始化步骤首先从prototype中绑定属性，再从构造函数中添加。
+并不是简单的拷贝prototype，是attach。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;swung&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;swingSword&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;swung&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;swingSword&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;Method exists, even out of order.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;这里在对象创建之后加入prototype依然能引用到。&lt;/p&gt;
+
+&lt;p&gt;每个对象有一个隐式的属性constructor引用对象的构造方法，而prototype是构造方法的一个属性，所以每个对象的实例都能找到自己的prototype。&lt;/p&gt;
+
+&lt;p&gt;所以访问一个对象的属性时，优先级是首先检查property，如果没有定义过，继续查找prototype，还是没有则返回undefined。&lt;/p&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;类型检测&lt;/h2&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){}&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;object&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;The type of the instance is object.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;instanceof identifies the constructor.&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;constructor&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;The ninja object was created by the Ninja function.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;使用对象constructor属性引用的构造器创建对象：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){}&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;constructor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja2&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;It&amp;#39;s a Ninja!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;But not the same Ninja!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;prototype-chain&quot;&gt;通过prototype chain实现继承&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;SubClass.prototype = new SuperClass();&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这样子类就有了父类的全部属性。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;dance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){};&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;ninja receives functionality from the Ninja prototype&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;... and the Person prototype&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;... and the Object prototype&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;dance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;function&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;... and can dance!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;Ninja.prototype = Person.prototype;&lt;/code&gt;不能这样，Ninja的prototype发生改变也会影响Person&lt;/p&gt;
+
+&lt;h2 id=&quot;js&quot;&gt;扩展js中的对象&lt;/h2&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;callback&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;callback&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;//防止传入undefined&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;c&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;s2&quot;&gt;&amp;quot;Is in position &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot; out of &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;html-dom&quot;&gt;扩展html dom对象&lt;/h2&gt;
+
+&lt;p&gt;现代浏览器中的dom对象继承自HTMLElement&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nx&quot;&gt;HTMLElement&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;remove&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;parentNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;parentNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;removeChild&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;但是这种用法是错误的：浏览器禁止直接调用构造函数
+&lt;code&gt;var elem = new HTMLElement();&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;object&quot;&gt;扩展Object&lt;/h2&gt;
+
+&lt;p&gt;这样无法得到正确的结果，原因是引入了keys这个新属性。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;obj&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;obj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;There are three properties in this object.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;使用hasOwnProperty判断属性是通过实例定义的还是prototype引入的。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;hasOwnProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;number&quot;&gt;扩展Number：&lt;/h2&gt;
+
+&lt;p&gt;p138 最好不要,语法上不支持&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://perfectionkills.com/&quot;&gt;一个很好的blog&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;继承原生对象&lt;/h2&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;All the items are in our sub-classed array.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;Verify that we implement Array functionality.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;在IE上length和Array的关系及其紧密&lt;/p&gt;
+
+&lt;p&gt;解决办法：定义新的Length属性并copy其他Array方法，使用immediate function：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;methods&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;push&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;pop&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;shift&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;unshift&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;s1&quot;&gt;&amp;#39;slice&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;splice&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;join&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;methods&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;})(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;methods&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})();&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;All the items are on our sub-classed array.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;We aren&amp;#39;t subclassing Array, though.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;实例化注意事项&lt;/h2&gt;
+
+&lt;p&gt;new操作符在创建对象时必不可少，缺少有可能污染全局scope，恰巧变量与属性同名。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;last&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;first&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot; &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;last&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Rukia&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Ichigo&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Kurosaki&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;function&quot;&gt;function序列化&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;/xyz/.test(function() { xyz; }&lt;/code&gt;调用function的toString方法&lt;/p&gt;
+
+&lt;h2 id=&quot;function-1&quot;&gt;检验function是通过构造函数调用还是普通调用&lt;/h2&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;callee&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;We didn&amp;#39;t instantiate, so it returns false.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;We did instantiate, returning true.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;section-3&quot;&gt;防御式编程&lt;/h2&gt;
+
+&lt;p&gt;如果不是通过new实例化&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;last&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;callee&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;last&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;first&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot; &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;last&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Rukia&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;Name was set to Rukia.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;仍存在3个问题：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;callee在未来版本js中废弃，strict模式下禁用。&lt;/li&gt;
+  &lt;li&gt;好的编程实践？&lt;/li&gt;
+  &lt;li&gt;自以为了解用户&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;section-4&quot;&gt;实现类的继承&lt;/h2&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Person&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;subClass&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;isDancing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;dancing&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;isDancing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;subclass&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;initializing&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;superPattern&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+        &lt;span class=&quot;sr&quot;&gt;/xyz/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;xyz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;sr&quot;&gt;/\b_super\b/&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;sr&quot;&gt;/.*/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;subClass&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;properties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;initializing&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;proto&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;initializing&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;properties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;proto&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;properties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;function&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//判断三件事：子类是方法，父类是方法，子类方法包含对_super()的引用&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;function&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;superPattern&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;properties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tmp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+                    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ret&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+                    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tmp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;})(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;properties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;properties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// All construction is actually done in the init method&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;initializing&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;   
+    &lt;span class=&quot;nx&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;proto&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;constructor&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;subClass&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;callee&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</description>
+        <pubDate>Wed, 17 Sep 2014 18:40:40 +0800</pubDate>
+        <link>http://yourdomain.com/js/jquery/2014/09/17/secrets-of-js-ninja-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-ch6.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/js/jquery/2014/09/17/secrets-of-js-ninja-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-ch6.html</guid>
+        
+        
+        <category>js</category>
+        
+        <category>jquery</category>
+        
+      </item>
     
       <item>
         <title>《Secrets of JS Ninja》读书笔记 ch5</title>
@@ -705,586 +957,7 @@ arguments.length不一样，是调用函数时传入参数的个数。&lt;/p&gt;
     
       <item>
         <title>《Secrets of JS Ninja》读书笔记</title>
-        <description>&lt;h2 id=&quot;ch5-closure&quot;&gt;ch5 closure&lt;/h2&gt;
-&lt;p&gt;当innerFunction在outerFunction内部声明时，一个闭包就被创建了。
-```javascript
-var outerValue = ‘ninja’;
-var later;
-function outerFunction() {
-    var innerValue = ‘samurai’;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;function innerFunction() {
-    assert(outerValue,&quot;I can see the ninja.&quot;);
-    assert(innerValue,&quot;I can see the samurai.&quot;);
-}
-later = innerFunction; } outerFunction(); later(); ```
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;closure还包含了传入的参数，甚至是在function定义后声明的变量，
-而在同一个scope中，是不能提前引用还未定义的变量的，undefined。&lt;/p&gt;
-
-&lt;h3 id=&quot;closure&quot;&gt;closure的应用&lt;/h3&gt;
-&lt;p&gt;#### private 变量&lt;/p&gt;
-
-&lt;p&gt;feint方法能访问feints变量是因为feints处在其closure中。而closure阻止了外面对feints的直接访问。外面要想访问，要通过ninja引用。
-&lt;code&gt;javascript
-function Ninja() {
-    var feints = 0;
-    this.getFeints = function(){
-        return feints;
-    };
-    this.feint = function(){
-        feints++;
-    };
-}
-var ninja = new Ninja();
-ninja.feint();
-assert(ninja.getFeints() == 1,
-    &quot;We're able to access the internal feint count.&quot;);
-assert(ninja.feints === undefined,
-    &quot;And the private data is inaccessible to us.&quot;);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;callback--timer&quot;&gt;callback &amp;amp; timer&lt;/h4&gt;
-
-&lt;p&gt;将$作为变量的前缀/后缀可以表示这是一个jquery对象的引用。
-success回调函数通过closure引用elem$变量。
-&lt;code&gt;javascript
-jQuery('#testButton').click(function(){
-    var elem$ = jQuery(&quot;#testSubject&quot;);
-    elem$.html(&quot;Loading...&quot;);
-    jQuery.ajax({
-        url: &quot;test.html&quot;,
-        success: function(html){
-            assert(elem$,
-                &quot;We can see elem$, via the closure for this callback.&quot;);
-            elem$.html(html);
-        }
-    });
-});
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;如果将变量elem,tick放在全局scope中，多个实例会发生干扰。每个handler的closure保证了其中的变量不会被其他实例访问到。而且closure不只是变量当前状态的快照，是一个动态的封装，只要closure存在就能修改变量。
-&lt;code&gt;javascript
-function animateIt(elementId) {
-    var elem = document.getElementById(elementId);
-    var tick = 0;
-    var timer = setInterval(function(){
-        if (tick &amp;lt; 100) {
-            elem.style.left = elem.style.top = tick + &quot;px&quot;;
-            tick++;
-        }
-        else {
-            clearInterval(timer);
-            assert(tick == 100,
-                &quot;Tick accessed via a closure.&quot;);
-            assert(elem,
-                &quot;Element also accessed via a closure.&quot;);
-            assert(timer,
-                &quot;Timer reference also obtained via a closure.&quot; );
-        }
-    }, 10);
-}
-animateIt('box');
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;section&quot;&gt;绑定函数上下文&lt;/h4&gt;
-
-&lt;p&gt;测试未通过的原因是addEventListener会将click处理函数的上下文设置成elem而不是我们
-期待的button对象
-&lt;code&gt;javascript
-var button = {
-    clicked: false,
-    click: function(){
-        this.clicked = true;
-        assert(button.clicked,&quot;The button has been clicked&quot;);
-    }
-};
-var elem = document.getElementById(&quot;test&quot;);
-elem.addEventListener(&quot;click&quot;,button.click,false);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;解决办法：通过apply指定上下文
-&lt;code&gt;javascript
-function bind(context,name){
-    return function(){
-        return context[name].apply(context,arguments);
-    };
-}
-var button = {
-    clicked: false,
-    click: function(){
-        this.clicked = true;
-        assert(button.clicked,&quot;The button has been clicked&quot;);
-        console.log(this);
-    }
-};
-var elem = document.getElementById(&quot;test&quot;);
-elem.addEventListener(&quot;click&quot;,bind(button,&quot;click&quot;),false);
-&lt;/code&gt;
-bind方法返回的匿名函数的closure包含了context，name。&lt;/p&gt;
-
-&lt;p&gt;Prototype类库中的bind实现：
-&lt;code&gt;javascript
-Function.prototype.bind = function(){
-    var fn = this, args = Array.prototype.slice.call(arguments),
-    object = args.shift();
-    return function(){
-        return fn.apply(object,
-            args.concat(Array.prototype.slice.call(arguments)));
-    };
-};
-var myObject = {};
-function myFunction(){
-    return this == myObject;
-}
-assert( !myFunction(), &quot;Context is not set yet&quot; );
-var aFunction = myFunction.bind(myObject)
-assert( aFunction(), &quot;Context is set properly&quot; );
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;partialcurry-function&quot;&gt;partial/curry function&lt;/h4&gt;
-&lt;p&gt;在调用函数之前传递特定参数，proxy
-Prototype中的curry实现：注意两个arguments是不同的
-&lt;code&gt;javascript
-Function.prototype.curry = function() {
-    var fn = this,
-        args = Array.prototype.slice.call(arguments);
-    return function() {
-        return fn.apply(this, args.concat(
-            Array.prototype.slice.call(arguments)));
-    };
-};
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;使用undefined占位
-&lt;code&gt;javascript
-Function.prototype.partial = function() {
-    var fn = this, args = Array.prototype.slice.call(arguments);
-    return function() {
-        var arg = 0;
-        for (var i = 0; i &amp;lt; args.length &amp;amp;&amp;amp; arg &amp;lt; arguments.length; i++) {
-            if (args[i] === undefined) {
-                args[i] = arguments[arg++];
-            }
-        }
-        return fn.apply(this, args);
-    };
-};
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;使用：
-&lt;code&gt;javascript
-var bindClick = document.body.addEventListener
-    .partial(&quot;click&quot;, undefined, false);
-bindClick(function(){
-    assert(true, &quot;Click event bound via curried function.&quot;);
-});
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;memoization-method&quot;&gt;memoization method&lt;/h4&gt;
-&lt;p&gt;这种方法的坏处是isPrime方法必须显式调用memoized方法才能存储之前的结果。
-&lt;code&gt;javascript
-Function.prototype.memoized = function(key){
-    this._values = this._values || {};
-    return this._values[key] !== undefined ?
-        this._values[key] :
-        this._values[key] = this.apply(this, arguments);
-};
-function isPrime(num) {
-    var prime = num != 1;
-    for (var i = 2; i &amp;lt; num; i++) {
-        if (num % i == 0) {
-            prime = false;
-            break;
-        }
-    }
-    return prime;
-}
-assert(isPrime.memoized(5),
-    &quot;The function works; 5 is prime.&quot;);
-assert(isPrime._values[5],
-    &quot;The answer has been cached.&quot;);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;改进：
-&lt;code&gt;javascript
-Function.prototype.memoize = function(){
-    var fn = this;
-    return function(){
-        return fn.memoized.apply( fn, arguments );
-    };
-};
-var isPrime = (function(num) {
-    var prime = num != 1;
-    for (var i = 2; i &amp;lt; num; i++) {
-        if (num % i == 0) {
-            prime = false;
-            break;
-        }
-    }
-    return prime;
-}).memoize();
-assert(isPrime(17),&quot;17 is prime&quot;);
-&lt;/code&gt;
-在memoize中创建了一个closure，由于每个函数都有上下文，所以上下文不能是closure的一部分。
-但是context的值可以通过一个变量引用它包含在closure中，如fn。&lt;/p&gt;
-
-&lt;h4 id=&quot;wrapper-function&quot;&gt;wrapper function&lt;/h4&gt;
-&lt;p&gt;重载函数但保持对原函数的引用
-&lt;code&gt;javascript
-function wrap(object, method, wrapper) {
-    var fn = object[method];
-    return object[method] = function() {//匿名函数可以通过closure访问fn和wrapper变量
-        return wrapper.apply(this, [fn.bind(this)].concat(//fn 作为参数列表的第一个
-            Array.prototype.slice.call(arguments)));
-    };
-}
-if (Prototype.Browser.Opera) {
-    wrap(Element.Methods, &quot;readAttribute&quot;,
-    function(original, elem, attr) {
-        return attr == &quot;title&quot; ?
-            elem.title :
-            original(elem, attr);
-    });
-}
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;immediate-function&quot;&gt;immediate function&lt;/h4&gt;
-&lt;p&gt;&lt;code&gt;(function(){})()&lt;/code&gt;第一组()只是表达式，第二组()才是函数调用符&lt;/p&gt;
-
-&lt;p&gt;这样做了3件事：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;创建了一个function实例&lt;/li&gt;
-  &lt;li&gt;执行了function&lt;/li&gt;
-  &lt;li&gt;废弃了function因为没有引用&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;closure起类似命名空间的作用，$被包含在任何创建在function内部的function的closure中，如handler。&lt;/p&gt;
-
-&lt;p&gt;传入jQuery变量。这种用法在plugin中十分常见，能避免变量的命名冲突。
-&lt;code&gt;javascript
-$ = function(){ alert('not jQuery!'); };
-(function($){
-    $('img').on('click',function(event){
-        $(event.target).addClass('clickedOn');
-    })
-})(jQuery);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;以下是Prototype中的例子。通过简短的变量名代替长的。
-&lt;code&gt;javascript
-(function(v) {
-    Object.extend(v, {
-        href: v._getAttr,
-        src: v._getAttr,
-        type: v._getAttr,
-        action: v._getAttrNode,
-        disabled: v._flag,
-        checked: v._flag,
-        readonly: v._flag,
-        multiple: v._flag,
-        onload: v._getEv,
-        onunload: v._getEv,
-        onclick: v._getEv,
-        ...
-    });
-})(Element.attributeTranslations.read.values);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;循环中的问题：
-```javascript&lt;/p&gt;
-&lt;body&gt;
-&lt;div&gt;DIV 0&lt;/div&gt;
-&lt;div&gt;DIV 1&lt;/div&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
-    var divs = document.getElementsByTagName(&quot;div&quot;);
-    for (var i = 0; i &lt; divs.length; i++) {
-        divs[i].addEventListener(&quot;click&quot;, function() {
-            alert(&quot;divs #&quot; + i + &quot; was clicked.&quot;);
-        }, false);
-    }
-&lt;/script&gt;
-&lt;/body&gt;
-&lt;p&gt;```
-这里的i会等于最终的值就是2。因为closure并不是只记录变量的当前值，会保持对它的引用。&lt;/p&gt;
-
-&lt;p&gt;解决办法：使用immediate function，在for循环的每次循环中，i都被重新定义为n，closure中n的值是正确的。
-&lt;code&gt;javascript
-for (var i = 0; i &amp;lt; div.length; i++) (function(n){
-    div[n].addEventListener(&quot;click&quot;, function(){
-        alert(&quot;div #&quot; + n + &quot; was clicked.&quot;);
-    }, false);
-})(i);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;window.jQuery作为全局变量。但是有可能被修改，所以在immediate function
-的scope中声明了一个局部变量jQuery。
-&lt;code&gt;javascript
-(function(){
-    var jQuery = window.jQuery = function(){
-        // Initialize
-    };
-    // ...
-})();
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;另一种方法：
-&lt;code&gt;javascript
-var jQuery = (function(){
-    function jQuery(){
-        // Initialize
-    }
-    // ...
-    return jQuery;
-})();
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;ch6-oo-prototype&quot;&gt;ch6 OO prototype&lt;/h2&gt;
-&lt;p&gt;p122
-初始化步骤首先从prototype中绑定属性，再从构造函数中添加。
-并不是简单的拷贝prototype，是attach。
-&lt;code&gt;javascript
-function Ninja(){
-    this.swung = true;
-}
-var ninja = new Ninja();
-Ninja.prototype.swingSword = function(){
-    return this.swung;
-};
-assert(ninja.swingSword(),
-    &quot;Method exists, even out of order.&quot;);
-&lt;/code&gt;
-这里在对象创建之后加入prototype依然能引用到。&lt;/p&gt;
-
-&lt;p&gt;每个对象有一个隐式的属性constructor引用对象的构造方法，而prototype是构造方法的一个属性，所以每个对象的实例都能找到自己的prototype。&lt;/p&gt;
-
-&lt;p&gt;所以访问一个对象的属性时，优先级是首先检查property，如果没有定义过，继续查找prototype，还是没有则返回undefined。&lt;/p&gt;
-
-&lt;h3 id=&quot;section-1&quot;&gt;类型检测&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;javascript
-function Ninja(){}
-var ninja = new Ninja();
-assert(typeof ninja == &quot;object&quot;,
-    &quot;The type of the instance is object.&quot;);
-assert(ninja instanceof Ninja,
-    &quot;instanceof identifies the constructor.&quot; );
-assert(ninja.constructor == Ninja,
-    &quot;The ninja object was created by the Ninja function.&quot;);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;使用对象constructor属性引用的构造器创建对象：
-&lt;code&gt;javascript
-function Ninja(){}
-var ninja = new Ninja();
-var ninja2 = new ninja.constructor();
-assert(ninja2 instanceof Ninja, &quot;It's a Ninja!&quot;);
-assert(ninja !== ninja2, &quot;But not the same Ninja!&quot;);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;prototype-chain&quot;&gt;通过prototype chain实现继承&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;SubClass.prototype = new SuperClass();&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;这样子类就有了父类的全部属性。
-&lt;code&gt;javascript
-function Person(){}
-Person.prototype.dance = function(){};
-function Ninja(){}
-Ninja.prototype = new Person();
-var ninja = new Ninja();
-assert(ninja instanceof Ninja,
-    &quot;ninja receives functionality from the Ninja prototype&quot;);
-assert(ninja instanceof Person, &quot;... and the Person prototype&quot;);
-assert(ninja instanceof Object, &quot;... and the Object prototype&quot;);
-assert(typeof ninja.dance == &quot;function&quot;, &quot;... and can dance!&quot;)
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;Ninja.prototype = Person.prototype;&lt;/code&gt;不能这样，Ninja的prototype发生改变也会影响Person&lt;/p&gt;
-
-&lt;h3 id=&quot;js&quot;&gt;扩展js中的对象&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;javascript
-if (!Array.prototype.forEach) {
-    Array.prototype.forEach = function(callback, context) {
-        for (var i = 0; i &amp;lt; this.length; i++) {
-            callback.call(context || null, this[i], i, this);//防止传入undefined
-        }
-    };
-}
-[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;].forEach(function(value, index, array) {
-    assert(value,
-        &quot;Is in position &quot; + index + &quot; out of &quot; +
-        (array.length - 1));
-});
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;html-dom&quot;&gt;扩展html dom对象&lt;/h3&gt;
-&lt;p&gt;现代浏览器中的dom对象继承自HTMLElement
-&lt;code&gt;javascript
-HTMLElement.prototype.remove = function() {
-    if (this.parentNode)
-    this.parentNode.removeChild(this);
-};
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;但是这种用法是错误的：浏览器禁止直接调用构造函数
-&lt;code&gt;var elem = new HTMLElement();&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;object&quot;&gt;扩展Object&lt;/h3&gt;
-&lt;p&gt;这样无法得到正确的结果，原因是引入了keys这个新属性。
-&lt;code&gt;javascript
-Object.prototype.keys = function() {
-    var keys = [];
-    for (var p in this) keys.push(p);
-    return keys;
-};
-var obj = { a: 1, b: 2, c: 3 };
-assert(obj.keys().length == 3,
-    &quot;There are three properties in this object.&quot;);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;使用hasOwnProperty判断属性是通过实例定义的还是prototype引入的。
-&lt;code&gt;javascript
-Object.prototype.keys = function() {
-    var keys = [];
-    for (var i in this)
-        if (this.hasOwnProperty(i)) keys.push(i);
-    return keys;
-};
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;number&quot;&gt;扩展Number：&lt;/h3&gt;
-&lt;p&gt;p138 最好不要,语法上不支持&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://perfectionkills.com/&quot;&gt;一个很好的blog&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;section-2&quot;&gt;继承原生对象&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;javascript
-function MyArray() {}
-MyArray.prototype = new Array();
-var mine = new MyArray();
-mine.push(1, 2, 3);
-assert(mine.length == 3,
-    &quot;All the items are in our sub-classed array.&quot;);
-assert(mine instanceof Array,
-    &quot;Verify that we implement Array functionality.&quot;);
-&lt;/code&gt;
-在IE上length和Array的关系及其紧密&lt;/p&gt;
-
-&lt;p&gt;解决办法：定义新的Length属性并copy其他Array方法，使用immediate function：
-&lt;code&gt;javascript
-function MyArray() {}
-MyArray.prototype.length = 0;
-(function() {
-    var methods = ['push', 'pop', 'shift', 'unshift',
-        'slice', 'splice', 'join'];
-    for (var i = 0; i &amp;lt; methods.length; i++) (function(name) {
-        MyArray.prototype[ name ] = function() {
-            return Array.prototype[ name ].apply(this, arguments);
-        };
-    })(methods[i]);
-})();
-var mine = new MyArray();
-mine.push(1, 2, 3);
-assert(mine.length == 3,
-    &quot;All the items are on our sub-classed array.&quot;);
-assert(!(mine instanceof Array),
-    &quot;We aren't subclassing Array, though.&quot;);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;section-3&quot;&gt;实例化注意事项&lt;/h3&gt;
-&lt;p&gt;new操作符在创建对象时必不可少，缺少有可能污染全局scope，恰巧变量与属性同名。
-&lt;code&gt;javascript
-function User(first, last){
-    this.name = first + &quot; &quot; + last;
-}
-var name = &quot;Rukia&quot;;
-var user = User(&quot;Ichigo&quot;, &quot;Kurosaki&quot;);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;function&quot;&gt;function序列化&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;/xyz/.test(function() { xyz; }&lt;/code&gt;调用function的toString方法&lt;/p&gt;
-
-&lt;h3 id=&quot;function-1&quot;&gt;检验function是通过构造函数调用还是普通调用&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;javascript
-function Test() {
-    return this instanceof arguments.callee;
-}
-assert(!Test(), &quot;We didn't instantiate, so it returns false.&quot;);
-assert(new Test(), &quot;We did instantiate, returning true.&quot;);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;section-4&quot;&gt;防御式编程&lt;/h3&gt;
-&lt;p&gt;如果不是通过new实例化
-&lt;code&gt;javascript
-function User(first, last) {
-    if (!(this instanceof arguments.callee)) {
-        return new User(first,last);
-    }
-    this.name = first + &quot; &quot; + last;
-}
-assert(name == &quot;Rukia&quot;,
-    &quot;Name was set to Rukia.&quot;);
-&lt;/code&gt;
-仍存在3个问题：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;callee在未来版本js中废弃，strict模式下禁用。&lt;/li&gt;
-  &lt;li&gt;好的编程实践？&lt;/li&gt;
-  &lt;li&gt;自以为了解用户&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;p146&quot;&gt;P146实现类的继承&lt;/h3&gt;
-&lt;p&gt;```javascript
-var Person = Object.subClass({
-    init: function(isDancing){
-        this.dancing = isDancing;
-    }
-});
-var Ninja = Person.subclass({
-    init: function(){
-        this._super(false);
-    }
-});&lt;/p&gt;
-
-&lt;p&gt;(function() {
-var initializing = false,
-    superPattern =
-        /xyz/.test(function() { xyz; }) ? /\b_super\b/ : /.*/;
-Object.subClass = function(properties) {
-    var _super = this.prototype;
-    initializing = true;
-    var proto = new this();
-    initializing = false;
-    for (var name in properties) {
-        proto[name] = typeof properties[name] == “function” &amp;amp;&amp;amp; //判断三件事：子类是方法，父类是方法，子类方法包含对_super()的引用
-        typeof _super[name] == “function” &amp;amp;&amp;amp;
-            superPattern.test(properties[name]) ?
-            (function(name, fn) {
-                return function() {
-                    var tmp = this._super;
-                    this._super = _super[name];
-                    var ret = fn.apply(this, arguments);
-                    this._super = tmp;
-                    return ret;
-                };
-            })(name, properties[name]) :
-            properties[name];
-    }
-    function Class() {
-        // All construction is actually done in the init method
-        if (!initializing &amp;amp;&amp;amp; this.init)
-            this.init.apply(this, arguments);
-    } &lt;br /&gt;
-    Class.prototype = proto;
-    Class.constructor = Class;
-    Class.subClass = arguments.callee;
-    return Class;
-};
-})();
-```&lt;/p&gt;
-
-&lt;h2 id=&quot;ch7&quot;&gt;ch7正则表达式&lt;/h2&gt;
+        <description>&lt;h2 id=&quot;ch7&quot;&gt;ch7正则表达式&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;? 0/1&lt;/li&gt;
@@ -1330,7 +1003,7 @@ nongreedy &lt;code&gt;/a+?/ aaa&lt;/code&gt;匹配第一个a&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;var regex = new RegExp(&quot;(^|\\s)&quot; + className + &quot;(\\s|$)&quot;);&lt;/code&gt;这里需要额外的\，因为在字符串中，需要转义&lt;/p&gt;
 
-&lt;h3 id=&quot;section-5&quot;&gt;得到透明度&lt;/h3&gt;
+&lt;h3 id=&quot;section&quot;&gt;得到透明度&lt;/h3&gt;
 &lt;p&gt;```javascript
 &amp;lt;div id=&quot;opacity&quot;
     style=&quot;opacity:0.5;filter:alpha(opacity=50);&quot;&amp;gt;
@@ -1440,7 +1113,7 @@ assert(compress(&quot;foo=1&amp;amp;foo=2&amp;amp;blah=a&amp;amp;blah=b&amp;amp;
     &quot;Compression is OK!&quot;);
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-6&quot;&gt;使用正则表达式解决常见问题&lt;/h3&gt;
+&lt;h3 id=&quot;section-1&quot;&gt;使用正则表达式解决常见问题&lt;/h3&gt;
 &lt;p&gt;#### trim string
 &lt;code&gt;javascript
 function trim(str) {
@@ -1449,7 +1122,7 @@ function trim(str) {
 &lt;/code&gt;
 p170提供手动解决尾部空格，针对大文档提高效率&lt;/p&gt;
 
-&lt;h4 id=&quot;section-7&quot;&gt;匹配换行符&lt;/h4&gt;
+&lt;h4 id=&quot;section-2&quot;&gt;匹配换行符&lt;/h4&gt;
 &lt;p&gt;```javascript
 var html = “&lt;b&gt;Hello&lt;/b&gt;\n&lt;i&gt;world!&lt;/i&gt;”;&lt;/p&gt;
 
@@ -1471,7 +1144,7 @@ var html = “&lt;b&gt;Hello&lt;/b&gt;\n&lt;i&gt;world!&lt;/i&gt;”;&lt;/p&gt;
 &lt;h2 id=&quot;ch8--&quot;&gt;ch8线程 和 定时器&lt;/h2&gt;
 &lt;p&gt;timer不是js而是浏览器提供的特性。&lt;/p&gt;
 
-&lt;h3 id=&quot;section-8&quot;&gt;处理计算成本高的任务&lt;/h3&gt;
+&lt;h3 id=&quot;section-3&quot;&gt;处理计算成本高的任务&lt;/h3&gt;
 &lt;p&gt;下面的任务耗时巨大，浏览器处理时，用户无法交互：
 &lt;code&gt;javascript
 var tbody = document.getElementsByTagName(&quot;tbody&quot;)[0];
@@ -1566,7 +1239,7 @@ timers.start();
 ```
 除了动画，中心定时器控制还能用于测试前端&lt;/p&gt;
 
-&lt;h3 id=&quot;section-9&quot;&gt;异步测试&lt;/h3&gt;
+&lt;h3 id=&quot;section-4&quot;&gt;异步测试&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;javascript
 (function() {
@@ -1602,14 +1275,14 @@ timers.start();
 &lt;p&gt;如果希望返回的不是原始类型，简单变量或者赋值，需要用大括号包裹。
 &lt;code&gt;var o = eval('({ninja: 1})');&lt;/code&gt;，如果没有，虽然还是创建了o，但是值是1。&lt;/p&gt;
 
-&lt;h3 id=&quot;function-2&quot;&gt;通过Function的构造函数&lt;/h3&gt;
+&lt;h3 id=&quot;function&quot;&gt;通过Function的构造函数&lt;/h3&gt;
 &lt;p&gt;不会创建闭包
 &lt;code&gt;javascript
 var add = new Function(&quot;a&quot;, &quot;b&quot;, &quot;return a + b;&quot;);
 assert(add(3,4) === 7, &quot;Function created and working!&quot;);
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-10&quot;&gt;定时器&lt;/h3&gt;
+&lt;h3 id=&quot;section-5&quot;&gt;定时器&lt;/h3&gt;
 &lt;p&gt;其实和new Function()差不多
 &lt;code&gt;var tick = window.setTimeout('alert(&quot;Hi!&quot;)',100);&lt;/code&gt;&lt;/p&gt;
 
@@ -1640,7 +1313,7 @@ window.onload = function() {
 
 &lt;p&gt;应用场景是动态执行从服务端返回的代码，但问题是安全性。&lt;/p&gt;
 
-&lt;h3 id=&quot;section-11&quot;&gt;安全地解析代码&lt;/h3&gt;
+&lt;h3 id=&quot;section-6&quot;&gt;安全地解析代码&lt;/h3&gt;
 &lt;p&gt;google项目&lt;a href=&quot;http://code.google.com/p/google-caja/&quot;&gt;Caja&lt;/a&gt;，将js代码转换成更安全的形式
 ```javascript
 var test = true;
@@ -1668,7 +1341,7 @@ Function.prototype.toString = function(){};&lt;/p&gt;
 }
 ```&lt;/p&gt;
 
-&lt;h3 id=&quot;function-3&quot;&gt;function的反编译&lt;/h3&gt;
+&lt;h3 id=&quot;function-1&quot;&gt;function的反编译&lt;/h3&gt;
 &lt;p&gt;将function反编译成string，注意返回的字符串包含全部空格和换行符
 &lt;code&gt;javascript
 function test(a){ return a + a; }
@@ -1707,7 +1380,7 @@ assert(object.name === &quot;Ninja&quot;,
 &lt;p&gt;&lt;a href=&quot;https://github.com/douglascrockford/JSON-js&quot;&gt;安全的实现&lt;/a&gt;
 做了很多预处理工作&lt;/p&gt;
 
-&lt;h3 id=&quot;section-12&quot;&gt;导入命名空间中的代码&lt;/h3&gt;
+&lt;h3 id=&quot;section-7&quot;&gt;导入命名空间中的代码&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;javascript
 base2.namespace ==
@@ -1715,7 +1388,7 @@ base2.namespace ==
 eval(base2.namespace);
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-13&quot;&gt;压缩和混淆&lt;/h3&gt;
+&lt;h3 id=&quot;section-8&quot;&gt;压缩和混淆&lt;/h3&gt;
 &lt;p&gt;将代码中的变量重新命名，压缩成一个字符串，使用eval解析执行&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dean.edwards.name/packer/&quot;&gt;Dean Edwards’s Packer&lt;/a&gt;&lt;/p&gt;
@@ -1723,7 +1396,7 @@ eval(base2.namespace);
 &lt;p&gt;但是小虽然能减少下载时间，但是解析时间不一定
 load time = download time + evaluation time&lt;/p&gt;
 
-&lt;h3 id=&quot;section-14&quot;&gt;动态代码重写&lt;/h3&gt;
+&lt;h3 id=&quot;section-9&quot;&gt;动态代码重写&lt;/h3&gt;
 &lt;p&gt;单元测试库&lt;a href=&quot;https://github.com/nkallen/screw-unit&quot;&gt;Screw.Unit&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;测试代码
@@ -1855,7 +1528,7 @@ with (String.prototype.escapeHTML) div.appendChild(text);
 })(String.prototype.escapeHTML);
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-15&quot;&gt;导入命名空间中的代码&lt;/h3&gt;
+&lt;h3 id=&quot;section-10&quot;&gt;导入命名空间中的代码&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;javascript
 with (YAHOO.util.Dom) {
     YAHOO.util.Event.on([get('item'), get('otheritem')], 'click',
@@ -1863,7 +1536,7 @@ with (YAHOO.util.Dom) {
 }
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-16&quot;&gt;测试&lt;/h3&gt;
+&lt;h3 id=&quot;section-11&quot;&gt;测试&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;javascript
 new Test.Unit.Runner({
     testSliderBasics: function(){with(this){
@@ -1878,7 +1551,7 @@ new Test.Unit.Runner({
 });
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-17&quot;&gt;模板&lt;/h3&gt;
+&lt;h3 id=&quot;section-12&quot;&gt;模板&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;javascript
 (function(){
     var cache = {};
@@ -1910,10 +1583,10 @@ assert( hello({name: &quot;world&quot;}) == &quot;Hello, world!&quot;,
 
 &lt;h2 id=&quot;ch11-&quot;&gt;ch11 跨浏览器策略&lt;/h2&gt;
 
-&lt;h3 id=&quot;section-18&quot;&gt;封装代码&lt;/h3&gt;
+&lt;h3 id=&quot;section-13&quot;&gt;封装代码&lt;/h3&gt;
 &lt;p&gt;不影响加载页面中的其他代码&lt;/p&gt;
 
-&lt;h3 id=&quot;section-19&quot;&gt;避免属性冲突&lt;/h3&gt;
+&lt;h3 id=&quot;section-14&quot;&gt;避免属性冲突&lt;/h3&gt;
 &lt;p&gt;使用hasOwnProperty判断，和in的区别是前者不会检查原型链&lt;/p&gt;
 
 &lt;h3 id=&quot;id&quot;&gt;贪婪的id&lt;/h3&gt;
@@ -1949,10 +1622,10 @@ assert( hello({name: &quot;world&quot;}) == &quot;Hello, world!&quot;,
 &amp;lt;/script&amp;gt;
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-20&quot;&gt;浏览器命名不同&lt;/h3&gt;
+&lt;h3 id=&quot;section-15&quot;&gt;浏览器命名不同&lt;/h3&gt;
 &lt;p&gt;大多数浏览器可以通过getAttribute(“class”)取到class，但是IE使用className，保持和property一致。&lt;/p&gt;
 
-&lt;h3 id=&quot;section-21&quot;&gt;命名限制&lt;/h3&gt;
+&lt;h3 id=&quot;section-16&quot;&gt;命名限制&lt;/h3&gt;
 &lt;p&gt;attr和prop不能做到一一对应，因为要考虑到保留字，比如label的for(attr)，就只能通过htmlFor(prop)。
 另外，由多个词组合成的attr，对应的prop要使用驼峰命名方式，如maxLength,rowSpan。
 这是因为通过prop访问&lt;code&gt;element.style.font-size;&lt;/code&gt;连字符会被当做减号。&lt;/p&gt;
@@ -1972,7 +1645,7 @@ function isXML(elem) {
 &lt;p&gt;自定义attr，只能通过get/setAttribute
 &lt;code&gt;var value = element.someValue ? element.someValue :element.getAttribute('someValue');&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-22&quot;&gt;性能考虑&lt;/h3&gt;
+&lt;h3 id=&quot;section-17&quot;&gt;性能考虑&lt;/h3&gt;
 &lt;p&gt;通常prop访问比getAttribute速度快&lt;/p&gt;
 
 &lt;h3 id=&quot;url&quot;&gt;url标准化&lt;/h3&gt;
@@ -2015,7 +1688,7 @@ window.onload = function(){
 
 &lt;p&gt;```&lt;/p&gt;
 
-&lt;h3 id=&quot;section-23&quot;&gt;像素值&lt;/h3&gt;
+&lt;h3 id=&quot;section-18&quot;&gt;像素值&lt;/h3&gt;
 
 &lt;p&gt;有些属性需要加上单位
 &lt;code&gt;javascript
@@ -2038,7 +1711,7 @@ element.style.height = 10 + &quot;px&quot;;
   &lt;li&gt;恢复改变的属性&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&quot;section-24&quot;&gt;透明度&lt;/h3&gt;
+&lt;h3 id=&quot;section-19&quot;&gt;透明度&lt;/h3&gt;
 &lt;p&gt;所有现代浏览器包括IE9，支持&lt;code&gt;opacity: 0.5&lt;/code&gt;，
 IE9之前，使用&lt;code&gt;filter: alpha(opacity=50)&lt;/code&gt;&lt;/p&gt;
 
@@ -2059,11 +1732,11 @@ assert(OPACITY_SUPPORTED,
     &quot;Opacity is supported.&quot;);
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-25&quot;&gt;颜色&lt;/h3&gt;
+&lt;h3 id=&quot;section-20&quot;&gt;颜色&lt;/h3&gt;
 &lt;p&gt;表达方式多种
 &lt;a href=&quot;http://plugins.jquery.com/project/color&quot;&gt;jQuery Color plugin&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-26&quot;&gt;获取计算后的样式&lt;/h3&gt;
+&lt;h3 id=&quot;section-21&quot;&gt;获取计算后的样式&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;window.getComputedStyle()&lt;/code&gt;IE9+，接受element作为参数，返回一个接口。
 返回的接口有方法&lt;code&gt;getPropertyValue()&lt;/code&gt;来获取计算后的样式值。&lt;/p&gt;
@@ -2099,7 +1772,7 @@ window.onload = doSomething;
 
 &lt;p&gt;DOM Level 2 Event Model&lt;/p&gt;
 
-&lt;h3 id=&quot;section-27&quot;&gt;绑定事件处理器&lt;/h3&gt;
+&lt;h3 id=&quot;section-22&quot;&gt;绑定事件处理器&lt;/h3&gt;
 &lt;p&gt;add/removeEventListener 主流浏览器 IE9+&lt;/p&gt;
 
 &lt;p&gt;attach/detachEvent IE9-  IE MODEL&lt;/p&gt;
@@ -2109,7 +1782,7 @@ window.onload = doSomething;
 
 &lt;p&gt;并且，IE MODEL不设置处理器上下文，导致处理器内部this指向全局对象。不传递事件信息到处理器，而是传到全局上下文window对象。&lt;/p&gt;
 
-&lt;h4 id=&quot;section-28&quot;&gt;解决设置上下文的问题&lt;/h4&gt;
+&lt;h4 id=&quot;section-23&quot;&gt;解决设置上下文的问题&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;javascript
 if (document.addEventListener) {
     this.addEvent = function (elem, type, fn) {
@@ -2135,7 +1808,7 @@ else if (document.attachEvent) {
 &lt;/code&gt;
 p291&lt;/p&gt;
 
-&lt;h3 id=&quot;section-29&quot;&gt;解决事件对象的问题&lt;/h3&gt;
+&lt;h3 id=&quot;section-24&quot;&gt;解决事件对象的问题&lt;/h3&gt;
 &lt;p&gt;主要修复IE MODEL存在的问题
 &lt;code&gt;javascript
 function fixEvent(event) {
@@ -2198,10 +1871,10 @@ function fixEvent(event) {
 }
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-30&quot;&gt;处理器管理&lt;/h3&gt;
+&lt;h3 id=&quot;section-25&quot;&gt;处理器管理&lt;/h3&gt;
 &lt;p&gt;一个元素绑定了多个事件处理器，难以管理&lt;/p&gt;
 
-&lt;h4 id=&quot;section-31&quot;&gt;存储相关信息&lt;/h4&gt;
+&lt;h4 id=&quot;section-26&quot;&gt;存储相关信息&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;javascript
 &amp;lt;div title=&quot;Ninja Power!&quot;&amp;gt; 忍者パワー!&amp;lt;/div&amp;gt;
 &amp;lt;div title=&quot;Secrets&quot;&amp;gt; 秘密&amp;lt;/div&amp;gt;
@@ -2248,7 +1921,7 @@ function fixEvent(event) {
 &amp;lt;/script&amp;gt;
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;section-32&quot;&gt;管理事件处理器&lt;/h4&gt;
+&lt;h4 id=&quot;section-27&quot;&gt;管理事件处理器&lt;/h4&gt;
 &lt;p&gt;绑定事件处理器
 &lt;code&gt;javascript
 (function(){
@@ -2344,7 +2017,7 @@ this.removeEvent = function (elem, type, fn) {// 可以通过检查elem的data-�
 };
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-33&quot;&gt;触发事件&lt;/h3&gt;
+&lt;h3 id=&quot;section-28&quot;&gt;触发事件&lt;/h3&gt;
 &lt;p&gt;事件触发时：&lt;/p&gt;
 
 &lt;ul&gt;
@@ -2379,7 +2052,7 @@ function triggerEvent(elem, event) {
 }
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-34&quot;&gt;自定义事件&lt;/h3&gt;
+&lt;h3 id=&quot;section-29&quot;&gt;自定义事件&lt;/h3&gt;
 &lt;p&gt;需要在不同场合下多次调用一段代码，使用全局函数？自定义事件，松耦合。&lt;/p&gt;
 
 &lt;h4 id=&quot;ajax&quot;&gt;ajax例子&lt;/h4&gt;
@@ -2395,10 +2068,10 @@ addEvent(body, 'ajax-complete', function(e){
 &lt;/code&gt;
 这其实是事件的委托。&lt;/p&gt;
 
-&lt;h3 id=&quot;section-35&quot;&gt;冒泡和委托&lt;/h3&gt;
+&lt;h3 id=&quot;section-30&quot;&gt;冒泡和委托&lt;/h3&gt;
 &lt;p&gt;委托：在目标节点更高级的dom节点上建立事件处理器&lt;/p&gt;
 
-&lt;h4 id=&quot;section-36&quot;&gt;委托事件给祖先节点&lt;/h4&gt;
+&lt;h4 id=&quot;section-31&quot;&gt;委托事件给祖先节点&lt;/h4&gt;
 
 &lt;p&gt;场景：点击每一个td使其变色&lt;/p&gt;
 
@@ -2422,7 +2095,7 @@ addEvent(table, 'click', function(event){
 });
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;section-37&quot;&gt;浏览器缺陷&lt;/h4&gt;
+&lt;h4 id=&quot;section-32&quot;&gt;浏览器缺陷&lt;/h4&gt;
 &lt;p&gt;submit,change,focus,blur在不同浏览器的冒泡实现中，存在严重问题。&lt;/p&gt;
 
 &lt;p&gt;事件冒泡检测代码，使用div是因为包含最多的冒泡事件种类
@@ -2845,7 +2518,7 @@ function root(elem, cur) {
 };
 ```&lt;/p&gt;
 
-&lt;h5 id=&quot;section-38&quot;&gt;执行脚本&lt;/h5&gt;
+&lt;h5 id=&quot;section-33&quot;&gt;执行脚本&lt;/h5&gt;
 
 &lt;p&gt;在插入到document之前，将内联脚本提取出来。ret数组保存所有生成的DOM节点。scripts数组保存所有提取出来的脚本节点。在插入操作完成后，解释执行这些脚本。
 &lt;code&gt;javascript
@@ -2895,7 +2568,7 @@ function evalScript(elem) {
 }
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-39&quot;&gt;克隆元素&lt;/h3&gt;
+&lt;h3 id=&quot;section-34&quot;&gt;克隆元素&lt;/h3&gt;
 
 &lt;p&gt;cloneNode方法，参数表示是否拷贝所有子节点。&lt;/p&gt;
 
@@ -2935,7 +2608,7 @@ function clone() {
 }
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-40&quot;&gt;删除元素&lt;/h3&gt;
+&lt;h3 id=&quot;section-35&quot;&gt;删除元素&lt;/h3&gt;
 &lt;p&gt;在简单地调用removeChild之前，还要做清理工作。&lt;/p&gt;
 
 &lt;p&gt;首先，所有绑定的事件处理器要清理。其次，元素关联的外部数据要清理。
@@ -2960,7 +2633,7 @@ function remove() {
 
 &lt;p&gt;解决方法是，在IE中有一个独有的属性outerHTML，代表元素的HTML字符串。既是getter又是setter，通过设置字符串为空比调用removeChild清除的更彻底，不是全部但也有大部分了。&lt;/p&gt;
 
-&lt;h3 id=&quot;section-41&quot;&gt;文本内容&lt;/h3&gt;
+&lt;h3 id=&quot;section-36&quot;&gt;文本内容&lt;/h3&gt;
 
 &lt;p&gt;textContent属性，
 IE中innerText属性&lt;/p&gt;
@@ -2990,11 +2663,11 @@ window.onload = function () {
 &amp;lt;/script&amp;gt;
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;section-42&quot;&gt;设置文本&lt;/h4&gt;
+&lt;h4 id=&quot;section-37&quot;&gt;设置文本&lt;/h4&gt;
 
 &lt;p&gt;插入文本和插入html不同在于文本需要进行转义，&lt;code&gt;&amp;lt;&lt;/code&gt;转义成&lt;code&gt;&amp;amp;lt&lt;/code&gt;。使用内置的createTextNode方法。&lt;/p&gt;
 
-&lt;h4 id=&quot;section-43&quot;&gt;获取文本&lt;/h4&gt;
+&lt;h4 id=&quot;section-38&quot;&gt;获取文本&lt;/h4&gt;
 &lt;p&gt;想取得精确的文本值，不能通过textContent或者innerText。原因是换行符会被去掉。&lt;/p&gt;
 
 &lt;p&gt;只能手动得到每个文本节点的nodeValue
@@ -3118,7 +2791,7 @@ function find(selector, root){
 };
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;section-44&quot;&gt;解析选择符&lt;/h4&gt;
+&lt;h4 id=&quot;section-39&quot;&gt;解析选择符&lt;/h4&gt;
 &lt;p&gt;上面的简单例子按照空格分割tag，但是很多选择中包含额外的空格，例如按照属性或者值查询。&lt;/p&gt;
 
 &lt;p&gt;注意非捕获组中的三种情况()，[]和非空格，逗号，大小括号。第三种情况将空格剔除。
@@ -3141,7 +2814,7 @@ assert(parts[2] === &quot;span:not(:first-child)&quot;, &quot;span selector&quot
 assert(parts[3] === &quot;a[href]&quot;, &quot;a selector&quot;);
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;section-45&quot;&gt;查找元素&lt;/h4&gt;
+&lt;h4 id=&quot;section-40&quot;&gt;查找元素&lt;/h4&gt;
 
 &lt;p&gt;getElementById用于ID选择器，IE和Opera会查出name值相同的元素。&lt;/p&gt;
 
@@ -3151,13 +2824,13 @@ assert(parts[3] === &quot;a[href]&quot;, &quot;a selector&quot;);
 
 &lt;p&gt;getElementsByClassName是HTML5的新方法，加速查询。&lt;/p&gt;
 
-&lt;h4 id=&quot;section-46&quot;&gt;过滤结果集&lt;/h4&gt;
+&lt;h4 id=&quot;section-41&quot;&gt;过滤结果集&lt;/h4&gt;
 
 &lt;p&gt;属性过滤：getAttribute()，类过滤也是其中一种，访问className属性。&lt;/p&gt;
 
 &lt;p&gt;位置过滤：&lt;code&gt;:nth-child(even)&lt;/code&gt;或者&lt;code&gt;:last-child,&lt;/code&gt;，使用children和childNodes这两个方法&lt;/p&gt;
 
-&lt;h4 id=&quot;section-47&quot;&gt;递归和合并&lt;/h4&gt;
+&lt;h4 id=&quot;section-42&quot;&gt;递归和合并&lt;/h4&gt;
 
 &lt;p&gt;之前简单例子中，结果集没有去重。采用遍历元素分配临时的标志，来判断是否之前遇到过。&lt;/p&gt;
 
