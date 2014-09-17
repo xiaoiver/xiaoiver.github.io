@@ -10,6 +10,7 @@ categories: js jquery
 ### 函数作为first-class对象
 
 对象有以下能力：
+
 * 可以被分配给变量，数组的成员，其他对象的属性
 * 当做参数传给函数
 * 当做函数返回值
@@ -36,12 +37,12 @@ function都有，所以first-class object
 function可以在声明前引用,变量不可以
 
 scope是由function定义的，而不是诸如if block
-```javascript
+{% highlight javascript %}
 if (window) {
     var x = 213;
 }
 alert(x); //213
-```
+{% endhighlight %}
 
 调用function的四种方式：
 
@@ -58,16 +59,23 @@ arguments变量有length属性，能通过下标取得某一个参数，但是�
 
 this是java中的概念，但是指向的对象根据调用function方法的不同
 
-function的调用方法：
+### function的调用方法
 
-1. 直接调用中function的上下文是全局上下文window对象
-2. 通过对象method使用时，上下文是owner对象，通过this指向
-```javascript
+#### 直接调用
+
+上下文是全局上下文window对象
+
+#### 通过对象method使用
+
+上下文是owner对象，通过this指向
+
+{% highlight javascript %}
 var o = {};
 o.whatever = function(){};
 o.whatever();
-```
-3. constructor:通过new调用构造函数。
+{% endhighlight %}
+
+#### constructor:通过new调用构造函数。
 `function creep(){ return this; }`
 
 `new creep();`虽然能用，但是这样不合适，因为有显式的返回值，我们想得到对象本身
@@ -79,7 +87,8 @@ o.whatever();
 
 直接通过function调用一个对象的构造函数是不好的，虽然合法
 `var whatever = Ninja();` this指向的是window对象而非创建的对象
-```javascript
+
+{% highlight javascript %}
 function Ninja() {
     this.skulk = function() { return this; };
 }
@@ -89,10 +98,11 @@ assert(ninja1.skulk() === ninja1,
     "The 1st ninja is skulking");
 assert(ninja2.skulk() === ninja2,
     "The 2nd ninja is skulking");
-```
+{% endhighlight %}
 为了区分，一般构造方法首字母大写
 
-4. apply和call
+#### apply和call
 目的：向方法传递任意上下文。
+
 apply两个参数，上下文对象和array参数列表，call直接传递参数，没有列表。
 常用在callback函数中。
