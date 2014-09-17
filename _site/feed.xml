@@ -6,9 +6,203 @@
 </description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 17 Sep 2014 10:43:10 +0800</pubDate>
-    <lastBuildDate>Wed, 17 Sep 2014 10:43:10 +0800</lastBuildDate>
+    <pubDate>Wed, 17 Sep 2014 10:47:52 +0800</pubDate>
+    <lastBuildDate>Wed, 17 Sep 2014 10:47:52 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>《Secrets of JS Ninja》读书笔记 ch7</title>
+        <description>&lt;h1 id=&quot;ch7&quot;&gt;ch7正则表达式&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;? 0/1&lt;/li&gt;
+  &lt;li&gt;
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;blockquote&gt;
+          &lt;p&gt;=1&lt;/p&gt;
+        &lt;/blockquote&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;blockquote&gt;
+          &lt;p&gt;=0&lt;/p&gt;
+        &lt;/blockquote&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;a href=&quot;jsbin.com&quot;&gt;jsbin&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;www.regexplanet.com/advanced/javascript/index.html&quot;&gt;regexplanet&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;三种flag: &lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;i-忽略大小写&lt;/li&gt;
+  &lt;li&gt;g-默认local匹配第一次&lt;/li&gt;
+  &lt;li&gt;m-多行&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;创建方式：&lt;code&gt;/test/ig&lt;/code&gt;或者 &lt;code&gt;new RegExp(&quot;test&quot;,&quot;ig&quot;)&lt;/code&gt;
+第二种的 好处是字符串可以运行时动态拼接&lt;/p&gt;
+
+&lt;p&gt;greedy &lt;code&gt;/a+/ aaa&lt;/code&gt;匹配一次，全部
+nongreedy &lt;code&gt;/a+?/ aaa&lt;/code&gt;匹配第一个a&lt;/p&gt;
+
+&lt;p&gt;backreference: &lt;code&gt;/&amp;lt;(\w+)&amp;gt;(.+)&amp;lt;\/\1&amp;gt;/&lt;/code&gt; 匹配xml格式&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;var regex = new RegExp(&quot;(^|\\s)&quot; + className + &quot;(\\s|$)&quot;);&lt;/code&gt;这里需要额外的\，因为在字符串中，需要转义&lt;/p&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;得到透明度&lt;/h2&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;opacity&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;opacity:0.5;filter:alpha(opacity=50);&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;/div&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;getOpacity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;elem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;filter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;elem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;filter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;indexOf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;opacity=&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;parseFloat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/opacity=([^)]+/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+                &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+                &lt;span class=&quot;nx&quot;&gt;elem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;opacity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;由于match会返回匹配数组，而0下标中是整个匹配字符串&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;exec()&lt;/code&gt;每次执行返回全局搜索的一个match&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;div class=&amp;#39;test&amp;#39;&amp;gt;&amp;lt;b&amp;gt;Hello&amp;lt;/b&amp;gt; &amp;lt;i&amp;gt;world!&amp;lt;/i&amp;gt;&amp;lt;/div&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sr&quot;&gt;/&amp;lt;(\/?)(\w+)([^&amp;gt;]*?)&amp;gt;/g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;num&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;s2&quot;&gt;&amp;quot;Every match finds each tag and 3 captures.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;num&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;num&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;3 opening and 3 closing tags found.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;backreference和exec结合使用&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;b class=&amp;#39;hello&amp;#39;&amp;gt;Hello&amp;lt;/b&amp;gt; &amp;lt;i&amp;gt;world!&amp;lt;/i&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;pattern&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sr&quot;&gt;/&amp;lt;(\w+)([^&amp;gt;]*)&amp;gt;(.*?)&amp;lt;\/\1&amp;gt;/g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;   &lt;span class=&quot;c1&quot;&gt;//非贪婪模式&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;pattern&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;b class=&amp;#39;hello&amp;#39;&amp;gt;Hello&amp;lt;/b&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;The entire tag, start to finish.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;The tag name.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot; class=&amp;#39;hello&amp;#39;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;The tag attributes.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hello&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;The contents of the tag.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;pattern&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;i&amp;gt;world!&amp;lt;/i&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;The entire tag, start to finish.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;i&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;The tag name.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;The tag attributes.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;world!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;The contents of the tag.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;replace方法中使用$1表示匹配&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;fontFamily&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;replace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/([A-Z])/g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;-$1&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;toLowerCase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;font-family&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Convert the camelCase into dashed notation.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;non-capturing-group&quot;&gt;non-capturing group&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;var pattern = /((ninja-)+)sword/;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;第一个括号表示sword前的全部字符串，第二个括号表示+之前的ninja-
+第二个括号不加入group中：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;pattern&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sr&quot;&gt;/((?:ninja-)+)sword/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninjas&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;ninja-ninja-sword&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;pattern&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninjas&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Only one capture was returned.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninjas&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;ninja-ninja-&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;Matched both words, without any extra capture.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;replace&quot;&gt;replace()&lt;/h2&gt;
+
+&lt;p&gt;replace函数的第二个参数可以是function，传入4类参数：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The full text of the match&lt;/li&gt;
+  &lt;li&gt;The captures of the match, one parameter for each（多个）&lt;/li&gt;
+  &lt;li&gt;The index of the match within the original string&lt;/li&gt;
+  &lt;li&gt;The source string&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;upper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;all&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;letter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;letter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;toUpperCase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;border-bottom-width&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;replace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/-(\w)/g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;upper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;borderBottomWidth&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;Camel cased a hyphenated string.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;无需使用while循环调用exec&lt;/p&gt;
+
+&lt;h2 id=&quot;query&quot;&gt;压缩query字符串&lt;/h2&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;compress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;replace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+        &lt;span class=&quot;sr&quot;&gt;/([^=&amp;amp;]+)=([^&amp;amp;]*)/g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;full&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;,&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;=&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;amp;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;compress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;foo=1&amp;amp;foo=2&amp;amp;blah=a&amp;amp;blah=b&amp;amp;foo=3&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;foo=1,2,3&amp;amp;blah=a,b&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;Compression is OK!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;使用正则表达式解决常见问题&lt;/h2&gt;
+
+&lt;h3 id=&quot;trim-string&quot;&gt;trim string&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;trim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;str&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;replace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/^\s+|\s+$/g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;p170提供手动解决尾部空格，针对大文档提高效率&lt;/p&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;匹配换行符&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;b&amp;gt;Hello&amp;lt;/b&amp;gt;\n&amp;lt;i&amp;gt;world!&amp;lt;/i&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/.*/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;b&amp;gt;Hello&amp;lt;/b&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;A normal capture doesn&amp;#39;t handle endlines.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;无法匹配换行符&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/[\S\s]*/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt;
+&lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;b&amp;gt;Hello&amp;lt;/b&amp;gt;\n&amp;lt;i&amp;gt;world!&amp;lt;/i&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;s2&quot;&gt;&amp;quot;Matching everything with a character set.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;使用空格字符检测所有&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/(?:.|\s)*/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt;
+&lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;lt;b&amp;gt;Hello&amp;lt;/b&amp;gt;\n&amp;lt;i&amp;gt;world!&amp;lt;/i&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;s2&quot;&gt;&amp;quot;Using a non-capturing group to match everything.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;包括换行符&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;unicode&quot;&gt;unicode&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;var matchAll = /[\w\u0080-\uFFFF_-]+/;&lt;/code&gt;&lt;/p&gt;
+</description>
+        <pubDate>Wed, 17 Sep 2014 18:45:40 +0800</pubDate>
+        <link>http://yourdomain.com/js/jquery/2014/09/17/secrets-of-js-ninja-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-ch7.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/js/jquery/2014/09/17/secrets-of-js-ninja-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-ch7.html</guid>
+        
+        
+        <category>js</category>
+        
+        <category>jquery</category>
+        
+      </item>
     
       <item>
         <title>《Secrets of JS Ninja》读书笔记 ch6</title>
@@ -957,194 +1151,10 @@ arguments.length不一样，是调用函数时传入参数的个数。&lt;/p&gt;
     
       <item>
         <title>《Secrets of JS Ninja》读书笔记</title>
-        <description>&lt;h2 id=&quot;ch7&quot;&gt;ch7正则表达式&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;? 0/1&lt;/li&gt;
-  &lt;li&gt;
-    &lt;ul&gt;
-      &lt;li&gt;
-        &lt;blockquote&gt;
-          &lt;p&gt;=1&lt;/p&gt;
-        &lt;/blockquote&gt;
-      &lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;ul&gt;
-      &lt;li&gt;
-        &lt;blockquote&gt;
-          &lt;p&gt;=0&lt;/p&gt;
-        &lt;/blockquote&gt;
-      &lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;a href=&quot;jsbin.com&quot;&gt;jsbin&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;www.regexplanet.com/advanced/javascript/index.html&quot;&gt;regexplanet&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;三种flag: &lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;i-忽略大小写&lt;/li&gt;
-  &lt;li&gt;g-默认local匹配第一次&lt;/li&gt;
-  &lt;li&gt;m-多行&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;创建方式：&lt;code&gt;/test/ig&lt;/code&gt;或者 &lt;code&gt;new RegExp(&quot;test&quot;,&quot;ig&quot;)&lt;/code&gt;
-第二种的 好处是字符串可以运行时动态拼接&lt;/p&gt;
-
-&lt;p&gt;greedy &lt;code&gt;/a+/ aaa&lt;/code&gt;匹配一次，全部
-nongreedy &lt;code&gt;/a+?/ aaa&lt;/code&gt;匹配第一个a&lt;/p&gt;
-
-&lt;p&gt;backreference: &lt;code&gt;/&amp;lt;(\w+)&amp;gt;(.+)&amp;lt;\/\1&amp;gt;/&lt;/code&gt; 匹配xml格式&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;var regex = new RegExp(&quot;(^|\\s)&quot; + className + &quot;(\\s|$)&quot;);&lt;/code&gt;这里需要额外的\，因为在字符串中，需要转义&lt;/p&gt;
-
-&lt;h3 id=&quot;section&quot;&gt;得到透明度&lt;/h3&gt;
-&lt;p&gt;```javascript
-&amp;lt;div id=&quot;opacity&quot;
-    style=&quot;opacity:0.5;filter:alpha(opacity=50);&quot;&amp;gt;
-&amp;lt;/div&amp;gt;&lt;/p&gt;
-
-&lt;p&gt;function getOpacity(elem) {
-    var filter = elem.style.filter;
-    return filter ?
-        filter.indexOf(“opacity=”) &amp;gt;= 0 ?
-            (parseFloat(filter.match(/opacity=([^)]+/)[1]) / 100) + “” :
-                “” :
-                elem.style.opacity;
-}
-```
-由于match会返回匹配数组，而0下标中是整个匹配字符串&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;exec()&lt;/code&gt;每次执行返回全局搜索的一个match
-&lt;code&gt;javascript
-var html = &quot;&amp;lt;div class='test'&amp;gt;&amp;lt;b&amp;gt;Hello&amp;lt;/b&amp;gt; &amp;lt;i&amp;gt;world!&amp;lt;/i&amp;gt;&amp;lt;/div&amp;gt;&quot;;
-var tag = /&amp;lt;(\/?)(\w+)([^&amp;gt;]*?)&amp;gt;/g, match;
-var num = 0;
-while ((match = tag.exec(html)) !== null) {
-    assert(match.length == 4,
-        &quot;Every match finds each tag and 3 captures.&quot;);
-    num++;
-}
-assert(num == 6, &quot;3 opening and 3 closing tags found.&quot;);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;backreference和exec结合使用
-```javascript
-var html = “&lt;b class=&quot;hello&quot;&gt;Hello&lt;/b&gt; &lt;i&gt;world!&lt;/i&gt;”;
-var pattern = /&amp;lt;(\w+)([^&amp;gt;]&lt;em&gt;)&amp;gt;(.&lt;/em&gt;?)&amp;lt;\/\1&amp;gt;/g;   //非贪婪模式&lt;/p&gt;
-
-&lt;p&gt;var match = pattern.exec(html);
-assert(match[0] == “&lt;b class=&quot;hello&quot;&gt;Hello&lt;/b&gt;”,
-    “The entire tag, start to finish.”);
-assert(match[1] == “b”, “The tag name.”);
-assert(match[2] == “ class=’hello’”, “The tag attributes.”);
-assert(match[3] == “Hello”, “The contents of the tag.”);&lt;/p&gt;
-
-&lt;p&gt;match = pattern.exec(html);
-assert(match[0] == “&lt;i&gt;world!&lt;/i&gt;”,
-    “The entire tag, start to finish.”);
-assert(match[1] == “i”, “The tag name.”);
-assert(match[2] == “”, “The tag attributes.”);
-assert(match[3] == “world!”, “The contents of the tag.”);
-```&lt;/p&gt;
-
-&lt;p&gt;replace方法中使用$1表示匹配
-&lt;code&gt;javascript
-assert(&quot;fontFamily&quot;.replace(/([A-Z])/g, &quot;-$1&quot;).toLowerCase() ==
-    &quot;font-family&quot;, &quot;Convert the camelCase into dashed notation.&quot;);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;non-capturing-group&quot;&gt;non-capturing group&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;var pattern = /((ninja-)+)sword/;&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;第一个括号表示sword前的全部字符串，第二个括号表示+之前的ninja-
-第二个括号不加入group中：
-&lt;code&gt;javascript
-var pattern = /((?:ninja-)+)sword/;
-var ninjas = &quot;ninja-ninja-sword&quot;.match(pattern);
-assert(ninjas.length == 2,&quot;Only one capture was returned.&quot;);
-assert(ninjas[1] == &quot;ninja-ninja-&quot;,
-    &quot;Matched both words, without any extra capture.&quot;);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;replace&quot;&gt;replace()&lt;/h3&gt;
-&lt;p&gt;replace函数的第二个参数可以是function，传入4类参数：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;The full text of the match&lt;/li&gt;
-  &lt;li&gt;The captures of the match, one parameter for each（多个）&lt;/li&gt;
-  &lt;li&gt;The index of the match within the original string&lt;/li&gt;
-  &lt;li&gt;The source string&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;code&gt;javascript
-function upper(all,letter) { return letter.toUpperCase(); }
-assert(&quot;border-bottom-width&quot;.replace(/-(\w)/g,upper)
-    == &quot;borderBottomWidth&quot;,
-    &quot;Camel cased a hyphenated string.&quot;);
-&lt;/code&gt;
-无需使用while循环调用exec&lt;/p&gt;
-
-&lt;h3 id=&quot;query&quot;&gt;压缩query字符串&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;javascript
-function compress(source) {
-    var keys = {};
-    source.replace(
-        /([^=&amp;amp;]+)=([^&amp;amp;]*)/g,
-        function(full, key, value) {
-            keys[key] =
-            (keys[key] ? keys[key] + &quot;,&quot; : &quot;&quot;) + value;
-            return &quot;&quot;;
-        }
-    );
-    var result = [];
-    for (var key in keys) {
-        result.push(key + &quot;=&quot; + keys[key]);
-    }
-    return result.join(&quot;&amp;amp;&quot;);
-}
-assert(compress(&quot;foo=1&amp;amp;foo=2&amp;amp;blah=a&amp;amp;blah=b&amp;amp;foo=3&quot;) ==
-    &quot;foo=1,2,3&amp;amp;blah=a,b&quot;,
-    &quot;Compression is OK!&quot;);
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;section-1&quot;&gt;使用正则表达式解决常见问题&lt;/h3&gt;
-&lt;p&gt;#### trim string
-&lt;code&gt;javascript
-function trim(str) {
-    return (str || &quot;&quot;).replace(/^\s+|\s+$/g, &quot;&quot;);
-}
-&lt;/code&gt;
-p170提供手动解决尾部空格，针对大文档提高效率&lt;/p&gt;
-
-&lt;h4 id=&quot;section-2&quot;&gt;匹配换行符&lt;/h4&gt;
-&lt;p&gt;```javascript
-var html = “&lt;b&gt;Hello&lt;/b&gt;\n&lt;i&gt;world!&lt;/i&gt;”;&lt;/p&gt;
-
-&lt;p&gt;assert(/.*/.exec(html)[0] === “&lt;b&gt;Hello&lt;/b&gt;”,
-    “A normal capture doesn’t handle endlines.”);无法匹配换行符&lt;/p&gt;
-
-&lt;p&gt;assert(/[\S\s]*/.exec(html)[0] ===
-“&lt;b&gt;Hello&lt;/b&gt;\n&lt;i&gt;world!&lt;/i&gt;”,
-“Matching everything with a character set.”);使用空格字符检测所有&lt;/p&gt;
-
-&lt;p&gt;assert(/(?:.|\s)*/.exec(html)[0] ===
-“&lt;b&gt;Hello&lt;/b&gt;\n&lt;i&gt;world!&lt;/i&gt;”,
-“Using a non-capturing group to match everything.”);\s包括换行符
-```&lt;/p&gt;
-
-&lt;h3 id=&quot;unicode&quot;&gt;unicode&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;var matchAll = /[\w\u0080-\uFFFF_-]+/;&lt;/code&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;ch8--&quot;&gt;ch8线程 和 定时器&lt;/h2&gt;
+        <description>&lt;h2 id=&quot;ch8--&quot;&gt;ch8线程 和 定时器&lt;/h2&gt;
 &lt;p&gt;timer不是js而是浏览器提供的特性。&lt;/p&gt;
 
-&lt;h3 id=&quot;section-3&quot;&gt;处理计算成本高的任务&lt;/h3&gt;
+&lt;h3 id=&quot;section&quot;&gt;处理计算成本高的任务&lt;/h3&gt;
 &lt;p&gt;下面的任务耗时巨大，浏览器处理时，用户无法交互：
 &lt;code&gt;javascript
 var tbody = document.getElementsByTagName(&quot;tbody&quot;)[0];
@@ -1239,7 +1249,7 @@ timers.start();
 ```
 除了动画，中心定时器控制还能用于测试前端&lt;/p&gt;
 
-&lt;h3 id=&quot;section-4&quot;&gt;异步测试&lt;/h3&gt;
+&lt;h3 id=&quot;section-1&quot;&gt;异步测试&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;javascript
 (function() {
@@ -1282,7 +1292,7 @@ var add = new Function(&quot;a&quot;, &quot;b&quot;, &quot;return a + b;&quot;);
 assert(add(3,4) === 7, &quot;Function created and working!&quot;);
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-5&quot;&gt;定时器&lt;/h3&gt;
+&lt;h3 id=&quot;section-2&quot;&gt;定时器&lt;/h3&gt;
 &lt;p&gt;其实和new Function()差不多
 &lt;code&gt;var tick = window.setTimeout('alert(&quot;Hi!&quot;)',100);&lt;/code&gt;&lt;/p&gt;
 
@@ -1313,7 +1323,7 @@ window.onload = function() {
 
 &lt;p&gt;应用场景是动态执行从服务端返回的代码，但问题是安全性。&lt;/p&gt;
 
-&lt;h3 id=&quot;section-6&quot;&gt;安全地解析代码&lt;/h3&gt;
+&lt;h3 id=&quot;section-3&quot;&gt;安全地解析代码&lt;/h3&gt;
 &lt;p&gt;google项目&lt;a href=&quot;http://code.google.com/p/google-caja/&quot;&gt;Caja&lt;/a&gt;，将js代码转换成更安全的形式
 ```javascript
 var test = true;
@@ -1380,7 +1390,7 @@ assert(object.name === &quot;Ninja&quot;,
 &lt;p&gt;&lt;a href=&quot;https://github.com/douglascrockford/JSON-js&quot;&gt;安全的实现&lt;/a&gt;
 做了很多预处理工作&lt;/p&gt;
 
-&lt;h3 id=&quot;section-7&quot;&gt;导入命名空间中的代码&lt;/h3&gt;
+&lt;h3 id=&quot;section-4&quot;&gt;导入命名空间中的代码&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;javascript
 base2.namespace ==
@@ -1388,7 +1398,7 @@ base2.namespace ==
 eval(base2.namespace);
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-8&quot;&gt;压缩和混淆&lt;/h3&gt;
+&lt;h3 id=&quot;section-5&quot;&gt;压缩和混淆&lt;/h3&gt;
 &lt;p&gt;将代码中的变量重新命名，压缩成一个字符串，使用eval解析执行&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dean.edwards.name/packer/&quot;&gt;Dean Edwards’s Packer&lt;/a&gt;&lt;/p&gt;
@@ -1396,7 +1406,7 @@ eval(base2.namespace);
 &lt;p&gt;但是小虽然能减少下载时间，但是解析时间不一定
 load time = download time + evaluation time&lt;/p&gt;
 
-&lt;h3 id=&quot;section-9&quot;&gt;动态代码重写&lt;/h3&gt;
+&lt;h3 id=&quot;section-6&quot;&gt;动态代码重写&lt;/h3&gt;
 &lt;p&gt;单元测试库&lt;a href=&quot;https://github.com/nkallen/screw-unit&quot;&gt;Screw.Unit&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;测试代码
@@ -1528,7 +1538,7 @@ with (String.prototype.escapeHTML) div.appendChild(text);
 })(String.prototype.escapeHTML);
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-10&quot;&gt;导入命名空间中的代码&lt;/h3&gt;
+&lt;h3 id=&quot;section-7&quot;&gt;导入命名空间中的代码&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;javascript
 with (YAHOO.util.Dom) {
     YAHOO.util.Event.on([get('item'), get('otheritem')], 'click',
@@ -1536,7 +1546,7 @@ with (YAHOO.util.Dom) {
 }
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-11&quot;&gt;测试&lt;/h3&gt;
+&lt;h3 id=&quot;section-8&quot;&gt;测试&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;javascript
 new Test.Unit.Runner({
     testSliderBasics: function(){with(this){
@@ -1551,7 +1561,7 @@ new Test.Unit.Runner({
 });
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-12&quot;&gt;模板&lt;/h3&gt;
+&lt;h3 id=&quot;section-9&quot;&gt;模板&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;javascript
 (function(){
     var cache = {};
@@ -1583,10 +1593,10 @@ assert( hello({name: &quot;world&quot;}) == &quot;Hello, world!&quot;,
 
 &lt;h2 id=&quot;ch11-&quot;&gt;ch11 跨浏览器策略&lt;/h2&gt;
 
-&lt;h3 id=&quot;section-13&quot;&gt;封装代码&lt;/h3&gt;
+&lt;h3 id=&quot;section-10&quot;&gt;封装代码&lt;/h3&gt;
 &lt;p&gt;不影响加载页面中的其他代码&lt;/p&gt;
 
-&lt;h3 id=&quot;section-14&quot;&gt;避免属性冲突&lt;/h3&gt;
+&lt;h3 id=&quot;section-11&quot;&gt;避免属性冲突&lt;/h3&gt;
 &lt;p&gt;使用hasOwnProperty判断，和in的区别是前者不会检查原型链&lt;/p&gt;
 
 &lt;h3 id=&quot;id&quot;&gt;贪婪的id&lt;/h3&gt;
@@ -1622,10 +1632,10 @@ assert( hello({name: &quot;world&quot;}) == &quot;Hello, world!&quot;,
 &amp;lt;/script&amp;gt;
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-15&quot;&gt;浏览器命名不同&lt;/h3&gt;
+&lt;h3 id=&quot;section-12&quot;&gt;浏览器命名不同&lt;/h3&gt;
 &lt;p&gt;大多数浏览器可以通过getAttribute(“class”)取到class，但是IE使用className，保持和property一致。&lt;/p&gt;
 
-&lt;h3 id=&quot;section-16&quot;&gt;命名限制&lt;/h3&gt;
+&lt;h3 id=&quot;section-13&quot;&gt;命名限制&lt;/h3&gt;
 &lt;p&gt;attr和prop不能做到一一对应，因为要考虑到保留字，比如label的for(attr)，就只能通过htmlFor(prop)。
 另外，由多个词组合成的attr，对应的prop要使用驼峰命名方式，如maxLength,rowSpan。
 这是因为通过prop访问&lt;code&gt;element.style.font-size;&lt;/code&gt;连字符会被当做减号。&lt;/p&gt;
@@ -1645,7 +1655,7 @@ function isXML(elem) {
 &lt;p&gt;自定义attr，只能通过get/setAttribute
 &lt;code&gt;var value = element.someValue ? element.someValue :element.getAttribute('someValue');&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-17&quot;&gt;性能考虑&lt;/h3&gt;
+&lt;h3 id=&quot;section-14&quot;&gt;性能考虑&lt;/h3&gt;
 &lt;p&gt;通常prop访问比getAttribute速度快&lt;/p&gt;
 
 &lt;h3 id=&quot;url&quot;&gt;url标准化&lt;/h3&gt;
@@ -1688,7 +1698,7 @@ window.onload = function(){
 
 &lt;p&gt;```&lt;/p&gt;
 
-&lt;h3 id=&quot;section-18&quot;&gt;像素值&lt;/h3&gt;
+&lt;h3 id=&quot;section-15&quot;&gt;像素值&lt;/h3&gt;
 
 &lt;p&gt;有些属性需要加上单位
 &lt;code&gt;javascript
@@ -1711,7 +1721,7 @@ element.style.height = 10 + &quot;px&quot;;
   &lt;li&gt;恢复改变的属性&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&quot;section-19&quot;&gt;透明度&lt;/h3&gt;
+&lt;h3 id=&quot;section-16&quot;&gt;透明度&lt;/h3&gt;
 &lt;p&gt;所有现代浏览器包括IE9，支持&lt;code&gt;opacity: 0.5&lt;/code&gt;，
 IE9之前，使用&lt;code&gt;filter: alpha(opacity=50)&lt;/code&gt;&lt;/p&gt;
 
@@ -1732,11 +1742,11 @@ assert(OPACITY_SUPPORTED,
     &quot;Opacity is supported.&quot;);
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-20&quot;&gt;颜色&lt;/h3&gt;
+&lt;h3 id=&quot;section-17&quot;&gt;颜色&lt;/h3&gt;
 &lt;p&gt;表达方式多种
 &lt;a href=&quot;http://plugins.jquery.com/project/color&quot;&gt;jQuery Color plugin&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-21&quot;&gt;获取计算后的样式&lt;/h3&gt;
+&lt;h3 id=&quot;section-18&quot;&gt;获取计算后的样式&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;window.getComputedStyle()&lt;/code&gt;IE9+，接受element作为参数，返回一个接口。
 返回的接口有方法&lt;code&gt;getPropertyValue()&lt;/code&gt;来获取计算后的样式值。&lt;/p&gt;
@@ -1772,7 +1782,7 @@ window.onload = doSomething;
 
 &lt;p&gt;DOM Level 2 Event Model&lt;/p&gt;
 
-&lt;h3 id=&quot;section-22&quot;&gt;绑定事件处理器&lt;/h3&gt;
+&lt;h3 id=&quot;section-19&quot;&gt;绑定事件处理器&lt;/h3&gt;
 &lt;p&gt;add/removeEventListener 主流浏览器 IE9+&lt;/p&gt;
 
 &lt;p&gt;attach/detachEvent IE9-  IE MODEL&lt;/p&gt;
@@ -1782,7 +1792,7 @@ window.onload = doSomething;
 
 &lt;p&gt;并且，IE MODEL不设置处理器上下文，导致处理器内部this指向全局对象。不传递事件信息到处理器，而是传到全局上下文window对象。&lt;/p&gt;
 
-&lt;h4 id=&quot;section-23&quot;&gt;解决设置上下文的问题&lt;/h4&gt;
+&lt;h4 id=&quot;section-20&quot;&gt;解决设置上下文的问题&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;javascript
 if (document.addEventListener) {
     this.addEvent = function (elem, type, fn) {
@@ -1808,7 +1818,7 @@ else if (document.attachEvent) {
 &lt;/code&gt;
 p291&lt;/p&gt;
 
-&lt;h3 id=&quot;section-24&quot;&gt;解决事件对象的问题&lt;/h3&gt;
+&lt;h3 id=&quot;section-21&quot;&gt;解决事件对象的问题&lt;/h3&gt;
 &lt;p&gt;主要修复IE MODEL存在的问题
 &lt;code&gt;javascript
 function fixEvent(event) {
@@ -1871,10 +1881,10 @@ function fixEvent(event) {
 }
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-25&quot;&gt;处理器管理&lt;/h3&gt;
+&lt;h3 id=&quot;section-22&quot;&gt;处理器管理&lt;/h3&gt;
 &lt;p&gt;一个元素绑定了多个事件处理器，难以管理&lt;/p&gt;
 
-&lt;h4 id=&quot;section-26&quot;&gt;存储相关信息&lt;/h4&gt;
+&lt;h4 id=&quot;section-23&quot;&gt;存储相关信息&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;javascript
 &amp;lt;div title=&quot;Ninja Power!&quot;&amp;gt; 忍者パワー!&amp;lt;/div&amp;gt;
 &amp;lt;div title=&quot;Secrets&quot;&amp;gt; 秘密&amp;lt;/div&amp;gt;
@@ -1921,7 +1931,7 @@ function fixEvent(event) {
 &amp;lt;/script&amp;gt;
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;section-27&quot;&gt;管理事件处理器&lt;/h4&gt;
+&lt;h4 id=&quot;section-24&quot;&gt;管理事件处理器&lt;/h4&gt;
 &lt;p&gt;绑定事件处理器
 &lt;code&gt;javascript
 (function(){
@@ -2017,7 +2027,7 @@ this.removeEvent = function (elem, type, fn) {// 可以通过检查elem的data-�
 };
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-28&quot;&gt;触发事件&lt;/h3&gt;
+&lt;h3 id=&quot;section-25&quot;&gt;触发事件&lt;/h3&gt;
 &lt;p&gt;事件触发时：&lt;/p&gt;
 
 &lt;ul&gt;
@@ -2052,7 +2062,7 @@ function triggerEvent(elem, event) {
 }
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-29&quot;&gt;自定义事件&lt;/h3&gt;
+&lt;h3 id=&quot;section-26&quot;&gt;自定义事件&lt;/h3&gt;
 &lt;p&gt;需要在不同场合下多次调用一段代码，使用全局函数？自定义事件，松耦合。&lt;/p&gt;
 
 &lt;h4 id=&quot;ajax&quot;&gt;ajax例子&lt;/h4&gt;
@@ -2068,10 +2078,10 @@ addEvent(body, 'ajax-complete', function(e){
 &lt;/code&gt;
 这其实是事件的委托。&lt;/p&gt;
 
-&lt;h3 id=&quot;section-30&quot;&gt;冒泡和委托&lt;/h3&gt;
+&lt;h3 id=&quot;section-27&quot;&gt;冒泡和委托&lt;/h3&gt;
 &lt;p&gt;委托：在目标节点更高级的dom节点上建立事件处理器&lt;/p&gt;
 
-&lt;h4 id=&quot;section-31&quot;&gt;委托事件给祖先节点&lt;/h4&gt;
+&lt;h4 id=&quot;section-28&quot;&gt;委托事件给祖先节点&lt;/h4&gt;
 
 &lt;p&gt;场景：点击每一个td使其变色&lt;/p&gt;
 
@@ -2095,7 +2105,7 @@ addEvent(table, 'click', function(event){
 });
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;section-32&quot;&gt;浏览器缺陷&lt;/h4&gt;
+&lt;h4 id=&quot;section-29&quot;&gt;浏览器缺陷&lt;/h4&gt;
 &lt;p&gt;submit,change,focus,blur在不同浏览器的冒泡实现中，存在严重问题。&lt;/p&gt;
 
 &lt;p&gt;事件冒泡检测代码，使用div是因为包含最多的冒泡事件种类
@@ -2518,7 +2528,7 @@ function root(elem, cur) {
 };
 ```&lt;/p&gt;
 
-&lt;h5 id=&quot;section-33&quot;&gt;执行脚本&lt;/h5&gt;
+&lt;h5 id=&quot;section-30&quot;&gt;执行脚本&lt;/h5&gt;
 
 &lt;p&gt;在插入到document之前，将内联脚本提取出来。ret数组保存所有生成的DOM节点。scripts数组保存所有提取出来的脚本节点。在插入操作完成后，解释执行这些脚本。
 &lt;code&gt;javascript
@@ -2568,7 +2578,7 @@ function evalScript(elem) {
 }
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-34&quot;&gt;克隆元素&lt;/h3&gt;
+&lt;h3 id=&quot;section-31&quot;&gt;克隆元素&lt;/h3&gt;
 
 &lt;p&gt;cloneNode方法，参数表示是否拷贝所有子节点。&lt;/p&gt;
 
@@ -2608,7 +2618,7 @@ function clone() {
 }
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;section-35&quot;&gt;删除元素&lt;/h3&gt;
+&lt;h3 id=&quot;section-32&quot;&gt;删除元素&lt;/h3&gt;
 &lt;p&gt;在简单地调用removeChild之前，还要做清理工作。&lt;/p&gt;
 
 &lt;p&gt;首先，所有绑定的事件处理器要清理。其次，元素关联的外部数据要清理。
@@ -2633,7 +2643,7 @@ function remove() {
 
 &lt;p&gt;解决方法是，在IE中有一个独有的属性outerHTML，代表元素的HTML字符串。既是getter又是setter，通过设置字符串为空比调用removeChild清除的更彻底，不是全部但也有大部分了。&lt;/p&gt;
 
-&lt;h3 id=&quot;section-36&quot;&gt;文本内容&lt;/h3&gt;
+&lt;h3 id=&quot;section-33&quot;&gt;文本内容&lt;/h3&gt;
 
 &lt;p&gt;textContent属性，
 IE中innerText属性&lt;/p&gt;
@@ -2663,11 +2673,11 @@ window.onload = function () {
 &amp;lt;/script&amp;gt;
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;section-37&quot;&gt;设置文本&lt;/h4&gt;
+&lt;h4 id=&quot;section-34&quot;&gt;设置文本&lt;/h4&gt;
 
 &lt;p&gt;插入文本和插入html不同在于文本需要进行转义，&lt;code&gt;&amp;lt;&lt;/code&gt;转义成&lt;code&gt;&amp;amp;lt&lt;/code&gt;。使用内置的createTextNode方法。&lt;/p&gt;
 
-&lt;h4 id=&quot;section-38&quot;&gt;获取文本&lt;/h4&gt;
+&lt;h4 id=&quot;section-35&quot;&gt;获取文本&lt;/h4&gt;
 &lt;p&gt;想取得精确的文本值，不能通过textContent或者innerText。原因是换行符会被去掉。&lt;/p&gt;
 
 &lt;p&gt;只能手动得到每个文本节点的nodeValue
@@ -2791,7 +2801,7 @@ function find(selector, root){
 };
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;section-39&quot;&gt;解析选择符&lt;/h4&gt;
+&lt;h4 id=&quot;section-36&quot;&gt;解析选择符&lt;/h4&gt;
 &lt;p&gt;上面的简单例子按照空格分割tag，但是很多选择中包含额外的空格，例如按照属性或者值查询。&lt;/p&gt;
 
 &lt;p&gt;注意非捕获组中的三种情况()，[]和非空格，逗号，大小括号。第三种情况将空格剔除。
@@ -2814,7 +2824,7 @@ assert(parts[2] === &quot;span:not(:first-child)&quot;, &quot;span selector&quot
 assert(parts[3] === &quot;a[href]&quot;, &quot;a selector&quot;);
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;section-40&quot;&gt;查找元素&lt;/h4&gt;
+&lt;h4 id=&quot;section-37&quot;&gt;查找元素&lt;/h4&gt;
 
 &lt;p&gt;getElementById用于ID选择器，IE和Opera会查出name值相同的元素。&lt;/p&gt;
 
@@ -2824,13 +2834,13 @@ assert(parts[3] === &quot;a[href]&quot;, &quot;a selector&quot;);
 
 &lt;p&gt;getElementsByClassName是HTML5的新方法，加速查询。&lt;/p&gt;
 
-&lt;h4 id=&quot;section-41&quot;&gt;过滤结果集&lt;/h4&gt;
+&lt;h4 id=&quot;section-38&quot;&gt;过滤结果集&lt;/h4&gt;
 
 &lt;p&gt;属性过滤：getAttribute()，类过滤也是其中一种，访问className属性。&lt;/p&gt;
 
 &lt;p&gt;位置过滤：&lt;code&gt;:nth-child(even)&lt;/code&gt;或者&lt;code&gt;:last-child,&lt;/code&gt;，使用children和childNodes这两个方法&lt;/p&gt;
 
-&lt;h4 id=&quot;section-42&quot;&gt;递归和合并&lt;/h4&gt;
+&lt;h4 id=&quot;section-39&quot;&gt;递归和合并&lt;/h4&gt;
 
 &lt;p&gt;之前简单例子中，结果集没有去重。采用遍历元素分配临时的标志，来判断是否之前遇到过。&lt;/p&gt;
 
