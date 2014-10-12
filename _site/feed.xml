@@ -6,9 +6,1114 @@
 </description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 18 Sep 2014 16:48:27 +0800</pubDate>
-    <lastBuildDate>Thu, 18 Sep 2014 16:48:27 +0800</lastBuildDate>
+    <pubDate>Sun, 12 Oct 2014 09:42:29 +0800</pubDate>
+    <lastBuildDate>Sun, 12 Oct 2014 09:42:29 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>《Async Javascript》读书笔记</title>
+        <description>&lt;h1 id=&quot;ch1-js&quot;&gt;ch1 理解js中的事件&lt;/h1&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;调度事件&lt;/h2&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;立即执行？&lt;/h3&gt;
+
+&lt;p&gt;关于setTimeout的描述不完全正确&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Given a callback and a delay of n milliseconds, setTimeout runs that 
+callback n milliseconds later.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;下面的代码会输出3个4，而不是1,2,3
+&amp;lt;% highlight javascript %&amp;gt;
+for (var i = 1; i &amp;lt;= 3; i++) {
+	setTimeout(function(){ console.log(i); }, 0);
+};
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;需要了解3件事&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;循环结束时，i的值是4&lt;/li&gt;
+  &lt;li&gt;闭包维持对变量i的引用&lt;/li&gt;
+  &lt;li&gt;js中 event handlers don’t run until the thread is free&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;阻塞线程&lt;/h3&gt;
+
+&lt;p&gt;并不会在500ms后就调用定时器回调函数进行输出，至少要1000ms，也就是在while循环结束后才会触发回调。
+&amp;lt;% highlight javascript %&amp;gt;
+var start = new Date;
+setTimeout(function(){
+	var end = new Date;
+	console.log(‘Time elapsed:’, end - start, ‘ms’);
+}, 500);
+while (new Date - start &amp;lt; 1000) {};
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;setTimeout并没有使用另一个线程&lt;/p&gt;
+
+&lt;h3 id=&quot;section-3&quot;&gt;队列&lt;/h3&gt;
+
+&lt;p&gt;调用setTimeout时，timeout事件进入队列，接着setTimeout下面的代码执行，最后js虚拟机才会到队列中找，调用事件回调函数，此时距离当初定时器设定的时间已经过去很久了。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-4&quot;&gt;异步函数的类型&lt;/h2&gt;
+
+&lt;h3 id=&quot;io&quot;&gt;I/O函数&lt;/h3&gt;
+
+&lt;p&gt;Node.js并不是想让服务端也能运行js才创造的。作者只是想找支持事件驱动服务器的高级语言，js由于十分适合非阻塞I/O，正好支持。&lt;/p&gt;
+
+&lt;p&gt;在其他语言中，使用循环能阻塞程序直到某个I/O请求完成。但是在js中不可能。下面的循环会一直运行。
+&amp;lt;% highlight javascript %&amp;gt;
+	var ajaxRequest = new XMLHttpRequest;
+	ajaxRequest.open(‘GET’, url);
+	ajaxRequest.send(null);
+	while (ajaxRequest.readyState === XMLHttpRequest.UNSENT) {
+		// readyState can’t change until the loop returns
+	};
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;在js中，需要绑定回调函数实现，让事件队列执行回调。
+&amp;lt;% highlight javascript %&amp;gt;
+	var ajaxRequest = new XMLHttpRequest;
+	ajaxRequest.open(‘GET’, url);
+	ajaxRequest.send(null);
+	ajaxRequest.onreadystatechange = function() {
+		// …
+	};
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;浏览器ajax方法提供async选项，值为false时代表同步，浏览器会不响应直到接收到服务端的响应。Node.js中同步API从方法名就能看出来，如&lt;code&gt;fs.readFileSync&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;console.log&lt;/code&gt;在Chrome和Safari中是异步执行的，会输出&lt;code&gt;{foo:bar}&lt;/code&gt;。原因是WebKit的日志方法会存储对象的引用，在代码返回到事件队列时再输出。
+而在Node.js中，是严格同步的，所以输出是&lt;code&gt;{}&lt;/code&gt;。
+&amp;lt;% highlight javascript %&amp;gt;
+	var obj = {};
+	console.log(obj);
+	obj.foo = ‘bar’;
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-5&quot;&gt;时间函数&lt;/h3&gt;
+
+&lt;p&gt;测试一秒钟能触发多少次定时器事件。FF,Chrome和Safari下大概是200/s，Node.js下1000/s。换成简单的while循环后，提高到4000000/s，Node.js中更高一些。
+&amp;lt;% highlight javascript %&amp;gt;
+var fireCount = 0;
+var start = new Date;
+var timer = setInterval(function() {
+	if (new Date - start &amp;gt; 1000) {
+		clearInterval(timer);
+		console.log(fireCount);
+		return;
+	}
+	fireCount++;
+}, 0);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;setInterval设置间隔为0比while循环慢很多，因为HTML规范中浏览器timeout/interval最小间隔是4ms。&lt;/p&gt;
+
+&lt;p&gt;想要更小的间隔有其他选择&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Node.js中&lt;code&gt;process.nextTick&lt;/code&gt;，超过100000/s&lt;/li&gt;
+  &lt;li&gt;现代浏览器包括ie9以上可以使用&lt;code&gt;requestAnimationFrame&lt;/code&gt;方法，动画60帧每秒&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;section-6&quot;&gt;异步函数编写&lt;/h2&gt;
+
+&lt;h3 id=&quot;section-7&quot;&gt;什么时候函数是异步的&lt;/h3&gt;
+
+&lt;p&gt;测试异步函数
+&amp;lt;% highlight javascript %&amp;gt;
+var functionHasReturned = false;
+asyncFunction(function() {
+	console.assert(functionHasReturned);
+});
+functionHasReturned = true;
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-8&quot;&gt;有时是异步的函数&lt;/h3&gt;
+
+&lt;p&gt;一个错误的认识：jQuery中$传入的方法会在页面加载完毕后运行。&lt;/p&gt;
+
+&lt;p&gt;大多数情况下下面的代码都能正常运行。除非浏览器从缓存中加载页面，此时DOM在脚本运行之前就加载完毕，调用还未被设置的utils方法就会出错。
+&amp;lt;% highlight javascript %&amp;gt;
+// application.js
+$(function() {
+	utils.log(‘Ready’);
+});
+// utils.js
+window.utils = {
+	log: function() {
+		if (window.console) console.log.apply(console, arguments);
+	}
+};
+&lt;script src=&quot;application.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;util.js&quot;&gt;&lt;/script&gt;
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;cache&quot;&gt;使用cache的异步函数&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://webworkersandbox.com/5009efc12245588e410002cf&quot;&gt;例子&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&amp;lt;% highlight javascript %&amp;gt;
+var calculationCache = {},
+	calculationCallbacks = {},
+	mathWorker = new Worker(‘calculator.js’);&lt;/p&gt;
+
+&lt;p&gt;mathWorker.addEventListener(‘message’, function(e) {
+	var message = e.data;
+	calculationCache[message.formula] = message.result;
+	calculationCallbacks&lt;a href=&quot;message.result&quot;&gt;message.formula&lt;/a&gt;;
+});&lt;/p&gt;
+
+&lt;p&gt;function runCalculation(formula, callback) {
+	if (formula in calculationCache) {//同步状态，结果已经被放入了cache中
+		return callback(calculationCache[formula]);
+	};
+	if (formula in calculationCallbacks) {//结果还未发回，调用自己
+		return setTimeout(function() {
+			runCalculation(formula, callback);
+		}, 0);
+	};
+	mathWorker.postMessage(formula);//公式还未分发给worker,触发事件
+	calculationCallbacks[formula] = callback;
+}
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-9&quot;&gt;异步递归和存储回调函数&lt;/h3&gt;
+
+&lt;p&gt;上面的runCalculation采用了异步递归和简单存储回调函数。&lt;/p&gt;
+
+&lt;p&gt;在java中轮询：
+&amp;lt;% highlight java %&amp;gt;
+while (!calculationCache.get(formula)) {
+	Thread.sleep(0);
+};
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;看起来异步递归更易用，但是js中使用setTimeout的异步递归调用并不好，在等待时触发的timeout事件是没有数量限制的，而且会使程序的事件结构变得不必要地复杂。所以异步递归是反模式。&lt;/p&gt;
+
+&lt;p&gt;使用存储回调函数来避免异步递归
+&amp;lt;% highlight javascript %&amp;gt;
+mathWorker.addEventListener(‘message’, function(e) {
+	var message = e.data;
+		calculationCache[message.formula] = message.result;
+		calculationCallbacks[message.formula]
+			.forEach(function(callback) {//统一处理之前未得到结果前压入的函数
+			callback(message.result);
+		});
+});
+function runCalculation(formula, callback) {
+	if (formula in calculationCache) {
+		return callback(calculationCache[formula]);//已经有结果，直接调用回调函数
+	};
+	if (formula in calculationCallbacks) {//将回调函数压栈
+		return calculationCallbacks[formula].push(callback);
+	};
+	mathWorker.postMessage(formula);
+	calculationCallbacks[formula] = [callback];
+}
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-10&quot;&gt;返回值和回调函数混合&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;return callback(calculationCache[formula]);&lt;/code&gt;由于返回值没有使用，
+可以简单地写成
+&amp;lt;% highlight javascript %&amp;gt;
+	callback(calculationCache[formula]);
+	return;
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;但是有些函数的返回值会被回调函数使用。
+&amp;lt;% highlight javascript %&amp;gt;
+var webSocketCache = {};
+function openWebSocket(serverAddress, callback) {
+	var socket;
+	if (serverAddress in webSocketCache) {//查看缓存
+		socket = webSocketCache[serverAddress];
+		if (socket.readyState === WebSocket.OPEN) {
+			callback();//这里有问题
+		} else {
+			//使用了Underscore.js，将两个函数包裹成一个新函数
+			socket.onopen = _.compose(callback, socket.onopen);
+		};
+	} else {
+		socket = new WebSocket(serverAddress);
+		webSocketCache[serverAddress] = socket;
+		socket.onopen = callback;
+	};
+	return socket;
+};
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;代码的问题在于，如果socket已经被缓存并且是打开的，callback会在openWebSocket函数返回之前运行。而callback函数中使用了返回值socket，就会出错。
+&amp;lt;% highlight javascript %&amp;gt;
+var socket = openWebSocket(url, function() {
+	socket.send(‘Hello, server!’);
+});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;解决办法是使用setTimeout，保证在函数返回后才执行回调函数。
+&amp;lt;% highlight javascript %&amp;gt;
+if (socket.readyState === WebSocket.OPEN) {
+	setTimeout(callback, 0);
+} else {
+// …
+}
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-11&quot;&gt;处理异步错误&lt;/h3&gt;
+
+&lt;p&gt;从一个异步回调函数中抛出异常
+&amp;lt;% highlight javascript %&amp;gt;
+setTimeout(function A() {
+	setTimeout(function B() {
+		setTimeout(function C() {
+			throw new Error(‘Something terrible has happened!’);
+		}, 0);
+	}, 0);
+}, 0);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;stack trace中只有C：&lt;code&gt;Error: Something terrible has happened! at Timer.C (/AsyncJS/nestedErrors.js:4:13)&lt;/code&gt;。在C运行时，A和B都不在stack中，这三个函数都是直接从事件队列中运行的。&lt;/p&gt;
+
+&lt;p&gt;所以外部的try/catch捕获不了异步回调函数抛出的异常：
+&amp;lt;% highlight javascript %&amp;gt;
+try {
+	setTimeout(function() {
+		throw new Error(‘Catch me if you can!’);
+	}, 0);
+} catch (e) {
+	console.error(e);
+}
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;所以Node.js中回调函数会err作为参数，让函数内部决定如何处理。
+&amp;lt;% highlight javascript %&amp;gt;
+	var fs = require(‘fs’);
+	fs.readFile(‘fhgwgdz.txt’, function(err, data) {
+		if (err) {
+			return console.error(err);
+		};
+		console.log(data.toString(‘utf8’));
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;客户端脚本如jquery使用两个回调函数（success/failure）&lt;/p&gt;
+
+&lt;h3 id=&quot;section-12&quot;&gt;处理未捕获的异常&lt;/h3&gt;
+
+&lt;p&gt;当回调函数抛出异常时，应该由调用者来捕获。但如果异常从未被捕获，不同的js环境有不同的规则。&lt;/p&gt;
+
+&lt;p&gt;在浏览器中，将未捕获的异常显示在控制台中，然后返回事件队列。可以为window.onerror添加处理函数改变浏览器行为。返回true会阻止浏览器默认的错误处理行为。
+&amp;lt;% highlight javascript %&amp;gt;
+	window.onerror = function(err) {
+		return true;
+	};
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;在Node.js中，process对象有类似的uncaughtException事件。
+通常遇到未捕获的异常，程序会立即退出。但只要至少存在一个uncaughtException处理器，app就会返回事件队列。
+&amp;lt;% highlight javascript %&amp;gt;
+process.on(‘uncaughtException’, function(err) {
+	console.error(err); // shutdown averted!
+});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;但是从0.8.4版本，就被废弃了。推荐使用domain模块。domain会将异常转化成error事件，然后在error事件处理器中进行处理。
+&amp;lt;% highlight javascript %&amp;gt;
+	var myDomain = require(‘domain’).create();
+	myDomain.run(function() {
+		setTimeout(function() {
+			throw new Error(‘Listen to me!’)
+		}, 50);
+	});
+	myDomain.on(‘error’, function(err) {
+		console.log(‘Error ignored!’);//简单的记录
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-13&quot;&gt;是否抛出异常&lt;/h3&gt;
+
+&lt;p&gt;Isaac Schlueter认为try/catch是反模式，不推荐使用。
+把try当作类似assert的结构使用，在出现重大问题时将程序终止。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-14&quot;&gt;嵌套的回调函数&lt;/h2&gt;
+
+&lt;p&gt;常见的反模式，回调函数里嵌套回调函数。目前看来没问题，但是需要扩展时，如处理数据库错误，添加日志等，就会变得很糟。
+&amp;lt;% highlight javascript %&amp;gt;
+function checkPassword(username, passwordGuess, callback) {
+	var queryStr = ‘SELECT * FROM user WHERE username = ?’;
+	db.query(selectUser, username, function (err, result) {
+		if (err) throw err;
+		hash(passwordGuess, function(passwordGuessHash) {
+			callback(passwordGuessHash === result[‘password_hash’]);
+		});
+	});
+}
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;下面的写法代码行变多了但是更清晰。将passwordHash拿到外面。
+&amp;lt;% highlight javascript %&amp;gt;
+function checkPassword(username, passwordGuess, callback) {
+	var passwordHash;
+	var queryStr = ‘SELECT * FROM user WHERE username = ?’;
+	db.query(selectUser, username, queryCallback);
+	function queryCallback(err, result) {
+		if (err) throw err;
+		passwordHash = result[‘password_hash’];
+		hash(passwordGuess, hashCallback);
+	}
+	function hashCallback(passwordGuessHash) {
+		callback(passwordHash === passwordGuessHash);
+	}
+}
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;ch2-&quot;&gt;ch2 事件&lt;/h1&gt;
+
+&lt;p&gt;一个事件由多个处理器处理。发布/订阅模式很适合。&lt;/p&gt;
+
+&lt;h2 id=&quot;pubsub&quot;&gt;Pub/Sub模式&lt;/h2&gt;
+
+&lt;p&gt;早期的js，浏览器允许事件处理器依附在DOM上，缺点是只能合并成一个函数。
+&amp;lt;% highlight javascript %&amp;gt;
+link.onclick = function() {
+	clickHandler1.apply(this, arguments);
+	clickHandler2.apply(this, arguments);
+};
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;W3C在DOM标准中增加了addEventListener，jquery实现了bind。&lt;/p&gt;
+
+&lt;h3 id=&quot;eventemitter&quot;&gt;EventEmitter&lt;/h3&gt;
+
+&lt;p&gt;on进行订阅，emit进行发布通知。
+&amp;lt;% highlight javascript %&amp;gt;
+emitter.on(‘evacuate’, function(message) {
+	console.log(message);
+});
+emitter.emit(‘evacuate’,’args’);//可以传递参数
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-15&quot;&gt;简单的实现&lt;/h3&gt;
+
+&lt;p&gt;EventEmitter中的实现
+&amp;lt;% highlight javascript %&amp;gt;
+PubSub = {handlers: {}}
+PubSub.on = function(eventType, handler) {
+	if (!(eventType in this.handlers)) {
+		this.handlers[eventType] = [];//每个事件都有处理器数组
+	}
+	this.handlers[eventType].push(handler);
+	return this;
+}
+PubSub.emit = function(eventType) {
+	var handlerArgs = Array.prototype.slice.call(arguments, 1);//截取参数
+	for (var i = 0; i &amp;lt; this.handlers[eventType].length; i++) {
+		this.handlers[eventType][i].apply(this, handlerArgs);
+	}
+	return this;
+}
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-16&quot;&gt;同步&lt;/h3&gt;
+
+&lt;p&gt;会输出foo bar。也就是trigger会立即触发回调函数，然后后面的代码才能执行。
+&amp;lt;% highlight javascript %&amp;gt;
+$(‘input[type=submit]’)
+	.on(‘click’, function() { console.log(‘foo’); })
+	.trigger(‘click’);
+console.log(‘bar’);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;如果太多处理器按顺序触发，可能会阻塞线程导致浏览器未响应。更糟糕的情况是当事件从处理器中触发时，会导致死循环。
+&amp;lt;% highlight javascript %&amp;gt;
+$(‘input[type=submit]’)
+	.on(‘click’, function() {
+		$(this).trigger(‘click’); // stack overflow!
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;对于许多处理器需要按顺序执行，并且有些处理器很耗时的情况，解决方法是维持一个队列，使用定时器按顺序调用。
+&amp;lt;% highlight javascript %&amp;gt;
+var tasks = [];
+setInterval(function() {
+	var nextTask;
+	if (nextTask = tasks.shift()) {
+		nextTask();
+	};
+}, 0);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;evented-model-&quot;&gt;Evented Model 可以发布事件的模型&lt;/h2&gt;
+
+&lt;p&gt;当一个对象拥有Pub/Sub接口，就称作evented object。
+特别的，这个对象存储了数据，成为了model，还能在数据改变时发布事件。&lt;/p&gt;
+
+&lt;p&gt;在Backbone.js中，可以创建一个model。
+和js中对象的区别是，model可以在发生改变时发布通知。使用set方法触发改变。
+&amp;lt;% highlight javascript %&amp;gt;
+style = new Backbone.Model(
+	{font: ‘Georgia’}
+);
+style.on(‘change:font’, function(model, font) {
+	alert(‘Thank you for choosing ‘ + font + ‘!’);
+});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;js中普遍的做法是通过input事件处理器直接改变DOM。而新的做法是对model进行改变，然后通过model发射事件使DOM更新。新的做法更优雅。&lt;/p&gt;
+
+&lt;h2 id=&quot;jquery&quot;&gt;jquery中自定义事件&lt;/h2&gt;
+
+&lt;p&gt;js中event会被父节点冒泡emit，一直到document根节点，除非调用了event的stopPropagation方法（jquery中只要handler中返回false会自动调用该方法）。jquery中自定义事件也会冒泡。
+如果soda是bottle的子节点，会冒泡到父节点。
+&amp;lt;% highlight javascript %&amp;gt;
+	$(‘#soda, #bottle’).on(‘fizz’, function() {
+		console.log(this.id + ‘ emitted fizz’);
+	});
+	$(‘#soda’).trigger(‘fizz’);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;有时不需要冒泡，jquery中提供不冒泡的&lt;a href=&quot;http://api.jquery.com/triggerHandler/&quot;&gt;triggerHandler&lt;/a&gt;方法。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-17&quot;&gt;工具提示的例子&lt;/h3&gt;
+
+&lt;p&gt;问题：容器中一次只显示一个工具提示，需要在每次添加新提示前移除旧的。
+&lt;code&gt;$('.tooltip').remove();&lt;/code&gt;并且容器之间互不影响，还要支持容器的嵌套。&lt;/p&gt;
+
+&lt;p&gt;使用选择器会很麻烦，采用事件的思想。
+&amp;lt;% highlight javascript %&amp;gt;
+$container.triggerHandler(‘newTooltip’);//不会冒泡到父节点
+$container.one(‘newTooltip’, function() {//触发后移除处理器
+	$tooltip.remove();
+});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;ch3-promisedeferred&quot;&gt;ch3 Promise和Deferred&lt;/h1&gt;
+
+&lt;p&gt;jquery1.4中ajax请求需要包含成功/失败/总是执行的处理器。
+&amp;lt;% highlight javascript %&amp;gt;
+$.get(‘/mydata’, {
+	success: onSuccess,
+	failure: onFailure,
+	always: onAlways
+});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;1.5中分离开，返回封装的Promise对象。一个明显的好处是可以对同一个事件绑定多个处理器，拆分功能。例如显示隐藏loading图片的代码就可以被多个ajax调用共用。
+&amp;lt;% highlight javascript %&amp;gt;
+	var promise = $.get(‘/mydata’);
+	promise.done(onSuccess);
+	promise.fail(onFailure);
+	promise.always(onAlways);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;最大的优点是可以从已有的Promise中获取新的Promise。两个并行的Promise返回代表共同进度的Promise.&lt;/p&gt;
+
+&lt;h2 id=&quot;deferred&quot;&gt;Deferred&lt;/h2&gt;
+
+&lt;p&gt;Deferred是Promise的超集，可以被直接触发。而Promise需要其他人来触发。
+另外，回调函数的运行顺序和绑定顺序一致。always最先绑定，所以最先触发。
+&amp;lt;% highlight javascript %&amp;gt;
+	var promptDeferred = new $.Deferred();
+	//1.6以上版本支持always
+	promptDeferred.always(function(){ console.log(‘A choice was made:’); });
+	promptDeferred.done(function(){ console.log(‘Starting game…’); });
+	promptDeferred.fail(function(){ console.log(‘No game today.’); });
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;通过resolve和reject触发Deferred。
+&amp;lt;% highlight javascript %&amp;gt;
+$(‘#playGame’).focus().on(‘keypress’, function(e) {
+	var Y = 121, N = 110;
+	if (e.keyCode === Y) {
+		promptDeferred.resolve();//只会被调用一次
+	} else if (e.keyCode === N) {
+		promptDeferred.reject();
+	} else {
+		return false; // our Deferred remains pending
+	};
+});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;Promise只能被解决或者拒绝一次，在此之前处于pending等待状态。
+1.7版本以上调用state方法查看状态，老版本使用isResovled和isRejected查看。&lt;/p&gt;
+
+&lt;h2 id=&quot;promise&quot;&gt;Promise&lt;/h2&gt;
+
+&lt;p&gt;调用Deferred的promise方法得到一个Promise。多次调用会返回同一个Promise。在Promise上继续调用这个方法还是返回同一个对象的引用。&lt;/p&gt;
+
+&lt;p&gt;Promise只是Deferred缺少resolve/reject方法的拷贝。内部共享同样的回调函数，所以绑定在Deferred或者生成的Promise上都一样。
+&lt;code&gt;var promptPromise = promptDeferred.promise();&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;使用Promise的唯一理由是封装。保留Deferred只传递Promise可以保证控制回调函数的触发。&lt;/p&gt;
+
+&lt;h3 id=&quot;jquerypromise&quot;&gt;jquery中的Promise&lt;/h3&gt;
+
+&lt;p&gt;动画方法允许传递回调函数，在效果完成后调用。
+&lt;code&gt;$('.error').fadeIn(afterErrorShown);&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;1.6之后
+&amp;lt;% highlight javascript %&amp;gt;
+	var errorPromise = $(‘.error’).fadeIn().promise();
+	errorPromise.done(afterErrorShown);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;jquery 1.8+ 以下等价
+&amp;lt;% highlight javascript %&amp;gt;
+	$(onReady);
+	$(document).ready(onReady);
+	$.ready.promise().done(onReady);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-18&quot;&gt;传递数据到回调函数&lt;/h2&gt;
+
+&lt;p&gt;通过resolve/reject传递参数到回调函数
+&amp;lt;% highlight javascript %&amp;gt;
+	var aDreamDeferred = new $.Deferred();
+	aDreamDeferred.done(function(subject) {
+		console.log(‘I had the most wonderful dream about’, subject);
+	});
+	aDreamDeferred.resolve(‘the JS event model’);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;resolveWith/rejectWith用于传递上下文作为第一个参数，后面是参数数组
+&amp;lt;% highlight javascript %&amp;gt;
+	var slashdotter = {
+		comment: function(editor){
+			console.log(‘Obviously’, editor, ‘is the best text editor.’);
+		}
+	};
+	var grammarDeferred = new $.Deferred();
+	grammarDeferred.done(function(verb, object) {
+		this&lt;a href=&quot;object&quot;&gt;verb&lt;/a&gt;;
+	});
+	grammarDeferred.resolveWith(slashdotter, [‘comment’, ‘Emacs’]);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;但想传递上下文使用call/apply就行了，因为resolve/reject会传递上下文到回调函数中
+&amp;lt;% highlight javascript %&amp;gt;
+	grammarDeferred.resolve.call(slashdotter, ‘comment’, ‘Emacs’);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-19&quot;&gt;进度通知&lt;/h2&gt;
+
+&lt;p&gt;不同于resolve/reject，progress方法可以被多次调用。
+notify可以传递参数到progress回调函数中。
+&amp;lt;% highlight javascript %&amp;gt;
+	var nanowrimoing = $.Deferred();
+	var wordGoal = 5000;
+	nanowrimoing.progress(function(wordCount) {
+		var percentComplete = Math.floor(wordCount / wordGoal * 100);
+		$(‘#indicator’).text(percentComplete + ‘% complete’);
+	});
+	nanowrimoing.done(function(){
+		$(‘#indicator’).text(‘Good job!’);
+	});
+	$(‘#document’).on(‘keypress’, function(){
+		var wordCount = $(this).val().split(/\s+/).length;
+		if (wordCount &amp;gt;= wordGoal) {
+			nanowrimoing.resolve();
+		};
+		nanowrimoing.notify(wordCount);//触发progress回调函数
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;promise-1&quot;&gt;合并Promise&lt;/h2&gt;
+
+&lt;p&gt;多个Promise可以使用when合并成一个任务集合，这样就把异步任务抽象成了布尔值，有and关系。
+&amp;lt;% highlight javascript %&amp;gt;
+	var gameReadying = $.when(tutorialPromise, gameLoadedPromise);
+	gameReadying.done(startGame);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;常用的场景，组合多个ajax请求，在都成功后得到通知。
+&amp;lt;% highlight javascript %&amp;gt;
+	$.when($.post(‘/1’, data1), $.post(‘/2’, data2))
+	.then(onPosted, onFailure);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;使用一个全局的数据容器，如Array，存放多个Promise想合并的数据。
+&amp;lt;% highlight javascript %&amp;gt;
+	var serverData = {};
+	var getting1 = $.get(‘/1’)
+		.done(function(result) {serverData[‘1’] = result;});
+	var getting2 = $.get(‘/2’)
+		.done(function(result) {serverData[‘2’] = result;});
+	$.when(getting1, getting2)
+		.done(function() {
+			// the GET information is now in serverData…
+		});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;pipe&quot;&gt;使用pipe绑定&lt;/h2&gt;
+
+&lt;p&gt;只有在GET操作完成后才能对postPromise绑定回调函数，之前还不存在。
+&amp;lt;% highlight javascript %&amp;gt;
+	var getPromise = $.get(‘/query’);
+	getPromise.done(function(data) {
+		var postPromise = $.post(‘/search’, data);
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;1.6之后增加pipe方法。如果返回一个Promise。如果返回一个非Promise甚至没有返回值，
+&amp;lt;% highlight javascript %&amp;gt;
+	var getPromise = $.get(‘/query’);
+	var postPromise = getPromise.pipe(function(data) {
+		return $.post(‘/search’, data);
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;promise-2&quot;&gt;使用Promise替换回调函数&lt;/h2&gt;
+
+&lt;p&gt;在Node.js中使用jquery&lt;code&gt;npm install jquery&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;大多js框架使用callback而非promise，改写Node.js回调函数风格代码：
+&amp;lt;% highlight javascript %&amp;gt;
+var fileReading = new $.Deferred();
+fs.readFile(filename, ‘utf8’, function(err) {
+	if (err) {
+		fileReading.reject(err);
+	} else {
+		fileReading.resolve(Array.prototype.slice.call(arguments, 1));
+	};
+});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;改写成通用的工具方法
+&amp;lt;% highlight javascript %&amp;gt;
+	deferredCallback = function(deferred) {
+		return function(err) {
+			if (err) {
+				deferred.reject(err);
+			} else {
+				deferred.resolve(Array.prototype.slice.call(arguments, 1));
+			};
+		};
+	}
+	var fileReading = new $.Deferred();
+	fs.readFile(filename, ‘utf8’, deferredCallback(fileReading));
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;Q.js中node方法直接使用。
+&amp;lt;% highlight javascript %&amp;gt;
+	var fileReading = Q.defer();
+	fs.readFile(filename, ‘utf8’, fileReading.node());
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;ch4-asyncjs&quot;&gt;ch4 使用Async.js控制流程&lt;/h1&gt;
+
+&lt;p&gt;迭代中保持顺序的问题。&lt;/p&gt;
+
+&lt;p&gt;安装async和step&lt;code&gt;npm install -g async step&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/kriskowal/es5-shim/&quot;&gt;es5-shim&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-20&quot;&gt;异步顺序问题&lt;/h2&gt;
+
+&lt;p&gt;问题：按字典序读取文件夹下所有文件，然后拼接内容。&lt;/p&gt;
+
+&lt;p&gt;使用同步方法：
+&amp;lt;% highlight javascript %&amp;gt;
+	var fs = require(‘fs’);
+	process.chdir(‘recipes’);//切换目录
+	var concatenation = ‘’;
+	fs.readdirSync(‘.’)
+		.filter(function(filename) {//忽略目录
+			return fs.statSync(filename).isFile();
+		})
+		.forEach(function(filename) {//forEach至少需要IE6+
+			concatenation += fs.readFileSync(filename, ‘utf8’);
+		});
+	console.log(concatenation);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;不能替换成异步版本。原因是拼接任务放在回调函数中，短文件会比长文件先读完，拼接的顺序不可预测。
+&amp;lt;% highlight javascript %&amp;gt;
+	fs.readFile(filename, ‘utf8’, function(err, contents) {
+		if (err) throw err;
+		concatenation += contents;
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-21&quot;&gt;异步&lt;/h2&gt;
+
+&lt;h3 id=&quot;section-22&quot;&gt;简单的实现&lt;/h3&gt;
+
+&lt;p&gt;不使用forEach，在前一个回调函数中调用下一个保证执行顺序，在最后一个文件处理完毕后输出。
+&amp;lt;% highlight javascript %&amp;gt;
+	var fs = require(‘fs’);
+	process.chdir(‘recipes’); // change the working directory
+	var concatenation = ‘’;
+	fs.readdir(‘.’, function(err, filenames) {
+		if (err) throw err;
+		function readFileAt(i) {
+			var filename = filenames[i];
+			fs.stat(filename, function(err, stats) {
+				if (err) throw err;
+				if (! stats.isFile()) return readFileAt(i + 1);
+				fs.readFile(filename, ‘utf8’, function(err, text) {
+					if (err) throw err;
+					concatenation += text;
+					if (i + 1 === filenames.length) {
+						return console.log(concatenation);
+					}
+					readFileAt(i + 1);//保证顺序
+				});
+			});
+		}
+		readFileAt(0);
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;asyncjs&quot;&gt;使用Async.js&lt;/h3&gt;
+
+&lt;p&gt;提供两种选择&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;async.filter&lt;/code&gt;和&lt;code&gt;async.forEach&lt;/code&gt;，并行处理数组&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;async.filterSeries&lt;/code&gt;和&lt;code&gt;async.forEachSeries&lt;/code&gt;，串行处理数组&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;并行异步操作明显更快，为何还要用串行的？两个原因&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;顺序问题。&lt;/li&gt;
+  &lt;li&gt;Node同时读取文件的数目有限制，超过会出错。串行读取不会有问题。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&amp;lt;% highlight javascript %&amp;gt;
+	var concatenation = ‘’;
+	var dirContents = fs.readdirSync(‘.’);
+	async.filter(dirContents, isFilename, function(filenames) {
+		async.forEachSeries(filenames, readAndConcat, onComplete);
+	});
+	function isFilename(filename, callback) {
+		fs.stat(filename, function(err, stats) {
+			if (err) throw err;
+			callback(stats.isFile());
+		});
+	}
+	function readAndConcat(filename, callback) {
+		fs.readFile(filename, ‘utf8’, function(err, fileContents) {
+			if (err) return callback(err);
+			concatenation += fileContents;
+			callback();
+		});
+	}
+	function onComplete(err) {
+		if (err) throw err;
+		console.log(concatenation);
+	}
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;asyncjs-1&quot;&gt;Async.js中错误处理&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Async.js follows Node conventions. This means that every I/O
+callback has the form (err, results…)—with the exception of callbacks 
+where the result is a boolean. Boolean callbacks just have the form (result)
+, which is why our isFilename iterator from the previous code example needs 
+to handle errors on its own.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;onComplete只会被调用一次，在第一次error出现时或者全部操作成功后。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-23&quot;&gt;组织任务&lt;/h2&gt;
+
+&lt;h3 id=&quot;section-24&quot;&gt;串行运行异步任务&lt;/h3&gt;
+
+&lt;p&gt;async.series/async.waterfall
+&amp;lt;% highlight javascript %&amp;gt;
+var async = require (‘async’);
+var start = new Date;
+async.series([
+	function(callback) { setTimeout(callback, 100); },
+	function(callback) { setTimeout(callback, 300); },
+	function(callback) { setTimeout(callback, 200); }
+], function(err, results) {
+	console.log(‘Completed in ‘ + (new Date - start) + ‘ms’);
+});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-25&quot;&gt;并行&lt;/h3&gt;
+
+&lt;p&gt;async.parallel上面的例子可能只要300ms，但无法保证顺序。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-26&quot;&gt;动态异步队列&lt;/h2&gt;
+
+&lt;p&gt;series和parallel存在局限性&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;任务数组是静态的，一旦调用不能再添加或者移除。&lt;/li&gt;
+  &lt;li&gt;无法得知任务完成进度。&lt;/li&gt;
+  &lt;li&gt;只有完全无并发性或者无限的并发性，无法精确控制并发粒度。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;section-27&quot;&gt;理解队列&lt;/h3&gt;
+
+&lt;p&gt;&amp;lt;% highlight javascript %&amp;gt;
+var async = require(‘async’);
+function worker(data, callback) {
+	console.log(data);
+	callback();
+}
+var concurrency = 2;
+var queue = async.queue(worker, concurrency);
+queue.push(1);
+queue.push(2);
+queue.push(3);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;step&quot;&gt;使用Step进行最小的流程控制&lt;/h2&gt;
+
+&lt;p&gt;只有一个方法Step，接受函数列表作为参数。&lt;/p&gt;
+
+&lt;p&gt;每个函数可以以三种方式控制流程&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;调用this使Step运行列表中下一个函数&lt;/li&gt;
+  &lt;li&gt;调用n次callback使Step运行下一个函数n次&lt;/li&gt;
+  &lt;li&gt;返回一个值，&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;下一个函数可以接受前一个的结果，包括返回值或者传递给this方法的参数。
+或者前面所有函数的结构，如果前一个通过this.parallel或者this.group调用。
+两个函数的区别是parallel将结果作为分离的参数，而group合并成数组。&lt;/p&gt;
+
+&lt;p&gt;async.map等同于
+&amp;lt;% highlight javascript %&amp;gt;
+	var Step = require(‘step’);
+	function stepMap(arr, iterator, callback) {
+		Step(
+			function() {
+				var group = this.group();
+				for (var i = 0; i &amp;lt; arr.length; i++) {
+					iterator(arr[i], group());
+				}
+			},
+			callback
+		);
+	}
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;ch5-workers&quot;&gt;ch5 使用Workers多线程&lt;/h1&gt;
+
+&lt;h2 id=&quot;web-worker&quot;&gt;Web Worker&lt;/h2&gt;
+
+&lt;p&gt;Html5提供Web Worker。
+双方通过监听message事件接收数据，通过postMessage发送数据。
+&amp;lt;% highlight javascript %&amp;gt;
+	// master script
+	var worker = new Worker(‘boknows.js’);
+	worker.addEventListener(‘message’, function(e) {
+		console.log(e.data);
+	});
+	worker.postMessage(‘football’);
+	worker.postMessage(‘baseball’);
+	// boknows.js
+	self.addEventListener(‘message’, function(e) {
+		self.postMessage(‘Bo knows ‘ + e.data);
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/ajaxorg/ace-builds/&quot;&gt;Ace文本编辑器&lt;/a&gt;
+使用单独的线程进行语法分析，保证编辑界面流畅运行。&lt;/p&gt;
+
+&lt;p&gt;通常worker将计算结果发送给主线程，然后由主线程更新页面。如果worker能直接改变页面，就会带来同步问题，需要将DOM操作包装在同步量中，像Java中那样。&lt;/p&gt;
+
+&lt;p&gt;所以worker无法看见全局window对象或者主线程和其他worker中的任何对象。
+通过postMessage传递对象时，会进行序列化和反序列化，修改原对象不会影响其他线程中的拷贝。&lt;/p&gt;
+
+&lt;p&gt;worker只能看到自身的全局对象也就是self对象。包括了标准的js对象和浏览器的ajax方法。worker可以使用XMLHttpRequest和WebSocket，可以独立地向服务器请求数据。&lt;/p&gt;
+
+&lt;h2 id=&quot;nodecluster&quot;&gt;Node中的cluster&lt;/h2&gt;
+
+&lt;h1 id=&quot;ch6-&quot;&gt;ch6 异步脚本加载&lt;/h1&gt;
+
+&lt;p&gt;script的位置，放在head标签中，影响加载速度，长时间的空白。
+放在body末尾，无生气的组件。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-28&quot;&gt;限制和警告&lt;/h2&gt;
+
+&lt;p&gt;以下方法不适合内联脚本。尽量避免使用，非要用则不要使用defer或者async属性。
+避免使用document.write，在异步加载的脚本中的行为是不可预测的。类似DOM操作的GOTO。&lt;/p&gt;
+
+&lt;h2 id=&quot;script&quot;&gt;script标签&lt;/h2&gt;
+
+&lt;p&gt;用户只能看到标题，直到放在head中的script被全部下载完毕并运行。
+需要绑定document.onreadystatechange，确保dom加载完成。&lt;/p&gt;
+
+&lt;p&gt;所以将脚本放在body的末尾，用户能更快看到页面，
+脚本也能看见DOM，无需等待事件触发。&lt;/p&gt;
+
+&lt;p&gt;这么做需要注意三点，任何一点不满足就不应该下移：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;body中是否有inline的js调用末尾的这些脚本&lt;/li&gt;
+  &lt;li&gt;使用&lt;a href=&quot;http://modernizr.com/&quot;&gt;Modernizr&lt;/a&gt;检测用户的浏览器是否支持HTML5&amp;amp;CSS3 &lt;a href=&quot;http://html5boilerplate.com/&quot;&gt;HTML5 Boilerplate&lt;/a&gt;将其在顶部引入&lt;/li&gt;
+  &lt;li&gt;脚本是否会影响页面中某些元素（如字体）的展示效果，会显示两次。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;section-29&quot;&gt;脚本延迟加载&lt;/h2&gt;
+
+&lt;p&gt;在文档全部加载完毕之前浏览器不会下载脚本，在大的文档传输中，会成为性能瓶颈。&lt;/p&gt;
+
+&lt;p&gt;理想化的场景中，脚本和文档并行加载，不影响DOM的渲染，当文档加载完毕再运行脚本。&lt;/p&gt;
+
+&lt;p&gt;使用ajax加载脚本可以满足需求，但是有个更简单的解决方案。
+使用script的defer属性：&lt;code&gt;&amp;lt;script defer src=&quot;deferredScript.js&quot;&amp;gt;&lt;/code&gt;。
+告诉浏览器首先加载，但不会立即执行，直到DOM加载完毕并且之前包含defer的脚本也执行完毕。这样就可以移入head标签中，得到所有之前移入body末尾的好处，还额外获得了加载大文档的速度提升。&lt;/p&gt;
+
+&lt;p&gt;缺点是不被所有浏览器支持。
+&amp;lt;% highlight html %&amp;gt;
+	&amp;lt;html&amp;gt;
+	&amp;lt;head&amp;gt;
+		&lt;!-- metadata and stylesheets go here --&gt;
+		&lt;script src=&quot;headScripts.js&quot;&gt;&amp;lt;/scripts&amp;gt;
+		&lt;script defer=&quot;&quot; src=&quot;deferredScripts.js&quot;&gt;&lt;/script&gt;
+	&amp;lt;/head&amp;gt;
+	&amp;lt;body&amp;gt;
+		&lt;!-- content goes here --&gt;
+	&amp;lt;/body&amp;gt;
+	&amp;lt;/html&amp;gt;
+&amp;lt;% endhighlight %&amp;gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-30&quot;&gt;并行加载&lt;/h2&gt;
+
+&lt;p&gt;有时我们不希望等到一个脚本执行完才开始加载下一个脚本。希望尽快加载所有脚本并运行。现代浏览器提供了async属性，不保证脚本的执行顺序，也不保证执行时DOM是否加载完毕。&lt;/p&gt;
+
+&lt;p&gt;同时使用async和defer时，支持async的浏览器中async会覆盖defer。由于defer支持度更高，也能提供在加载脚本的同时渲染DOM的好处，所以推荐在使用async的地方都使用defer。&lt;/p&gt;
+
+&lt;p&gt;以下加载顺序是：headScript运行完毕后，dom开始加载，deferredScript在dom显示的同时后台加载，dom显示完毕，两个wigetJs开始执行，顺序未知。
+&amp;lt;% highlight html %&amp;gt;
+	&amp;lt;html&amp;gt;
+	&amp;lt;head&amp;gt;
+		&lt;!-- metadata and stylesheets go here --&gt;
+		&lt;script src=&quot;headScripts.js&quot;&gt;&amp;lt;/scripts&amp;gt;
+		&lt;script src=&quot;deferredScripts.js&quot; defer=&quot;&quot;&gt;&lt;/script&gt;
+	&amp;lt;/head&amp;gt;
+	&amp;lt;body&amp;gt;
+		&lt;!-- content goes here --&gt;
+		&lt;script async=&quot;&quot; defer=&quot;&quot; src=&quot;feedbackWidget.js&quot;&gt;&lt;/script&gt;
+		&lt;script async=&quot;&quot; defer=&quot;&quot; src=&quot;chatWidget.js&quot;&gt;&lt;/script&gt;
+	&amp;lt;/body&amp;gt;
+	&amp;lt;/html&amp;gt;
+&amp;lt;% endhighlight %&amp;gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-31&quot;&gt;可编程加载&lt;/h2&gt;
+
+&lt;p&gt;希望在特定的条件下加载脚本。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-32&quot;&gt;直接加载&lt;/h3&gt;
+
+&lt;p&gt;浏览器向服务器请求脚本并执行的两种方式：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;发出ajax请求，使用eval执行响应内容。&lt;/li&gt;
+  &lt;li&gt;向DOM中插入script标签。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;第一种的缺点是eval存在作用域泄露问题。
+&amp;lt;% highlight javascript %&amp;gt;
+	var head = document.getElementsByTagName(‘head’)[0];
+	var script = document.createElement(‘script’);
+	script.src = ‘/js/feature.js’;
+	head.appendChild(script);
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;如果想知道script何时加载完成，可以让其触发一个特定事件，但这样太繁琐。
+html5中&lt;code&gt;script.onload = function(){}&lt;/code&gt;可以绑定一个回调函数。但是不被所有
+浏览器支持，比如ie8使用&lt;code&gt;onreadystatechange&lt;/code&gt;。所以推荐使用script加载类库。&lt;/p&gt;
+
+&lt;h3 id=&quot;yepnope&quot;&gt;使用yepnope进行条件加载&lt;/h3&gt;
+
+&lt;p&gt;yepnope是一个轻量级类库，可以单独使用，也可以配合Modernizr使用。
+&amp;lt;% highlight javascript %&amp;gt;
+	yepnope({
+		load: ‘oompaLoompas.js’,
+		callback: function() {
+			console.log(‘Oompa-Loompas ready!’);
+		}
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;backbone依赖于underscore，加载顺序。complete不同于callback，前者在所有脚本都被加载完毕后运行，而callback为加载列表中每一个资源运行。
+&amp;lt;% highlight javascript %&amp;gt;
+	yepnope({
+		load: [‘underscore.js’, ‘backbone.js’],
+		complete: function() {
+			// Backbone logic goes here
+		}
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;yepnope最具代表性的特征是条件加载。&lt;/p&gt;
+
+&lt;p&gt;判断设备是否是触屏设备：根据条件判断决定加载文件
+&amp;lt;% highlight javascript %&amp;gt;
+	yepnope({
+		test: Modernizr.touch,
+		yep: [‘touchStyles.css’, ‘touchApplication.js’],
+		nope: [‘mouseStyles.css’, ‘mouseApplication.js’],
+		complete: function() {
+			// either way, the application is now ready!
+		}
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;常用的用法：填补旧版本浏览器缺失的功能
+&amp;lt;% highlight javascript %&amp;gt;
+	yepnope({
+		test: window.json,
+		nope: [‘json2.js’],
+		complete: function() {
+			// now we can JSON safely
+		}
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;requirejsamd&quot;&gt;使用Require.js和AMD智能加载&lt;/h3&gt;
+
+&lt;p&gt;require函数第一个参数是数组，并行加载数组中的脚本。不同于yepnope，require不保证目标脚本的运行顺序。但是会保证脚本之间的依赖关系，只要脚本满足AMD(Asynchronous Module Definition)规范。
+&amp;lt;% highlight javascript %&amp;gt;
+	require([‘moment’], function(moment) {
+		console.log(moment().format(‘dddd’)); // day of the week
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/amdjs/amdjs-api/wiki/AMD&quot;&gt;AMD&lt;/a&gt;规范。&lt;/p&gt;
+
+&lt;p&gt;全局函数define，三个参数：名字，依赖列表和依赖加载完毕后的回调函数。&lt;/p&gt;
+
+&lt;p&gt;下面就是一个有效的AMD规范，定义了一个依赖jquery的应用。
+&amp;lt;% highlight javascript %&amp;gt;
+	define(‘myApplication’, [‘jquery’], function($) {
+		$(‘&amp;lt;body&amp;gt;’).append(‘&amp;lt;p&amp;gt;Hello, async world!&amp;lt;/p&amp;gt;’);
+	});
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;define是如何捕获jquery对象的呢？jquery的AMD定义返回了jQuery对象。
+&amp;lt;% highlight javascript %&amp;gt;
+	define( “jquery”, [], function () { return jQuery; } );
+&amp;lt;% endhighlight %&amp;gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 11 Oct 2014 17:40:40 +0800</pubDate>
+        <link>http://yourdomain.com/js/async/yepnope/require/2014/10/11/async-javascript-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/js/async/yepnope/require/2014/10/11/async-javascript-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0.html</guid>
+        
+        
+        <category>js</category>
+        
+        <category>async</category>
+        
+        <category>yepnope</category>
+        
+        <category>require</category>
+        
+      </item>
     
       <item>
         <title>《Less Web Development Essentials》读书笔记</title>
@@ -2600,258 +3705,6 @@ nongreedy &lt;code&gt;/a+?/ aaa&lt;/code&gt;匹配第一个a&lt;/p&gt;
         <pubDate>Wed, 17 Sep 2014 18:45:40 +0800</pubDate>
         <link>http://yourdomain.com/js/jquery/2014/09/17/secrets-of-js-ninja-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-ch7.html</link>
         <guid isPermaLink="true">http://yourdomain.com/js/jquery/2014/09/17/secrets-of-js-ninja-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-ch7.html</guid>
-        
-        
-        <category>js</category>
-        
-        <category>jquery</category>
-        
-      </item>
-    
-      <item>
-        <title>《Secrets of JS Ninja》读书笔记 ch6</title>
-        <description>&lt;h1 id=&quot;ch6-oo-prototype&quot;&gt;ch6 OO prototype&lt;/h1&gt;
-
-&lt;p&gt;初始化步骤首先从prototype中绑定属性，再从构造函数中添加。
-并不是简单的拷贝prototype，是attach。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;swung&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;swingSword&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;swung&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;swingSword&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
-    &lt;span class=&quot;s2&quot;&gt;&amp;quot;Method exists, even out of order.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;这里在对象创建之后加入prototype依然能引用到。&lt;/p&gt;
-
-&lt;p&gt;每个对象有一个隐式的属性constructor引用对象的构造方法，而prototype是构造方法的一个属性，所以每个对象的实例都能找到自己的prototype。&lt;/p&gt;
-
-&lt;p&gt;所以访问一个对象的属性时，优先级是首先检查property，如果没有定义过，继续查找prototype，还是没有则返回undefined。&lt;/p&gt;
-
-&lt;h2 id=&quot;section&quot;&gt;类型检测&lt;/h2&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){}&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;object&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s2&quot;&gt;&amp;quot;The type of the instance is object.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s2&quot;&gt;&amp;quot;instanceof identifies the constructor.&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;constructor&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s2&quot;&gt;&amp;quot;The ninja object was created by the Ninja function.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;使用对象constructor属性引用的构造器创建对象：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){}&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;constructor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja2&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;It&amp;#39;s a Ninja!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;But not the same Ninja!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;prototype-chain&quot;&gt;通过prototype chain实现继承&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;SubClass.prototype = new SuperClass();&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;这样子类就有了父类的全部属性。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){}&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;dance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){};&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){}&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s2&quot;&gt;&amp;quot;ninja receives functionality from the Ninja prototype&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;... and the Person prototype&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;... and the Object prototype&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ninja&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;dance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;function&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;... and can dance!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code&gt;Ninja.prototype = Person.prototype;&lt;/code&gt;不能这样，Ninja的prototype发生改变也会影响Person&lt;/p&gt;
-
-&lt;h2 id=&quot;js&quot;&gt;扩展js中的对象&lt;/h2&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;callback&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;nx&quot;&gt;callback&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;//防止传入undefined&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;b&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;c&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;s2&quot;&gt;&amp;quot;Is in position &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot; out of &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;html-dom&quot;&gt;扩展html dom对象&lt;/h2&gt;
-
-&lt;p&gt;现代浏览器中的dom对象继承自HTMLElement&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nx&quot;&gt;HTMLElement&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;remove&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;parentNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;parentNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;removeChild&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;但是这种用法是错误的：浏览器禁止直接调用构造函数
-&lt;code&gt;var elem = new HTMLElement();&lt;/code&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;object&quot;&gt;扩展Object&lt;/h2&gt;
-
-&lt;p&gt;这样无法得到正确的结果，原因是引入了keys这个新属性。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;obj&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;obj&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s2&quot;&gt;&amp;quot;There are three properties in this object.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;使用hasOwnProperty判断属性是通过实例定义的还是prototype引入的。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;hasOwnProperty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;number&quot;&gt;扩展Number：&lt;/h2&gt;
-
-&lt;p&gt;p138 最好不要,语法上不支持&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://perfectionkills.com/&quot;&gt;一个很好的blog&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;section-1&quot;&gt;继承原生对象&lt;/h2&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s2&quot;&gt;&amp;quot;All the items are in our sub-classed array.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s2&quot;&gt;&amp;quot;Verify that we implement Array functionality.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;在IE上length和Array的关系及其紧密&lt;/p&gt;
-
-&lt;p&gt;解决办法：定义新的Length属性并copy其他Array方法，使用immediate function：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;methods&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;push&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;pop&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;shift&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;unshift&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;s1&quot;&gt;&amp;#39;slice&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;splice&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;join&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;methods&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;})(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;methods&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;})();&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MyArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s2&quot;&gt;&amp;quot;All the items are on our sub-classed array.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mine&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;s2&quot;&gt;&amp;quot;We aren&amp;#39;t subclassing Array, though.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;section-2&quot;&gt;实例化注意事项&lt;/h2&gt;
-
-&lt;p&gt;new操作符在创建对象时必不可少，缺少有可能污染全局scope，恰巧变量与属性同名。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;last&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;first&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot; &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;last&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Rukia&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Ichigo&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Kurosaki&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;function&quot;&gt;function序列化&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;/xyz/.test(function() { xyz; }&lt;/code&gt;调用function的toString方法&lt;/p&gt;
-
-&lt;h2 id=&quot;function-1&quot;&gt;检验function是通过构造函数调用还是普通调用&lt;/h2&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;callee&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;We didn&amp;#39;t instantiate, so it returns false.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;We did instantiate, returning true.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;section-3&quot;&gt;防御式编程&lt;/h2&gt;
-
-&lt;p&gt;如果不是通过new实例化&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;last&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;callee&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;last&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;first&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot; &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;last&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Rukia&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s2&quot;&gt;&amp;quot;Name was set to Rukia.&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;仍存在3个问题：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;callee在未来版本js中废弃，strict模式下禁用。&lt;/li&gt;
-  &lt;li&gt;好的编程实践？&lt;/li&gt;
-  &lt;li&gt;自以为了解用户&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;section-4&quot;&gt;实现类的继承&lt;/h2&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Person&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;subClass&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;isDancing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;dancing&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;isDancing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ninja&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;subclass&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
-
-&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;initializing&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;superPattern&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
-        &lt;span class=&quot;sr&quot;&gt;/xyz/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;xyz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;sr&quot;&gt;/\b_super\b/&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;sr&quot;&gt;/.*/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;subClass&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;properties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;initializing&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;proto&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;initializing&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;properties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;proto&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;properties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;function&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//判断三件事：子类是方法，父类是方法，子类方法包含对_super()的引用&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;function&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt;
-            &lt;span class=&quot;nx&quot;&gt;superPattern&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;properties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;
-            &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tmp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-                    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-                    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ret&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-                    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_super&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tmp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-                    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-                &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-            &lt;span class=&quot;p&quot;&gt;})(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;properties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-            &lt;span class=&quot;nx&quot;&gt;properties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// All construction is actually done in the init method&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;initializing&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;   
-    &lt;span class=&quot;nx&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;prototype&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;proto&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;constructor&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;subClass&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;callee&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;})();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-</description>
-        <pubDate>Wed, 17 Sep 2014 18:40:40 +0800</pubDate>
-        <link>http://yourdomain.com/js/jquery/2014/09/17/secrets-of-js-ninja-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-ch6.html</link>
-        <guid isPermaLink="true">http://yourdomain.com/js/jquery/2014/09/17/secrets-of-js-ninja-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-ch6.html</guid>
         
         
         <category>js</category>
