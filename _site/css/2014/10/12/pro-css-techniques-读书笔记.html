@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>《Pro Css Techniques》读书笔记</title>
+    <meta name="description" content="读书笔记，碰到的问题
+">
+
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="canonical" href="http://yourdomain.com/css/2014/10/12/pro-css-techniques-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0.html">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">xiaOp写东西的地方</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于xiaOp</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">《Pro Css Techniques》读书笔记</h1>
+    <p class="post-meta">Oct 12, 2014</p>
+  </header>
+
+  <article class="post-content">
+    <h1 id="ch3-">ch3 特性和层叠</h1>
+
+<h2 id="afterbefore">after/before伪元素</h2>
+
+<p>在段落前后添加中括号，不影响html标记</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">p</span><span class="nc">.note</span><span class="nd">:before</span> <span class="p">{</span>
+    <span class="k">content</span><span class="o">:</span><span class="s2">&quot;[&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">p</span><span class="nc">.note</span><span class="nd">:after</span> <span class="p">{</span>
+    <span class="k">content</span><span class="o">:</span><span class="s2">&quot;]&quot;</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<p>打印样式中对于链接，希望在链接文本后面显示地址</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">a</span><span class="o">[</span><span class="nt">href</span><span class="o">^=</span><span class="s1">&#39;http://&#39;</span><span class="o">]</span><span class="nd">:after</span> <span class="p">{</span>
+    <span class="k">content</span><span class="o">:</span><span class="s2">&quot; [&quot;</span> <span class="n">attr</span><span class="p">(</span><span class="n">href</span><span class="p">)</span> <span class="s2">&quot;]&quot;</span><span class="p">;</span><span class="k">font-size</span><span class="o">:</span><span class="m">90%</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<p>列表中显示特殊字符如箭头</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">ul</span> <span class="nt">li</span> <span class="p">{</span>
+    <span class="k">list-style</span><span class="o">:</span><span class="k">none</span><span class="p">;</span><span class="k">margin</span><span class="o">:</span><span class="m">0</span><span class="p">;</span><span class="k">text-indent</span><span class="o">:-</span><span class="m">1em</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:before</span> <span class="p">{</span>
+    <span class="k">content</span><span class="o">:</span><span class="s2">&quot;\2192 \0020&quot;</span><span class="p">;</span><span class="c">/*箭头和空白*/</span>
+<span class="p">}</span></code></pre></div>
+
+<h2 id="section">层叠，计算特性</h2>
+
+<p><a href="http://www.w3.org/TR/CSS21/cascade.html#cascading-order">css2.1规定的层叠顺序</a></p>
+
+<p>计算特性，!important&gt;内联样式&gt;id&gt;类伪类&gt;元素伪元素</p>
+
+<p>特性相同，最后出现的覆盖之前的。</p>
+
+<h1 id="ch4-">ch4 浏览器</h1>
+
+<h2 id="ie6">ie6存在的问题</h2>
+
+<h3 id="section-1">盒模型</h3>
+
+<p>在ie的错误盒模型实现中，width包括了margin，padding和border。会使盒变得更窄。而正常的实现中，width只是内容的宽度。</p>
+
+<p>ie6有两种渲染模式：标准模式(standard compliance mode)和奇怪模式(quirk mode)。前者使用正确的盒模型实现，后者使用错误的实现。两种模式通过DOCTYPE区分，应用严格的DOCTYPE会使用标准模式。所以推荐使用。</p>
+
+<h3 id="hover">对hover伪元素的支持</h3>
+
+<p>ie只支持对<code>&lt;a&gt;</code>应用hover伪元素。想在表格中高亮显示某一行，只能通过js实现。</p>
+
+<h3 id="fixed">缺少对fixed的支持</h3>
+
+<p>当做<code>display:static</code>显示。</p>
+
+<h3 id="png">对PNG图片不完全支持</h3>
+
+<p>alpha通道透明度。</p>
+
+<h1 id="ch5-css">ch5 管理css文件</h1>
+
+<h2 id="section-2">样式的快捷属性</h2>
+
+<p><a href="www.dustindiaz.com/css-shorthand/">所有支持快捷方式的属性</a></p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">background-color</span><span class="o">:</span> <span class="nf">#dfdfdf</span><span class="o">;</span>
+<span class="nt">background-image</span><span class="o">:</span> <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;/img/background.png&#39;</span><span class="o">);</span>
+<span class="nt">background-position</span><span class="o">:</span> <span class="nt">15px</span> <span class="nt">5px</span><span class="o">;</span>
+<span class="nt">background-repeat</span><span class="o">:</span> <span class="nt">repeat-x</span><span class="o">;</span>
+
+<span class="nt">background</span><span class="o">:</span> <span class="nf">#dfdfdf</span> <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;/img/background.png&#39;</span><span class="o">)</span> <span class="nt">15px</span> <span class="nt">5px</span> <span class="nt">repeat-x</span><span class="o">;</span></code></pre></div>
+
+<h2 id="section-3">注释</h2>
+
+<p>使用TODO,BUG等标识</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="c">/* TODO: The h1s need further styling, but this gets us started. */</span>
+<span class="nt">h1</span> <span class="p">{</span>
+    <span class="k">color</span><span class="o">:</span> <span class="m">#333</span>
+<span class="p">}</span></code></pre></div>
+
+<p>对元数据注释</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="c">/* -------------------------------------</span>
+<span class="c">Filename: base.css</span>
+<span class="c">Title : Primary CSS file for jeffcroft.com</span>
+<span class="c">Author : Jeff Croft, jeff@jeffcroft.com</span>
+<span class="c">URL : http://media.jeffcroft.com/css/base.css</span>
+<span class="c">--------------------------------------- */</span></code></pre></div>
+
+<p>列出所有使用的变量，类似LESS的变量概念</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="c">/* ---------------------------------------</span>
+<span class="c">Main Purple: #50017C</span>
+<span class="c">Lighter Purple: #732799</span>
+<span class="c">Accent Orange: #ff8800</span>
+<span class="c">Accent Green: #99cc00</span>
+<span class="c">Accent Blue: #6699cc</span>
+<span class="c">Beige: #A5A48C</span>
+<span class="c">Light Beige: #C7C3B3</span>
+
+<span class="c">Serif fonts: Georgia, &quot;Times New Roman&quot;, serif</span>
+<span class="c">Sans-serif fonts: Verdana, Arial, Helvetica, sans-serif</span>
+<span class="c">---------------------------------------- */</span></code></pre></div>
+
+<p>表示段落，便于查找</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="c">/* ----------------------------------------------------------------------------</span>
+<span class="c">   NAVIGATION STYLES</span>
+<span class="c">   ----------------------------------------------------------------------------- */</span>
+
+<span class="c">/* =NAVIGATION STYLES */</span></code></pre></div>
+
+<h2 id="reset">reset</h2>
+
+<p>引入
+<code>@import url("reset.css");</code></p>
+
+<h1 id="ch6-hack">ch6 hack和替代方法</h1>
+
+<h2 id="ie">ie条件注释</h2>
+
+<p>其他浏览器会忽略</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="c">&lt;!--[if lte IE 6]&gt;</span>
+<span class="c">    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;css/IEhacks.css&quot; /&gt;</span>
+<span class="c">&lt;![endif]--&gt;</span></code></pre></div>
+
+<h2 id="html">* html</h2>
+
+<p><code>* html</code>其他浏览器或者标准中都不支持这种选择器。</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="o">*</span> <span class="nt">html</span> <span class="nt">body</span> <span class="p">{</span>
+    <span class="k">background-image</span><span class="o">:</span><span class="k">none</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<h2 id="holly-hack">Holly hack</h2>
+
+<p>以发现者命名。给一个非常小的height触发hasLayout。由于IE中存在的另一个Bug，这个很小的height会被浏览器忽略，高度会被内容撑开。另外，Mac下的ie不存在layout问题，所以需要过滤掉。</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="c">/* Hides from IE5-mac \*/</span>
+    <span class="o">*</span> <span class="nt">html</span> <span class="nc">.floatcontainer</span> <span class="p">{</span> <span class="k">height</span><span class="o">:</span><span class="m">1%</span><span class="p">;</span> <span class="p">}</span>
+<span class="c">/* End hide from IE5-mac */</span></code></pre></div>
+
+<p><a href="http://stopdesign.com/archive/2004/07/06/filtering-css.html">IE/Mac Filter</a></p>
+
+<p><a href="www.satzansatz.de/cssd/onhavinglayout.html">IE hasLayout属性</a></p>
+
+<h2 id="section-4">清除浮动</h2>
+
+<p>在导航条的实现中，每个li向左浮动后，发现父元素ul没有被撑开。可以通过在ul最后添加div元素清除左右浮动达到撑开效果，但是添加html不够优雅。可以使用after伪元素，效果是一样的。这样只需要在ul上应用clearfix类即可。</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.clearfix</span><span class="nd">:after</span> <span class="p">{</span>
+        <span class="k">content</span><span class="o">:</span><span class="s2">&quot;.&quot;</span><span class="p">;</span><span class="c">/*为空也一样*/</span>
+        <span class="k">display</span><span class="o">:</span><span class="k">block</span><span class="p">;</span>
+        <span class="k">height</span><span class="o">:</span><span class="m">0</span><span class="p">;</span>
+        <span class="k">clear</span><span class="o">:</span><span class="k">both</span><span class="p">;</span>
+        <span class="k">visibility</span><span class="o">:</span><span class="k">hidden</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c">/* Hides from IE-mac \*/</span>
+        <span class="o">*</span> <span class="nt">html</span> <span class="nc">.clearfix</span> <span class="p">{</span> <span class="k">height</span><span class="o">:</span><span class="m">1%</span><span class="p">;</span> <span class="p">}</span>
+    <span class="c">/* End hide from IE-mac */</span></code></pre></div>
+
+<h2 id="section-5">水平居中</h2>
+
+<p>想让wrapper水平居中</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;body&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;wrapper&quot;</span><span class="nt">&gt;</span>
+        ...
+        <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/body&gt;</span></code></pre></div>
+
+<p>ie6中<code>text-align:center;</code>即可实现居中，但是包括文字图片也会继承居中。所以wrapper需要恢复左对齐。对于其他浏览器，通过左右外边距auto就能居中。</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">body</span> <span class="p">{</span>
+        <span class="k">text-align</span><span class="o">:</span><span class="k">center</span><span class="p">;</span>
+        <span class="k">min-width</span><span class="o">:</span><span class="m">800px</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nf">#wrapper</span> <span class="p">{</span>
+        <span class="k">margin</span><span class="o">:</span><span class="m">0</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="k">width</span><span class="o">:</span><span class="m">800px</span><span class="p">;</span>
+        <span class="k">text-align</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></div>
+
+<h1 id="ch7-css">ch7 css布局</h1>
+
+<h2 id="liquid">liquid布局</h2>
+
+<p>使用百分比，左侧25%，右侧75%。注意增加浮动元素的border哪怕是1px也会产生错误的效果，会被挤到下一行。最好保证加起来不足100%。</p>
+
+<h2 id="elastic">elastic布局</h2>
+
+<p>改变浏览器字体大小，元素大小随之改变。</p>
+
+<p>首先需要设置一个基准。大多数浏览器默认的字体大小是16px。为了方便计算，可以化成10单位。这样其他元素可以以此为基准，如2em就代表20px。</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">body</span> <span class="p">{</span>
+        <span class="k">font-size</span><span class="o">:</span><span class="m">62.5%</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nt">h1</span> <span class="p">{</span>
+        <span class="k">font-size</span><span class="o">:</span><span class="m">2em</span>
+    <span class="p">}</span>
+    <span class="nf">#wrapper</span> <span class="p">{</span>
+        <span class="k">font-size</span><span class="o">:</span><span class="m">1.4em</span><span class="p">;</span>
+        <span class="k">width</span><span class="o">:</span><span class="m">56em</span><span class="p">;</span>
+        <span class="k">margin</span><span class="o">:</span><span class="m">10px</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="k">text-align</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
+        <span class="k">background</span><span class="o">:</span><span class="m">#dade75</span><span class="p">;</span>
+        <span class="k">border</span><span class="o">:</span><span class="m">1px</span> <span class="k">solid</span> <span class="nb">silver</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></div>
+
+<p>为了防止字体太大元素宽高也变得太大，使用<code>max-width:25%;</code>进行限制。</p>
+
+<h2 id="section-6">响应式布局</h2>
+
+<p>随浏览器窗口大小改变布局发生改变</p>
+
+<h2 id="margin">负margin</h2>
+
+<p>右侧固定宽度200px，需要左侧满足100% -200px的宽度。可以使用负margin实现。
+<a href="http://alistapart.com/articles/negativemargins">negativemargins</a></p>
+
+<h1 id="ch9-">ch9 字体</h1>
+
+<h2 id="line-height">line-height</h2>
+
+<p>每行上下都有2px的空间。也可以是负的，如果line-height为8px，可能会覆盖在一起。</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">p</span> <span class="p">{</span>
+        <span class="k">font-size</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+        <span class="k">line-height</span><span class="o">:</span> <span class="m">14px</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></div>
+
+<p>当line-height缺少单位如px时。代表倍数。</p>
+
+<h2 id="kerning">kerning</h2>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">p</span> <span class="p">{</span>
+    <span class="k">letter-spacing</span><span class="o">:</span> <span class="m">-.05em</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<h1 id="ch10-table">ch10 table</h1>
+
+<h2 id="border">border</h2>
+
+<p>border有两种模型collapsed和separate。后者是大多数浏览器的默认样式，cell之间有空隙。</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">table</span> <span class="p">{</span>
+        <span class="k">width</span><span class="o">:</span> <span class="m">90%</span><span class="p">;</span>
+        <span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="k">auto</span><span class="p">;</span>
+        <span class="k">font-family</span><span class="o">:</span> <span class="n">Lucida</span> <span class="n">Grande</span><span class="o">,</span> <span class="n">Verdana</span><span class="o">,</span> <span class="n">Helvetica</span><span class="o">,</span> <span class="n">Arial</span><span class="o">,</span> <span class="k">sans-serif</span><span class="p">;</span>
+        <span class="k">font-size</span><span class="o">:</span> <span class="m">.9em</span><span class="p">;</span>
+        <span class="k">line-height</span><span class="o">:</span> <span class="m">1.4em</span><span class="p">;</span>
+        <span class="k">border-collapse</span><span class="o">:</span> <span class="k">collapse</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nt">th</span> <span class="p">{</span>
+        <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+        <span class="k">border-bottom</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span> <span class="m">#000</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nt">td</span> <span class="p">{</span>
+        <span class="k">color</span><span class="o">:</span> <span class="m">#333</span><span class="p">;</span>
+        <span class="k">border</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span> <span class="m">#ccc</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></div>
+
+<p>应用了collapse模型后，有如下规则</p>
+
+<ul>
+  <li>table元素没有padding，这意味着表格的边框和最外层的cell之间没有空间。</li>
+  <li>cell row col都可以有border</li>
+  <li>相邻的cell只会显示一边的border</li>
+  <li>如果相邻的cell边框border-style不同，取优先级高的。优先级是hidden, double, solid, dashed, dotted, ridge, outset, groove, inset, none</li>
+  <li>如果style和宽度相同，但是颜色不同。按元素优先级cell, row, row group, column, column group, table。取决于浏览器。</li>
+</ul>
+
+<h2 id="section-7">斑马纹效果</h2>
+
+<p>定义odd，even类，css3中使用nth选择器</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">tr</span><span class="nc">.odd</span> <span class="p">{</span>
+        <span class="k">background-color</span><span class="o">:</span> <span class="m">#dfdfdf</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nt">tr</span><span class="nd">:nth-child</span><span class="o">(</span><span class="nt">odd</span><span class="o">)</span> <span class="p">{</span>
+        <span class="k">background-color</span><span class="o">:</span> <span class="m">#dfdfdf</span>
+    <span class="p">}</span></code></pre></div>
+
+<h2 id="caption">caption样式</h2>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">caption</span> <span class="p">{</span>
+        <span class="k">caption-side</span><span class="o">:</span> <span class="k">bottom</span><span class="p">;</span>
+        <span class="k">line-height</span><span class="o">:</span> <span class="m">4em</span><span class="p">;</span>
+        <span class="k">font-family</span><span class="o">:</span> <span class="n">Georgia</span><span class="o">,</span> <span class="s2">&quot;Times New Roman&quot;</span><span class="o">,</span> <span class="k">serif</span><span class="p">;</span>
+        <span class="k">font-size</span><span class="o">:</span> <span class="m">.85em</span><span class="p">;</span>
+        <span class="k">font-style</span><span class="o">:</span> <span class="k">italic</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></div>
+
+<h1 id="ch11-">ch11 表单</h1>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">label</span> <span class="p">{</span>
+        <span class="k">display</span><span class="o">:</span> <span class="k">block</span><span class="p">;</span>
+        <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+        <span class="k">clear</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+        <span class="k">width</span><span class="o">:</span> <span class="m">9em</span><span class="p">;</span>
+        <span class="k">padding-right</span><span class="o">:</span> <span class="m">1em</span><span class="p">;</span>
+        <span class="k">text-align</span><span class="o">:</span> <span class="k">right</span><span class="p">;</span>
+        <span class="k">line-height</span><span class="o">:</span> <span class="m">1.8em</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></div>
+
+<h1 id="ch12-">ch12 列表</h1>
+
+<p>重置ul li默认样式</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nf">#tablinks</span> <span class="nt">ul</span><span class="o">,</span><span class="nf">#tablinks</span> <span class="nt">li</span> <span class="p">{</span>
+        <span class="k">padding</span><span class="o">:</span><span class="m">0</span><span class="p">;</span>
+        <span class="k">margin</span><span class="o">:</span><span class="m">0</span><span class="p">;</span>
+        <span class="k">list-style</span><span class="o">:</span><span class="k">none</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></div>
+
+<p>自定义</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">li</span> <span class="p">{</span>
+        <span class="k">list-style-image</span><span class="o">:</span><span class="sx">url(bullet.gif)</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">xiaOp写东西的地方</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>xiaOp写东西的地方</li>
+          <li><a href="mailto:pyqiverson@gmail.com">pyqiverson@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/xiaoiver">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">xiaoiver</span>
+            </a>
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/jekyllrb">
+              <span class="icon  icon--twitter">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809
+                  c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/>
+                </svg>
+              </span>
+
+              <span class="username">jekyllrb</span>
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">读书笔记，碰到的问题
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
