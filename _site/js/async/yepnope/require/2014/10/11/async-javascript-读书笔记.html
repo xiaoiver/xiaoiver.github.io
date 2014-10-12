@@ -75,12 +75,11 @@
 callback n milliseconds later.</p>
 </blockquote>
 
-<p>下面的代码会输出3个4，而不是1,2,3
-&lt;% highlight javascript %&gt;
-for (var i = 1; i &lt;= 3; i++) {
-	setTimeout(function(){ console.log(i); }, 0);
-};
-&lt;% endhighlight %&gt;</p>
+<p>下面的代码会输出3个4，而不是1,2,3</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span> <span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">};</span></code></pre></div>
 
 <p>需要了解3件事</p>
 
@@ -92,15 +91,14 @@ for (var i = 1; i &lt;= 3; i++) {
 
 <h3 id="section-2">阻塞线程</h3>
 
-<p>并不会在500ms后就调用定时器回调函数进行输出，至少要1000ms，也就是在while循环结束后才会触发回调。
-&lt;% highlight javascript %&gt;
-var start = new Date;
-setTimeout(function(){
-	var end = new Date;
-	console.log(‘Time elapsed:’, end - start, ‘ms’);
-}, 500);
-while (new Date - start &lt; 1000) {};
-&lt;% endhighlight %&gt;</p>
+<p>并不会在500ms后就调用定时器回调函数进行输出，至少要1000ms，也就是在while循环结束后才会触发回调。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">;</span>
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+	<span class="kd">var</span> <span class="nx">end</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">;</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Time elapsed:&#39;</span><span class="p">,</span> <span class="nx">end</span> <span class="o">-</span> <span class="nx">start</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">);</span>
+<span class="p">},</span> <span class="mi">500</span><span class="p">);</span>
+<span class="k">while</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span> <span class="o">-</span> <span class="nx">start</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">)</span> <span class="p">{};</span></code></pre></div>
 
 <p>setTimeout并没有使用另一个线程</p>
 
@@ -114,51 +112,47 @@ while (new Date - start &lt; 1000) {};
 
 <p>Node.js并不是想让服务端也能运行js才创造的。作者只是想找支持事件驱动服务器的高级语言，js由于十分适合非阻塞I/O，正好支持。</p>
 
-<p>在其他语言中，使用循环能阻塞程序直到某个I/O请求完成。但是在js中不可能。下面的循环会一直运行。
-&lt;% highlight javascript %&gt;
-	var ajaxRequest = new XMLHttpRequest;
-	ajaxRequest.open(‘GET’, url);
-	ajaxRequest.send(null);
-	while (ajaxRequest.readyState === XMLHttpRequest.UNSENT) {
-		// readyState can’t change until the loop returns
-	};
-&lt;% endhighlight %&gt;</p>
+<p>在其他语言中，使用循环能阻塞程序直到某个I/O请求完成。但是在js中不可能。下面的循环会一直运行。</p>
 
-<p>在js中，需要绑定回调函数实现，让事件队列执行回调。
-&lt;% highlight javascript %&gt;
-	var ajaxRequest = new XMLHttpRequest;
-	ajaxRequest.open(‘GET’, url);
-	ajaxRequest.send(null);
-	ajaxRequest.onreadystatechange = function() {
-		// …
-	};
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">ajaxRequest</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">;</span>
+	<span class="nx">ajaxRequest</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="nx">url</span><span class="p">);</span>
+	<span class="nx">ajaxRequest</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+	<span class="k">while</span> <span class="p">(</span><span class="nx">ajaxRequest</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="nx">XMLHttpRequest</span><span class="p">.</span><span class="nx">UNSENT</span><span class="p">)</span> <span class="p">{</span>
+		<span class="c1">// readyState can&#39;t change until the loop returns</span>
+	<span class="p">};</span></code></pre></div>
+
+<p>在js中，需要绑定回调函数实现，让事件队列执行回调。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">ajaxRequest</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">;</span>
+	<span class="nx">ajaxRequest</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="nx">url</span><span class="p">);</span>
+	<span class="nx">ajaxRequest</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+	<span class="nx">ajaxRequest</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="c1">// ...</span>
+	<span class="p">};</span></code></pre></div>
 
 <p>浏览器ajax方法提供async选项，值为false时代表同步，浏览器会不响应直到接收到服务端的响应。Node.js中同步API从方法名就能看出来，如<code>fs.readFileSync</code>。</p>
 
 <p><code>console.log</code>在Chrome和Safari中是异步执行的，会输出<code>{foo:bar}</code>。原因是WebKit的日志方法会存储对象的引用，在代码返回到事件队列时再输出。
-而在Node.js中，是严格同步的，所以输出是<code>{}</code>。
-&lt;% highlight javascript %&gt;
-	var obj = {};
-	console.log(obj);
-	obj.foo = ‘bar’;
-&lt;% endhighlight %&gt;</p>
+而在Node.js中，是严格同步的，所以输出是<code>{}</code>。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+	<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span> <span class="o">=</span> <span class="s1">&#39;bar&#39;</span><span class="p">;</span></code></pre></div>
 
 <h3 id="section-5">时间函数</h3>
 
-<p>测试一秒钟能触发多少次定时器事件。FF,Chrome和Safari下大概是200/s，Node.js下1000/s。换成简单的while循环后，提高到4000000/s，Node.js中更高一些。
-&lt;% highlight javascript %&gt;
-var fireCount = 0;
-var start = new Date;
-var timer = setInterval(function() {
-	if (new Date - start &gt; 1000) {
-		clearInterval(timer);
-		console.log(fireCount);
-		return;
-	}
-	fireCount++;
-}, 0);
-&lt;% endhighlight %&gt;</p>
+<p>测试一秒钟能触发多少次定时器事件。FF,Chrome和Safari下大概是200/s，Node.js下1000/s。换成简单的while循环后，提高到4000000/s，Node.js中更高一些。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">fireCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">timer</span> <span class="o">=</span> <span class="nx">setInterval</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span> <span class="o">-</span> <span class="nx">start</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">clearInterval</span><span class="p">(</span><span class="nx">timer</span><span class="p">);</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">fireCount</span><span class="p">);</span>
+		<span class="k">return</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nx">fireCount</span><span class="o">++</span><span class="p">;</span>
+<span class="p">},</span> <span class="mi">0</span><span class="p">);</span></code></pre></div>
 
 <p>setInterval设置间隔为0比while循环慢很多，因为HTML规范中浏览器timeout/interval最小间隔是4ms。</p>
 
@@ -173,182 +167,169 @@ var timer = setInterval(function() {
 
 <h3 id="section-7">什么时候函数是异步的</h3>
 
-<p>测试异步函数
-&lt;% highlight javascript %&gt;
-var functionHasReturned = false;
-asyncFunction(function() {
-	console.assert(functionHasReturned);
-});
-functionHasReturned = true;
-&lt;% endhighlight %&gt;</p>
+<p>测试异步函数</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">functionHasReturned</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<span class="nx">asyncFunction</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">assert</span><span class="p">(</span><span class="nx">functionHasReturned</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">functionHasReturned</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span></code></pre></div>
 
 <h3 id="section-8">有时是异步的函数</h3>
 
 <p>一个错误的认识：jQuery中$传入的方法会在页面加载完毕后运行。</p>
 
-<p>大多数情况下下面的代码都能正常运行。除非浏览器从缓存中加载页面，此时DOM在脚本运行之前就加载完毕，调用还未被设置的utils方法就会出错。
-&lt;% highlight javascript %&gt;
-// application.js
-$(function() {
-	utils.log(‘Ready’);
-});
-// utils.js
-window.utils = {
-	log: function() {
-		if (window.console) console.log.apply(console, arguments);
-	}
-};
-<script src="application.js"></script>
-<script src="util.js"></script>
-&lt;% endhighlight %&gt;</p>
+<p>大多数情况下下面的代码都能正常运行。除非浏览器从缓存中加载页面，此时DOM在脚本运行之前就加载完毕，调用还未被设置的utils方法就会出错。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// application.js</span>
+<span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">utils</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Ready&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="c1">// utils.js</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">utils</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="nx">log</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">console</span><span class="p">)</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">console</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">};</span>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;application.js&quot;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;util.js&quot;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span></code></pre></div>
 
 <h3 id="cache">使用cache的异步函数</h3>
 
 <p><a href="http://webworkersandbox.com/5009efc12245588e410002cf">例子</a></p>
 
-<p>&lt;% highlight javascript %&gt;
-var calculationCache = {},
-	calculationCallbacks = {},
-	mathWorker = new Worker(‘calculator.js’);</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">calculationCache</span> <span class="o">=</span> <span class="p">{},</span>
+	<span class="nx">calculationCallbacks</span> <span class="o">=</span> <span class="p">{},</span>
+	<span class="nx">mathWorker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s1">&#39;calculator.js&#39;</span><span class="p">);</span>
+	
+<span class="nx">mathWorker</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+	<span class="nx">calculationCache</span><span class="p">[</span><span class="nx">message</span><span class="p">.</span><span class="nx">formula</span><span class="p">]</span> <span class="o">=</span> <span class="nx">message</span><span class="p">.</span><span class="nx">result</span><span class="p">;</span>
+	<span class="nx">calculationCallbacks</span><span class="p">[</span><span class="nx">message</span><span class="p">.</span><span class="nx">formula</span><span class="p">](</span><span class="nx">message</span><span class="p">.</span><span class="nx">result</span><span class="p">);</span>
+<span class="p">});</span>
 
-<p>mathWorker.addEventListener(‘message’, function(e) {
-	var message = e.data;
-	calculationCache[message.formula] = message.result;
-	calculationCallbacks<a href="message.result">message.formula</a>;
-});</p>
-
-<p>function runCalculation(formula, callback) {
-	if (formula in calculationCache) {//同步状态，结果已经被放入了cache中
-		return callback(calculationCache[formula]);
-	};
-	if (formula in calculationCallbacks) {//结果还未发回，调用自己
-		return setTimeout(function() {
-			runCalculation(formula, callback);
-		}, 0);
-	};
-	mathWorker.postMessage(formula);//公式还未分发给worker,触发事件
-	calculationCallbacks[formula] = callback;
-}
-&lt;% endhighlight %&gt;</p>
+<span class="kd">function</span> <span class="nx">runCalculation</span><span class="p">(</span><span class="nx">formula</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">formula</span> <span class="k">in</span> <span class="nx">calculationCache</span><span class="p">)</span> <span class="p">{</span><span class="c1">//同步状态，结果已经被放入了cache中</span>
+		<span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">calculationCache</span><span class="p">[</span><span class="nx">formula</span><span class="p">]);</span>
+	<span class="p">};</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">formula</span> <span class="k">in</span> <span class="nx">calculationCallbacks</span><span class="p">)</span> <span class="p">{</span><span class="c1">//结果还未发回，调用自己</span>
+		<span class="k">return</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">runCalculation</span><span class="p">(</span><span class="nx">formula</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+		<span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="p">};</span>
+	<span class="nx">mathWorker</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="nx">formula</span><span class="p">);</span><span class="c1">//公式还未分发给worker,触发事件</span>
+	<span class="nx">calculationCallbacks</span><span class="p">[</span><span class="nx">formula</span><span class="p">]</span> <span class="o">=</span> <span class="nx">callback</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
 
 <h3 id="section-9">异步递归和存储回调函数</h3>
 
 <p>上面的runCalculation采用了异步递归和简单存储回调函数。</p>
 
-<p>在java中轮询：
-&lt;% highlight java %&gt;
-while (!calculationCache.get(formula)) {
-	Thread.sleep(0);
-};
-&lt;% endhighlight %&gt;</p>
+<p>在java中轮询：</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">while</span> <span class="o">(!</span><span class="n">calculationCache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">formula</span><span class="o">))</span> <span class="o">{</span>
+	<span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+<span class="o">};</span></code></pre></div>
 
 <p>看起来异步递归更易用，但是js中使用setTimeout的异步递归调用并不好，在等待时触发的timeout事件是没有数量限制的，而且会使程序的事件结构变得不必要地复杂。所以异步递归是反模式。</p>
 
-<p>使用存储回调函数来避免异步递归
-&lt;% highlight javascript %&gt;
-mathWorker.addEventListener(‘message’, function(e) {
-	var message = e.data;
-		calculationCache[message.formula] = message.result;
-		calculationCallbacks[message.formula]
-			.forEach(function(callback) {//统一处理之前未得到结果前压入的函数
-			callback(message.result);
-		});
-});
-function runCalculation(formula, callback) {
-	if (formula in calculationCache) {
-		return callback(calculationCache[formula]);//已经有结果，直接调用回调函数
-	};
-	if (formula in calculationCallbacks) {//将回调函数压栈
-		return calculationCallbacks[formula].push(callback);
-	};
-	mathWorker.postMessage(formula);
-	calculationCallbacks[formula] = [callback];
-}
-&lt;% endhighlight %&gt;</p>
+<p>使用存储回调函数来避免异步递归</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">mathWorker</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+		<span class="nx">calculationCache</span><span class="p">[</span><span class="nx">message</span><span class="p">.</span><span class="nx">formula</span><span class="p">]</span> <span class="o">=</span> <span class="nx">message</span><span class="p">.</span><span class="nx">result</span><span class="p">;</span>
+		<span class="nx">calculationCallbacks</span><span class="p">[</span><span class="nx">message</span><span class="p">.</span><span class="nx">formula</span><span class="p">]</span>
+			<span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span><span class="c1">//统一处理之前未得到结果前压入的函数</span>
+			<span class="nx">callback</span><span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">result</span><span class="p">);</span>
+		<span class="p">});</span>
+<span class="p">});</span>
+<span class="kd">function</span> <span class="nx">runCalculation</span><span class="p">(</span><span class="nx">formula</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">formula</span> <span class="k">in</span> <span class="nx">calculationCache</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">calculationCache</span><span class="p">[</span><span class="nx">formula</span><span class="p">]);</span><span class="c1">//已经有结果，直接调用回调函数</span>
+	<span class="p">};</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">formula</span> <span class="k">in</span> <span class="nx">calculationCallbacks</span><span class="p">)</span> <span class="p">{</span><span class="c1">//将回调函数压栈</span>
+		<span class="k">return</span> <span class="nx">calculationCallbacks</span><span class="p">[</span><span class="nx">formula</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+	<span class="p">};</span>
+	<span class="nx">mathWorker</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="nx">formula</span><span class="p">);</span>
+	<span class="nx">calculationCallbacks</span><span class="p">[</span><span class="nx">formula</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">callback</span><span class="p">];</span>
+<span class="p">}</span></code></pre></div>
 
 <h3 id="section-10">返回值和回调函数混合</h3>
 
 <p><code>return callback(calculationCache[formula]);</code>由于返回值没有使用，
-可以简单地写成
-&lt;% highlight javascript %&gt;
-	callback(calculationCache[formula]);
-	return;
-&lt;% endhighlight %&gt;</p>
+可以简单地写成</p>
 
-<p>但是有些函数的返回值会被回调函数使用。
-&lt;% highlight javascript %&gt;
-var webSocketCache = {};
-function openWebSocket(serverAddress, callback) {
-	var socket;
-	if (serverAddress in webSocketCache) {//查看缓存
-		socket = webSocketCache[serverAddress];
-		if (socket.readyState === WebSocket.OPEN) {
-			callback();//这里有问题
-		} else {
-			//使用了Underscore.js，将两个函数包裹成一个新函数
-			socket.onopen = _.compose(callback, socket.onopen);
-		};
-	} else {
-		socket = new WebSocket(serverAddress);
-		webSocketCache[serverAddress] = socket;
-		socket.onopen = callback;
-	};
-	return socket;
-};
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">callback</span><span class="p">(</span><span class="nx">calculationCache</span><span class="p">[</span><span class="nx">formula</span><span class="p">]);</span>
+	<span class="k">return</span><span class="p">;</span></code></pre></div>
 
-<p>代码的问题在于，如果socket已经被缓存并且是打开的，callback会在openWebSocket函数返回之前运行。而callback函数中使用了返回值socket，就会出错。
-&lt;% highlight javascript %&gt;
-var socket = openWebSocket(url, function() {
-	socket.send(‘Hello, server!’);
-});
-&lt;% endhighlight %&gt;</p>
+<p>但是有些函数的返回值会被回调函数使用。</p>
 
-<p>解决办法是使用setTimeout，保证在函数返回后才执行回调函数。
-&lt;% highlight javascript %&gt;
-if (socket.readyState === WebSocket.OPEN) {
-	setTimeout(callback, 0);
-} else {
-// …
-}
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">webSocketCache</span> <span class="o">=</span> <span class="p">{};</span>
+<span class="kd">function</span> <span class="nx">openWebSocket</span><span class="p">(</span><span class="nx">serverAddress</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">socket</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">serverAddress</span> <span class="k">in</span> <span class="nx">webSocketCache</span><span class="p">)</span> <span class="p">{</span><span class="c1">//查看缓存</span>
+		<span class="nx">socket</span> <span class="o">=</span> <span class="nx">webSocketCache</span><span class="p">[</span><span class="nx">serverAddress</span><span class="p">];</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">socket</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="nx">WebSocket</span><span class="p">.</span><span class="nx">OPEN</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">callback</span><span class="p">();</span><span class="c1">//这里有问题</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="c1">//使用了Underscore.js，将两个函数包裹成一个新函数</span>
+			<span class="nx">socket</span><span class="p">.</span><span class="nx">onopen</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">compose</span><span class="p">(</span><span class="nx">callback</span><span class="p">,</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">onopen</span><span class="p">);</span>
+		<span class="p">};</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WebSocket</span><span class="p">(</span><span class="nx">serverAddress</span><span class="p">);</span>
+		<span class="nx">webSocketCache</span><span class="p">[</span><span class="nx">serverAddress</span><span class="p">]</span> <span class="o">=</span> <span class="nx">socket</span><span class="p">;</span>
+		<span class="nx">socket</span><span class="p">.</span><span class="nx">onopen</span> <span class="o">=</span> <span class="nx">callback</span><span class="p">;</span>
+	<span class="p">};</span>
+	<span class="k">return</span> <span class="nx">socket</span><span class="p">;</span>
+<span class="p">};</span></code></pre></div>
+
+<p>代码的问题在于，如果socket已经被缓存并且是打开的，callback会在openWebSocket函数返回之前运行。而callback函数中使用了返回值socket，就会出错。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">socket</span> <span class="o">=</span> <span class="nx">openWebSocket</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">socket</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s1">&#39;Hello, server!&#39;</span><span class="p">);</span>
+<span class="p">});</span></code></pre></div>
+
+<p>解决办法是使用setTimeout，保证在函数返回后才执行回调函数。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">if</span> <span class="p">(</span><span class="nx">socket</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="nx">WebSocket</span><span class="p">.</span><span class="nx">OPEN</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">setTimeout</span><span class="p">(</span><span class="nx">callback</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<span class="c1">// ...</span>
+<span class="p">}</span></code></pre></div>
 
 <h3 id="section-11">处理异步错误</h3>
 
-<p>从一个异步回调函数中抛出异常
-&lt;% highlight javascript %&gt;
-setTimeout(function A() {
-	setTimeout(function B() {
-		setTimeout(function C() {
-			throw new Error(‘Something terrible has happened!’);
-		}, 0);
-	}, 0);
-}, 0);
-&lt;% endhighlight %&gt;</p>
+<p>从一个异步回调函数中抛出异常</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="nx">A</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="nx">B</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="nx">C</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Something terrible has happened!&#39;</span><span class="p">);</span>
+		<span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">},</span> <span class="mi">0</span><span class="p">);</span></code></pre></div>
 
 <p>stack trace中只有C：<code>Error: Something terrible has happened! at Timer.C (/AsyncJS/nestedErrors.js:4:13)</code>。在C运行时，A和B都不在stack中，这三个函数都是直接从事件队列中运行的。</p>
 
-<p>所以外部的try/catch捕获不了异步回调函数抛出的异常：
-&lt;% highlight javascript %&gt;
-try {
-	setTimeout(function() {
-		throw new Error(‘Catch me if you can!’);
-	}, 0);
-} catch (e) {
-	console.error(e);
-}
-&lt;% endhighlight %&gt;</p>
+<p>所以外部的try/catch捕获不了异步回调函数抛出的异常：</p>
 
-<p>所以Node.js中回调函数会err作为参数，让函数内部决定如何处理。
-&lt;% highlight javascript %&gt;
-	var fs = require(‘fs’);
-	fs.readFile(‘fhgwgdz.txt’, function(err, data) {
-		if (err) {
-			return console.error(err);
-		};
-		console.log(data.toString(‘utf8’));
-	});
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">try</span> <span class="p">{</span>
+	<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Catch me if you can!&#39;</span><span class="p">);</span>
+	<span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+<span class="p">}</span></code></pre></div>
+
+<p>所以Node.js中回调函数会err作为参数，让函数内部决定如何处理。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
+	<span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s1">&#39;fhgwgdz.txt&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+		<span class="p">};</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">));</span>
+	<span class="p">});</span></code></pre></div>
 
 <p>客户端脚本如jquery使用两个回调函数（success/failure）</p>
 
@@ -356,33 +337,30 @@ try {
 
 <p>当回调函数抛出异常时，应该由调用者来捕获。但如果异常从未被捕获，不同的js环境有不同的规则。</p>
 
-<p>在浏览器中，将未捕获的异常显示在控制台中，然后返回事件队列。可以为window.onerror添加处理函数改变浏览器行为。返回true会阻止浏览器默认的错误处理行为。
-&lt;% highlight javascript %&gt;
-	window.onerror = function(err) {
-		return true;
-	};
-&lt;% endhighlight %&gt;</p>
+<p>在浏览器中，将未捕获的异常显示在控制台中，然后返回事件队列。可以为window.onerror添加处理函数改变浏览器行为。返回true会阻止浏览器默认的错误处理行为。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nb">window</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+	<span class="p">};</span></code></pre></div>
 
 <p>在Node.js中，process对象有类似的uncaughtException事件。
-通常遇到未捕获的异常，程序会立即退出。但只要至少存在一个uncaughtException处理器，app就会返回事件队列。
-&lt;% highlight javascript %&gt;
-process.on(‘uncaughtException’, function(err) {
-	console.error(err); // shutdown averted!
-});
-&lt;% endhighlight %&gt;</p>
+通常遇到未捕获的异常，程序会立即退出。但只要至少存在一个uncaughtException处理器，app就会返回事件队列。</p>
 
-<p>但是从0.8.4版本，就被废弃了。推荐使用domain模块。domain会将异常转化成error事件，然后在error事件处理器中进行处理。
-&lt;% highlight javascript %&gt;
-	var myDomain = require(‘domain’).create();
-	myDomain.run(function() {
-		setTimeout(function() {
-			throw new Error(‘Listen to me!’)
-		}, 50);
-	});
-	myDomain.on(‘error’, function(err) {
-		console.log(‘Error ignored!’);//简单的记录
-	});
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">process</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;uncaughtException&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span> <span class="c1">// shutdown averted!</span>
+<span class="p">});</span></code></pre></div>
+
+<p>但是从0.8.4版本，就被废弃了。推荐使用domain模块。domain会将异常转化成error事件，然后在error事件处理器中进行处理。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">myDomain</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;domain&#39;</span><span class="p">).</span><span class="nx">create</span><span class="p">();</span>
+	<span class="nx">myDomain</span><span class="p">.</span><span class="nx">run</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Listen to me!&#39;</span><span class="p">)</span>
+		<span class="p">},</span> <span class="mi">50</span><span class="p">);</span>
+	<span class="p">});</span>
+	<span class="nx">myDomain</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Error ignored!&#39;</span><span class="p">);</span><span class="c1">//简单的记录</span>
+	<span class="p">});</span></code></pre></div>
 
 <h3 id="section-13">是否抛出异常</h3>
 
@@ -391,35 +369,33 @@ process.on(‘uncaughtException’, function(err) {
 
 <h2 id="section-14">嵌套的回调函数</h2>
 
-<p>常见的反模式，回调函数里嵌套回调函数。目前看来没问题，但是需要扩展时，如处理数据库错误，添加日志等，就会变得很糟。
-&lt;% highlight javascript %&gt;
-function checkPassword(username, passwordGuess, callback) {
-	var queryStr = ‘SELECT * FROM user WHERE username = ?’;
-	db.query(selectUser, username, function (err, result) {
-		if (err) throw err;
-		hash(passwordGuess, function(passwordGuessHash) {
-			callback(passwordGuessHash === result[‘password_hash’]);
-		});
-	});
-}
-&lt;% endhighlight %&gt;</p>
+<p>常见的反模式，回调函数里嵌套回调函数。目前看来没问题，但是需要扩展时，如处理数据库错误，添加日志等，就会变得很糟。</p>
 
-<p>下面的写法代码行变多了但是更清晰。将passwordHash拿到外面。
-&lt;% highlight javascript %&gt;
-function checkPassword(username, passwordGuess, callback) {
-	var passwordHash;
-	var queryStr = ‘SELECT * FROM user WHERE username = ?’;
-	db.query(selectUser, username, queryCallback);
-	function queryCallback(err, result) {
-		if (err) throw err;
-		passwordHash = result[‘password_hash’];
-		hash(passwordGuess, hashCallback);
-	}
-	function hashCallback(passwordGuessHash) {
-		callback(passwordHash === passwordGuessHash);
-	}
-}
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">checkPassword</span><span class="p">(</span><span class="nx">username</span><span class="p">,</span> <span class="nx">passwordGuess</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">queryStr</span> <span class="o">=</span> <span class="s1">&#39;SELECT * FROM user WHERE username = ?&#39;</span><span class="p">;</span>
+	<span class="nx">db</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">selectUser</span><span class="p">,</span> <span class="nx">username</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+		<span class="nx">hash</span><span class="p">(</span><span class="nx">passwordGuess</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">passwordGuessHash</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">callback</span><span class="p">(</span><span class="nx">passwordGuessHash</span> <span class="o">===</span> <span class="nx">result</span><span class="p">[</span><span class="s1">&#39;password_hash&#39;</span><span class="p">]);</span>
+		<span class="p">});</span>
+	<span class="p">});</span>
+<span class="p">}</span></code></pre></div>
+
+<p>下面的写法代码行变多了但是更清晰。将passwordHash拿到外面。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">checkPassword</span><span class="p">(</span><span class="nx">username</span><span class="p">,</span> <span class="nx">passwordGuess</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">passwordHash</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">queryStr</span> <span class="o">=</span> <span class="s1">&#39;SELECT * FROM user WHERE username = ?&#39;</span><span class="p">;</span>
+	<span class="nx">db</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">selectUser</span><span class="p">,</span> <span class="nx">username</span><span class="p">,</span> <span class="nx">queryCallback</span><span class="p">);</span>
+	<span class="kd">function</span> <span class="nx">queryCallback</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+		<span class="nx">passwordHash</span> <span class="o">=</span> <span class="nx">result</span><span class="p">[</span><span class="s1">&#39;password_hash&#39;</span><span class="p">];</span>
+		<span class="nx">hash</span><span class="p">(</span><span class="nx">passwordGuess</span><span class="p">,</span> <span class="nx">hashCallback</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="kd">function</span> <span class="nx">hashCallback</span><span class="p">(</span><span class="nx">passwordGuessHash</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">callback</span><span class="p">(</span><span class="nx">passwordHash</span> <span class="o">===</span> <span class="nx">passwordGuessHash</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></div>
 
 <h1 id="ch2-">ch2 事件</h1>
 
@@ -427,75 +403,69 @@ function checkPassword(username, passwordGuess, callback) {
 
 <h2 id="pubsub">Pub/Sub模式</h2>
 
-<p>早期的js，浏览器允许事件处理器依附在DOM上，缺点是只能合并成一个函数。
-&lt;% highlight javascript %&gt;
-link.onclick = function() {
-	clickHandler1.apply(this, arguments);
-	clickHandler2.apply(this, arguments);
-};
-&lt;% endhighlight %&gt;</p>
+<p>早期的js，浏览器允许事件处理器依附在DOM上，缺点是只能合并成一个函数。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">link</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">clickHandler1</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+	<span class="nx">clickHandler2</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+<span class="p">};</span></code></pre></div>
 
 <p>W3C在DOM标准中增加了addEventListener，jquery实现了bind。</p>
 
 <h3 id="eventemitter">EventEmitter</h3>
 
-<p>on进行订阅，emit进行发布通知。
-&lt;% highlight javascript %&gt;
-emitter.on(‘evacuate’, function(message) {
-	console.log(message);
-});
-emitter.emit(‘evacuate’,’args’);//可以传递参数
-&lt;% endhighlight %&gt;</p>
+<p>on进行订阅，emit进行发布通知。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">emitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;evacuate&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">emitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;evacuate&#39;</span><span class="p">,</span><span class="s1">&#39;args&#39;</span><span class="p">);</span><span class="c1">//可以传递参数</span></code></pre></div>
 
 <h3 id="section-15">简单的实现</h3>
 
-<p>EventEmitter中的实现
-&lt;% highlight javascript %&gt;
-PubSub = {handlers: {}}
-PubSub.on = function(eventType, handler) {
-	if (!(eventType in this.handlers)) {
-		this.handlers[eventType] = [];//每个事件都有处理器数组
-	}
-	this.handlers[eventType].push(handler);
-	return this;
-}
-PubSub.emit = function(eventType) {
-	var handlerArgs = Array.prototype.slice.call(arguments, 1);//截取参数
-	for (var i = 0; i &lt; this.handlers[eventType].length; i++) {
-		this.handlers[eventType][i].apply(this, handlerArgs);
-	}
-	return this;
-}
-&lt;% endhighlight %&gt;</p>
+<p>EventEmitter中的实现</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">PubSub</span> <span class="o">=</span> <span class="p">{</span><span class="nx">handlers</span><span class="o">:</span> <span class="p">{}}</span>
+<span class="nx">PubSub</span><span class="p">.</span><span class="nx">on</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">eventType</span><span class="p">,</span> <span class="nx">handler</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">eventType</span> <span class="k">in</span> <span class="k">this</span><span class="p">.</span><span class="nx">handlers</span><span class="p">))</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">handlers</span><span class="p">[</span><span class="nx">eventType</span><span class="p">]</span> <span class="o">=</span> <span class="p">[];</span><span class="c1">//每个事件都有处理器数组</span>
+	<span class="p">}</span>
+	<span class="k">this</span><span class="p">.</span><span class="nx">handlers</span><span class="p">[</span><span class="nx">eventType</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">handler</span><span class="p">);</span>
+	<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">PubSub</span><span class="p">.</span><span class="nx">emit</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">eventType</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">handlerArgs</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span><span class="c1">//截取参数</span>
+	<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">handlers</span><span class="p">[</span><span class="nx">eventType</span><span class="p">].</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">handlers</span><span class="p">[</span><span class="nx">eventType</span><span class="p">][</span><span class="nx">i</span><span class="p">].</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">handlerArgs</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
 
 <h3 id="section-16">同步</h3>
 
-<p>会输出foo bar。也就是trigger会立即触发回调函数，然后后面的代码才能执行。
-&lt;% highlight javascript %&gt;
-$(‘input[type=submit]’)
-	.on(‘click’, function() { console.log(‘foo’); })
-	.trigger(‘click’);
-console.log(‘bar’);
-&lt;% endhighlight %&gt;</p>
+<p>会输出foo bar。也就是trigger会立即触发回调函数，然后后面的代码才能执行。</p>
 
-<p>如果太多处理器按顺序触发，可能会阻塞线程导致浏览器未响应。更糟糕的情况是当事件从处理器中触发时，会导致死循环。
-&lt;% highlight javascript %&gt;
-$(‘input[type=submit]’)
-	.on(‘click’, function() {
-		$(this).trigger(‘click’); // stack overflow!
-	});
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;input[type=submit]&#39;</span><span class="p">)</span>
+	<span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">);</span> <span class="p">})</span>
+	<span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">);</span></code></pre></div>
 
-<p>对于许多处理器需要按顺序执行，并且有些处理器很耗时的情况，解决方法是维持一个队列，使用定时器按顺序调用。
-&lt;% highlight javascript %&gt;
-var tasks = [];
-setInterval(function() {
-	var nextTask;
-	if (nextTask = tasks.shift()) {
-		nextTask();
-	};
-}, 0);
-&lt;% endhighlight %&gt;</p>
+<p>如果太多处理器按顺序触发，可能会阻塞线程导致浏览器未响应。更糟糕的情况是当事件从处理器中触发时，会导致死循环。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;input[type=submit]&#39;</span><span class="p">)</span>
+	<span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">);</span> <span class="c1">// stack overflow!</span>
+	<span class="p">});</span></code></pre></div>
+
+<p>对于许多处理器需要按顺序执行，并且有些处理器很耗时的情况，解决方法是维持一个队列，使用定时器按顺序调用。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">tasks</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="nx">setInterval</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">nextTask</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">nextTask</span> <span class="o">=</span> <span class="nx">tasks</span><span class="p">.</span><span class="nx">shift</span><span class="p">())</span> <span class="p">{</span>
+		<span class="nx">nextTask</span><span class="p">();</span>
+	<span class="p">};</span>
+<span class="p">},</span> <span class="mi">0</span><span class="p">);</span></code></pre></div>
 
 <h2 id="evented-model-">Evented Model 可以发布事件的模型</h2>
 
@@ -503,28 +473,26 @@ setInterval(function() {
 特别的，这个对象存储了数据，成为了model，还能在数据改变时发布事件。</p>
 
 <p>在Backbone.js中，可以创建一个model。
-和js中对象的区别是，model可以在发生改变时发布通知。使用set方法触发改变。
-&lt;% highlight javascript %&gt;
-style = new Backbone.Model(
-	{font: ‘Georgia’}
-);
-style.on(‘change:font’, function(model, font) {
-	alert(‘Thank you for choosing ‘ + font + ‘!’);
-});
-&lt;% endhighlight %&gt;</p>
+和js中对象的区别是，model可以在发生改变时发布通知。使用set方法触发改变。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">style</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">(</span>
+	<span class="p">{</span><span class="nx">font</span><span class="o">:</span> <span class="s1">&#39;Georgia&#39;</span><span class="p">}</span>
+<span class="p">);</span>
+<span class="nx">style</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;change:font&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">font</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;Thank you for choosing &#39;</span> <span class="o">+</span> <span class="nx">font</span> <span class="o">+</span> <span class="s1">&#39;!&#39;</span><span class="p">);</span>
+<span class="p">});</span></code></pre></div>
 
 <p>js中普遍的做法是通过input事件处理器直接改变DOM。而新的做法是对model进行改变，然后通过model发射事件使DOM更新。新的做法更优雅。</p>
 
 <h2 id="jquery">jquery中自定义事件</h2>
 
 <p>js中event会被父节点冒泡emit，一直到document根节点，除非调用了event的stopPropagation方法（jquery中只要handler中返回false会自动调用该方法）。jquery中自定义事件也会冒泡。
-如果soda是bottle的子节点，会冒泡到父节点。
-&lt;% highlight javascript %&gt;
-	$(‘#soda, #bottle’).on(‘fizz’, function() {
-		console.log(this.id + ‘ emitted fizz’);
-	});
-	$(‘#soda’).trigger(‘fizz’);
-&lt;% endhighlight %&gt;</p>
+如果soda是bottle的子节点，会冒泡到父节点。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#soda, #bottle&#39;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;fizz&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">id</span> <span class="o">+</span> <span class="s1">&#39; emitted fizz&#39;</span><span class="p">);</span>
+	<span class="p">});</span>
+	<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#soda&#39;</span><span class="p">).</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;fizz&#39;</span><span class="p">);</span></code></pre></div>
 
 <p>有时不需要冒泡，jquery中提供不冒泡的<a href="http://api.jquery.com/triggerHandler/">triggerHandler</a>方法。</p>
 
@@ -533,60 +501,55 @@ style.on(‘change:font’, function(model, font) {
 <p>问题：容器中一次只显示一个工具提示，需要在每次添加新提示前移除旧的。
 <code>$('.tooltip').remove();</code>并且容器之间互不影响，还要支持容器的嵌套。</p>
 
-<p>使用选择器会很麻烦，采用事件的思想。
-&lt;% highlight javascript %&gt;
-$container.triggerHandler(‘newTooltip’);//不会冒泡到父节点
-$container.one(‘newTooltip’, function() {//触发后移除处理器
-	$tooltip.remove();
-});
-&lt;% endhighlight %&gt;</p>
+<p>使用选择器会很麻烦，采用事件的思想。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">$container</span><span class="p">.</span><span class="nx">triggerHandler</span><span class="p">(</span><span class="s1">&#39;newTooltip&#39;</span><span class="p">);</span><span class="c1">//不会冒泡到父节点</span>
+<span class="nx">$container</span><span class="p">.</span><span class="nx">one</span><span class="p">(</span><span class="s1">&#39;newTooltip&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span><span class="c1">//触发后移除处理器</span>
+	<span class="nx">$tooltip</span><span class="p">.</span><span class="nx">remove</span><span class="p">();</span>
+<span class="p">});</span></code></pre></div>
 
 <h1 id="ch3-promisedeferred">ch3 Promise和Deferred</h1>
 
-<p>jquery1.4中ajax请求需要包含成功/失败/总是执行的处理器。
-&lt;% highlight javascript %&gt;
-$.get(‘/mydata’, {
-	success: onSuccess,
-	failure: onFailure,
-	always: onAlways
-});
-&lt;% endhighlight %&gt;</p>
+<p>jquery1.4中ajax请求需要包含成功/失败/总是执行的处理器。</p>
 
-<p>1.5中分离开，返回封装的Promise对象。一个明显的好处是可以对同一个事件绑定多个处理器，拆分功能。例如显示隐藏loading图片的代码就可以被多个ajax调用共用。
-&lt;% highlight javascript %&gt;
-	var promise = $.get(‘/mydata’);
-	promise.done(onSuccess);
-	promise.fail(onFailure);
-	promise.always(onAlways);
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/mydata&#39;</span><span class="p">,</span> <span class="p">{</span>
+	<span class="nx">success</span><span class="o">:</span> <span class="nx">onSuccess</span><span class="p">,</span>
+	<span class="nx">failure</span><span class="o">:</span> <span class="nx">onFailure</span><span class="p">,</span>
+	<span class="nx">always</span><span class="o">:</span> <span class="nx">onAlways</span>
+<span class="p">});</span></code></pre></div>
+
+<p>1.5中分离开，返回封装的Promise对象。一个明显的好处是可以对同一个事件绑定多个处理器，拆分功能。例如显示隐藏loading图片的代码就可以被多个ajax调用共用。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/mydata&#39;</span><span class="p">);</span>
+	<span class="nx">promise</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="nx">onSuccess</span><span class="p">);</span>
+	<span class="nx">promise</span><span class="p">.</span><span class="nx">fail</span><span class="p">(</span><span class="nx">onFailure</span><span class="p">);</span>
+	<span class="nx">promise</span><span class="p">.</span><span class="nx">always</span><span class="p">(</span><span class="nx">onAlways</span><span class="p">);</span></code></pre></div>
 
 <p>最大的优点是可以从已有的Promise中获取新的Promise。两个并行的Promise返回代表共同进度的Promise.</p>
 
 <h2 id="deferred">Deferred</h2>
 
 <p>Deferred是Promise的超集，可以被直接触发。而Promise需要其他人来触发。
-另外，回调函数的运行顺序和绑定顺序一致。always最先绑定，所以最先触发。
-&lt;% highlight javascript %&gt;
-	var promptDeferred = new $.Deferred();
-	//1.6以上版本支持always
-	promptDeferred.always(function(){ console.log(‘A choice was made:’); });
-	promptDeferred.done(function(){ console.log(‘Starting game…’); });
-	promptDeferred.fail(function(){ console.log(‘No game today.’); });
-&lt;% endhighlight %&gt;</p>
+另外，回调函数的运行顺序和绑定顺序一致。always最先绑定，所以最先触发。</p>
 
-<p>通过resolve和reject触发Deferred。
-&lt;% highlight javascript %&gt;
-$(‘#playGame’).focus().on(‘keypress’, function(e) {
-	var Y = 121, N = 110;
-	if (e.keyCode === Y) {
-		promptDeferred.resolve();//只会被调用一次
-	} else if (e.keyCode === N) {
-		promptDeferred.reject();
-	} else {
-		return false; // our Deferred remains pending
-	};
-});
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">promptDeferred</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Deferred</span><span class="p">();</span>
+	<span class="c1">//1.6以上版本支持always</span>
+	<span class="nx">promptDeferred</span><span class="p">.</span><span class="nx">always</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;A choice was made:&#39;</span><span class="p">);</span> <span class="p">});</span>
+	<span class="nx">promptDeferred</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Starting game...&#39;</span><span class="p">);</span> <span class="p">});</span>
+	<span class="nx">promptDeferred</span><span class="p">.</span><span class="nx">fail</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;No game today.&#39;</span><span class="p">);</span> <span class="p">});</span></code></pre></div>
+
+<p>通过resolve和reject触发Deferred。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#playGame&#39;</span><span class="p">).</span><span class="nx">focus</span><span class="p">().</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;keypress&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">Y</span> <span class="o">=</span> <span class="mi">121</span><span class="p">,</span> <span class="nx">N</span> <span class="o">=</span> <span class="mi">110</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">===</span> <span class="nx">Y</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">promptDeferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span><span class="c1">//只会被调用一次</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">===</span> <span class="nx">N</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">promptDeferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">();</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="p">;</span> <span class="c1">// our Deferred remains pending</span>
+	<span class="p">};</span>
+<span class="p">});</span></code></pre></div>
 
 <p>Promise只能被解决或者拒绝一次，在此之前处于pending等待状态。
 1.7版本以上调用state方法查看状态，老版本使用isResovled和isRejected查看。</p>
@@ -605,153 +568,139 @@ $(‘#playGame’).focus().on(‘keypress’, function(e) {
 <p>动画方法允许传递回调函数，在效果完成后调用。
 <code>$('.error').fadeIn(afterErrorShown);</code></p>
 
-<p>1.6之后
-&lt;% highlight javascript %&gt;
-	var errorPromise = $(‘.error’).fadeIn().promise();
-	errorPromise.done(afterErrorShown);
-&lt;% endhighlight %&gt;</p>
+<p>1.6之后</p>
 
-<p>jquery 1.8+ 以下等价
-&lt;% highlight javascript %&gt;
-	$(onReady);
-	$(document).ready(onReady);
-	$.ready.promise().done(onReady);
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">errorPromise</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.error&#39;</span><span class="p">).</span><span class="nx">fadeIn</span><span class="p">().</span><span class="nx">promise</span><span class="p">();</span>
+	<span class="nx">errorPromise</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="nx">afterErrorShown</span><span class="p">);</span></code></pre></div>
+
+<p>jquery 1.8+ 以下等价</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">$</span><span class="p">(</span><span class="nx">onReady</span><span class="p">);</span>
+	<span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="nx">onReady</span><span class="p">);</span>
+	<span class="nx">$</span><span class="p">.</span><span class="nx">ready</span><span class="p">.</span><span class="nx">promise</span><span class="p">().</span><span class="nx">done</span><span class="p">(</span><span class="nx">onReady</span><span class="p">);</span></code></pre></div>
 
 <h2 id="section-18">传递数据到回调函数</h2>
 
-<p>通过resolve/reject传递参数到回调函数
-&lt;% highlight javascript %&gt;
-	var aDreamDeferred = new $.Deferred();
-	aDreamDeferred.done(function(subject) {
-		console.log(‘I had the most wonderful dream about’, subject);
-	});
-	aDreamDeferred.resolve(‘the JS event model’);
-&lt;% endhighlight %&gt;</p>
+<p>通过resolve/reject传递参数到回调函数</p>
 
-<p>resolveWith/rejectWith用于传递上下文作为第一个参数，后面是参数数组
-&lt;% highlight javascript %&gt;
-	var slashdotter = {
-		comment: function(editor){
-			console.log(‘Obviously’, editor, ‘is the best text editor.’);
-		}
-	};
-	var grammarDeferred = new $.Deferred();
-	grammarDeferred.done(function(verb, object) {
-		this<a href="object">verb</a>;
-	});
-	grammarDeferred.resolveWith(slashdotter, [‘comment’, ‘Emacs’]);
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">aDreamDeferred</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Deferred</span><span class="p">();</span>
+	<span class="nx">aDreamDeferred</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">subject</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;I had the most wonderful dream about&#39;</span><span class="p">,</span> <span class="nx">subject</span><span class="p">);</span>
+	<span class="p">});</span>
+	<span class="nx">aDreamDeferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="s1">&#39;the JS event model&#39;</span><span class="p">);</span></code></pre></div>
 
-<p>但想传递上下文使用call/apply就行了，因为resolve/reject会传递上下文到回调函数中
-&lt;% highlight javascript %&gt;
-	grammarDeferred.resolve.call(slashdotter, ‘comment’, ‘Emacs’);
-&lt;% endhighlight %&gt;</p>
+<p>resolveWith/rejectWith用于传递上下文作为第一个参数，后面是参数数组</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">slashdotter</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="nx">comment</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">editor</span><span class="p">){</span>
+			<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Obviously&#39;</span><span class="p">,</span> <span class="nx">editor</span><span class="p">,</span> <span class="s1">&#39;is the best text editor.&#39;</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+	<span class="kd">var</span> <span class="nx">grammarDeferred</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Deferred</span><span class="p">();</span>
+	<span class="nx">grammarDeferred</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">verb</span><span class="p">,</span> <span class="nx">object</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">[</span><span class="nx">verb</span><span class="p">](</span><span class="nx">object</span><span class="p">);</span>
+	<span class="p">});</span>
+	<span class="nx">grammarDeferred</span><span class="p">.</span><span class="nx">resolveWith</span><span class="p">(</span><span class="nx">slashdotter</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;comment&#39;</span><span class="p">,</span> <span class="s1">&#39;Emacs&#39;</span><span class="p">]);</span></code></pre></div>
+
+<p>但想传递上下文使用call/apply就行了，因为resolve/reject会传递上下文到回调函数中</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">grammarDeferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">slashdotter</span><span class="p">,</span> <span class="s1">&#39;comment&#39;</span><span class="p">,</span> <span class="s1">&#39;Emacs&#39;</span><span class="p">);</span></code></pre></div>
 
 <h2 id="section-19">进度通知</h2>
 
 <p>不同于resolve/reject，progress方法可以被多次调用。
-notify可以传递参数到progress回调函数中。
-&lt;% highlight javascript %&gt;
-	var nanowrimoing = $.Deferred();
-	var wordGoal = 5000;
-	nanowrimoing.progress(function(wordCount) {
-		var percentComplete = Math.floor(wordCount / wordGoal * 100);
-		$(‘#indicator’).text(percentComplete + ‘% complete’);
-	});
-	nanowrimoing.done(function(){
-		$(‘#indicator’).text(‘Good job!’);
-	});
-	$(‘#document’).on(‘keypress’, function(){
-		var wordCount = $(this).val().split(/\s+/).length;
-		if (wordCount &gt;= wordGoal) {
-			nanowrimoing.resolve();
-		};
-		nanowrimoing.notify(wordCount);//触发progress回调函数
-	});
-&lt;% endhighlight %&gt;</p>
+notify可以传递参数到progress回调函数中。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">nanowrimoing</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Deferred</span><span class="p">();</span>
+	<span class="kd">var</span> <span class="nx">wordGoal</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">;</span>
+	<span class="nx">nanowrimoing</span><span class="p">.</span><span class="nx">progress</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">wordCount</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">percentComplete</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">wordCount</span> <span class="o">/</span> <span class="nx">wordGoal</span> <span class="o">*</span> <span class="mi">100</span><span class="p">);</span>
+		<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#indicator&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="nx">percentComplete</span> <span class="o">+</span> <span class="s1">&#39;% complete&#39;</span><span class="p">);</span>
+	<span class="p">});</span>
+	<span class="nx">nanowrimoing</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+		<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#indicator&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="s1">&#39;Good job!&#39;</span><span class="p">);</span>
+	<span class="p">});</span>
+	<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#document&#39;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;keypress&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+		<span class="kd">var</span> <span class="nx">wordCount</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">val</span><span class="p">().</span><span class="nx">split</span><span class="p">(</span><span class="sr">/\s+/</span><span class="p">).</span><span class="nx">length</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">wordCount</span> <span class="o">&gt;=</span> <span class="nx">wordGoal</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">nanowrimoing</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+		<span class="p">};</span>
+		<span class="nx">nanowrimoing</span><span class="p">.</span><span class="nx">notify</span><span class="p">(</span><span class="nx">wordCount</span><span class="p">);</span><span class="c1">//触发progress回调函数</span>
+	<span class="p">});</span></code></pre></div>
 
 <h2 id="promise-1">合并Promise</h2>
 
-<p>多个Promise可以使用when合并成一个任务集合，这样就把异步任务抽象成了布尔值，有and关系。
-&lt;% highlight javascript %&gt;
-	var gameReadying = $.when(tutorialPromise, gameLoadedPromise);
-	gameReadying.done(startGame);
-&lt;% endhighlight %&gt;</p>
+<p>多个Promise可以使用when合并成一个任务集合，这样就把异步任务抽象成了布尔值，有and关系。</p>
 
-<p>常用的场景，组合多个ajax请求，在都成功后得到通知。
-&lt;% highlight javascript %&gt;
-	$.when($.post(‘/1’, data1), $.post(‘/2’, data2))
-	.then(onPosted, onFailure);
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">gameReadying</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">tutorialPromise</span><span class="p">,</span> <span class="nx">gameLoadedPromise</span><span class="p">);</span>
+	<span class="nx">gameReadying</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="nx">startGame</span><span class="p">);</span></code></pre></div>
 
-<p>使用一个全局的数据容器，如Array，存放多个Promise想合并的数据。
-&lt;% highlight javascript %&gt;
-	var serverData = {};
-	var getting1 = $.get(‘/1’)
-		.done(function(result) {serverData[‘1’] = result;});
-	var getting2 = $.get(‘/2’)
-		.done(function(result) {serverData[‘2’] = result;});
-	$.when(getting1, getting2)
-		.done(function() {
-			// the GET information is now in serverData…
-		});
-&lt;% endhighlight %&gt;</p>
+<p>常用的场景，组合多个ajax请求，在都成功后得到通知。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">$</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/1&#39;</span><span class="p">,</span> <span class="nx">data1</span><span class="p">),</span> <span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/2&#39;</span><span class="p">,</span> <span class="nx">data2</span><span class="p">))</span>
+	<span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">onPosted</span><span class="p">,</span> <span class="nx">onFailure</span><span class="p">);</span></code></pre></div>
+
+<p>使用一个全局的数据容器，如Array，存放多个Promise想合并的数据。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">serverData</span> <span class="o">=</span> <span class="p">{};</span>
+	<span class="kd">var</span> <span class="nx">getting1</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/1&#39;</span><span class="p">)</span>
+		<span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span><span class="nx">serverData</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;});</span>
+	<span class="kd">var</span> <span class="nx">getting2</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/2&#39;</span><span class="p">)</span>
+		<span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span><span class="nx">serverData</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;});</span>
+	<span class="nx">$</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">getting1</span><span class="p">,</span> <span class="nx">getting2</span><span class="p">)</span>
+		<span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="c1">// the GET information is now in serverData...</span>
+		<span class="p">});</span></code></pre></div>
 
 <h2 id="pipe">使用pipe绑定</h2>
 
-<p>只有在GET操作完成后才能对postPromise绑定回调函数，之前还不存在。
-&lt;% highlight javascript %&gt;
-	var getPromise = $.get(‘/query’);
-	getPromise.done(function(data) {
-		var postPromise = $.post(‘/search’, data);
-	});
-&lt;% endhighlight %&gt;</p>
+<p>只有在GET操作完成后才能对postPromise绑定回调函数，之前还不存在。</p>
 
-<p>1.6之后增加pipe方法。如果返回一个Promise。如果返回一个非Promise甚至没有返回值，
-&lt;% highlight javascript %&gt;
-	var getPromise = $.get(‘/query’);
-	var postPromise = getPromise.pipe(function(data) {
-		return $.post(‘/search’, data);
-	});
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">getPromise</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/query&#39;</span><span class="p">);</span>
+	<span class="nx">getPromise</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">postPromise</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/search&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+	<span class="p">});</span></code></pre></div>
+
+<p>1.6之后增加pipe方法。如果返回一个Promise。如果返回一个非Promise甚至没有返回值，</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">getPromise</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/query&#39;</span><span class="p">);</span>
+	<span class="kd">var</span> <span class="nx">postPromise</span> <span class="o">=</span> <span class="nx">getPromise</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/search&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+	<span class="p">});</span></code></pre></div>
 
 <h2 id="promise-2">使用Promise替换回调函数</h2>
 
 <p>在Node.js中使用jquery<code>npm install jquery</code></p>
 
-<p>大多js框架使用callback而非promise，改写Node.js回调函数风格代码：
-&lt;% highlight javascript %&gt;
-var fileReading = new $.Deferred();
-fs.readFile(filename, ‘utf8’, function(err) {
-	if (err) {
-		fileReading.reject(err);
-	} else {
-		fileReading.resolve(Array.prototype.slice.call(arguments, 1));
-	};
-});
-&lt;% endhighlight %&gt;</p>
+<p>大多js框架使用callback而非promise，改写Node.js回调函数风格代码：</p>
 
-<p>改写成通用的工具方法
-&lt;% highlight javascript %&gt;
-	deferredCallback = function(deferred) {
-		return function(err) {
-			if (err) {
-				deferred.reject(err);
-			} else {
-				deferred.resolve(Array.prototype.slice.call(arguments, 1));
-			};
-		};
-	}
-	var fileReading = new $.Deferred();
-	fs.readFile(filename, ‘utf8’, deferredCallback(fileReading));
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">fileReading</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Deferred</span><span class="p">();</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">fileReading</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">fileReading</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
+	<span class="p">};</span>
+<span class="p">});</span></code></pre></div>
 
-<p>Q.js中node方法直接使用。
-&lt;% highlight javascript %&gt;
-	var fileReading = Q.defer();
-	fs.readFile(filename, ‘utf8’, fileReading.node());
-&lt;% endhighlight %&gt;</p>
+<p>改写成通用的工具方法</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">deferredCallback</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">deferred</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
+			<span class="p">};</span>
+		<span class="p">};</span>
+	<span class="p">}</span>
+	<span class="kd">var</span> <span class="nx">fileReading</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Deferred</span><span class="p">();</span>
+	<span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="nx">deferredCallback</span><span class="p">(</span><span class="nx">fileReading</span><span class="p">));</span></code></pre></div>
+
+<p>Q.js中node方法直接使用。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">fileReading</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+	<span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="nx">fileReading</span><span class="p">.</span><span class="nx">node</span><span class="p">());</span></code></pre></div>
 
 <h1 id="ch4-asyncjs">ch4 使用Async.js控制流程</h1>
 
@@ -765,58 +714,55 @@ fs.readFile(filename, ‘utf8’, function(err) {
 
 <p>问题：按字典序读取文件夹下所有文件，然后拼接内容。</p>
 
-<p>使用同步方法：
-&lt;% highlight javascript %&gt;
-	var fs = require(‘fs’);
-	process.chdir(‘recipes’);//切换目录
-	var concatenation = ‘’;
-	fs.readdirSync(‘.’)
-		.filter(function(filename) {//忽略目录
-			return fs.statSync(filename).isFile();
-		})
-		.forEach(function(filename) {//forEach至少需要IE6+
-			concatenation += fs.readFileSync(filename, ‘utf8’);
-		});
-	console.log(concatenation);
-&lt;% endhighlight %&gt;</p>
+<p>使用同步方法：</p>
 
-<p>不能替换成异步版本。原因是拼接任务放在回调函数中，短文件会比长文件先读完，拼接的顺序不可预测。
-&lt;% highlight javascript %&gt;
-	fs.readFile(filename, ‘utf8’, function(err, contents) {
-		if (err) throw err;
-		concatenation += contents;
-	});
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
+	<span class="nx">process</span><span class="p">.</span><span class="nx">chdir</span><span class="p">(</span><span class="s1">&#39;recipes&#39;</span><span class="p">);</span><span class="c1">//切换目录</span>
+	<span class="kd">var</span> <span class="nx">concatenation</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+	<span class="nx">fs</span><span class="p">.</span><span class="nx">readdirSync</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+		<span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">filename</span><span class="p">)</span> <span class="p">{</span><span class="c1">//忽略目录</span>
+			<span class="k">return</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">statSync</span><span class="p">(</span><span class="nx">filename</span><span class="p">).</span><span class="nx">isFile</span><span class="p">();</span>
+		<span class="p">})</span>
+		<span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">filename</span><span class="p">)</span> <span class="p">{</span><span class="c1">//forEach至少需要IE6+</span>
+			<span class="nx">concatenation</span> <span class="o">+=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">);</span>
+		<span class="p">});</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">concatenation</span><span class="p">);</span></code></pre></div>
+
+<p>不能替换成异步版本。原因是拼接任务放在回调函数中，短文件会比长文件先读完，拼接的顺序不可预测。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">contents</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+		<span class="nx">concatenation</span> <span class="o">+=</span> <span class="nx">contents</span><span class="p">;</span>
+	<span class="p">});</span></code></pre></div>
 
 <h2 id="section-21">异步</h2>
 
 <h3 id="section-22">简单的实现</h3>
 
-<p>不使用forEach，在前一个回调函数中调用下一个保证执行顺序，在最后一个文件处理完毕后输出。
-&lt;% highlight javascript %&gt;
-	var fs = require(‘fs’);
-	process.chdir(‘recipes’); // change the working directory
-	var concatenation = ‘’;
-	fs.readdir(‘.’, function(err, filenames) {
-		if (err) throw err;
-		function readFileAt(i) {
-			var filename = filenames[i];
-			fs.stat(filename, function(err, stats) {
-				if (err) throw err;
-				if (! stats.isFile()) return readFileAt(i + 1);
-				fs.readFile(filename, ‘utf8’, function(err, text) {
-					if (err) throw err;
-					concatenation += text;
-					if (i + 1 === filenames.length) {
-						return console.log(concatenation);
-					}
-					readFileAt(i + 1);//保证顺序
-				});
-			});
-		}
-		readFileAt(0);
-	});
-&lt;% endhighlight %&gt;</p>
+<p>不使用forEach，在前一个回调函数中调用下一个保证执行顺序，在最后一个文件处理完毕后输出。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
+	<span class="nx">process</span><span class="p">.</span><span class="nx">chdir</span><span class="p">(</span><span class="s1">&#39;recipes&#39;</span><span class="p">);</span> <span class="c1">// change the working directory</span>
+	<span class="kd">var</span> <span class="nx">concatenation</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+	<span class="nx">fs</span><span class="p">.</span><span class="nx">readdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">filenames</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+		<span class="kd">function</span> <span class="nx">readFileAt</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">filename</span> <span class="o">=</span> <span class="nx">filenames</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+			<span class="nx">fs</span><span class="p">.</span><span class="nx">stat</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+				<span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">isFile</span><span class="p">())</span> <span class="k">return</span> <span class="nx">readFileAt</span><span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+				<span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+					<span class="nx">concatenation</span> <span class="o">+=</span> <span class="nx">text</span><span class="p">;</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">===</span> <span class="nx">filenames</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">concatenation</span><span class="p">);</span>
+					<span class="p">}</span>
+					<span class="nx">readFileAt</span><span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span><span class="c1">//保证顺序</span>
+				<span class="p">});</span>
+			<span class="p">});</span>
+		<span class="p">}</span>
+		<span class="nx">readFileAt</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+	<span class="p">});</span></code></pre></div>
 
 <h3 id="asyncjs">使用Async.js</h3>
 
@@ -834,30 +780,28 @@ fs.readFile(filename, ‘utf8’, function(err) {
   <li>Node同时读取文件的数目有限制，超过会出错。串行读取不会有问题。</li>
 </ul>
 
-<p>&lt;% highlight javascript %&gt;
-	var concatenation = ‘’;
-	var dirContents = fs.readdirSync(‘.’);
-	async.filter(dirContents, isFilename, function(filenames) {
-		async.forEachSeries(filenames, readAndConcat, onComplete);
-	});
-	function isFilename(filename, callback) {
-		fs.stat(filename, function(err, stats) {
-			if (err) throw err;
-			callback(stats.isFile());
-		});
-	}
-	function readAndConcat(filename, callback) {
-		fs.readFile(filename, ‘utf8’, function(err, fileContents) {
-			if (err) return callback(err);
-			concatenation += fileContents;
-			callback();
-		});
-	}
-	function onComplete(err) {
-		if (err) throw err;
-		console.log(concatenation);
-	}
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">concatenation</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">dirContents</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readdirSync</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">);</span>
+	<span class="nx">async</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">dirContents</span><span class="p">,</span> <span class="nx">isFilename</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">filenames</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">async</span><span class="p">.</span><span class="nx">forEachSeries</span><span class="p">(</span><span class="nx">filenames</span><span class="p">,</span> <span class="nx">readAndConcat</span><span class="p">,</span> <span class="nx">onComplete</span><span class="p">);</span>
+	<span class="p">});</span>
+	<span class="kd">function</span> <span class="nx">isFilename</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">fs</span><span class="p">.</span><span class="nx">stat</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+			<span class="nx">callback</span><span class="p">(</span><span class="nx">stats</span><span class="p">.</span><span class="nx">isFile</span><span class="p">());</span>
+		<span class="p">});</span>
+	<span class="p">}</span>
+	<span class="kd">function</span> <span class="nx">readAndConcat</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fileContents</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+			<span class="nx">concatenation</span> <span class="o">+=</span> <span class="nx">fileContents</span><span class="p">;</span>
+			<span class="nx">callback</span><span class="p">();</span>
+		<span class="p">});</span>
+	<span class="p">}</span>
+	<span class="kd">function</span> <span class="nx">onComplete</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">concatenation</span><span class="p">);</span>
+	<span class="p">}</span></code></pre></div>
 
 <h2 id="asyncjs-1">Async.js中错误处理</h2>
 
@@ -875,18 +819,17 @@ to handle errors on its own.</p>
 
 <h3 id="section-24">串行运行异步任务</h3>
 
-<p>async.series/async.waterfall
-&lt;% highlight javascript %&gt;
-var async = require (‘async’);
-var start = new Date;
-async.series([
-	function(callback) { setTimeout(callback, 100); },
-	function(callback) { setTimeout(callback, 300); },
-	function(callback) { setTimeout(callback, 200); }
-], function(err, results) {
-	console.log(‘Completed in ‘ + (new Date - start) + ‘ms’);
-});
-&lt;% endhighlight %&gt;</p>
+<p>async.series/async.waterfall</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">async</span> <span class="o">=</span> <span class="nx">require</span> <span class="p">(</span><span class="s1">&#39;async&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">;</span>
+<span class="nx">async</span><span class="p">.</span><span class="nx">series</span><span class="p">([</span>
+	<span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">callback</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span> <span class="p">},</span>
+	<span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">callback</span><span class="p">,</span> <span class="mi">300</span><span class="p">);</span> <span class="p">},</span>
+	<span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">callback</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span> <span class="p">}</span>
+<span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Completed in &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span> <span class="o">-</span> <span class="nx">start</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;ms&#39;</span><span class="p">);</span>
+<span class="p">});</span></code></pre></div>
 
 <h3 id="section-25">并行</h3>
 
@@ -904,18 +847,16 @@ async.series([
 
 <h3 id="section-27">理解队列</h3>
 
-<p>&lt;% highlight javascript %&gt;
-var async = require(‘async’);
-function worker(data, callback) {
-	console.log(data);
-	callback();
-}
-var concurrency = 2;
-var queue = async.queue(worker, concurrency);
-queue.push(1);
-queue.push(2);
-queue.push(3);
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">async</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;async&#39;</span><span class="p">);</span>
+<span class="kd">function</span> <span class="nx">worker</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+	<span class="nx">callback</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">concurrency</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">queue</span> <span class="o">=</span> <span class="nx">async</span><span class="p">.</span><span class="nx">queue</span><span class="p">(</span><span class="nx">worker</span><span class="p">,</span> <span class="nx">concurrency</span><span class="p">);</span>
+<span class="nx">queue</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="nx">queue</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="nx">queue</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span></code></pre></div>
 
 <h2 id="step">使用Step进行最小的流程控制</h2>
 
@@ -933,41 +874,39 @@ queue.push(3);
 或者前面所有函数的结构，如果前一个通过this.parallel或者this.group调用。
 两个函数的区别是parallel将结果作为分离的参数，而group合并成数组。</p>
 
-<p>async.map等同于
-&lt;% highlight javascript %&gt;
-	var Step = require(‘step’);
-	function stepMap(arr, iterator, callback) {
-		Step(
-			function() {
-				var group = this.group();
-				for (var i = 0; i &lt; arr.length; i++) {
-					iterator(arr[i], group());
-				}
-			},
-			callback
-		);
-	}
-&lt;% endhighlight %&gt;</p>
+<p>async.map等同于</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">Step</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;step&#39;</span><span class="p">);</span>
+	<span class="kd">function</span> <span class="nx">stepMap</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">iterator</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Step</span><span class="p">(</span>
+			<span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">group</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">group</span><span class="p">();</span>
+				<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">iterator</span><span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">group</span><span class="p">());</span>
+				<span class="p">}</span>
+			<span class="p">},</span>
+			<span class="nx">callback</span>
+		<span class="p">);</span>
+	<span class="p">}</span></code></pre></div>
 
 <h1 id="ch5-workers">ch5 使用Workers多线程</h1>
 
 <h2 id="web-worker">Web Worker</h2>
 
 <p>Html5提供Web Worker。
-双方通过监听message事件接收数据，通过postMessage发送数据。
-&lt;% highlight javascript %&gt;
-	// master script
-	var worker = new Worker(‘boknows.js’);
-	worker.addEventListener(‘message’, function(e) {
-		console.log(e.data);
-	});
-	worker.postMessage(‘football’);
-	worker.postMessage(‘baseball’);
-	// boknows.js
-	self.addEventListener(‘message’, function(e) {
-		self.postMessage(‘Bo knows ‘ + e.data);
-	});
-&lt;% endhighlight %&gt;</p>
+双方通过监听message事件接收数据，通过postMessage发送数据。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// master script</span>
+	<span class="kd">var</span> <span class="nx">worker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s1">&#39;boknows.js&#39;</span><span class="p">);</span>
+	<span class="nx">worker</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+	<span class="p">});</span>
+	<span class="nx">worker</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="s1">&#39;football&#39;</span><span class="p">);</span>
+	<span class="nx">worker</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="s1">&#39;baseball&#39;</span><span class="p">);</span>
+	<span class="c1">// boknows.js</span>
+	<span class="nx">self</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">self</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="s1">&#39;Bo knows &#39;</span> <span class="o">+</span> <span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+	<span class="p">});</span></code></pre></div>
 
 <p><a href="https://github.com/ajaxorg/ace-builds/">Ace文本编辑器</a>
 使用单独的线程进行语法分析，保证编辑界面流畅运行。</p>
@@ -1017,19 +956,18 @@ queue.push(3);
 使用script的defer属性：<code>&lt;script defer src="deferredScript.js"&gt;</code>。
 告诉浏览器首先加载，但不会立即执行，直到DOM加载完毕并且之前包含defer的脚本也执行完毕。这样就可以移入head标签中，得到所有之前移入body末尾的好处，还额外获得了加载大文档的速度提升。</p>
 
-<p>缺点是不被所有浏览器支持。
-&lt;% highlight html %&gt;
-	&lt;html&gt;
-	&lt;head&gt;
-		<!-- metadata and stylesheets go here -->
-		<script src="headScripts.js">&lt;/scripts&gt;
-		<script defer="" src="deferredScripts.js"></script>
-	&lt;/head&gt;
-	&lt;body&gt;
-		<!-- content goes here -->
-	&lt;/body&gt;
-	&lt;/html&gt;
-&lt;% endhighlight %&gt;</script></p>
+<p>缺点是不被所有浏览器支持。</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;html&gt;</span>
+	<span class="nt">&lt;head&gt;</span>
+		<span class="c">&lt;!-- metadata and stylesheets go here --&gt;</span>
+		<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;headScripts.js&quot;</span><span class="nt">&gt;</span><span class="o">&lt;</span><span class="err">/scripts&gt;</span>
+		<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">defer</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;deferredScripts.js&quot;</span><span class="o">&gt;</span><span class="nt">&lt;/script&gt;</span>
+	<span class="nt">&lt;/head&gt;</span>
+	<span class="nt">&lt;body&gt;</span>
+		<span class="c">&lt;!-- content goes here --&gt;</span>
+	<span class="nt">&lt;/body&gt;</span>
+	<span class="nt">&lt;/html&gt;</span></code></pre></div>
 
 <h2 id="section-30">并行加载</h2>
 
@@ -1037,21 +975,20 @@ queue.push(3);
 
 <p>同时使用async和defer时，支持async的浏览器中async会覆盖defer。由于defer支持度更高，也能提供在加载脚本的同时渲染DOM的好处，所以推荐在使用async的地方都使用defer。</p>
 
-<p>以下加载顺序是：headScript运行完毕后，dom开始加载，deferredScript在dom显示的同时后台加载，dom显示完毕，两个wigetJs开始执行，顺序未知。
-&lt;% highlight html %&gt;
-	&lt;html&gt;
-	&lt;head&gt;
-		<!-- metadata and stylesheets go here -->
-		<script src="headScripts.js">&lt;/scripts&gt;
-		<script src="deferredScripts.js" defer=""></script>
-	&lt;/head&gt;
-	&lt;body&gt;
-		<!-- content goes here -->
-		<script async="" defer="" src="feedbackWidget.js"></script>
-		<script async="" defer="" src="chatWidget.js"></script>
-	&lt;/body&gt;
-	&lt;/html&gt;
-&lt;% endhighlight %&gt;</script></p>
+<p>以下加载顺序是：headScript运行完毕后，dom开始加载，deferredScript在dom显示的同时后台加载，dom显示完毕，两个wigetJs开始执行，顺序未知。</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;html&gt;</span>
+	<span class="nt">&lt;head&gt;</span>
+		<span class="c">&lt;!-- metadata and stylesheets go here --&gt;</span>
+		<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;headScripts.js&quot;</span><span class="nt">&gt;</span><span class="o">&lt;</span><span class="err">/scripts&gt;</span>
+		<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;deferredScripts.js&quot;</span> <span class="nx">defer</span><span class="o">&gt;</span><span class="nt">&lt;/script&gt;</span>
+	<span class="nt">&lt;/head&gt;</span>
+	<span class="nt">&lt;body&gt;</span>
+		<span class="c">&lt;!-- content goes here --&gt;</span>
+		<span class="nt">&lt;script </span><span class="na">async</span> <span class="na">defer</span> <span class="na">src=</span><span class="s">&quot;feedbackWidget.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+		<span class="nt">&lt;script </span><span class="na">async</span> <span class="na">defer</span> <span class="na">src=</span><span class="s">&quot;chatWidget.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+	<span class="nt">&lt;/body&gt;</span>
+	<span class="nt">&lt;/html&gt;</span></code></pre></div>
 
 <h2 id="section-31">可编程加载</h2>
 
@@ -1066,13 +1003,12 @@ queue.push(3);
   <li>向DOM中插入script标签。</li>
 </ol>
 
-<p>第一种的缺点是eval存在作用域泄露问题。
-&lt;% highlight javascript %&gt;
-	var head = document.getElementsByTagName(‘head’)[0];
-	var script = document.createElement(‘script’);
-	script.src = ‘/js/feature.js’;
-	head.appendChild(script);
-&lt;% endhighlight %&gt;</p>
+<p>第一种的缺点是eval存在作用域泄露问题。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">head</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;head&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+	<span class="kd">var</span> <span class="nx">script</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;script&#39;</span><span class="p">);</span>
+	<span class="nx">script</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="s1">&#39;/js/feature.js&#39;</span><span class="p">;</span>
+	<span class="nx">head</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">script</span><span class="p">);</span></code></pre></div>
 
 <p>如果想知道script何时加载完成，可以让其触发一个特定事件，但这样太繁琐。
 html5中<code>script.onload = function(){}</code>可以绑定一个回调函数。但是不被所有
@@ -1080,75 +1016,68 @@ html5中<code>script.onload = function(){}</code>可以绑定一个回调函数�
 
 <h3 id="yepnope">使用yepnope进行条件加载</h3>
 
-<p>yepnope是一个轻量级类库，可以单独使用，也可以配合Modernizr使用。
-&lt;% highlight javascript %&gt;
-	yepnope({
-		load: ‘oompaLoompas.js’,
-		callback: function() {
-			console.log(‘Oompa-Loompas ready!’);
-		}
-	});
-&lt;% endhighlight %&gt;</p>
+<p>yepnope是一个轻量级类库，可以单独使用，也可以配合Modernizr使用。</p>
 
-<p>backbone依赖于underscore，加载顺序。complete不同于callback，前者在所有脚本都被加载完毕后运行，而callback为加载列表中每一个资源运行。
-&lt;% highlight javascript %&gt;
-	yepnope({
-		load: [‘underscore.js’, ‘backbone.js’],
-		complete: function() {
-			// Backbone logic goes here
-		}
-	});
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">yepnope</span><span class="p">({</span>
+		<span class="nx">load</span><span class="o">:</span> <span class="s1">&#39;oompaLoompas.js&#39;</span><span class="p">,</span>
+		<span class="nx">callback</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Oompa-Loompas ready!&#39;</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">});</span></code></pre></div>
+
+<p>backbone依赖于underscore，加载顺序。complete不同于callback，前者在所有脚本都被加载完毕后运行，而callback为加载列表中每一个资源运行。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">yepnope</span><span class="p">({</span>
+		<span class="nx">load</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;underscore.js&#39;</span><span class="p">,</span> <span class="s1">&#39;backbone.js&#39;</span><span class="p">],</span>
+		<span class="nx">complete</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="c1">// Backbone logic goes here</span>
+		<span class="p">}</span>
+	<span class="p">});</span></code></pre></div>
 
 <p>yepnope最具代表性的特征是条件加载。</p>
 
-<p>判断设备是否是触屏设备：根据条件判断决定加载文件
-&lt;% highlight javascript %&gt;
-	yepnope({
-		test: Modernizr.touch,
-		yep: [‘touchStyles.css’, ‘touchApplication.js’],
-		nope: [‘mouseStyles.css’, ‘mouseApplication.js’],
-		complete: function() {
-			// either way, the application is now ready!
-		}
-	});
-&lt;% endhighlight %&gt;</p>
+<p>判断设备是否是触屏设备：根据条件判断决定加载文件</p>
 
-<p>常用的用法：填补旧版本浏览器缺失的功能
-&lt;% highlight javascript %&gt;
-	yepnope({
-		test: window.json,
-		nope: [‘json2.js’],
-		complete: function() {
-			// now we can JSON safely
-		}
-	});
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">yepnope</span><span class="p">({</span>
+		<span class="nx">test</span><span class="o">:</span> <span class="nx">Modernizr</span><span class="p">.</span><span class="nx">touch</span><span class="p">,</span>
+		<span class="nx">yep</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;touchStyles.css&#39;</span><span class="p">,</span> <span class="s1">&#39;touchApplication.js&#39;</span><span class="p">],</span>
+		<span class="nx">nope</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;mouseStyles.css&#39;</span><span class="p">,</span> <span class="s1">&#39;mouseApplication.js&#39;</span><span class="p">],</span>
+		<span class="nx">complete</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="c1">// either way, the application is now ready!</span>
+		<span class="p">}</span>
+	<span class="p">});</span></code></pre></div>
+
+<p>常用的用法：填补旧版本浏览器缺失的功能</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">yepnope</span><span class="p">({</span>
+		<span class="nx">test</span><span class="o">:</span> <span class="nb">window</span><span class="p">.</span><span class="nx">json</span><span class="p">,</span>
+		<span class="nx">nope</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;json2.js&#39;</span><span class="p">],</span>
+		<span class="nx">complete</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="c1">// now we can JSON safely</span>
+		<span class="p">}</span>
+	<span class="p">});</span></code></pre></div>
 
 <h3 id="requirejsamd">使用Require.js和AMD智能加载</h3>
 
-<p>require函数第一个参数是数组，并行加载数组中的脚本。不同于yepnope，require不保证目标脚本的运行顺序。但是会保证脚本之间的依赖关系，只要脚本满足AMD(Asynchronous Module Definition)规范。
-&lt;% highlight javascript %&gt;
-	require([‘moment’], function(moment) {
-		console.log(moment().format(‘dddd’)); // day of the week
-	});
-&lt;% endhighlight %&gt;</p>
+<p>require函数第一个参数是数组，并行加载数组中的脚本。不同于yepnope，require不保证目标脚本的运行顺序。但是会保证脚本之间的依赖关系，只要脚本满足AMD(Asynchronous Module Definition)规范。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">require</span><span class="p">([</span><span class="s1">&#39;moment&#39;</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">moment</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">moment</span><span class="p">().</span><span class="nx">format</span><span class="p">(</span><span class="s1">&#39;dddd&#39;</span><span class="p">));</span> <span class="c1">// day of the week</span>
+	<span class="p">});</span></code></pre></div>
 
 <p><a href="https://github.com/amdjs/amdjs-api/wiki/AMD">AMD</a>规范。</p>
 
 <p>全局函数define，三个参数：名字，依赖列表和依赖加载完毕后的回调函数。</p>
 
-<p>下面就是一个有效的AMD规范，定义了一个依赖jquery的应用。
-&lt;% highlight javascript %&gt;
-	define(‘myApplication’, [‘jquery’], function($) {
-		$(‘&lt;body&gt;’).append(‘&lt;p&gt;Hello, async world!&lt;/p&gt;’);
-	});
-&lt;% endhighlight %&gt;</p>
+<p>下面就是一个有效的AMD规范，定义了一个依赖jquery的应用。</p>
 
-<p>define是如何捕获jquery对象的呢？jquery的AMD定义返回了jQuery对象。
-&lt;% highlight javascript %&gt;
-	define( “jquery”, [], function () { return jQuery; } );
-&lt;% endhighlight %&gt;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">define</span><span class="p">(</span><span class="s1">&#39;myApplication&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;jquery&#39;</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;body&gt;&#39;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Hello, async world!&lt;/p&gt;&#39;</span><span class="p">);</span>
+	<span class="p">});</span></code></pre></div>
+
+<p>define是如何捕获jquery对象的呢？jquery的AMD定义返回了jQuery对象。</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">define</span><span class="p">(</span> <span class="s2">&quot;jquery&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">jQuery</span><span class="p">;</span> <span class="p">}</span> <span class="p">);</span></code></pre></div>
 
   </article>
 
