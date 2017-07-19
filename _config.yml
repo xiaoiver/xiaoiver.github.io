@@ -1,12 +1,19 @@
 # Site settings
-title: xiaOp写东西的地方
+title: xiaOp的博客
 email: pyqiverson@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
   读书笔记，碰到的问题
 baseurl: "" # the subpath of your site, e.g. /blog/
-url: "http://yourdomain.com" # the base hostname & protocol for your site
-twitter_username: jekyllrb
+url: "https://xiaoiver.github.io" # the base hostname & protocol for your site
 github_username:  xiaoiver
+
+highlighter: rouge
 
 # Build settings
 markdown: kramdown
+
+# Pagination
+paginate: 5
+
+# Gems plugins
+plugins: [jekyll-paginate]

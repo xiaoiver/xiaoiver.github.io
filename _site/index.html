@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="读书笔记，碰到的问题
+">
+    <meta name="keywords"  content="">
+    <meta name="theme-color" content="">
+
+    <title>xiaOp的博客</title>
+
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="canonical" href="http://localhost:4000/">
+
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/style-large.css" />
+    <link rel="stylesheet" href="/css/highlight.css" />
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+    <body>
+
+        <section id="header" class="skel-layers-fixed">
+    <header>
+        <span class="image avatar"><img src="/img/avatar.jpg" alt="" /></span>
+        <h1 id="logo"><a href="/">xiaOp</a></h1>
+        <p>想成为一个有趣的人</p>
+    </header>
+    <nav id="nav">
+        <ul>
+            <li><a href="#intro">主页</a></li>
+            <li><a href="#blog">文章</a></li>
+            <li><a href="#contact">兴趣</a></li>
+        </ul>
+    </nav>
+    <footer>
+        <ul class="icons">
+            <li><a href="https://github.com/xiaoiver" class="icon fa-github"><span class="label">Github</span></a></li>
+            <li><a href="mailto:pyqiverson@gmail.com" class="icon fa-envelope"><span class="label">Email</span></a></li>
+            <li><a href="https://www.douban.com/people/150275082/" class="icon">豆</a></li>
+            <li><a href="https://www.zhihu.com/people/pan-yu-qi-20/activities" class="icon">知</a></li>
+        </ul>
+    </footer>
+</section>
+
+
+        <div id="wrapper">
+            <div id="main">
+                <style type="text/css">
+.pager {
+    padding-left: 0;
+    margin: 20px 0;
+    text-align: center;
+    list-style: none;
+}
+.pager li {
+    display: inline-block;
+}
+</style>
+
+<section id="intro">
+    <div class="container">
+        <header class="major">
+            <h2>xiaOp 的博客</h2>
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </header>
+
+        <section>
+            <div class="tags">
+                
+                    
+                    <a href="/tags/#http2" title="http2">
+                        http2
+                    </a>
+                
+                    
+                    <a href="/tags/#hiphop" title="hiphop">
+                        hiphop
+                    </a>
+                
+                    
+                    <a href="/tags/#nodejs" title="nodejs">
+                        nodejs
+                    </a>
+                
+                    
+                    <a href="/tags/#webpack" title="webpack">
+                        webpack
+                    </a>
+                
+                    
+                    <a href="/tags/#vue" title="vue">
+                        vue
+                    </a>
+                
+                    
+                    <a href="/tags/#ava" title="ava">
+                        ava
+                    </a>
+                
+                    
+                    <a href="/tags/#travis" title="travis">
+                        travis
+                    </a>
+                
+                    
+                    <a href="/tags/#javascript" title="javascript">
+                        javascript
+                    </a>
+                
+                    
+                    <a href="/tags/#babel" title="babel">
+                        babel
+                    </a>
+                
+            </div>
+        </section>
+    </div>
+</section>
+
+<section id="blog">
+    <div class="container">
+        
+        <div class="post-preview">
+            <a href="/coding/2017/07/17/npm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html">
+                <h2 class="post-title">
+                    npm包提供多入口
+                </h2>
+                
+                <h3 class="post-subtitle">
+                    不同模块机制，不同平台环境以及是否需要转译
+                </h3>
+                
+                <div class="post-content-preview">
+                    问题背景
+
+之前给webpack-cdn-plugin提PR时，遇到这样一个问题，入口文件使用了部分 ES6 特性，而作者不想直接提供转译版本，这就导致在低版本 Node.js 环境无法直接运行。
+
+package.json中的main只能支持单文件，无法提供多入口供使用者根据自身环境选择。
+
+当时的做法是在入口文件中判断当前运行环境，选择使用转译或非转译版本。
+
+前段时间刚好看到这一系列文...
+                </div>
+            </a>
+            <p class="post-meta">
+                July 17, 2017
+            </p>
+        </div>
+        <hr>
+        
+        <div class="post-preview">
+            <a href="/coding/2017/07/16/ava%E5%92%8Ctravis-ci.html">
+                <h2 class="post-title">
+                    ava和travis-ci的使用
+                </h2>
+                
+                <div class="post-content-preview">
+                    最近给 skeleton 插件加上了测试用例，顺便使用了下自动集成工具。
+
+ava
+
+首先配置基本参数：
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12// package.json
+
+"ava": {
+    "concurrency": 5,
+    "failFast": true,
+    "files": [
+      "test/*.test.js"
+    ],
+  ...
+                </div>
+            </a>
+            <p class="post-meta">
+                July 16, 2017
+            </p>
+        </div>
+        <hr>
+        
+        <div class="post-preview">
+            <a href="/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html">
+                <h2 class="post-title">
+                    基于vue和webpack的skeleton插件
+                </h2>
+                
+                <div class="post-content-preview">
+                    
+  这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。
+
+
+如果您还不了解 skeleton，可以参考App Skeleton 介绍一文。
+
+github 地址：https://github.com/lavas-project/vue-skeleton-webpack-plugin
+
+问题背景
+
+参考饿了么的 PWA 升级实践一文，我...
+                </div>
+            </a>
+            <p class="post-meta">
+                July 15, 2017
+            </p>
+        </div>
+        <hr>
+        
+        <div class="post-preview">
+            <a href="/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html">
+                <h2 class="post-title">
+                    写一个支持svg的loader
+                </h2>
+                
+                <div class="post-content-preview">
+                    在 如何在项目中使用图标 一节中，我们介绍了开发时引入自定义 svg 图标的方法，例如：
+
+
+  将自定义 svg 文件放入指定文件夹下，自动完成注册
+  修改 config/icon.js 配置文件引入 svg 格式的 fontawesome 图标
+
+
+以上修改甚至都不需要重启开发服务器，这一切都是通过模版项目中的 build/loaders/svg-loader 完成的，本文将介绍其实现...
+                </div>
+            </a>
+            <p class="post-meta">
+                July 14, 2017
+            </p>
+        </div>
+        <hr>
+        
+        <div class="post-preview">
+            <a href="/coding/2017/06/11/Node.js%E7%BA%BF%E7%A8%8B.html">
+                <h2 class="post-title">
+                    Node.js线程的简单用法
+                </h2>
+                
+                <h3 class="post-subtitle">
+                    spawn(), exec(), execFile(), fork()
+                </h3>
+                
+                <div class="post-content-preview">
+                    原文地址
+
+spawn
+
+spawn返回一个ChildProcess对象：
+
+  可以监听exit error等事件，其中的message可用于父子进程通信。
+  3个stdio stream，但是和主进程相反，stdout/stderror是可读的数据流，而stdin是可写的，所以data事件监听的是执行命令过程中的输出
+
+
+exec
+
+和spawn不同，会启动一个新的shell，执行结果...
+                </div>
+            </a>
+            <p class="post-meta">
+                June 11, 2017
+            </p>
+        </div>
+        <hr>
+        
+
+        
+        <ul class="pager">
+            
+            
+            <li class="next">
+                <a href="/page2">下一页&nbsp;<span class="icon fa-arrow-right"></span></a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</section>
+
+<section id="contact">
+    <div class="container">
+        <h3>喜欢的事情可多啦</h3>
+        <ul class="feature-icons">
+            <li class="fa-code">Coding</li>
+            <li class="fa-cubes">听歌 苏打绿 MCR</li>
+            <li class="fa-book">看看书，刷知乎</li>
+            <li class="fa-coffee">看电影，电视剧</li>
+            <li class="fa-users">搓炉石</li>
+        </ul>
+    </div>
+</section>
+
+            </div>
+        </div>
+
+        <script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.scrollzer.min.js"></script>
+<script src="/js/jquery.scrolly.min.js"></script>
+<script src="/js/skel.min.js"></script>
+<script src="/js/skel-layers.min.js"></script>
+<script src="/js/init.js"></script>
+
+
+    </body>
+
+</html>
