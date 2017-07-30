@@ -25,7 +25,7 @@ layout: default
             <div class="tags">
                 {% for tag in site.tags %}
                     {% capture tag_name %}{{ tag | first }}{% endcapture %}
-                    <a href="{{ site.baseurl }}/tags/#{{ tag_name }}" title="{{ tag_name }}">
+                    <a href="{{ site.baseurl }}/tags#{{ tag_name }}" title="{{ tag_name }}">
                         {{ tag_name }}
                     </a>
                 {% endfor %}

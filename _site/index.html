@@ -5,15 +5,27 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="读书笔记，碰到的问题
-">
-    <meta name="keywords"  content="">
-    <meta name="theme-color" content="">
+    <meta name="keywords" content="coding编程">
+    <meta name="theme-color" content="#eee">
+    <!-- Begin Jekyll SEO tag v2.2.3 -->
+<title>xiaOp的博客 | 读书笔记，碰到的问题</title>
+<meta property="og:title" content="xiaOp的博客" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="读书笔记，碰到的问题" />
+<meta property="og:description" content="读书笔记，碰到的问题" />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<link rel="next" href="http://localhost:4000/page2">
+<script type="application/ld+json">
+{"@context":"http://schema.org","@type":"WebSite","name":"xiaOp的博客","headline":"xiaOp的博客","description":"读书笔记，碰到的问题","url":"http://localhost:4000/"}</script>
+<!-- End Jekyll SEO tag -->
 
     <title>xiaOp的博客</title>
 
     <link rel="shortcut icon" href="/img/favicon.ico">
     <link rel="canonical" href="http://localhost:4000/">
+    <link rel="manifest" href="/manifest.json">
 
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/style-large.css" />
@@ -77,48 +89,63 @@
             <div class="tags">
                 
                     
-                    <a href="/tags/#http2" title="http2">
+                    <a href="/tags#performance" title="performance">
+                        performance
+                    </a>
+                
+                    
+                    <a href="/tags#http2" title="http2">
                         http2
                     </a>
                 
                     
-                    <a href="/tags/#hiphop" title="hiphop">
+                    <a href="/tags#hiphop" title="hiphop">
                         hiphop
                     </a>
                 
                     
-                    <a href="/tags/#nodejs" title="nodejs">
+                    <a href="/tags#nodejs" title="nodejs">
                         nodejs
                     </a>
                 
                     
-                    <a href="/tags/#webpack" title="webpack">
+                    <a href="/tags#webpack" title="webpack">
                         webpack
                     </a>
                 
                     
-                    <a href="/tags/#vue" title="vue">
+                    <a href="/tags#vue" title="vue">
                         vue
                     </a>
                 
                     
-                    <a href="/tags/#ava" title="ava">
+                    <a href="/tags#ava" title="ava">
                         ava
                     </a>
                 
                     
-                    <a href="/tags/#travis" title="travis">
+                    <a href="/tags#travis" title="travis">
                         travis
                     </a>
                 
                     
-                    <a href="/tags/#javascript" title="javascript">
+                    <a href="/tags#javascript" title="javascript">
                         javascript
                     </a>
                 
                     
-                    <a href="/tags/#babel" title="babel">
+                    <a href="/tags#babel" title="babel">
                         babel
+                    </a>
+                
+                    
+                    <a href="/tags#ruby" title="ruby">
+                        ruby
+                    </a>
+                
+                    
+                    <a href="/tags#jekyll" title="jekyll">
+                        jekyll
                     </a>
                 
             </div>
@@ -128,6 +155,59 @@
 
 <section id="blog">
     <div class="container">
+        
+        <div class="post-preview">
+            <a href="/coding/2017/07/21/jekyll%E7%9B%B8%E5%85%B3.html">
+                <h2 class="post-title">
+                    jekyll相关
+                </h2>
+                
+                <div class="post-content-preview">
+                    背景
+
+试图为 jekyll 增加 PWA 特性支持，顺便整理了下自己之前放在 github 上的博客。
+本文将记录过程中遇到的问题。
+
+bundler
+
+我们都知道 ruby 中安装依赖的工具是 gem，类似 Node.js 中的 npm。但 gem 并没有类似 package.json 这样的依赖描述文件，这就导致安装特定版本号的依赖很不方便。
+
+而 bundler 提供了缺失的依赖管理...
+                </div>
+            </a>
+            <p class="post-meta">
+                July 21, 2017
+            </p>
+        </div>
+        <hr>
+        
+        <div class="post-preview">
+            <a href="/coding/2017/07/18/webpack%E4%BB%A3%E7%A0%81%E5%88%86%E5%89%B2.html">
+                <h2 class="post-title">
+                    webpack代码分割
+                </h2>
+                
+                <div class="post-content-preview">
+                    在开发 Lavas 模版的过程中，使用到了 webpack 代码切割点的功能。
+
+代码分割
+
+切割点 import require.ensure
+
+Bundle splitting
+
+CommonChunkPlugin
+
+示例
+
+以vue模版为例，按顺序执行，所以首先vendor将entry中共用的依赖抽出，此时标记为entry chunk，然后遇到manifest，发现此时各个chunk不...
+                </div>
+            </a>
+            <p class="post-meta">
+                July 18, 2017
+            </p>
+        </div>
+        <hr>
         
         <div class="post-preview">
             <a href="/coding/2017/07/17/npm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html">
@@ -220,61 +300,6 @@ github 地址：https://github.com/lavas-project/vue-skeleton-webpack-plugin
             </a>
             <p class="post-meta">
                 July 15, 2017
-            </p>
-        </div>
-        <hr>
-        
-        <div class="post-preview">
-            <a href="/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html">
-                <h2 class="post-title">
-                    写一个支持svg的loader
-                </h2>
-                
-                <div class="post-content-preview">
-                    在 如何在项目中使用图标 一节中，我们介绍了开发时引入自定义 svg 图标的方法，例如：
-
-
-  将自定义 svg 文件放入指定文件夹下，自动完成注册
-  修改 config/icon.js 配置文件引入 svg 格式的 fontawesome 图标
-
-
-以上修改甚至都不需要重启开发服务器，这一切都是通过模版项目中的 build/loaders/svg-loader 完成的，本文将介绍其实现...
-                </div>
-            </a>
-            <p class="post-meta">
-                July 14, 2017
-            </p>
-        </div>
-        <hr>
-        
-        <div class="post-preview">
-            <a href="/coding/2017/06/11/Node.js%E7%BA%BF%E7%A8%8B.html">
-                <h2 class="post-title">
-                    Node.js线程的简单用法
-                </h2>
-                
-                <h3 class="post-subtitle">
-                    spawn(), exec(), execFile(), fork()
-                </h3>
-                
-                <div class="post-content-preview">
-                    原文地址
-
-spawn
-
-spawn返回一个ChildProcess对象：
-
-  可以监听exit error等事件，其中的message可用于父子进程通信。
-  3个stdio stream，但是和主进程相反，stdout/stderror是可读的数据流，而stdin是可写的，所以data事件监听的是执行命令过程中的输出
-
-
-exec
-
-和spawn不同，会启动一个新的shell，执行结果...
-                </div>
-            </a>
-            <p class="post-meta">
-                June 11, 2017
             </p>
         </div>
         <hr>

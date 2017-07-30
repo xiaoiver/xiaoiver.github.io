@@ -6,9 +6,112 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 19 Jul 2017 15:28:24 +0800</pubDate>
-    <lastBuildDate>Wed, 19 Jul 2017 15:28:24 +0800</lastBuildDate>
+    <pubDate>Sun, 23 Jul 2017 00:43:23 +0800</pubDate>
+    <lastBuildDate>Sun, 23 Jul 2017 00:43:23 +0800</lastBuildDate>
     <generator>Jekyll v3.5.0</generator>
+    
+      <item>
+        <title>jekyll相关</title>
+        <description>&lt;h2 id=&quot;背景&quot;&gt;背景&lt;/h2&gt;
+
+&lt;p&gt;试图为 jekyll 增加 PWA 特性支持，顺便整理了下自己之前放在 github 上的博客。
+本文将记录过程中遇到的问题。&lt;/p&gt;
+
+&lt;h2 id=&quot;bundler&quot;&gt;bundler&lt;/h2&gt;
+
+&lt;p&gt;我们都知道 ruby 中安装依赖的工具是 gem，类似 Node.js 中的 npm。但 gem 并没有类似 package.json 这样的依赖描述文件，这就导致安装特定版本号的依赖很不方便。&lt;/p&gt;
+
+&lt;p&gt;而 bundler 提供了缺失的依赖管理功能。主要依靠两个描述文件：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Gemfile&lt;/code&gt;类似&lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt;，包含依赖列表，版本要求等。&lt;/li&gt;
+  &lt;li&gt;安装所有依赖后会生成&lt;code class=&quot;highlighter-rouge&quot;&gt;Gemfile.lock&lt;/code&gt;，类似 yarn 中的&lt;code class=&quot;highlighter-rouge&quot;&gt;yarn.lock&lt;/code&gt;，存储依赖的精确版本。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;这样将这两个文件连同项目一并提交，就能保证代码共享后依赖的一致性。&lt;/p&gt;
+
+&lt;p&gt;首先使用 gem 安装，然后创建&lt;code class=&quot;highlighter-rouge&quot;&gt;Gemfile&lt;/code&gt;文件，写入依赖并安装：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;gem install bundler
+bundle init
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'gem &quot;rspec&quot;'&lt;/span&gt; &amp;gt;&amp;gt; Gemfile
+bundle install
+bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;github-pages&quot;&gt;github pages&lt;/h2&gt;
+
+&lt;p&gt;提交到指定分支(master/gh-pages)，自动完成构建，但是和本地构建不同的是，github 会加上&lt;code class=&quot;highlighter-rouge&quot;&gt;--save&lt;/code&gt;参数，只运行&lt;a href=&quot;https://pages.github.com/versions/&quot;&gt;信任的插件&lt;/a&gt;。所以如果使用了其他插件，只能提交构建后的产物了。&lt;/p&gt;
+
+&lt;h2 id=&quot;jekyll-seo-tag-插件&quot;&gt;jekyll-seo-tag 插件&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/jekyll/jekyll-seo-tag/&quot;&gt;jekyll-seo-tag 插件&lt;/a&gt;，会从&lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;中提取，生成机器可读的元数据，供搜索引擎和社交工具使用。&lt;/p&gt;
+
+&lt;p&gt;包括：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;title，页面标题加上站点名称&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;meta name=description&amp;gt;&lt;/code&gt; 目测是取内容第一段&lt;/li&gt;
+  &lt;li&gt;Canonical URL 标准格式&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://developers.google.com/structured-data/&quot;&gt;JSON-LD&lt;/a&gt;格式的站点数据，供搜索引擎使用&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://ogp.me/&quot;&gt;Open Graph&lt;/a&gt;数据，供社交工具使用&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;已有的支持-pwa-模版&quot;&gt;已有的支持 PWA 模版&lt;/h2&gt;
+
+&lt;p&gt;我找到了一个基于 yeoman 的&lt;a href=&quot;https://github.com/nirgn975/generator-jekyll-starter-kit&quot;&gt;模版&lt;/a&gt;，包含了对 PWA 的支持。&lt;/p&gt;
+
+&lt;p&gt;主要是使用 gulp 在构建时调用 sw-precache 生成&lt;code class=&quot;highlighter-rouge&quot;&gt;service-worker.js&lt;/code&gt;。缓存&lt;code class=&quot;highlighter-rouge&quot;&gt;_site&lt;/code&gt;文件夹内全部静态资源。&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 22 Jul 2017 03:21:32 +0800</pubDate>
+        <link>http://localhost:4000/coding/2017/07/21/jekyll%E7%9B%B8%E5%85%B3.html</link>
+        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/21/jekyll%E7%9B%B8%E5%85%B3.html</guid>
+        
+        <category>ruby</category>
+        
+        <category>jekyll</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
+    
+      <item>
+        <title>webpack代码分割</title>
+        <description>&lt;p&gt;在开发 Lavas 模版的过程中，使用到了 webpack 代码切割点的功能。&lt;/p&gt;
+
+&lt;h1 id=&quot;代码分割&quot;&gt;代码分割&lt;/h1&gt;
+
+&lt;p&gt;切割点 import require.ensure&lt;/p&gt;
+
+&lt;h1 id=&quot;bundle-splitting&quot;&gt;Bundle splitting&lt;/h1&gt;
+
+&lt;h2 id=&quot;commonchunkplugin&quot;&gt;CommonChunkPlugin&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://stackoverflow.com/questions/39548175/can-someone-explain-webpacks-commonschunkplugin/39600793&quot;&gt;示例&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;以vue模版为例，按顺序执行，所以首先vendor将entry中共用的依赖抽出，此时标记为entry chunk，然后遇到manifest，发现此时各个chunk不存在公共依赖，所以标记为entry后只包含webpack runtime代码。这样避免runtime和第三方依赖全在vendor中，修改app代码也会导致vendor改变。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://survivejs.com/webpack/building/bundle-splitting/#chunk-types-in-webpack&quot;&gt;chunk 类型&lt;/a&gt;中最重要的两种就是entry chunk和normal chunk。
+entry chunk就是包含runtime代码，而normal chunk包含动态加载的wrapper例如JSONP&lt;/p&gt;
+
+&lt;h2 id=&quot;切分与合并chunk&quot;&gt;切分与合并chunk&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://survivejs.com/webpack/building/bundle-splitting/#splitting-and-merging-chunks&quot;&gt;结合http2切分大chunk&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;提升构建性能&quot;&gt;提升构建性能&lt;/h1&gt;
+
+&lt;p&gt;每次构建时处理第三方依赖
+&lt;a href=&quot;https://survivejs.com/webpack/optimizing/performance/&quot;&gt;dll&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Wed, 19 Jul 2017 03:21:32 +0800</pubDate>
+        <link>http://localhost:4000/coding/2017/07/18/webpack%E4%BB%A3%E7%A0%81%E5%88%86%E5%89%B2.html</link>
+        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/18/webpack%E4%BB%A3%E7%A0%81%E5%88%86%E5%89%B2.html</guid>
+        
+        <category>webpack</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
     
       <item>
         <title>npm包提供多入口</title>
@@ -780,19 +883,239 @@
       </item>
     
       <item>
+        <title>以用户为中心的性能指标</title>
+        <description>&lt;p&gt;&lt;a href=&quot;https://developers.google.com/web/fundamentals/performance/rail&quot;&gt;RAIL&lt;/a&gt;性能评估模型从以下四个方面提出了要求：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;立即响应用户；在 100 毫秒以内确认用户输入。&lt;/li&gt;
+  &lt;li&gt;设置动画或滚动时，在 10 毫秒以内生成帧。&lt;/li&gt;
+  &lt;li&gt;最大程度增加主线程的空闲时间。&lt;/li&gt;
+  &lt;li&gt;持续吸引用户；在 1000 毫秒以内呈现交互内容。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/rail.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;针对该评估模型，Google 提出了&lt;a href=&quot;https://developers.google.com/web/updates/2017/06/user-centric-performance-metrics&quot;&gt;以用户为中心&lt;/a&gt;的四个衡量指标：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Is it happening?    First Paint (FP) / First Contentful Paint (FCP)&lt;/li&gt;
+  &lt;li&gt;Is it useful?   First Meaningful Paint (FMP) / Hero Element Timing&lt;/li&gt;
+  &lt;li&gt;Is it usable?   Time to Interactive (TTI)&lt;/li&gt;
+  &lt;li&gt;Is it delightful?   Long Tasks&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;分别对应渲染过程中的若干阶段，截图如下：
+&lt;img src=&quot;/img/perf-metrics-load-timeline.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;那么如何具体统计这些指标呢？&lt;/p&gt;
+
+&lt;h2 id=&quot;旧方法的问题&quot;&gt;旧方法的问题&lt;/h2&gt;
+
+&lt;p&gt;过去的某些统计方法是会损耗性能的，例如使用 rAF 检测过长的帧。但是缺点很明显，轮询会影响性能。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;detectLongFrame&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;lastFrameTime&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Date&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;requestAnimationFrame&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;currentFrameTime&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Date&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;currentFrameTime&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;lastFrameTime&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// Report long frame here...&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;nx&quot;&gt;detectLongFrame&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;currentFrameTime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}());&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;下面来看看具体针对这四个指标的检测方法以及优化方式。&lt;/p&gt;
+
+&lt;h2 id=&quot;fpfcp&quot;&gt;FP/FCP&lt;/h2&gt;
+
+&lt;p&gt;跟踪 FP/FCP，监听 paint 事件，不得不说这样的确太方便了。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;observer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;PerformanceObserver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;of&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getEntries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// `name` will be either 'first-paint' or 'first-contentful-paint'.&lt;/span&gt;
+        &lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;metricName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Math&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;round&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;startTime&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;duration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+        &lt;span class=&quot;nx&quot;&gt;ga&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'send'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'event'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;eventCategory&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'Performance Metrics'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;eventAction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;metricName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;eventValue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;nonInteraction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;observer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;observe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;entryTypes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'paint'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]});&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;针对 FP，也就是优化首屏方案大致包括以下几种，当然实现难度各异：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;减少 head 中阻塞的 JS/CSS，这一点已经普遍应用，包括关键路径资源等&lt;/li&gt;
+  &lt;li&gt;HTTP/2 push，这就对服务端提出很高要求了，我发现目前 Ele.me 已经应用&lt;/li&gt;
+  &lt;li&gt;app shell，整个应用的壳，抽离出来利于离线缓存，&lt;a href=&quot;https://lavas.baidu.com&quot;&gt;Lavas&lt;/a&gt; 中已经应用&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;fmp&quot;&gt;FMP&lt;/h2&gt;
+
+&lt;p&gt;关于页面有效内容，或者“Hero element”，由于依赖具体实现，并没有给出通用方法。
+具体可以&lt;a href=&quot;https://speedcurve.com/blog/user-timing-and-custom-metrics/&quot;&gt;使用performance api&lt;/a&gt;度量指标。&lt;/p&gt;
+
+&lt;h2 id=&quot;tti&quot;&gt;TTI&lt;/h2&gt;
+
+&lt;p&gt;这个指标我第一次听说，首次可交互时间。不过其实在前端渲染完成之前，例如展示 skeleton 页面骨架时，对于用户而言就是无法交互的状态，只能看不能点。&lt;/p&gt;
+
+&lt;p&gt;文章中指出在添加到 PerformanceObserver 之前，可以使用&lt;a href=&quot;https://github.com/GoogleChrome/tti-polyfill&quot;&gt;polyfill&lt;/a&gt;完成：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ttiPolyfill&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'./path/to/tti-polyfill.js'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;ttiPolyfill&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getFirstConsistentlyInteractive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;tti&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;ga&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'send'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'event'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;eventCategory&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'Performance Metrics'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;eventAction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'TTI'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;eventValue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tti&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;nonInteraction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;long-task&quot;&gt;long task&lt;/h2&gt;
+
+&lt;p&gt;浏览器在响应用户交互事件时，向队列中添加任务，等待主线程依次执行。
+由于主线程还要负责执行 JS，当处理时间过长时，就会导致任务无法及时得到执行，给用户的感觉就是未响应。
+通常定义超过 50ms 响应时间的任务就是 long task 了。&lt;/p&gt;
+
+&lt;p&gt;和 FP 一样，可以直接使用 PerformanceObserver：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;observer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;PerformanceObserver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;of&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getEntries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;ga&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'send'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'event'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;eventCategory&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'Performance Metrics'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;eventAction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'longtask'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;eventValue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Math&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;round&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;startTime&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;duration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;eventLabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;JSON&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;stringify&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;attribution&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;observer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;observe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;entryTypes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'longtask'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]});&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;关于优化方式，可以使用&lt;a href=&quot;https://developers.google.com/web/updates/2015/08/using-requestidlecallback&quot;&gt;requestIdleCallback&lt;/a&gt;，不重要的任务例如发送日志等操作可以放在里面执行。但是&lt;a href=&quot;https://caniuse.com/#search=requestIdleCallback&quot;&gt;支持度不高&lt;/a&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;input-latency&quot;&gt;input latency&lt;/h2&gt;
+
+&lt;p&gt;滚动和动画的延迟是难以统计的，但是针对点击事件的响应延迟，可以采用如下方法统计：事件触发的时间到最终响应时的时间差就是延迟了，当超过 100 毫秒时进行记录：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;subscribeBtn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;querySelector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'#subscribe'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;subscribeBtn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;addEventListener&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'click'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;lag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;performance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;timeStamp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;lag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;ga&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'send'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'event'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;eventCategory&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'Performance Metric'&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;eventAction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'input-latency'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;eventLabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'#subscribe:click'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;eventValue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Math&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;round&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;lag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;nonInteraction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+</description>
+        <pubDate>Sat, 10 Jun 2017 03:21:32 +0800</pubDate>
+        <link>http://localhost:4000/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html</link>
+        <guid isPermaLink="true">http://localhost:4000/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html</guid>
+        
+        <category>performance</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
+    
+      <item>
         <title>我喜欢的说唱歌手</title>
         <description>&lt;p&gt;最近在看《中国有嘻哈》，对吴亦凡的印象大为改观。此人似乎展现出极强的专业性，当然是指音乐上的。&lt;/p&gt;
 
-&lt;p&gt;以前我对说唱没啥印象，国内大概只有热狗的《差不多先生》，《我爱台妹》一类的歌曲，再就是阿姆的几首有名的歌。
+&lt;p&gt;以前我听的说唱比较有限，国内大概只有热狗的《差不多先生》，《我爱台妹》一类的歌曲，再就是阿姆的几首有名的歌。
 后来大学里听跑火车电台的时候，有一期请到了小老虎作为嘉宾，节目里播放了他当时的新歌&lt;a href=&quot;http://music.163.com/#/song?id=34324015&quot;&gt;《为你出生入死九十九次》&lt;/a&gt;。当时一听有点惊讶，原来说唱旋律可以这么好听，也可以不在意韵脚，赶紧下载了那张&lt;a href=&quot;http://www.xiami.com/album/2100185908&quot;&gt;《色弱》&lt;/a&gt;听了好久。&lt;/p&gt;
 
-&lt;p&gt;最近通过节目发现几个还不错的：&lt;/p&gt;
+&lt;p&gt;最近通过节目发现几首不错的歌：&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;Jony J &lt;a href=&quot;http://music.163.com/#/song?id=31260611&quot;&gt;《信仰》&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Jony J &lt;a href=&quot;http://music.163.com/#/song?id=37720226&quot;&gt;《套路》&lt;/a&gt;，这首算之前比较火的&lt;/li&gt;
   &lt;li&gt;马思唯 &lt;a href=&quot;http://music.163.com/#/song?id=33894145&quot;&gt;《崂山道士》&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;蛋堡 &lt;a href=&quot;http://music.163.com/#/song?id=76881&quot;&gt;《关于小熊》&lt;/a&gt;，“蛋堡的饶舌就像是清爽黄瓜味的乐事薯片”，这句评论有同感&lt;/li&gt;
+  &lt;li&gt;蛋堡 &lt;a href=&quot;http://music.163.com/#/song?id=93401&quot;&gt;《放个假》&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;后来在知乎上看了一些说唱圈的好玩事情，包括之前的一些 battle 比赛。有个叫贝贝的，押韵狂魔极具攻击性，就是词有点脏。节目里那期 freestyle 有些选手看的真的无比尴尬，“我的脑袋有点乱，下一个是谁赶紧上来拿mic”。&lt;/p&gt;
+&lt;p&gt;后来在知乎上了解一些说唱以及圈子里的事情：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;有个叫贝贝的，押韵狂魔（节目里一半标出来单压，双压，他似乎可以到四五六个字）极具攻击性，就是词有点脏。和孙八一，马思唯比赛的视频挺好看的。&lt;/li&gt;
+  &lt;li&gt;Diss? 似乎 rapper 们看不顺眼就通过写歌对喷。例如节目中人气很高的“你的男孩TT”，Jony J，Gai，都有被人出歌骂，类似《豆芽炒粉》这种。&lt;/li&gt;
+  &lt;li&gt;能 Diss 解决冲突的就算不错了，还有线下 gank 这种。。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;最后再次安利小老虎和蛋堡。&lt;/p&gt;
 </description>
         <pubDate>Sun, 04 Jun 2017 03:21:32 +0800</pubDate>
         <link>http://localhost:4000/music/2017/06/03/%E6%88%91%E5%96%9C%E6%AC%A2%E7%9A%84%E8%AF%B4%E5%94%B1%E6%AD%8C%E6%89%8B.html</link>

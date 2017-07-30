@@ -53,7 +53,7 @@ layout: default
             <h3 class="subheading">{{ page.subtitle }}</h2>
             <div class="tags">
                 {% for tag in page.tags %}
-                <a class="tag" href="{{ site.baseurl }}/tags/#{{ tag }}" title="{{ tag }}">{{ tag }}</a>
+                <a class="tag" href="{{ site.baseurl }}/tags#{{ tag }}" title="{{ tag }}">{{ tag }}</a>
                 {% endfor %}
             </div>
             <span class="meta">Posted by {% if page.author %}{{ page.author }}{% else %}{{ site.title }}{% endif %} on {{ page.date | date: "%B %-d, %Y" }}</span>
