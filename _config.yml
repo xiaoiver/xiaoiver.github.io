@@ -20,4 +20,6 @@ markdown: kramdown
 paginate: 5
 
 # Gems plugins
-plugins: [jekyll-paginate, jekyll-seo-tag]
+gems:
+  - jekyll-paginate
+  - jekyll-seo-tag
