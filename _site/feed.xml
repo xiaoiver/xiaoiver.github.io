@@ -6,16 +6,312 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 23 Jul 2017 00:43:23 +0800</pubDate>
-    <lastBuildDate>Sun, 23 Jul 2017 00:43:23 +0800</lastBuildDate>
+    <pubDate>Tue, 01 Aug 2017 16:14:33 +0800</pubDate>
+    <lastBuildDate>Tue, 01 Aug 2017 16:14:33 +0800</lastBuildDate>
     <generator>Jekyll v3.5.0</generator>
     
       <item>
-        <title>jekyll相关</title>
+        <title>为vue项目添加骨架屏</title>
+        <description>&lt;p&gt;前段时间阅读了&lt;a href=&quot;https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/&quot;&gt;饿了么的 PWA 升级实践&lt;/a&gt;一文，受益匪浅。其中&lt;a href=&quot;https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/#在构建时使用-vue-预渲染骨架屏&quot;&gt;构建时使用 Vue 预渲染骨架屏&lt;/a&gt;一节，为开发者提供了减少白屏时间，提升用户感知体验的新思路。本文将借鉴这一思路，尝试为 Vue 项目添加骨架屏。&lt;/p&gt;
+
+&lt;h2 id=&quot;骨架屏是什么&quot;&gt;骨架屏是什么？&lt;/h2&gt;
+
+&lt;p&gt;在 Google 提出的&lt;a href=&quot;https://developers.google.com/web/updates/2017/06/user-centric-performance-metrics&quot;&gt;以用户为中心&lt;/a&gt;的四个页面性能衡量指标中，FP/FCP(首屏渲染)可能是开发者最熟悉的了。下图来自&lt;a href=&quot;https://developers.google.com/web/updates/2017/06/user-centric-performance-metrics&quot;&gt;原文&lt;/a&gt;：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://developers.google.com/web/updates/images/2017/06/perf-metrics-load-timeline.png&quot; alt=&quot;google页面在各个阶段的截屏&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;关于尽快渲染出首屏，减少白屏时间，我能想到的优化方式大致有以下几种：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;优化 &lt;a href=&quot;https://developers.google.com/web/fundamentals/performance/critical-rendering-path/&quot;&gt;Critical Rendering Path(关键渲染路径)&lt;/a&gt;，尽可能减少阻塞渲染的 JavaScript 和 CSS。常见做法包括使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;async/defer&lt;/code&gt; 让浏览器下载 JavaScript 的同时不阻塞 HTML 解析，内联页面关键部分的样式到 HTML 中等。&lt;/li&gt;
+  &lt;li&gt;使用 Service Worker 缓存&lt;a href=&quot;https://developers.google.com/web/updates/2015/11/app-shell&quot;&gt; AppShell&lt;/a&gt;，加快后续访问速度。&lt;/li&gt;
+  &lt;li&gt;使用 HTTP/2 Server Push，帮助浏览器尽早发现静态资源，减少请求数。&lt;a href=&quot;https://zhuanlan.zhihu.com/p/26757514&quot;&gt;浅谈 HTTP/2 Server Push&lt;/a&gt;一文介绍了 Ele.me 在这方面的实践，推送 API 请求而非静态资源。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;骨架屏充分利用了前两点。下图来自原文&lt;a href=&quot;https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/#为感知体验奋斗&quot;&gt;为感知体验奋斗&lt;/a&gt;一节。从图中的 Skeleton Screen (骨架屏)中可以看出，在页面完全渲染完成之前，用户会看到一个样式简单，描绘了当前页面的大致框架，感知到页面正在逐步加载，最终骨架屏中各个占位部分被完全替换，体验良好。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://huangxuan.me/img/in-post/post-eleme-pwa/after-skeleton.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;骨架屏可以看成一个简单的关键渲染路径，由于只是页面的大致框架，样式不会太复杂，内联在 HTML 中体积很小。使用 Service Worker 缓存包含骨架屏的 HTML 页面之后，从缓存中取出展示速度更快。&lt;/p&gt;
+
+&lt;h2 id=&quot;实现思路&quot;&gt;实现思路&lt;/h2&gt;
+
+&lt;p&gt;参考原文中&lt;a href=&quot;https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/#在构建时使用-vue-预渲染骨架屏&quot;&gt;在构建时使用 Vue 预渲染骨架屏&lt;/a&gt;一节介绍的思路，我将骨架屏也看成路由组件，在构建时使用 Vue 预渲染功能，将骨架屏组件的渲染结果 HTML 片段插入 HTML 页面模版的挂载点中，将样式内联到 head 标签中。这样等前端渲染完成时，Vue 将使用&lt;a href=&quot;https://ssr.vuejs.org/zh/hydration.html&quot;&gt;客户端混合&lt;/a&gt;，把挂载点中的骨架屏内容替换成真正的页面内容。&lt;/p&gt;
+
+&lt;p&gt;有了以上思路，让我们看看如何为一个简单的 Vue 应用添加骨架屏。&lt;/p&gt;
+
+&lt;h2 id=&quot;具体实现&quot;&gt;具体实现&lt;/h2&gt;
+
+&lt;p&gt;为此我开发了一个 webpack 插件：&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin&quot;&gt;vue-skeleton-webpack-plugin&lt;/a&gt;。下面将从以下三方面介绍部分实现细节：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;使用 Vue 预渲染骨架屏&lt;/li&gt;
+  &lt;li&gt;将骨架屏渲染结果插入 HTML 模版中&lt;/li&gt;
+  &lt;li&gt;开发模式下插入各个骨架屏路由&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;使用-vue-预渲染骨架屏&quot;&gt;使用 Vue 预渲染骨架屏&lt;/h3&gt;
+
+&lt;p&gt;我们使用 Vue 的&lt;a href=&quot;https://ssr.vuejs.org/zh/&quot;&gt;预渲染&lt;/a&gt;功能渲染骨架屏组件，不熟悉的同学可以先阅读官方文档中的&lt;a href=&quot;https://ssr.vuejs.org/zh/basic.html&quot;&gt;基本用法&lt;/a&gt;一节。&lt;/p&gt;
+
+&lt;p&gt;首先需要创建一个仅使用骨架屏组件的入口文件：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// src/entry-skeleton.js&lt;/span&gt;
+
+&lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Skeleton&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'./Skeleton.vue'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 创建一个骨架屏 Vue 实例&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Vue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;components&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;Skeleton&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'&amp;lt;skeleton /&amp;gt;'&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;接下来创建一个用于服务端渲染的 webpack 配置对象，将刚创建的入口文件指定为 entry 依赖入口：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// webpack.skeleton.conf.js&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nl&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'node'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 区别默认的 'web'&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'./src/entry-skeleton.js'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 多页传入对象&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nl&quot;&gt;libraryTarget&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'commonjs2'&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;externals&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;nodeExternals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;whitelist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;sr&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\.&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;css$/&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}),&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;plugins&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;这里只展示单页应用的情况，在多页应用中，指定 entry 为包含各个页面入口的对象即可。关于多页中的 webpack 配置对象示例，可参考&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples/multipage&quot;&gt;插件的多页测试用例&lt;/a&gt;或者&lt;a href=&quot;https://github.com/lavas-project/lavas-template-vue-mpa&quot;&gt;Lavas MPA 模版&lt;/a&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;然后我们将这个 webpack 配置对象通过参数传入骨架屏插件中。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// webpack.dev.conf.js&lt;/span&gt;
+&lt;span class=&quot;nl&quot;&gt;plugins&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;SkeletonWebpackPlugin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 我们编写的插件&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;webpackConfig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'./webpack.skeleton.conf'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;骨架屏插件运行时会使用 webpack 编译这个传入的配置对象，得到骨架屏的 bundle 文件。接下来只需要使用这个 bundle 文件内容创建一个 renderer，调用&lt;code class=&quot;highlighter-rouge&quot;&gt;renderToString()&lt;/code&gt;方法就可以得到字符串形式的 HTML 渲染结果了。由于我们不需要将过程中的文件产物保存在硬盘中，使用内存文件系统&lt;a href=&quot;https://github.com/webpack/memory-fs&quot;&gt;memory-fs&lt;/a&gt;即可。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// vue-skeleton-webpack-plugin/src/ssr.js&lt;/span&gt;
+
+&lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;createBundleRenderer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'vue-server-renderer'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;createBundleRenderer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 从内存文件系统中读取 bundle 文件&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;mfs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;readFileSync&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;outputPath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'utf-8'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 创建 renderer&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;renderer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;createBundleRenderer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;bundle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 渲染得到 HTML&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;renderer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;renderToString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;skeletonHtml&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{});&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;默认情况下，webpack 模块引用的样式内容是内嵌在 JavaScript bundle 中的。官方插件&lt;a href=&quot;https://github.com/webpack-contrib/extract-text-webpack-plugin&quot;&gt; ExtractTextPlugin&lt;/a&gt;可以进行样式分离。我们也使用这个插件，将骨架屏样式内容输出到单独的 CSS 文件中。
+关于插件更多用法，可参考&lt;a href=&quot;https://doc.webpack-china.org/plugins/extract-text-webpack-plugin/&quot;&gt;官方文档&lt;/a&gt;或者&lt;a href=&quot;https://github.com/vuejs-templates/webpack/blob/master/template/build/utils.js&quot;&gt; Vue 基于 webpack 的模版&lt;/a&gt;。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// vue-skeleton-webpack-plugin/src/ssr.js&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// 加入 ExtractTextPlugin 插件到 webpack 配置对象插件列表中&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;serverWebpackConfig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;plugins&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ExtractTextPlugin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;filename&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;outputCssBasename&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 样式文件名&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}));&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;至此，我们已经得到了骨架屏的渲染结果 HTML 和样式内容，接下来需要关心如何将结果注入 HTML 页面模版中。&lt;/p&gt;
+
+&lt;h3 id=&quot;注入渲染结果&quot;&gt;注入渲染结果&lt;/h3&gt;
+
+&lt;p&gt;Vue webpack 模版项目使用了&lt;a href=&quot;https://github.com/jantimon/html-webpack-plugin&quot;&gt; HTML Webpack Plugin&lt;/a&gt;生成 HTML 文件。参考该插件的&lt;a href=&quot;https://github.com/jantimon/html-webpack-plugin#events&quot;&gt; 事件说明&lt;/a&gt;，我们选择监听&lt;code class=&quot;highlighter-rouge&quot;&gt;html-webpack-plugin-before-html-processing&lt;/code&gt;事件，在事件的回调函数中，插件会传入当前待处理的 HTML 内容供我们进一步修改。&lt;/p&gt;
+
+&lt;p&gt;我们知道骨架屏组件最终的渲染结果包含 HTML 和样式两部分，样式部分可以直接插入 head 标签內，而 HTML 需要插入挂载点中。插件使用者可以通过参数设置这个挂载点位置，默认将使用&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;div id=&quot;app&quot;&amp;gt;&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;看起来一切都很顺利，但是在多页应用中，情况会变的稍稍复杂。多页项目中通常会引入多个 HTML Webpack Plugin，例如我们在&lt;a href=&quot;https://github.com/lavas-project/lavas-template-vue-mpa&quot;&gt; Lavas MPA 模版&lt;/a&gt;中使用的&lt;a href=&quot;https://github.com/mutualofomaha/multipage-webpack-plugin&quot;&gt; Multipage Webpack 插件&lt;/a&gt;就是如此，这就会导致&lt;code class=&quot;highlighter-rouge&quot;&gt;html-webpack-plugin-before-html-processing&lt;/code&gt;事件被多次触发。&lt;/p&gt;
+
+&lt;p&gt;在多页应用中，我们传给骨架屏插件的 webpack 配置对象是包含多个入口的：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// webpack.skeleton.conf.js&lt;/span&gt;
+&lt;span class=&quot;nl&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nl&quot;&gt;page1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'./src/pages/page1/entry-skeleton.js'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;page2&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'./src/pages/page2/entry-skeleton.js'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;这就意味着每次&lt;code class=&quot;highlighter-rouge&quot;&gt;html-webpack-plugin-before-html-processing&lt;/code&gt;事件触发时，骨架屏插件都需要识别出当前正在处理的入口文件，执行 webpack 编译当前页面对应的骨架屏入口文件，渲染对应的骨架屏组件。查找当前处理的入口文件过程如下：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// vue-skeleton-webpack-plugin/src/index.js&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// 当前页面使用的所有 chunks&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;usedChunks&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;htmlPluginData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;plugin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;options&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;chunks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;entryKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// chunks 和所有入口文件的交集就是当前待处理的入口文件&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;isArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;usedChunks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;entryKey&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;skeletonEntries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;entryKey&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;entryKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;usedChunks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;indexOf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 设置当前的 webpack 配置对象的入口文件和结果输出文件&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;webpackConfig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;skeletonEntries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;entryKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;webpackConfig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;filename&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;skeleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;entryKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;js&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 使用配置对象进行服务端渲染&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;ssr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;webpackConfig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(({&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;skeletonHtml&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;skeletonCss&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// 注入骨架屏 HTML 和 CSS 到页面 HTML 中&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;至此，我们已经完成了骨架屏的渲染和注入工作，接下来有一个开发中的小问题需要关注。&lt;/p&gt;
+
+&lt;h3 id=&quot;开发模式下插入路由&quot;&gt;开发模式下插入路由&lt;/h3&gt;
+
+&lt;p&gt;前面说过，由于 Vue 会使用&lt;a href=&quot;https://ssr.vuejs.org/zh/hydration.html&quot;&gt;客户端混合&lt;/a&gt;，骨架屏内容在前端渲染完成后就会被替换，那么如何在开发时方便的查看调试呢？&lt;/p&gt;
+
+&lt;p&gt;使用浏览器开发工具设置断点是一个办法，但如果能在开发模式中向路由文件插入骨架屏组件对应的路由规则，使各个页面的骨架屏能像其他路由组件一样被访问，将使开发调试变得更加方便。向路由文件插入规则代码的工作将在&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/blob/master/src/loader.js&quot;&gt;插件的 loader&lt;/a&gt;中完成。如果您对 webpack loader 还不了解，可以参阅&lt;a href=&quot;https://doc.webpack-china.org/concepts/loaders/&quot;&gt;官方文档&lt;/a&gt;。&lt;/p&gt;
+
+&lt;p&gt;我们需要向路由文件插入两类代码：引入骨架屏组件的代码和对应的路由规则对象。关于代码插入点，引入组件代码相对简单，放在文件顶部就行了，而路由规则需要插入路由对象数组中，目前我使用的是简单的字符串匹配来查找这个数组的起始位置。例如下面的例子中，需要向 loader 传入&lt;code class=&quot;highlighter-rouge&quot;&gt;routes: [&lt;/code&gt;来确定插入路由的位置。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// router.js&lt;/span&gt;
+
+&lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Skeleton&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'@/pages/Skeleton.vue'&lt;/span&gt;
+&lt;span class=&quot;nl&quot;&gt;routes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 插入骨架屏路由&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'/skeleton'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'skeleton'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;component&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Skeleton&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// ...其余路由规则&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;在多页应用中，每个页面对应的骨架屏都需要插入代码，使用者可以通过占位符设置引入骨架屏组件语句和路由规则的模版。loader 在运行时会使用这些模版，用真实的骨架屏名称替换掉占位符。在下面的例子中，假设我们有&lt;code class=&quot;highlighter-rouge&quot;&gt;Page1.skeleton.vue&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;Page2.skeleton.vue&lt;/code&gt;这两个骨架屏，开发模式下可以通过&lt;code class=&quot;highlighter-rouge&quot;&gt;/skeleton-page1&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;/skeleton-page2&lt;/code&gt;访问这两个骨架屏路由。更多参数说明可以参考&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin#参数说明&quot;&gt;这里&lt;/a&gt;。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// webpack.dev.conf.js&lt;/span&gt;
+
+&lt;span class=&quot;nl&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nl&quot;&gt;rules&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 其他规则&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;concat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;SkeletonWebpackPlugin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;loader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;resource&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'src/router.js'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 目标路由文件&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;options&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'page1'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'page2'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; 
+                &lt;span class=&quot;na&quot;&gt;importTemplate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'import [nameCap] from \'@/pages/[name]/[nameCap].skeleton.vue\';'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;routePathTemplate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'/skeleton-[name]'&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}))&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;多页中的具体应用示例，可参考&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples/multipage&quot;&gt;多页测试用例&lt;/a&gt;或者&lt;a href=&quot;https://github.com/lavas-project/lavas-template-vue-mpa&quot;&gt;Lavas MPA 模版&lt;/a&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
+
+&lt;p&gt;感谢&lt;a href=&quot;https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/&quot;&gt;饿了么的 PWA 升级实践&lt;/a&gt;一文，提供了解决这个问题的思路。当然文章中包含的远不止骨架屏这方面，相信每个读者都会受益匪浅。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin&quot;&gt;插件&lt;/a&gt;使用中遇到任何问题，都欢迎提出&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/issues&quot;&gt; ISSUE&lt;/a&gt;。&lt;/p&gt;
+
+&lt;p&gt;百度&lt;a href=&quot;https://lavas.baidu.com/&quot;&gt; Lavas&lt;/a&gt;是一个基于 Vue 的 PWA 解决方案，帮助开发者轻松搭建 PWA 站点。其中多个模版也使用了这个插件，欢迎大家试用并提出意见。&lt;/p&gt;
+</description>
+        <pubDate>Mon, 31 Jul 2017 03:21:32 +0800</pubDate>
+        <link>http://localhost:4000/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html</link>
+        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html</guid>
+        
+        <category>vue</category>
+        
+        <category>webpack</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
+    
+      <item>
+        <title>使用jekyll遇到的问题</title>
         <description>&lt;h2 id=&quot;背景&quot;&gt;背景&lt;/h2&gt;
 
 &lt;p&gt;试图为 jekyll 增加 PWA 特性支持，顺便整理了下自己之前放在 github 上的博客。
-本文将记录过程中遇到的问题。&lt;/p&gt;
+在此记录下过程中遇到的一些问题。&lt;/p&gt;
 
 &lt;h2 id=&quot;bundler&quot;&gt;bundler&lt;/h2&gt;
 
@@ -41,11 +337,11 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
 
 &lt;p&gt;提交到指定分支(master/gh-pages)，自动完成构建，但是和本地构建不同的是，github 会加上&lt;code class=&quot;highlighter-rouge&quot;&gt;--save&lt;/code&gt;参数，只运行&lt;a href=&quot;https://pages.github.com/versions/&quot;&gt;信任的插件&lt;/a&gt;。所以如果使用了其他插件，只能提交构建后的产物了。&lt;/p&gt;
 
-&lt;h2 id=&quot;jekyll-seo-tag-插件&quot;&gt;jekyll-seo-tag 插件&lt;/h2&gt;
+&lt;h3 id=&quot;jekyll-seo-tag-插件&quot;&gt;jekyll-seo-tag 插件&lt;/h3&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/jekyll/jekyll-seo-tag/&quot;&gt;jekyll-seo-tag 插件&lt;/a&gt;，会从&lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;中提取，生成机器可读的元数据，供搜索引擎和社交工具使用。&lt;/p&gt;
+&lt;p&gt;我试用了一下&lt;a href=&quot;https://github.com/jekyll/jekyll-seo-tag/&quot;&gt;jekyll-seo-tag 插件&lt;/a&gt;，它会从&lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;中提取字段，生成机器可读的元数据，供搜索引擎和社交工具使用。&lt;/p&gt;
 
-&lt;p&gt;包括：&lt;/p&gt;
+&lt;p&gt;字段包括：&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;title，页面标题加上站点名称&lt;/li&gt;
   &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;meta name=description&amp;gt;&lt;/code&gt; 目测是取内容第一段&lt;/li&gt;
@@ -59,6 +355,10 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
 &lt;p&gt;我找到了一个基于 yeoman 的&lt;a href=&quot;https://github.com/nirgn975/generator-jekyll-starter-kit&quot;&gt;模版&lt;/a&gt;，包含了对 PWA 的支持。&lt;/p&gt;
 
 &lt;p&gt;主要是使用 gulp 在构建时调用 sw-precache 生成&lt;code class=&quot;highlighter-rouge&quot;&gt;service-worker.js&lt;/code&gt;。缓存&lt;code class=&quot;highlighter-rouge&quot;&gt;_site&lt;/code&gt;文件夹内全部静态资源。&lt;/p&gt;
+
+&lt;h2 id=&quot;后续思路&quot;&gt;后续思路&lt;/h2&gt;
+
+&lt;p&gt;以模版而非插件形式输出，参考 pjax 思路，使用 ajax 请求页面，替换内容。配合 sw-toolbox 缓存异步请求。&lt;/p&gt;
 
 </description>
         <pubDate>Sat, 22 Jul 2017 03:21:32 +0800</pubDate>
@@ -75,76 +375,49 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
       </item>
     
       <item>
-        <title>webpack代码分割</title>
-        <description>&lt;p&gt;在开发 Lavas 模版的过程中，使用到了 webpack 代码切割点的功能。&lt;/p&gt;
-
-&lt;h1 id=&quot;代码分割&quot;&gt;代码分割&lt;/h1&gt;
-
-&lt;p&gt;切割点 import require.ensure&lt;/p&gt;
-
-&lt;h1 id=&quot;bundle-splitting&quot;&gt;Bundle splitting&lt;/h1&gt;
-
-&lt;h2 id=&quot;commonchunkplugin&quot;&gt;CommonChunkPlugin&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://stackoverflow.com/questions/39548175/can-someone-explain-webpacks-commonschunkplugin/39600793&quot;&gt;示例&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;以vue模版为例，按顺序执行，所以首先vendor将entry中共用的依赖抽出，此时标记为entry chunk，然后遇到manifest，发现此时各个chunk不存在公共依赖，所以标记为entry后只包含webpack runtime代码。这样避免runtime和第三方依赖全在vendor中，修改app代码也会导致vendor改变。&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://survivejs.com/webpack/building/bundle-splitting/#chunk-types-in-webpack&quot;&gt;chunk 类型&lt;/a&gt;中最重要的两种就是entry chunk和normal chunk。
-entry chunk就是包含runtime代码，而normal chunk包含动态加载的wrapper例如JSONP&lt;/p&gt;
-
-&lt;h2 id=&quot;切分与合并chunk&quot;&gt;切分与合并chunk&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://survivejs.com/webpack/building/bundle-splitting/#splitting-and-merging-chunks&quot;&gt;结合http2切分大chunk&lt;/a&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;提升构建性能&quot;&gt;提升构建性能&lt;/h1&gt;
-
-&lt;p&gt;每次构建时处理第三方依赖
-&lt;a href=&quot;https://survivejs.com/webpack/optimizing/performance/&quot;&gt;dll&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Wed, 19 Jul 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/coding/2017/07/18/webpack%E4%BB%A3%E7%A0%81%E5%88%86%E5%89%B2.html</link>
-        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/18/webpack%E4%BB%A3%E7%A0%81%E5%88%86%E5%89%B2.html</guid>
-        
-        <category>webpack</category>
-        
-        
-        <category>coding</category>
-        
-      </item>
-    
-      <item>
-        <title>npm包提供多入口</title>
+        <title>为npm包提供多入口</title>
         <description>&lt;h2 id=&quot;问题背景&quot;&gt;问题背景&lt;/h2&gt;
 
 &lt;p&gt;之前给&lt;a href=&quot;https://github.com/van-nguyen/webpack-cdn-plugin&quot;&gt;webpack-cdn-plugin&lt;/a&gt;提PR时，遇到这样一个问题，入口文件使用了部分 ES6 特性，而作者不想直接提供转译版本，这就导致在低版本 Node.js 环境无法直接运行。&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt;中的&lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;只能支持单文件，无法提供多入口供使用者根据自身环境选择。&lt;/p&gt;
+&lt;p&gt;首先想到的办法是，能不能提供多个版本。但是&lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt;中的&lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;只能支持单文件，无法提供多入口供使用者根据自身环境选择。&lt;/p&gt;
 
-&lt;p&gt;当时的做法是在入口文件中判断当前运行环境，选择使用转译或非转译版本。&lt;/p&gt;
+&lt;p&gt;后来采用的做法是在入口文件中判断当前运行环境，使用动态&lt;code class=&quot;highlighter-rouge&quot;&gt;require&lt;/code&gt;来选择转译或非转译版本。等于说模块开发者需要判断使用者当前的运行环境，总感觉不太优雅。&lt;/p&gt;
 
-&lt;p&gt;前段时间刚好看到&lt;a href=&quot;http://2ality.com/2017/04/setting-up-multi-platform-packages.html&quot;&gt;这一系列文章&lt;/a&gt;，算是给出了较为全面的解决方案。&lt;/p&gt;
+&lt;p&gt;前段时间刚好看到&lt;a href=&quot;http://2ality.com/2017/04/setting-up-multi-platform-packages.html&quot;&gt;这一系列文章&lt;/a&gt;，里面针对这个问题给出了较为全面的解决方案。&lt;/p&gt;
 
-&lt;h2 id=&quot;多种模块机制版本&quot;&gt;多种模块机制版本&lt;/h2&gt;
+&lt;h2 id=&quot;多种模块格式版本&quot;&gt;多种模块格式版本&lt;/h2&gt;
 
-&lt;p&gt;模块格式包括：&lt;/p&gt;
+&lt;p&gt;我们都知道模块格式包括了以下几种：&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;AMD 浏览器端异步模块机制&lt;/li&gt;
   &lt;li&gt;CJS Node.js同步模块机制，浏览器端想使用必须先使用类似 webpack 之类的工具编译成异步的&lt;/li&gt;
-  &lt;li&gt;ESM ES6提出内置机制支持同步和异步，部分浏览器已支持，Node.js端2018年？&lt;/li&gt;
+  &lt;li&gt;ESM ES6提出的内置机制，支持同步和异步，部分浏览器已支持，Node.js 计划2018年实现&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;UMD支持&lt;a href=&quot;https://github.com/umdjs/umd/blob/master/templates/nodeAdapter.js&quot;&gt;在 Node.js 中写类似 AMD 的代码&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;作为模块提供者，我们自然希望兼容更多模块格式，还好 UMD 提供了一系列兼容 AMD 和 CJS 的方案，例如支持&lt;a href=&quot;https://github.com/umdjs/umd/blob/master/templates/nodeAdapter.js&quot;&gt;在 Node.js 中写 AMD 标准的代码&lt;/a&gt;。这些模版范式为模块提供者提供了极大便利。&lt;/p&gt;
 
-&lt;p&gt;在&lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt;中暴露多种模块格式的入口，通过&lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;module&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;browser&lt;/code&gt;字段。&lt;/p&gt;
+&lt;p&gt;是时候说说 ESM 了。它提供了统一的&lt;code class=&quot;highlighter-rouge&quot;&gt;import/export&lt;/code&gt;，真正统一了浏览器和 Node.js 端的模块标准。而且配合 Webpack 和 Rollup 提供的 &lt;a href=&quot;https://webpack.js.org/guides/tree-shaking/&quot;&gt;Tree-shaking&lt;/a&gt; 技术可以最大程度精简代码。那么问题来了，在 ESM 一统天下之前，如何提供使用 ESM 编写的代码给先进的打包工具，同时又不至于完全失去兼容性。换句话说，&lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt;中真的只有&lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;这一个暴露模块入口文件的属性吗？&lt;/p&gt;
 
-&lt;p&gt;angular提出&lt;code class=&quot;highlighter-rouge&quot;&gt;es2015&lt;/code&gt;，直接使用ES6非转译版本。&lt;/p&gt;
+&lt;p&gt;显然不是，来看看这两个属性吧：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;module，还&lt;a href=&quot;https://github.com/dherman/defense-of-dot-js/blob/master/proposal.md&quot;&gt;处于提案阶段&lt;/a&gt;，提供使用 ESM 编写的版本&lt;/li&gt;
+  &lt;li&gt;browser，提供仅针对浏览器环境版本&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;p&gt;在 webpack 中，可以通过&lt;code class=&quot;highlighter-rouge&quot;&gt;resolve.mainFields&lt;/code&gt;指定模块查找优先级。例如&lt;code class=&quot;highlighter-rouge&quot;&gt;target: 'web'&lt;/code&gt;默认的优先级为：&lt;code class=&quot;highlighter-rouge&quot;&gt;[&quot;browser&quot;, &quot;module&quot;, &quot;main&quot;]&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;对于打包工具来说，就不能只考虑&lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;入口了。
+在 webpack 中，可以通过&lt;code class=&quot;highlighter-rouge&quot;&gt;resolve.mainFields&lt;/code&gt;来指定模块查找优先级。
+而这个优先级又是根据目标环境确定的，例如针对浏览器环境，即&lt;code class=&quot;highlighter-rouge&quot;&gt;target: 'web'&lt;/code&gt;，默认的优先级为：&lt;code class=&quot;highlighter-rouge&quot;&gt;[&quot;browser&quot;, &quot;module&quot;, &quot;main&quot;]&lt;/code&gt;。而服务端渲染中常用的&lt;code class=&quot;highlighter-rouge&quot;&gt;target: 'node'&lt;/code&gt;查找优先级为&lt;code class=&quot;highlighter-rouge&quot;&gt;[&quot;module&quot;, &quot;main&quot;]&lt;/code&gt;。可以看出，webpack 会优先使用 ESM 标准的代码。&lt;/p&gt;
+
+&lt;p&gt;看起来支持不同模块格式的问题解决了。&lt;/p&gt;
 
 &lt;h2 id=&quot;转译和非转译版本&quot;&gt;转译和非转译版本&lt;/h2&gt;
 
-&lt;p&gt;参考 babel-preset-env 的做法根据运行环境决定是否需要使用 transpiled 版本代码&lt;/p&gt;
+&lt;p&gt;除了支持不同的模块格式，代码中使用了新特性，是否需要转译也是一个问题。&lt;/p&gt;
+
+&lt;p&gt;Angular 提出在&lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt;中新增&lt;code class=&quot;highlighter-rouge&quot;&gt;es2015&lt;/code&gt;属性，用来指定使用 ES6 的非转译代码入口。&lt;/p&gt;
+
+&lt;p&gt;当然，最好能参考 babel-preset-env 的做法，也根据运行环境决定是否需要使用转译版本的代码。&lt;/p&gt;
 
 &lt;h3 id=&quot;babel-preset-env&quot;&gt;babel-preset-env&lt;/h3&gt;
 
@@ -178,7 +451,7 @@ entry chunk就是包含runtime代码，而normal chunk包含动态加载的wrapp
     &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;其他参数包括：&lt;/p&gt;
+&lt;p&gt;其他重要的参数包括：&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;modules 默认CJS，不转译&lt;code class=&quot;highlighter-rouge&quot;&gt;false&lt;/code&gt;&lt;/li&gt;
   &lt;li&gt;useBuiltIns 使用polyfill，注入类似&lt;code class=&quot;highlighter-rouge&quot;&gt;import &quot;core-js/modules/es7.string.pad-start&quot;;&lt;/code&gt;的代码&lt;/li&gt;
@@ -207,18 +480,18 @@ entry chunk就是包含runtime代码，而normal chunk包含动态加载的wrapp
 &lt;h3 id=&quot;其他做法&quot;&gt;其他做法&lt;/h3&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;全部转译，耗时但是配置简单&lt;/li&gt;
+  &lt;li&gt;全部转译，耗时但是配置简单。webpack 插件大多采用这种方式。&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://gist.github.com/developit/081148d83348ebe9a1bc1ba0707e1bb8&quot;&gt;配置 babel-loader，只转译提供了 module 字段的依赖&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;根据后缀，js不转译，esm转译&lt;/li&gt;
+  &lt;li&gt;根据文件后缀决定，&lt;code class=&quot;highlighter-rouge&quot;&gt;.js&lt;/code&gt;不转译，&lt;code class=&quot;highlighter-rouge&quot;&gt;.esm&lt;/code&gt;转译&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
 
-&lt;p&gt;作为模块提供者，我会采用&lt;code class=&quot;highlighter-rouge&quot;&gt;esnext&lt;/code&gt;的方式，提供非转译版本。然后让使用者根据运行环境选择使用。&lt;/p&gt;
+&lt;p&gt;作为模块提供者，我会采用&lt;code class=&quot;highlighter-rouge&quot;&gt;esnext&lt;/code&gt;的方式，即额外提供非转译版本。然后让使用者通过配置，根据自身运行环境选择使用不同的版本。&lt;/p&gt;
 </description>
         <pubDate>Tue, 18 Jul 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/coding/2017/07/17/npm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html</link>
-        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/17/npm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html</guid>
+        <link>http://localhost:4000/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html</link>
+        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html</guid>
         
         <category>javascript</category>
         
@@ -234,7 +507,7 @@ entry chunk就是包含runtime代码，而normal chunk包含动态加载的wrapp
       </item>
     
       <item>
-        <title>ava和travis-ci的使用</title>
+        <title>使用ava和travis-ci</title>
         <description>&lt;p&gt;最近给 &lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin&quot;&gt;skeleton 插件&lt;/a&gt;加上了测试用例，顺便使用了下自动集成工具。&lt;/p&gt;
 
 &lt;h2 id=&quot;ava&quot;&gt;&lt;a href=&quot;https://github.com/avajs/ava&quot;&gt;ava&lt;/a&gt;&lt;/h2&gt;
@@ -322,8 +595,8 @@ entry chunk就是包含runtime代码，而normal chunk包含动态加载的wrapp
 &lt;p&gt;完成后就可以在&lt;code class=&quot;highlighter-rouge&quot;&gt;README.md&lt;/code&gt;里加上build图标了。&lt;img src=&quot;https://travis-ci.org/lavas-project/vue-skeleton-webpack-plugin.svg?branch=master&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 17 Jul 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/coding/2017/07/16/ava%E5%92%8Ctravis-ci.html</link>
-        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/16/ava%E5%92%8Ctravis-ci.html</guid>
+        <link>http://localhost:4000/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html</link>
+        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html</guid>
         
         <category>ava</category>
         
@@ -1092,34 +1365,44 @@ entry chunk就是包含runtime代码，而normal chunk包含动态加载的wrapp
       </item>
     
       <item>
-        <title>我喜欢的说唱歌手</title>
-        <description>&lt;p&gt;最近在看《中国有嘻哈》，对吴亦凡的印象大为改观。此人似乎展现出极强的专业性，当然是指音乐上的。&lt;/p&gt;
+        <title>最近听的说唱</title>
+        <description>&lt;p&gt;最近在看《中国有嘻哈》，对吴亦凡的印象大为改观。此人似乎展现出极强的专业性，当然是指音乐上的。但是有人爆出这都是剪辑的节目效果，另外两组制作人说的一点不比他少，都被剪了，刻意营造出wuli凡凡专业严格的形象。如果是真的，那“孤儿剪辑”真的是名副其实了。&lt;/p&gt;
 
 &lt;p&gt;以前我听的说唱比较有限，国内大概只有热狗的《差不多先生》，《我爱台妹》一类的歌曲，再就是阿姆的几首有名的歌。
-后来大学里听跑火车电台的时候，有一期请到了小老虎作为嘉宾，节目里播放了他当时的新歌&lt;a href=&quot;http://music.163.com/#/song?id=34324015&quot;&gt;《为你出生入死九十九次》&lt;/a&gt;。当时一听有点惊讶，原来说唱旋律可以这么好听，也可以不在意韵脚，赶紧下载了那张&lt;a href=&quot;http://www.xiami.com/album/2100185908&quot;&gt;《色弱》&lt;/a&gt;听了好久。&lt;/p&gt;
+后来大学里听跑火车电台的时候，有一期请到了说唱歌手小老虎作为嘉宾，节目里播放了他当时的新歌&lt;a href=&quot;http://music.163.com/#/song?id=34324015&quot;&gt;《为你出生入死九十九次》&lt;/a&gt;。当时就觉得惊艳，原来说唱旋律可以这么好听，节奏可以不用特别快，也可以不在意韵脚。在虾米上听了他的&lt;a href=&quot;http://www.xiami.com/album/2100185908&quot;&gt;《色弱》&lt;/a&gt;这张专辑很久。&lt;/p&gt;
 
-&lt;p&gt;最近通过节目发现几首不错的歌：&lt;/p&gt;
+&lt;p&gt;现在这个综艺节目算是彻底火了，很多歌手也疯狂涨粉。我跟风听了不少，也发现了几首不错的歌：&lt;/p&gt;
 &lt;ul&gt;
-  &lt;li&gt;Jony J &lt;a href=&quot;http://music.163.com/#/song?id=31260611&quot;&gt;《信仰》&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Jony J &lt;a href=&quot;http://music.163.com/#/song?id=31260611&quot;&gt;《信仰》&lt;/a&gt;，好听&lt;/li&gt;
   &lt;li&gt;Jony J &lt;a href=&quot;http://music.163.com/#/song?id=37720226&quot;&gt;《套路》&lt;/a&gt;，这首算之前比较火的&lt;/li&gt;
+  &lt;li&gt;Jony J &lt;a href=&quot;http://music.163.com/#/song?id=31260603&quot;&gt;《My City》&lt;/a&gt;，关于南京的回忆&lt;/li&gt;
   &lt;li&gt;马思唯 &lt;a href=&quot;http://music.163.com/#/song?id=33894145&quot;&gt;《崂山道士》&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;蛋堡 &lt;a href=&quot;http://music.163.com/#/song?id=76881&quot;&gt;《关于小熊》&lt;/a&gt;，“蛋堡的饶舌就像是清爽黄瓜味的乐事薯片”，这句评论有同感&lt;/li&gt;
+  &lt;li&gt;蛋堡 &lt;a href=&quot;http://music.163.com/#/song?id=76881&quot;&gt;《关于小熊》&lt;/a&gt;，“蛋堡的饶舌就像是清爽黄瓜味的乐事薯片”&lt;/li&gt;
   &lt;li&gt;蛋堡 &lt;a href=&quot;http://music.163.com/#/song?id=93401&quot;&gt;《放个假》&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Ty &lt;a href=&quot;http://music.163.com/#/song?id=482056804&quot;&gt;《高，还没富，但帅》&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;后来在知乎上了解一些说唱以及圈子里的事情：&lt;/p&gt;
+&lt;p&gt;后来在知乎上了解一些说唱以及圈子里的事情，比如 diss 和 battle。&lt;/p&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;有个叫贝贝的，押韵狂魔（节目里一半标出来单压，双压，他似乎可以到四五六个字）极具攻击性，就是词有点脏。和孙八一，马思唯比赛的视频挺好看的。&lt;/li&gt;
-  &lt;li&gt;Diss? 似乎 rapper 们看不顺眼就通过写歌对喷。例如节目中人气很高的“你的男孩TT”，Jony J，Gai，都有被人出歌骂，类似《豆芽炒粉》这种。&lt;/li&gt;
-  &lt;li&gt;能 Diss 解决冲突的就算不错了，还有线下 gank 这种。。&lt;/li&gt;
-&lt;/ul&gt;
+&lt;h2 id=&quot;diss&quot;&gt;Diss&lt;/h2&gt;
 
-&lt;p&gt;最后再次安利小老虎和蛋堡。&lt;/p&gt;
+&lt;p&gt;众所周知 rapper 们一贯以特立独行的装束（大金链子，脏辫，oversize）示人，脾气自然都不小。当他们遇到看不顺眼的人或者事，就会写首歌来喷，这就是 diss。被喷者不甘示弱回击，俩人就算结下了梁子（beef）。&lt;/p&gt;
+
+&lt;p&gt;网易云搜索“diss 中国有嘻哈”，结果茫茫多。&lt;/p&gt;
+
+&lt;h2 id=&quot;battle&quot;&gt;Battle&lt;/h2&gt;
+
+&lt;p&gt;节目中的 1v1 battle 环节更类似隔壁台好声音的双人合唱模式。不过如果按真实的 battle 形式来，估计全场哔哔哔，“商务说唱”孙八一恐成最大赢家。&lt;/p&gt;
+
+&lt;p&gt;网上“iron mic”或者“地下八英里”这样的 battle 比赛视频很多，在这样的 battle 里，选手们需要即兴发挥，展示真正的 freestyle 实力与攻击性，这就导致过程中难免脏字乱蹦。节目中提到的那场 PG One 和孙八一的决赛，就是两种风格的交锋。面对 PG One “猪头”这样类似人身攻击的嘲讽，孙八一依旧面不改色，延续自己不带脏字的风格，最后夺冠。&lt;/p&gt;
+
+&lt;p&gt;说到 freestyle，这方面各个 rapper 水平有强有弱。从节目中也能看出来，battle 出身的自然强，例如 PG One，小青龙。而 Jony J，TT 明显就比较弱，甚至完全放弃即兴发挥，直接偷懒套用自己的老词。不过 freestyle 也只是说唱的一部分，只能说各有侧重吧。&lt;/p&gt;
+
+&lt;p&gt;这里推荐红花会贝贝和马思唯的表演赛视频。抛开脏字不谈，贝贝的押韵到达了匪夷所思的地步。当然马思唯也很棒。&lt;/p&gt;
 </description>
         <pubDate>Sun, 04 Jun 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/music/2017/06/03/%E6%88%91%E5%96%9C%E6%AC%A2%E7%9A%84%E8%AF%B4%E5%94%B1%E6%AD%8C%E6%89%8B.html</link>
-        <guid isPermaLink="true">http://localhost:4000/music/2017/06/03/%E6%88%91%E5%96%9C%E6%AC%A2%E7%9A%84%E8%AF%B4%E5%94%B1%E6%AD%8C%E6%89%8B.html</guid>
+        <link>http://localhost:4000/music/2017/06/03/%E6%9C%80%E8%BF%91%E5%90%AC%E7%9A%84%E8%AF%B4%E5%94%B1.html</link>
+        <guid isPermaLink="true">http://localhost:4000/music/2017/06/03/%E6%9C%80%E8%BF%91%E5%90%AC%E7%9A%84%E8%AF%B4%E5%94%B1.html</guid>
         
         <category>hiphop</category>
         
@@ -1137,6 +1420,8 @@ entry chunk就是包含runtime代码，而normal chunk包含动态加载的wrapp
 &lt;p&gt;&lt;a href=&quot;https://github.com/nodejs/http2&quot;&gt;nodejs内置支持&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://jakearchibald.com/2017/h2-push-tougher-than-i-thought/&quot;&gt;使用中的问题&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://zhuanlan.zhihu.com/p/26757514&quot;&gt;API 推送&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;http2&quot;&gt;HTTP/2&lt;/h2&gt;
 

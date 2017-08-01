@@ -89,11 +89,6 @@
             <div class="tags">
                 
                     
-                    <a href="/tags#performance" title="performance">
-                        performance
-                    </a>
-                
-                    
                     <a href="/tags#http2" title="http2">
                         http2
                     </a>
@@ -101,6 +96,11 @@
                     
                     <a href="/tags#hiphop" title="hiphop">
                         hiphop
+                    </a>
+                
+                    
+                    <a href="/tags#performance" title="performance">
+                        performance
                     </a>
                 
                     
@@ -157,22 +157,46 @@
     <div class="container">
         
         <div class="post-preview">
+            <a href="/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html">
+                <h2 class="post-title">
+                    为vue项目添加骨架屏
+                </h2>
+                
+                <div class="post-content-preview">
+                    前段时间阅读了饿了么的 PWA 升级实践一文，受益匪浅。其中构建时使用 Vue 预渲染骨架屏一节，为开发者提供了减少白屏时间，提升用户感知体验的新思路。本文将借鉴这一思路，尝试为 Vue 项目添加骨架屏。
+
+骨架屏是什么？
+
+在 Google 提出的以用户为中心的四个页面性能衡量指标中，FP/FCP(首屏渲染)可能是开发者最熟悉的了。下图来自原文：
+
+
+
+关于尽快渲染出首屏，减少白屏时间，我...
+                </div>
+            </a>
+            <p class="post-meta">
+                July 30, 2017
+            </p>
+        </div>
+        <hr>
+        
+        <div class="post-preview">
             <a href="/coding/2017/07/21/jekyll%E7%9B%B8%E5%85%B3.html">
                 <h2 class="post-title">
-                    jekyll相关
+                    使用jekyll遇到的问题
                 </h2>
                 
                 <div class="post-content-preview">
                     背景
 
 试图为 jekyll 增加 PWA 特性支持，顺便整理了下自己之前放在 github 上的博客。
-本文将记录过程中遇到的问题。
+在此记录下过程中遇到的一些问题。
 
 bundler
 
 我们都知道 ruby 中安装依赖的工具是 gem，类似 Node.js 中的 npm。但 gem 并没有类似 package.json 这样的依赖描述文件，这就导致安装特定版本号的依赖很不方便。
 
-而 bundler 提供了缺失的依赖管理...
+而 bundler 提供了缺失的依赖...
                 </div>
             </a>
             <p class="post-meta">
@@ -182,37 +206,9 @@ bundler
         <hr>
         
         <div class="post-preview">
-            <a href="/coding/2017/07/18/webpack%E4%BB%A3%E7%A0%81%E5%88%86%E5%89%B2.html">
+            <a href="/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html">
                 <h2 class="post-title">
-                    webpack代码分割
-                </h2>
-                
-                <div class="post-content-preview">
-                    在开发 Lavas 模版的过程中，使用到了 webpack 代码切割点的功能。
-
-代码分割
-
-切割点 import require.ensure
-
-Bundle splitting
-
-CommonChunkPlugin
-
-示例
-
-以vue模版为例，按顺序执行，所以首先vendor将entry中共用的依赖抽出，此时标记为entry chunk，然后遇到manifest，发现此时各个chunk不...
-                </div>
-            </a>
-            <p class="post-meta">
-                July 18, 2017
-            </p>
-        </div>
-        <hr>
-        
-        <div class="post-preview">
-            <a href="/coding/2017/07/17/npm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html">
-                <h2 class="post-title">
-                    npm包提供多入口
+                    为npm包提供多入口
                 </h2>
                 
                 <h3 class="post-subtitle">
@@ -224,11 +220,9 @@ CommonChunkPlugin
 
 之前给webpack-cdn-plugin提PR时，遇到这样一个问题，入口文件使用了部分 ES6 特性，而作者不想直接提供转译版本，这就导致在低版本 Node.js 环境无法直接运行。
 
-package.json中的main只能支持单文件，无法提供多入口供使用者根据自身环境选择。
+首先想到的办法是，能不能提供多个版本。但是package.json中的main只能支持单文件，无法提供多入口供使用者根据自身环境选择。
 
-当时的做法是在入口文件中判断当前运行环境，选择使用转译或非转译版本。
-
-前段时间刚好看到这一系列文...
+后来采用的做法是在入口文件中判断当前运行环境，使用动态r...
                 </div>
             </a>
             <p class="post-meta">
@@ -238,9 +232,9 @@ package.json中的main只能支持单文件，无法提供多入口供使用者�
         <hr>
         
         <div class="post-preview">
-            <a href="/coding/2017/07/16/ava%E5%92%8Ctravis-ci.html">
+            <a href="/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html">
                 <h2 class="post-title">
-                    ava和travis-ci的使用
+                    使用ava和travis-ci
                 </h2>
                 
                 <div class="post-content-preview">

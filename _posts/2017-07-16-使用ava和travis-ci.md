@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "ava和travis-ci的使用"
+title:  "使用ava和travis-ci"
 header-img: "img/travis-ci.jpg"
 header-mask: 0.4
 date:   2017-07-16 19:21:32

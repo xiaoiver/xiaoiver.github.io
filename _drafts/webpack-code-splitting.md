@@ -3,7 +3,7 @@ layout: post
 title:  "webpack代码分割"
 header-img: "img/vue-webpack.png"
 header-mask: 0.6
-date:   2017-07-18 19:21:32
+date:  
 category: coding
 tags: webpack
 ---
