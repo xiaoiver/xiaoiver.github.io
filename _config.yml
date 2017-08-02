@@ -6,6 +6,9 @@ description: >
 keywords:
   - coding
   - 编程
+  - javascript
+  - xiaoiver
+  - xiaop
 chrome-tab-theme-color: "#eee"
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "https://xiaoiver.github.io" # the base hostname & protocol for your site
@@ -20,4 +23,19 @@ markdown: kramdown
 paginate: 5
 
 # Gems plugins
-plugins: [jekyll-paginate, jekyll-seo-tag]
+# plugins: [jekyll-paginate, jekyll-seo-tag]
+gems:
+  - jekyll-paginate
+  - jekyll-seo-tag
+  - jekyll-responsive-image
+
+# Responsive image
+responsive_image:
+  template: _includes/responsive-image.html
+  sizes:
+    - width: 480
+      quality: 80
+    - width: 800
+    - width: 1400
+      quality: 90
+  output_path_format: img/resized/%{width}/%{basename}
