@@ -150,6 +150,11 @@
                         jekyll
                     </a>
                 
+                    
+                    <a href="/tags#github-pages" title="github-pages">
+                        github-pages
+                    </a>
+                
             </div>
         </section>
     </div>
@@ -204,23 +209,23 @@
         <hr>
         
         <div class="post-preview">
-            <a href="/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html">
+            <a href="/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html">
                 <h2 class="post-title">
-                    为jekyll增加PWA特性
+                    在Github Pages中使用第三方插件
                 </h2>
                 
+                <h3 class="post-subtitle">
+                    仅对本地构建结果进行版本控制
+                </h3>
+                
                 <div class="post-content-preview">
-                    背景
+                    Github Pages能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。
 
-试图为 jekyll 增加 PWA 特性支持，顺便整理了下自己之前放在 github 上的博客。
-
-bundler
-
-我们都知道 ruby 中安装依赖的工具是 gem，类似 Node.js 中的 npm。但不同之处在于，gem 的依赖是全局性的，并没有项目內的node_modules，而且 gem 并没有类似 package.json 这样的依赖描述文件，这就导致安装特定版本号的依赖...
+jekyll 项目不可避免的会使用各种各样的插件，而 Github Pages 目前仅支持到 jekyll 3.4.5 版本，新版本在_config.yml中对插件的使用方法发生了变更，使用plugins代替旧版本的属性gems。所...
                 </div>
             </a>
             <p class="post-meta">
-                July 21, 2017
+                July 22, 2017
             </p>
         </div>
         <hr>

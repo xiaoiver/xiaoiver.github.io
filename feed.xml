@@ -6,8 +6,8 @@
 </description>
     <link>https://xiaoiver.github.io/</link>
     <atom:link href="https://xiaoiver.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 02 Aug 2017 15:17:53 +0800</pubDate>
-    <lastBuildDate>Wed, 02 Aug 2017 15:17:53 +0800</lastBuildDate>
+    <pubDate>Wed, 02 Aug 2017 15:49:52 +0800</pubDate>
+    <lastBuildDate>Wed, 02 Aug 2017 15:49:52 +0800</lastBuildDate>
     <generator>Jekyll v3.4.5</generator>
     
       <item>
@@ -350,58 +350,55 @@
       </item>
     
       <item>
-        <title>为jekyll增加PWA特性</title>
-        <description>&lt;h2 id=&quot;背景&quot;&gt;背景&lt;/h2&gt;
+        <title>在Github Pages中使用第三方插件</title>
+        <description>&lt;p&gt;&lt;a href=&quot;https://pages.github.com/&quot;&gt;Github Pages&lt;/a&gt;能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。&lt;/p&gt;
 
-&lt;p&gt;试图为 jekyll 增加 PWA 特性支持，顺便整理了下自己之前放在 github 上的博客。&lt;/p&gt;
+&lt;p&gt;jekyll 项目不可避免的会使用各种各样的插件，而 Github Pages 目前仅支持到 jekyll 3.4.5 版本，新版本在&lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;中对插件的使用方法发生了变更，使用&lt;code class=&quot;highlighter-rouge&quot;&gt;plugins&lt;/code&gt;代替旧版本的属性&lt;code class=&quot;highlighter-rouge&quot;&gt;gems&lt;/code&gt;。所以为了兼容 Github Pages，本地新版本的警告提示信息只能选择忽略了。&lt;/p&gt;
 
-&lt;h2 id=&quot;bundler&quot;&gt;bundler&lt;/h2&gt;
+&lt;p&gt;和在本地构建不同的一点是，github 构建时会加上&lt;code class=&quot;highlighter-rouge&quot;&gt;--save&lt;/code&gt;参数，只运行&lt;a href=&quot;https://pages.github.com/versions/&quot;&gt;信任的插件&lt;/a&gt;。这就导致如果我们的博客使用了不在白名单中的插件，github 构建时就会提示警告（在项目标签页 Setting -&amp;gt; GitHub Pages 中），构建失败也就看不到最新的博客内容了。&lt;/p&gt;
 
-&lt;p&gt;我们都知道 ruby 中安装依赖的工具是 gem，类似 Node.js 中的 npm。但不同之处在于，gem 的依赖是全局性的，并没有项目內的&lt;code class=&quot;highlighter-rouge&quot;&gt;node_modules&lt;/code&gt;，而且 gem 并没有类似 package.json 这样的依赖描述文件，这就导致安装特定版本号的依赖很不方便。&lt;/p&gt;
+&lt;p&gt;Github Pages 给出一种建议是，让用户在本地构建站点，然后仅将结果纳入版本控制，提交到指定分支。这就意味着我们放弃了 github 构建。&lt;/p&gt;
 
-&lt;p&gt;而 bundler 提供了缺失的依赖管理功能，正如自身的介绍“一个管理 gem 的 gem”。主要依靠两个描述文件：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Gemfile&lt;/code&gt;类似&lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt;，包含依赖列表，版本要求等。&lt;/li&gt;
-  &lt;li&gt;安装所有依赖后会生成&lt;code class=&quot;highlighter-rouge&quot;&gt;Gemfile.lock&lt;/code&gt;，类似 yarn 中的&lt;code class=&quot;highlighter-rouge&quot;&gt;yarn.lock&lt;/code&gt;，存储依赖的精确版本。&lt;/li&gt;
-&lt;/ul&gt;
+&lt;p&gt;至于本地构建，熟悉 Node.js 的开发者完全可以采用 gulp/grunt 工作流，调用&lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll build&lt;/code&gt;构建站点，顺便还能做一些静态资源压缩的工作。我在网上找到一种使用 rakefile 的&lt;a href=&quot;https://www.sitepoint.com/jekyll-plugins-github/&quot;&gt;简单方法&lt;/a&gt;，决定一试。&lt;/p&gt;
 
-&lt;p&gt;这样将这两个文件连同项目一并提交，就能保证代码共享后依赖的一致性。&lt;/p&gt;
+&lt;h2 id=&quot;使用-rakefile-构建&quot;&gt;使用 Rakefile 构建&lt;/h2&gt;
 
-&lt;p&gt;首先使用 gem 安装，然后创建&lt;code class=&quot;highlighter-rouge&quot;&gt;Gemfile&lt;/code&gt;文件，写入依赖并安装：&lt;/p&gt;
+&lt;p&gt;首先我们需要拷贝原有 repo 内容到一个新文件夹中，以后这个新文件夹将成为我们的工作文件夹。由于以后我们不会再在原有 repo 中进行写作，所以此时可以在 repo 中执行&lt;code class=&quot;highlighter-rouge&quot;&gt;git rm -r ./&lt;/code&gt;清空所有版本控制。&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;gem install bundler
-bundle init
-&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'gem &quot;rspec&quot;'&lt;/span&gt; &amp;gt;&amp;gt; Gemfile
-bundle install
-bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;p&gt;在新文件夹中增加 Rakefile，进行如下操作：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;使用&lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll build&lt;/code&gt;构建站点&lt;/li&gt;
+  &lt;li&gt;清空真正的 repo 内容，拷贝&lt;code class=&quot;highlighter-rouge&quot;&gt;_site&lt;/code&gt;文件夹内容到里面。&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;p&gt;命令都和 npm 一样，不知道是否有借鉴。&lt;/p&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;no&quot;&gt;GH_PAGES_DIR&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;xiaoiver.github.io&quot;&lt;/span&gt;
 
-&lt;h2 id=&quot;github-pages&quot;&gt;Github Pages&lt;/h2&gt;
+&lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Build Jekyll site and copy files&quot;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:build&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;system&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;jekyll build&quot;&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;system&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;rm -r ../&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;GH_PAGES_DIR&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/*&quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;unless&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Dir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'../#{GH_PAGES_DIR}/*'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;empty?&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;system&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;cp -r _site/* ../&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;GH_PAGES_DIR&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/&quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://pages.github.com/&quot;&gt;Github Pages&lt;/a&gt;帮助托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。但是和在本地构建不同的是，github 构建时会加上&lt;code class=&quot;highlighter-rouge&quot;&gt;--save&lt;/code&gt;参数，只运行&lt;a href=&quot;https://pages.github.com/versions/&quot;&gt;信任的插件&lt;/a&gt;。所以如果使用了其他插件，例如用户自定义的插件，就只能在本地构建后，提交&lt;code class=&quot;highlighter-rouge&quot;&gt;_sites&lt;/code&gt;文件夹的内容了。&lt;/p&gt;
-
-&lt;p&gt;需要注意的是 Github Pages 目前仅支持到 jekyll 3.4.5 版本，而我本地安装的最新版 jekyll 是 3.5.0 版本的。新版本在&lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;中使用&lt;code class=&quot;highlighter-rouge&quot;&gt;plugins&lt;/code&gt;代替旧版本的属性&lt;code class=&quot;highlighter-rouge&quot;&gt;gems&lt;/code&gt;，所以为了兼容 Github Pages，本地的警告提示信息只能忽略了。&lt;/p&gt;
-
-&lt;p&gt;另外，在安装&lt;code class=&quot;highlighter-rouge&quot;&gt;github-pages&lt;/code&gt;时，我遇到了这样一个报错。
-&lt;code class=&quot;highlighter-rouge&quot;&gt;bundle config build.nokogiri -v '1.8.0' --with-iconv-lib=/usr/local/lib --with-iconv-include=/usr/local/include&lt;/code&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;已有的支持-pwa-模版&quot;&gt;已有的支持 PWA 模版&lt;/h2&gt;
-
-&lt;p&gt;我找到了一个基于 yeoman 的&lt;a href=&quot;https://github.com/nirgn975/generator-jekyll-starter-kit&quot;&gt;模版&lt;/a&gt;，包含了对 PWA 的支持。这个模版在构建时使用 gulp 通过 sw-precache 生成&lt;code class=&quot;highlighter-rouge&quot;&gt;service-worker.js&lt;/code&gt;。缓存&lt;code class=&quot;highlighter-rouge&quot;&gt;_site&lt;/code&gt;文件夹内全部静态资源。同时定义了其他 task，包括使用 jekyll build 文章列表。所以使用这个模版之后，其实构建就完全使用 gulp 工作流了。&lt;/p&gt;
-
-&lt;h2 id=&quot;后续思路&quot;&gt;后续思路&lt;/h2&gt;
-
-&lt;p&gt;所以我也打算以模版而非插件形式提供支持，参考 pjax 思路，使用 ajax 请求页面，替换内容，同时配合 sw-toolbox 缓存异步请求。&lt;/p&gt;
-
+&lt;p&gt;然后回到 repo 中，提交修改即可。&lt;/p&gt;
 </description>
-        <pubDate>Sat, 22 Jul 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html</guid>
+        <pubDate>Sun, 23 Jul 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html</guid>
         
         <category>ruby</category>
         
         <category>jekyll</category>
+        
+        <category>github-pages</category>
         
         
         <category>coding</category>
