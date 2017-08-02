@@ -13,19 +13,19 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="背景" />
 <meta property="og:description" content="背景" />
-<link rel="canonical" href="http://localhost:4000/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html" />
-<meta property="og:url" content="http://localhost:4000/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html" />
 <meta property="og:site_name" content="xiaOp的博客" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-07-22T03:21:32+08:00" />
 <script type="application/ld+json">
-{"@context":"http://schema.org","@type":"BlogPosting","headline":"为jekyll增加PWA特性","datePublished":"2017-07-22T03:21:32+08:00","dateModified":"2017-07-22T03:21:32+08:00","description":"背景","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html"},"url":"http://localhost:4000/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html"}</script>
+{"@context":"http://schema.org","@type":"BlogPosting","headline":"为jekyll增加PWA特性","datePublished":"2017-07-22T03:21:32+08:00","dateModified":"2017-07-22T03:21:32+08:00","description":"背景","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html"},"url":"https://xiaoiver.github.io/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html"}</script>
 <!-- End Jekyll SEO tag -->
 
     <title>为jekyll增加PWA特性</title>
 
     <link rel="shortcut icon" href="/img/favicon.ico">
-    <link rel="canonical" href="http://localhost:4000/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html">
     <link rel="manifest" href="/manifest.json">
 
     <link rel="stylesheet" href="/css/style.css" />
@@ -153,7 +153,7 @@ bundle <span class="nb">exec </span>rspec</code></pre></figure>
 
 <h2 id="github-pages">Github Pages</h2>
 
-<p><a href="https://pages.github.com/">Github Pages</a>帮助托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。但是和在本地构建不同的是，github 构建时会加上<code class="highlighter-rouge">--save</code>参数，只运行<a href="https://pages.github.com/versions/">信任的插件</a>。所以如果使用了其他插件，例如用户自定义的插件，就只能提交构建后的产物<code class="highlighter-rouge">_sites</code>文件夹了。</p>
+<p><a href="https://pages.github.com/">Github Pages</a>帮助托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。但是和在本地构建不同的是，github 构建时会加上<code class="highlighter-rouge">--save</code>参数，只运行<a href="https://pages.github.com/versions/">信任的插件</a>。所以如果使用了其他插件，例如用户自定义的插件，就只能在本地构建后，提交<code class="highlighter-rouge">_sites</code>文件夹的内容了。</p>
 
 <p>需要注意的是 Github Pages 目前仅支持到 jekyll 3.4.5 版本，而我本地安装的最新版 jekyll 是 3.5.0 版本的。新版本在<code class="highlighter-rouge">_config.yml</code>中使用<code class="highlighter-rouge">plugins</code>代替旧版本的属性<code class="highlighter-rouge">gems</code>，所以为了兼容 Github Pages，本地的警告提示信息只能忽略了。</p>
 

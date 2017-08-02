@@ -4,10 +4,10 @@
     <title>xiaOp的博客</title>
     <description>读书笔记，碰到的问题
 </description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 02 Aug 2017 14:46:21 +0800</pubDate>
-    <lastBuildDate>Wed, 02 Aug 2017 14:46:21 +0800</lastBuildDate>
+    <link>https://xiaoiver.github.io/</link>
+    <atom:link href="https://xiaoiver.github.io/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Wed, 02 Aug 2017 15:17:53 +0800</pubDate>
+    <lastBuildDate>Wed, 02 Aug 2017 15:17:53 +0800</lastBuildDate>
     <generator>Jekyll v3.4.5</generator>
     
       <item>
@@ -294,8 +294,8 @@
 &lt;p&gt;百度&lt;a href=&quot;https://lavas.baidu.com/&quot;&gt; Lavas&lt;/a&gt;是一个基于 Vue 的 PWA 解决方案，帮助开发者轻松搭建 PWA 站点。其中多个模版也使用了这个插件，欢迎大家试用并提出意见。&lt;/p&gt;
 </description>
         <pubDate>Mon, 31 Jul 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html</link>
-        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html</guid>
+        <link>https://xiaoiver.github.io/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html</guid>
         
         <category>vue</category>
         
@@ -337,8 +337,8 @@
 
 </description>
         <pubDate>Mon, 24 Jul 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/coding/2017/07/23/%E6%97%A0%E7%94%A8%E7%9A%84keywords.html</link>
-        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/23/%E6%97%A0%E7%94%A8%E7%9A%84keywords.html</guid>
+        <link>https://xiaoiver.github.io/coding/2017/07/23/%E6%97%A0%E7%94%A8%E7%9A%84keywords.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/23/%E6%97%A0%E7%94%A8%E7%9A%84keywords.html</guid>
         
         <category>ruby</category>
         
@@ -379,7 +379,7 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
 
 &lt;h2 id=&quot;github-pages&quot;&gt;Github Pages&lt;/h2&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://pages.github.com/&quot;&gt;Github Pages&lt;/a&gt;帮助托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。但是和在本地构建不同的是，github 构建时会加上&lt;code class=&quot;highlighter-rouge&quot;&gt;--save&lt;/code&gt;参数，只运行&lt;a href=&quot;https://pages.github.com/versions/&quot;&gt;信任的插件&lt;/a&gt;。所以如果使用了其他插件，例如用户自定义的插件，就只能提交构建后的产物&lt;code class=&quot;highlighter-rouge&quot;&gt;_sites&lt;/code&gt;文件夹了。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://pages.github.com/&quot;&gt;Github Pages&lt;/a&gt;帮助托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。但是和在本地构建不同的是，github 构建时会加上&lt;code class=&quot;highlighter-rouge&quot;&gt;--save&lt;/code&gt;参数，只运行&lt;a href=&quot;https://pages.github.com/versions/&quot;&gt;信任的插件&lt;/a&gt;。所以如果使用了其他插件，例如用户自定义的插件，就只能在本地构建后，提交&lt;code class=&quot;highlighter-rouge&quot;&gt;_sites&lt;/code&gt;文件夹的内容了。&lt;/p&gt;
 
 &lt;p&gt;需要注意的是 Github Pages 目前仅支持到 jekyll 3.4.5 版本，而我本地安装的最新版 jekyll 是 3.5.0 版本的。新版本在&lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;中使用&lt;code class=&quot;highlighter-rouge&quot;&gt;plugins&lt;/code&gt;代替旧版本的属性&lt;code class=&quot;highlighter-rouge&quot;&gt;gems&lt;/code&gt;，所以为了兼容 Github Pages，本地的警告提示信息只能忽略了。&lt;/p&gt;
 
@@ -396,8 +396,8 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
 
 </description>
         <pubDate>Sat, 22 Jul 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html</link>
-        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html</guid>
+        <link>https://xiaoiver.github.io/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/21/%E4%B8%BAjekyll%E5%A2%9E%E5%8A%A0PWA%E7%89%B9%E6%80%A7.html</guid>
         
         <category>ruby</category>
         
@@ -524,8 +524,8 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
 &lt;p&gt;作为模块提供者，我会采用&lt;code class=&quot;highlighter-rouge&quot;&gt;esnext&lt;/code&gt;的方式，即额外提供非转译版本。然后让使用者通过配置，根据自身运行环境选择使用不同的版本。&lt;/p&gt;
 </description>
         <pubDate>Tue, 18 Jul 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html</link>
-        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html</guid>
+        <link>https://xiaoiver.github.io/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html</guid>
         
         <category>javascript</category>
         
@@ -629,8 +629,8 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
 &lt;p&gt;完成后就可以在&lt;code class=&quot;highlighter-rouge&quot;&gt;README.md&lt;/code&gt;里加上build图标了。&lt;img src=&quot;https://travis-ci.org/lavas-project/vue-skeleton-webpack-plugin.svg?branch=master&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 17 Jul 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html</link>
-        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html</guid>
+        <link>https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html</guid>
         
         <category>ava</category>
         
@@ -897,8 +897,8 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
 &lt;p&gt;您也可以帮助我们完善&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples&quot;&gt;测试用例&lt;/a&gt;。&lt;/p&gt;
 </description>
         <pubDate>Sun, 16 Jul 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html</link>
-        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html</guid>
+        <link>https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html</guid>
         
         <category>vue</category>
         
@@ -1105,8 +1105,8 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
 
 </description>
         <pubDate>Sat, 15 Jul 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html</link>
-        <guid isPermaLink="true">http://localhost:4000/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html</guid>
+        <link>https://xiaoiver.github.io/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html</guid>
         
         <category>webpack</category>
         
@@ -1157,8 +1157,8 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
 
 </description>
         <pubDate>Sun, 02 Jul 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/movie/2017/07/01/%E8%BF%91%E6%9C%9F%E7%9C%8B%E7%9A%84%E5%89%A7.html</link>
-        <guid isPermaLink="true">http://localhost:4000/movie/2017/07/01/%E8%BF%91%E6%9C%9F%E7%9C%8B%E7%9A%84%E5%89%A7.html</guid>
+        <link>https://xiaoiver.github.io/movie/2017/07/01/%E8%BF%91%E6%9C%9F%E7%9C%8B%E7%9A%84%E5%89%A7.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/movie/2017/07/01/%E8%BF%91%E6%9C%9F%E7%9C%8B%E7%9A%84%E5%89%A7.html</guid>
         
         <category>movie</category>
         
@@ -1366,8 +1366,8 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
 
 </description>
         <pubDate>Sat, 10 Jun 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html</link>
-        <guid isPermaLink="true">http://localhost:4000/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html</guid>
+        <link>https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html</guid>
         
         <category>performance</category>
         
@@ -1413,8 +1413,8 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
 &lt;p&gt;这里推荐红花会贝贝和马思唯的表演赛视频。抛开脏字不谈，贝贝的押韵到达了匪夷所思的地步。当然马思唯也很棒。&lt;/p&gt;
 </description>
         <pubDate>Sun, 04 Jun 2017 03:21:32 +0800</pubDate>
-        <link>http://localhost:4000/music/2017/06/03/%E6%9C%80%E8%BF%91%E5%90%AC%E7%9A%84%E8%AF%B4%E5%94%B1.html</link>
-        <guid isPermaLink="true">http://localhost:4000/music/2017/06/03/%E6%9C%80%E8%BF%91%E5%90%AC%E7%9A%84%E8%AF%B4%E5%94%B1.html</guid>
+        <link>https://xiaoiver.github.io/music/2017/06/03/%E6%9C%80%E8%BF%91%E5%90%AC%E7%9A%84%E8%AF%B4%E5%94%B1.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/music/2017/06/03/%E6%9C%80%E8%BF%91%E5%90%AC%E7%9A%84%E8%AF%B4%E5%94%B1.html</guid>
         
         <category>hiphop</category>
         
