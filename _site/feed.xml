@@ -6,9 +6,9 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 02 Aug 2017 13:13:21 +0800</pubDate>
-    <lastBuildDate>Wed, 02 Aug 2017 13:13:21 +0800</lastBuildDate>
-    <generator>Jekyll v3.5.0</generator>
+    <pubDate>Wed, 02 Aug 2017 14:46:21 +0800</pubDate>
+    <lastBuildDate>Wed, 02 Aug 2017 14:46:21 +0800</lastBuildDate>
+    <generator>Jekyll v3.4.5</generator>
     
       <item>
         <title>为vue项目添加骨架屏</title>
@@ -382,6 +382,9 @@ bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;rspec&lt;/code&gt;&lt;
 &lt;p&gt;&lt;a href=&quot;https://pages.github.com/&quot;&gt;Github Pages&lt;/a&gt;帮助托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。但是和在本地构建不同的是，github 构建时会加上&lt;code class=&quot;highlighter-rouge&quot;&gt;--save&lt;/code&gt;参数，只运行&lt;a href=&quot;https://pages.github.com/versions/&quot;&gt;信任的插件&lt;/a&gt;。所以如果使用了其他插件，例如用户自定义的插件，就只能提交构建后的产物&lt;code class=&quot;highlighter-rouge&quot;&gt;_sites&lt;/code&gt;文件夹了。&lt;/p&gt;
 
 &lt;p&gt;需要注意的是 Github Pages 目前仅支持到 jekyll 3.4.5 版本，而我本地安装的最新版 jekyll 是 3.5.0 版本的。新版本在&lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;中使用&lt;code class=&quot;highlighter-rouge&quot;&gt;plugins&lt;/code&gt;代替旧版本的属性&lt;code class=&quot;highlighter-rouge&quot;&gt;gems&lt;/code&gt;，所以为了兼容 Github Pages，本地的警告提示信息只能忽略了。&lt;/p&gt;
+
+&lt;p&gt;另外，在安装&lt;code class=&quot;highlighter-rouge&quot;&gt;github-pages&lt;/code&gt;时，我遇到了这样一个报错。
+&lt;code class=&quot;highlighter-rouge&quot;&gt;bundle config build.nokogiri -v '1.8.0' --with-iconv-lib=/usr/local/lib --with-iconv-include=/usr/local/include&lt;/code&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;已有的支持-pwa-模版&quot;&gt;已有的支持 PWA 模版&lt;/h2&gt;
 
