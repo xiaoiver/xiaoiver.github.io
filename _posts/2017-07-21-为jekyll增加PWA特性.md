@@ -38,6 +38,9 @@ bundle exec rspec
 
 需要注意的是 Github Pages 目前仅支持到 jekyll 3.4.5 版本，而我本地安装的最新版 jekyll 是 3.5.0 版本的。新版本在`_config.yml`中使用`plugins`代替旧版本的属性`gems`，所以为了兼容 Github Pages，本地的警告提示信息只能忽略了。
 
+另外，在安装`github-pages`时，我遇到了这样一个报错。
+`bundle config build.nokogiri -v '1.8.0' --with-iconv-lib=/usr/local/lib --with-iconv-include=/usr/local/include`
+
 ## 已有的支持 PWA 模版
 
 我找到了一个基于 yeoman 的[模版](https://github.com/nirgn975/generator-jekyll-starter-kit)，包含了对 PWA 的支持。这个模版在构建时使用 gulp 通过 sw-precache 生成`service-worker.js`。缓存`_site`文件夹内全部静态资源。同时定义了其他 task，包括使用 jekyll build 文章列表。所以使用这个模版之后，其实构建就完全使用 gulp 工作流了。
