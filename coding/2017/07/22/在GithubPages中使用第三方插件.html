@@ -46,7 +46,7 @@
         <section id="header" class="skel-layers-fixed">
     <header>
         <span class="image avatar"><img src="/img/avatar.jpg" alt="" /></span>
-        <h1 id="logo"><a href="/">xiaOp</a></h1>
+        <h1 id="logo"><a href="/">xiaOp的博客</a></h1>
         <p>想成为一个有趣的人</p>
     </header>
     <nav id="nav">
@@ -162,6 +162,11 @@
   <span class="nb">system</span> <span class="s2">"rm -r ../</span><span class="si">#{</span><span class="no">GH_PAGES_DIR</span><span class="si">}</span><span class="s2">/*"</span> <span class="k">unless</span> <span class="no">Dir</span><span class="p">[</span><span class="s1">'../#{GH_PAGES_DIR}/*'</span><span class="p">].</span><span class="nf">empty?</span>
   <span class="nb">system</span> <span class="s2">"cp -r _site/* ../</span><span class="si">#{</span><span class="no">GH_PAGES_DIR</span><span class="si">}</span><span class="s2">/"</span>
 <span class="k">end</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Rakefile 只在构建时使用，所以需要在<code class="highlighter-rouge">_config.yml</code>中过滤掉，避免拷贝到结果文件夹中：</p>
+
+<figure class="highlight"><pre><code class="language-yml" data-lang="yml"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1</pre></td><td class="code"><pre><span class="s">exclude</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">Rakefile</span><span class="pi">]</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>然后回到 repo 中，提交修改即可。</p>

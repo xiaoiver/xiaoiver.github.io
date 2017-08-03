@@ -6,8 +6,8 @@
 </description>
     <link>https://xiaoiver.github.io/</link>
     <atom:link href="https://xiaoiver.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 02 Aug 2017 15:49:52 +0800</pubDate>
-    <lastBuildDate>Wed, 02 Aug 2017 15:49:52 +0800</lastBuildDate>
+    <pubDate>Thu, 03 Aug 2017 15:43:46 +0800</pubDate>
+    <lastBuildDate>Thu, 03 Aug 2017 15:43:46 +0800</lastBuildDate>
     <generator>Jekyll v3.4.5</generator>
     
       <item>
@@ -329,11 +329,17 @@
 
 &lt;p&gt;文章指出 Google 在 ranking 时，已经不考虑&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;meta name=keywords&amp;gt;&lt;/code&gt;这个标签了。原因是这个标签过去被滥用太多了，而且也很容易被滥用。。。&lt;/p&gt;
 
-&lt;p&gt;好吧，但是 meta 家族中的&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;meta name=description&amp;gt;&lt;/code&gt;还是很重要的，毕竟会被直接展示在搜索结果中。&lt;/p&gt;
+&lt;p&gt;但是 meta 家族中的&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;meta name=description&amp;gt;&lt;/code&gt;毕竟会被直接展示在搜索结果中，所以作为页面开发者不能忽略。&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;http://www.wordstream.com/images/screenshots/meta-description-tag.gif&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;那 Baidu 是怎么做的呢？&lt;a href=&quot;https://www.quora.com/Is-the-meta-keyword-tag-a-factor-in-Baidu&quot;&gt;Quora上有相应的一个问题&lt;/a&gt;，里面有答主给出了一份巨详细的&lt;a href=&quot;http://www.dragonmetrics.com/baidu-seo-guide/&quot;&gt;研究报告&lt;/a&gt;，分成10个章节介绍百度的 SEO 问题。。。实在是太长了，还没看。&lt;/p&gt;
+&lt;p&gt;那 Baidu 是怎么做的呢？&lt;a href=&quot;https://www.quora.com/Is-the-meta-keyword-tag-a-factor-in-Baidu&quot;&gt;Quora上有相应的一个问题&lt;/a&gt;，里面有答主给出了一份巨详细的&lt;a href=&quot;http://www.dragonmetrics.com/baidu-seo-guide/&quot;&gt;研究报告&lt;/a&gt;，分成10个章节介绍百度的 SEO 问题。&lt;/p&gt;
+
+&lt;p&gt;从&lt;a href=&quot;http://www.dragonmetrics.com/baidu-seo-guide/#ch1&quot;&gt;第一节&lt;/a&gt;的内容来看，Baidu 并没有完全放弃 keywords，并且疑似将 descripton 也纳入 ranking，虽然可能权重不一定很高。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;However, Baidu may still use meta keywords as a ranking signal. There is also some evidence that supports the possibility that meta descriptions may even affect rankings on Baidu, in addition to being used for the SERP snippet.&lt;/p&gt;
+&lt;/blockquote&gt;
 
 </description>
         <pubDate>Mon, 24 Jul 2017 03:21:32 +0800</pubDate>
@@ -386,6 +392,11 @@
   &lt;span class=&quot;nb&quot;&gt;system&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;rm -r ../&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;GH_PAGES_DIR&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/*&quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;unless&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Dir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'../#{GH_PAGES_DIR}/*'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;empty?&lt;/span&gt;
   &lt;span class=&quot;nb&quot;&gt;system&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;cp -r _site/* ../&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;GH_PAGES_DIR&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/&quot;&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Rakefile 只在构建时使用，所以需要在&lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;中过滤掉，避免拷贝到结果文件夹中：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-yml&quot; data-lang=&quot;yml&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;s&quot;&gt;exclude&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;Rakefile&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;然后回到 repo 中，提交修改即可。&lt;/p&gt;
@@ -1136,11 +1147,29 @@
 
 &lt;h2 id=&quot;名姝&quot;&gt;&lt;a href=&quot;https://movie.douban.com/subject/26805324/&quot;&gt;名姝&lt;/a&gt;&lt;/h2&gt;
 
-&lt;p&gt;这个算是两个月前看的了，宫斗剧妓院版。期待第二季吧。&lt;/p&gt;
+&lt;p&gt;这个算是两个月前看的了，宫斗剧妓院版。姐姐似乎表面上和母亲决裂，但又对高级会所老鸨暗藏杀机。且看幕后黑手法轮大人还能嚣张到几时，期待第二季吧。&lt;/p&gt;
 
 &lt;div class=&quot;responsive-image&quot;&gt;
     &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/harlots.jpg&quot; /&gt;
     &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/harlots.jpg&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+    new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800, 1400],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+        }
+    });
+&lt;/script&gt;
+
+&lt;h2 id=&quot;迷失z城&quot;&gt;&lt;a href=&quot;https://movie.douban.com/subject/3025669/&quot;&gt;迷失Z城&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;这部影片在中国上映时遭遇删减近40分钟，大概还能看。完整版根据真实事件改编，可以说每个角色包括配角都立得住，不存在完美人设，也没有大型特效奇观场景。暮光男“牛五方”的表演很赞，从扮相上就看得出努力想转变自己的戏路。看完后最打动我的一点是，主角儿子从一开始不理解甚至埋怨父亲，到父亲从战场负伤归来后渐渐敞开心扉，最终决定跟随父亲一道追寻幻想乡。这样的人物转变令人信服。&lt;/p&gt;
+
+&lt;div class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/the-lost-city-of-z.jpg&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/the-lost-city-of-z.jpg&quot;&gt;&lt;/div&gt;
 &lt;/div&gt;
 
 &lt;script&gt;
