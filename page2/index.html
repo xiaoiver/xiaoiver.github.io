@@ -8,17 +8,18 @@
     <meta name="keywords" content="coding编程javascriptxiaoiverxiaop">
     <meta name="theme-color" content="#eee">
     <!-- Begin Jekyll SEO tag v2.2.3 -->
-<title>xiaOp的博客 | 读书笔记，碰到的问题</title>
+<title>xiaOp的博客 | 分享写代码，听音乐，看电影的心得</title>
 <meta property="og:title" content="xiaOp的博客" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="读书笔记，碰到的问题" />
-<meta property="og:description" content="读书笔记，碰到的问题" />
+<meta name="description" content="分享写代码，听音乐，看电影的心得" />
+<meta property="og:description" content="分享写代码，听音乐，看电影的心得" />
 <link rel="canonical" href="https://xiaoiver.github.io/page2/" />
 <meta property="og:url" content="https://xiaoiver.github.io/page2/" />
 <meta property="og:site_name" content="xiaOp的博客" />
 <link rel="prev" href="https://xiaoiver.github.io/">
+<link rel="next" href="https://xiaoiver.github.io/page3">
 <script type="application/ld+json">
-{"@context":"http://schema.org","@type":"WebPage","headline":"xiaOp的博客","description":"读书笔记，碰到的问题","url":"https://xiaoiver.github.io/page2/"}</script>
+{"@context":"http://schema.org","@type":"WebPage","headline":"xiaOp的博客","description":"分享写代码，听音乐，看电影的心得","url":"https://xiaoiver.github.io/page2/"}</script>
 <!-- End Jekyll SEO tag -->
 
     <title>xiaOp的博客</title>
@@ -155,6 +156,11 @@
                         github-pages
                     </a>
                 
+                    
+                    <a href="/tags#browser" title="browser">
+                        browser
+                    </a>
+                
             </div>
         </section>
     </div>
@@ -162,6 +168,73 @@
 
 <section id="blog">
     <div class="container">
+        
+        <div class="post-preview">
+            <a href="/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html">
+                <h2 class="post-title">
+                    为npm包提供多入口
+                </h2>
+                
+                <h3 class="post-subtitle">
+                    不同模块机制，不同平台环境以及是否需要转译
+                </h3>
+                
+                <div class="post-content-preview">
+                    问题背景
+
+之前给webpack-cdn-plugin提PR时，遇到这样一个问题，入口文件使用了部分 ES6 特性，而作者不想直接提供转译版本，这就导致在低版本 Node.js 环境无法直接运行。
+
+首先想到的办法是，能不能提供多个版本。但是package.json中的main只能支持单文件，无法提供多入口供使用者根据自身环境选择。
+
+后来采用的做法是在入口文件中判断当前运行环境，使用动态r...
+                </div>
+            </a>
+            <p class="post-meta">
+                July 17, 2017
+            </p>
+        </div>
+        <hr>
+        
+        <div class="post-preview">
+            <a href="/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html">
+                <h2 class="post-title">
+                    使用ava和travis-ci
+                </h2>
+                
+                <div class="post-content-preview">
+                    最近给 skeleton 插件加上了测试用例，顺便使用了下自动集成工具。
+
+ava
+
+首先配置基本参数：
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12// package.json
+
+"ava": {
+    "concurrency": 5,
+    "failFast": true,
+    "files": [
+      "test/*.test.js"
+    ],
+  ...
+                </div>
+            </a>
+            <p class="post-meta">
+                July 16, 2017
+            </p>
+        </div>
+        <hr>
         
         <div class="post-preview">
             <a href="/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html">
@@ -243,55 +316,6 @@ github 地址：https://github.com/lavas-project/vue-skeleton-webpack-plugin
         </div>
         <hr>
         
-        <div class="post-preview">
-            <a href="/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html">
-                <h2 class="post-title">
-                    以用户为中心的性能指标
-                </h2>
-                
-                <div class="post-content-preview">
-                    RAIL性能评估模型从以下四个方面提出了要求：
-
-
-  立即响应用户；在 100 毫秒以内确认用户输入。
-  设置动画或滚动时，在 10 毫秒以内生成帧。
-  最大程度增加主线程的空闲时间。
-  持续吸引用户；在 1000 毫秒以内呈现交互内容。
-
-
-
-
-针对该评估模型，Google 提出了以用户为中心的四个衡量指标：
-
-
-  Is it happening?    First Paint ...
-                </div>
-            </a>
-            <p class="post-meta">
-                June 9, 2017
-            </p>
-        </div>
-        <hr>
-        
-        <div class="post-preview">
-            <a href="/music/2017/06/03/%E6%9C%80%E8%BF%91%E5%90%AC%E7%9A%84%E8%AF%B4%E5%94%B1.html">
-                <h2 class="post-title">
-                    最近听的说唱
-                </h2>
-                
-                <div class="post-content-preview">
-                    最近在看《中国有嘻哈》，对吴亦凡的印象大为改观。此人似乎展现出极强的专业性，当然是指音乐上的。但是有人爆出这都是剪辑的节目效果，另外两组制作人说的一点不比他少，都被剪了，刻意营造出wuli凡凡专业严格的形象。如果是真的，那“孤儿剪辑”真的是名副其实了。
-
-以前我听的说唱比较有限，国内大概只有热狗的《差不多先生》，《我爱台妹》一类的歌曲，再就是阿姆的几首有名的歌。
-后来大学里听跑火车电台的时候...
-                </div>
-            </a>
-            <p class="post-meta">
-                June 3, 2017
-            </p>
-        </div>
-        <hr>
-        
 
         
         <ul class="pager">
@@ -300,6 +324,10 @@ github 地址：https://github.com/lavas-project/vue-skeleton-webpack-plugin
                 <a href="/"><span class="icon fa-arrow-left"></span>&nbsp;上一页</a>
             </li>
             
+            
+            <li class="next">
+                <a href="/page3">下一页&nbsp;<span class="icon fa-arrow-right"></span></a>
+            </li>
             
         </ul>
         
