@@ -6,9 +6,147 @@
 </description>
     <link>https://xiaoiver.github.io/</link>
     <atom:link href="https://xiaoiver.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 08 Aug 2017 00:01:08 +0800</pubDate>
-    <lastBuildDate>Tue, 08 Aug 2017 00:01:08 +0800</lastBuildDate>
+    <pubDate>Mon, 21 Aug 2017 17:17:51 +0800</pubDate>
+    <lastBuildDate>Mon, 21 Aug 2017 17:17:51 +0800</lastBuildDate>
     <generator>Jekyll v3.4.5</generator>
+    
+      <item>
+        <title>判断元素是否在视口内</title>
+        <description>&lt;p&gt;在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;inViewport&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;el&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;elH&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;el&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;offsetHeight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 元素高度&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;scrolled&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;scrollY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 视口顶部距离document顶部的距离&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;viewed&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;scrolled&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;getViewportH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 视口底部距离document的距离&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;elTop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;el&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getBoundingClientRect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;top&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 元素顶部距离document顶部的距离&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;elBottom&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;elTop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;elH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 元素底部距离document顶部的距离&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 高度系数&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;elTop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;elH&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;viewed&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;elBottom&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;scrolled&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;这种方法的问题是使用&lt;code class=&quot;highlighter-rouge&quot;&gt;getBoundingClientRect()&lt;/code&gt;读取元素尺寸数据时，会造成 re-layout，在滚动过程中会导致页面卡顿(jank)。&lt;/p&gt;
+
+&lt;h2 id=&quot;intersectionobserver&quot;&gt;IntersectionObserver&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://wicg.github.io/IntersectionObserver/&quot;&gt;IntersectionObserver&lt;/a&gt; 作为新引入的 API，异步查询元素相对于另一个元素（例如视口）的位置，不会影响主线程，可以解决检测方法带来的性能问题。&lt;/p&gt;
+
+&lt;p&gt;首先我们需要创建一个观察对象，构造函数方法签名如下：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;IntersectionObserver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;entries&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{},&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;options&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;随后将使用这个观察对象对元素的位置变化进行观测：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;nx&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;observe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;观察对象构造函数的第一个参数便是回调函数，这能避免旧方法中轮询带来的性能问题。
+在回调函数中，传入的参数是一个数组（可以观测多个元素），每个元素对象包含以下属性：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;rootBounds&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;ClientRect&lt;/code&gt;对象，等同于对根元素（默认值为视口）调用&lt;code class=&quot;highlighter-rouge&quot;&gt;getBoundingClientRect()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;boundingClientRect&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;ClientRect&lt;/code&gt;对象，等同于对被观测元素调用&lt;code class=&quot;highlighter-rouge&quot;&gt;getBoundingClientRect()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;intersectionRect&lt;/code&gt;，以上两个矩形的交集&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;intersectionRatio&lt;/code&gt;，被观测元素被覆盖的比例，如下图所示：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/intersectratio.png&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/intersectratio.png&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+    new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+        }
+    });
+&lt;/script&gt;
+
+&lt;p&gt;现在来看看观察对象的第二个参数，这是一个配置对象，其中包含3个重要的配置项：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;root&lt;/code&gt;，默认值为视口，在容器内滚动的场景中，我们可以指定根元素为容器&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;rootMargin&lt;/code&gt;，顾名思义，值的格式与&lt;code class=&quot;highlighter-rouge&quot;&gt;margin&lt;/code&gt;一样&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;threshold&lt;/code&gt;，这个阈值甚至可以是一个列表，每次达到其中的一个阈值时都会触发回调函数，取值范围为[0-1]&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;最后，相对于&lt;code class=&quot;highlighter-rouge&quot;&gt;observe()&lt;/code&gt;观测方法，自然也有解除观测方法&lt;code class=&quot;highlighter-rouge&quot;&gt;unobserve()&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;以上就是这个新 API 的全部内容了，下面让我们看看在实际场景中如何应用吧。&lt;/p&gt;
+
+&lt;h2 id=&quot;懒加载图片&quot;&gt;懒加载图片&lt;/h2&gt;
+
+&lt;p&gt;有了这个新的 API，实现滚动到视口内加载图片就十分简单了，其实就是多了新的判断方法，不再需要在滚动事件中获取了。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// 创建观测对象&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;observer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;IntersectionObserver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;entries&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;entries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// 图片和视口有交集了&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;intersectionRatio&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// 停止继续观测，直接加载&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;observer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;unobserve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;loadImage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;threshold&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.01&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// 观测所有图片&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;images&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;image&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;observer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;observe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;当然，这里还有一些细节，例如：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;考虑浏览器兼容性，目前&lt;a href=&quot;https://caniuse.com/#feat=intersectionobserver&quot;&gt;最新版 Chrome 和 Firefox 支持&lt;/a&gt;良好。&lt;a href=&quot;https://github.com/WICG/IntersectionObserver/tree/gh-pages/polyfill&quot;&gt;polyfill&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;图片的 src 属性存放在例如 data-src 上&lt;/li&gt;
+  &lt;li&gt;全部图片加载完毕，调用观测对象的&lt;code class=&quot;highlighter-rouge&quot;&gt;disconnect()&lt;/code&gt;方法彻底关闭&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;可以参考&lt;a href=&quot;https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163&quot;&gt;这篇文章&lt;/a&gt;的实现。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://developers.google.com/web/updates/2016/04/intersectionobserver&quot;&gt;Google Developer&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://hacks.mozilla.org/2017/08/intersection-observer-comes-to-firefox/&quot;&gt;MDN&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163&quot;&gt;懒加载图片文章&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 21 Aug 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html</guid>
+        
+        <category>javascript</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
     
       <item>
         <title>垃圾围城</title>
@@ -111,7 +249,7 @@
 
 &lt;h2 id=&quot;引入新的-api&quot;&gt;引入新的 API&lt;/h2&gt;
 
-&lt;p&gt;为了让开发者能够通过编程方式关闭这一浏览器行为，引入了新的 API：&lt;/p&gt;
+&lt;p&gt;为了让开发者能够通过编程方式关闭这一浏览器行为，&lt;a href=&quot;https://majido.github.io/scroll-restoration-proposal/&quot;&gt;《浏览器恢复滚动提案》&lt;/a&gt;引入了新的 API：&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -124,11 +262,11 @@
 
 &lt;p&gt;根据&lt;a href=&quot;https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration&quot;&gt; Google 开发者文档&lt;/a&gt;，Chrome 46 以上已经实装。&lt;/p&gt;
 
-&lt;p&gt;我自己也写了一个 demo 测试了一下，这或许才是最好的解决方案，等待其他浏览器厂商支持吧。&lt;/p&gt;
+&lt;p&gt;我自己也写了一个 demo 测试了一下确实可行，这或许才是最好的解决方案，等待其他浏览器厂商支持吧。&lt;/p&gt;
 </description>
-        <pubDate>Sun, 06 Aug 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/coding/2017/08/05/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/08/05/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html</guid>
+        <pubDate>Fri, 04 Aug 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html</guid>
         
         <category>browser</category>
         
@@ -490,7 +628,7 @@
 
 &lt;p&gt;和在本地构建不同的一点是，github 构建时会加上&lt;code class=&quot;highlighter-rouge&quot;&gt;--save&lt;/code&gt;参数，只运行&lt;a href=&quot;https://pages.github.com/versions/&quot;&gt;信任的插件&lt;/a&gt;。这就导致如果我们的博客使用了不在白名单中的插件，github 构建时就会提示警告（在项目标签页 Setting -&amp;gt; GitHub Pages 中），构建失败也就看不到最新的博客内容了。&lt;/p&gt;
 
-&lt;p&gt;Github Pages 给出一种建议是，让用户在本地构建站点，然后仅将结果纳入版本控制，提交到指定分支。这就意味着我们放弃了 github 构建。&lt;/p&gt;
+&lt;p&gt;Github Pages 给出一种建议是，让用户在本地构建站点，然后仅将构建结果纳入版本控制，提交到指定分支。避免 github 构建，只需要在根目录下放一个空文件&lt;code class=&quot;highlighter-rouge&quot;&gt;.nojekyll&lt;/code&gt;。&lt;/p&gt;
 
 &lt;p&gt;至于本地构建，熟悉 Node.js 的开发者完全可以采用 gulp/grunt 工作流，调用&lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll build&lt;/code&gt;构建站点，顺便还能做一些静态资源压缩的工作。我在网上找到一种使用 rakefile 的&lt;a href=&quot;https://www.sitepoint.com/jekyll-plugins-github/&quot;&gt;简单方法&lt;/a&gt;，决定一试。&lt;/p&gt;
 
@@ -527,6 +665,14 @@
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;然后回到 repo 中，提交修改即可。&lt;/p&gt;
+
+&lt;h2 id=&quot;使用-gulp-工作流构建&quot;&gt;使用 gulp 工作流构建&lt;/h2&gt;
+
+&lt;p&gt;例如这个基于 yeoman 的&lt;a href=&quot;https://github.com/nirgn975/generator-jekyll-starter-kit&quot;&gt;模版项目&lt;/a&gt;，包含了对 PWA 的支持。&lt;/p&gt;
+
+&lt;p&gt;这个模版在构建时使用 gulp 通过 sw-precache 生成&lt;code class=&quot;highlighter-rouge&quot;&gt;service-worker.js&lt;/code&gt;，缓存&lt;code class=&quot;highlighter-rouge&quot;&gt;_site&lt;/code&gt;文件夹内全部静态资源。同时也定义了其他 task 用于压缩静态文件。&lt;/p&gt;
+
+&lt;p&gt;我在博客中也使用了这种方式。&lt;/p&gt;
 </description>
         <pubDate>Sun, 23 Jul 2017 03:21:32 +0800</pubDate>
         <link>https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html</link>
@@ -1247,76 +1393,6 @@
         
         
         <category>coding</category>
-        
-      </item>
-    
-      <item>
-        <title>近期看的剧</title>
-        <description>&lt;h2 id=&quot;大小谎言&quot;&gt;&lt;a href=&quot;https://movie.douban.com/subject/25953429/&quot;&gt;大小谎言&lt;/a&gt;&lt;/h2&gt;
-
-&lt;p&gt;7集，属于好看不累的长度。&lt;/p&gt;
-
-&lt;p&gt;围绕一个社区内三个女人与孩子之间的生活琐事展开，从始至终穿插着一条警方审讯线，带着“我就想知道谁死了”的疑问看到最后，此时案件的真相也逐渐清晰。配乐和演员表演都很棒，只是结局略假，不知道是不是原著就是如此安排。推荐给了老妈看，她也觉得不错。&lt;/p&gt;
-
-&lt;div class=&quot;responsive-image&quot;&gt;
-    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/big-little-lie.jpg&quot; /&gt;
-    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/big-little-lie.jpg&quot;&gt;&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;script&gt;
-    new Imager('.responsive-image__delayed', {
-        availableWidths: [480, 800, 1400],
-        onImagesReplaced: function() {
-            $('.responsive-image__placeholder').hide();
-        }
-    });
-&lt;/script&gt;
-
-&lt;h2 id=&quot;名姝&quot;&gt;&lt;a href=&quot;https://movie.douban.com/subject/26805324/&quot;&gt;名姝&lt;/a&gt;&lt;/h2&gt;
-
-&lt;p&gt;这个算是两个月前看的了，宫斗剧妓院版。姐姐似乎表面上和母亲决裂，但又对高级会所老鸨暗藏杀机。且看幕后黑手法轮大人还能嚣张到几时，期待第二季吧。&lt;/p&gt;
-
-&lt;div class=&quot;responsive-image&quot;&gt;
-    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/harlots.jpg&quot; /&gt;
-    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/harlots.jpg&quot;&gt;&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;script&gt;
-    new Imager('.responsive-image__delayed', {
-        availableWidths: [480, 800, 1400],
-        onImagesReplaced: function() {
-            $('.responsive-image__placeholder').hide();
-        }
-    });
-&lt;/script&gt;
-
-&lt;h2 id=&quot;迷失z城&quot;&gt;&lt;a href=&quot;https://movie.douban.com/subject/3025669/&quot;&gt;迷失Z城&lt;/a&gt;&lt;/h2&gt;
-
-&lt;p&gt;这部影片在中国上映时遭遇删减近40分钟，大概还能看。完整版根据真实事件改编，可以说每个角色包括配角都立得住，不存在完美人设，也没有大型特效奇观场景。暮光男“牛五方”的表演很赞，从扮相上就看得出努力想转变自己的戏路。看完后最打动我的一点是，主角儿子从一开始不理解甚至埋怨父亲，到父亲从战场负伤归来后渐渐敞开心扉，最终决定跟随父亲一道追寻幻想乡。这样的人物转变令人信服。&lt;/p&gt;
-
-&lt;div class=&quot;responsive-image&quot;&gt;
-    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/the-lost-city-of-z.jpg&quot; /&gt;
-    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/the-lost-city-of-z.jpg&quot;&gt;&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;script&gt;
-    new Imager('.responsive-image__delayed', {
-        availableWidths: [480, 800, 1400],
-        onImagesReplaced: function() {
-            $('.responsive-image__placeholder').hide();
-        }
-    });
-&lt;/script&gt;
-
-</description>
-        <pubDate>Sun, 02 Jul 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/movie/2017/07/01/%E8%BF%91%E6%9C%9F%E7%9C%8B%E7%9A%84%E5%89%A7.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/movie/2017/07/01/%E8%BF%91%E6%9C%9F%E7%9C%8B%E7%9A%84%E5%89%A7.html</guid>
-        
-        <category>movie</category>
-        
-        
-        <category>movie</category>
         
       </item>
     
