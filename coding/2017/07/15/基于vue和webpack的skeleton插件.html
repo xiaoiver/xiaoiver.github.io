@@ -1,7 +1,7 @@
-<!DOCTYPE html><meta charset=utf-8><meta name=viewport content="width=device-widthinitial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=keywords content=coding编程javascriptxiaoiverxiaop><meta name=theme-color content=#eee><title>基于vue和webpack的skeleton插件 | xiaOp的博客</title><meta property=og:title content=基于vue和webpack的skeleton插件><meta property=og:locale content=en_US><meta name=description content="这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。"><meta property=og:description content="这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-07-16T03:21:32+08:00><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"基于vue和webpack的skeleton插件","datePublished":"2017-07-16T03:21:32+08:00","dateModified":"2017-07-16T03:21:32+08:00","description":"这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html"},"url":"https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html"}</script><title>基于vue和webpack的skeleton插件</title><link rel="shortcut icon" href=/img/favicon.ico><link rel=canonical href=https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/style-large.css><link rel=stylesheet href=/css/highlight.css><!--[if lt IE 9]>
+<!DOCTYPE html><meta charset=utf-8><meta name=viewport content="width=device-widthinitial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=keywords content=coding编程javascriptxiaoiverxiaop><meta name=theme-color content=#eee><title>基于vue和webpack的skeleton插件 | xiaOp的博客</title><meta property=og:title content=基于vue和webpack的skeleton插件><meta property=og:locale content=en_US><meta name=description content="这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。"><meta property=og:description content="这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-07-16T03:21:32+08:00><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"基于vue和webpack的skeleton插件","datePublished":"2017-07-16T03:21:32+08:00","dateModified":"2017-07-16T03:21:32+08:00","description":"这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html"},"url":"https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html"}</script><title>基于vue和webpack的skeleton插件</title><link rel="shortcut icon" href=/img/favicon.ico><link rel=canonical href=https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/style-large.css><link rel=stylesheet href=/css/prism.css><!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]--><script src=/js/jquery.min.js></script><script src=/js/Imager.min.js></script><script src=/js/jquery.scrollzer.min.js></script><script src=/js/jquery.scrolly.min.js></script><script src=/js/skel.min.js></script><script src=/js/skel-layers.min.js></script><script src=/js/init.min.js></script><section id=header class=skel-layers-fixed><header><span class="image avatar"><img src=/img/avatar.jpg alt=""></span><h1 id=logo><a href=/ >xiaOp的博客</a></h1><p>想成为一个有趣的人</header><nav id=nav><ul><li><a href=#intro>主页</a><li><a href=#blog>文章</a><li><a href=#contact>兴趣</a></ul></nav><footer><ul class=icons><li><a href=https://github.com/xiaoiver class="icon fa-github"><span class=label>Github</span></a><li><a href=mailto:pyqiverson@gmail.com class="icon fa-envelope"><span class=label>Email</span></a><li><a href=https://www.douban.com/people/150275082/ class=icon>豆</a><li><a href=https://www.zhihu.com/people/pan-yu-qi-20/activities class=icon>知</a></ul></footer></section><div id=wrapper><div id=main><style>header.intro-header {
+    <![endif]--><script src=/js/jquery.min.js></script><script src=/js/Imager.min.js></script><script src=/js/jquery.scrollzer.min.js></script><script src=/js/jquery.scrolly.min.js></script><script src=/js/skel.min.js></script><script src=/js/skel-layers.min.js></script><script src=/js/prism.min.js></script><script src=/js/init.min.js></script><section id=header class=skel-layers-fixed><header><span class="image avatar"><img src=/img/avatar.jpg alt=""></span><h1 id=logo><a href=/ >xiaOp的博客</a></h1><p>想成为一个有趣的人</header><nav id=nav><ul><li><a href=#intro>主页</a><li><a href=#blog>文章</a><li><a href=#contact>兴趣</a></ul></nav><footer><ul class=icons><li><a href=https://github.com/xiaoiver class="icon fa-github"><span class=label>Github</span></a><li><a href=mailto:pyqiverson@gmail.com class="icon fa-envelope"><span class=label>Email</span></a><li><a href=https://www.douban.com/people/150275082/ class=icon>豆</a><li><a href=https://www.zhihu.com/people/pan-yu-qi-20/activities class=icon>知</a></ul></footer></section><div id=wrapper><div id=main><style>header.intro-header {
         position: relative;
         background-image: url('/img/vue-webpack.png');
         background-size: cover;
@@ -41,137 +41,69 @@
     }
     .post-container a {
         color: #4acaa8;
-    }</style><header class=intro-header><div class=header-mask></div><div class=container><div class=post-heading><h2>基于vue和webpack的skeleton插件<h3 class=subheading></h3></h2><div class=tags><a class=tag href=/tags#vue title=vue>vue</a> <a class=tag href=/tags#webpack title=webpack>webpack</a></div><span class=meta>Posted by xiaOp的博客 on July 15, 2017</span></div></div></header><article class=post-container><div class=container><blockquote><p>这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。</blockquote><p>如果您还不了解 skeleton，可以参考<a href=https://lavas.baidu.com/guide/vue/doc/vue/advanced/skeleton>App Skeleton 介绍</a>一文。<p>github 地址：<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin>https://github.com/lavas-project/vue-skeleton-webpack-plugin</a><h2 id=问题背景>问题背景</h2><p>参考<a href=https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/#在构建时使用-vue-预渲染骨架屏>饿了么的 PWA 升级实践</a>一文，我们希望在构建时渲染 skeleton 组件，将渲染 DOM 插入 html 的挂载点中，同时将使用的样式通过 style 标签内联。这样在前端 JS 渲染完成之前，用户将看到页面的大致骨架，感知到页面是正在加载的。<p>我们当然可以选择在开发时直接将页面骨架内容写入 html 模版中，但是这会带来两个问题：<ol><li>开发 skeleton 与其他组件体验不一致。<li>多页应用中多个页面可能共用同一个 html 模版，而又有独立的 skeleton。</ol><p>下面我们将看看插件在具体实现中是如何解决这两个问题的。<h2 id=实现思路>实现思路</h2><p>我们希望能够保证一致的开发体验，开发 skeleton 和其他组件没有任何不同。而且开发者不需要关心渲染结果是如何被注入 html 的。 下面我们将从渲染和注入这两方面展开介绍。<h3 id=渲染组件>渲染组件</h3><p>我们使用 vue 的<a href=https://ssr.vuejs.org/zh/ >服务端渲染</a>功能，接受 webpack 配置对象作为输入，输出渲染的 DOM 和样式。<p>一个典型的用于服务端渲染的 webpack 配置对象如下，其中 entry 入口文件中使用了 skeleton 组件：<figure class=highlight><pre><code class=language-javascript data-lang=javascript><table style="border-spacing: 0"><tr><td class="gutter gl" style="text-align: right"><pre class=lineno>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12</pre><td class=code><pre><span class=p>{</span>
-    <span class=nl>target</span><span class=p>:</span> <span class=s1>'node'</span><span class=p>,</span>
-    <span class=nx>devtool</span><span class=err>:</span> <span class=kc>false</span><span class=p>,</span>
-    <span class=nx>entry</span><span class=err>:</span> <span class=nx>resolve</span><span class=p>(</span><span class=s1>'./src/entry-skeleton.js'</span><span class=p>),</span> <span class=c1>// 多页应用中传入数组</span>
-    <span class=nx>output</span><span class=err>:</span> <span class=nb>Object</span><span class=p>.</span><span class=nx>assign</span><span class=p>({},</span> <span class=nx>baseWebpackConfig</span><span class=p>.</span><span class=nx>output</span><span class=p>,</span> <span class=p>{</span>
-        <span class=na>libraryTarget</span><span class=p>:</span> <span class=s1>'commonjs2'</span>
-    <span class=p>}),</span>
-    <span class=nx>externals</span><span class=err>:</span> <span class=nx>nodeExternals</span><span class=p>({</span>
-        <span class=na>whitelist</span><span class=p>:</span> <span class=sr>/</span><span class=se>\.</span><span class=sr>css$/</span>
-    <span class=p>}),</span>
-    <span class=nx>plugins</span><span class=err>:</span> <span class=p>[]</span>
-<span class=p>}</span><span class=w>
-</span></pre></table></code></pre></figure><blockquote><p>多页中的 webpack 配置对象示例，可参考<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples/multipage>多页测试用例</a>或者<a href=https://github.com/lavas-project/lavas-template-vue-mpa>Lavas MPA 模版</a>。</blockquote><p>webpack 将使用传入的配置对象进行编译，由于我们不需要将最终产物保存在硬盘中，使用内存文件系统<a href=https://github.com/webpack/memory-fs>memory-fs</a>能够减少不必要的I/O开销。最终会生成一个 bundle 文件，使用<code class=highlighter-rouge>createBundleRenderer</code>创建一个 renderer，就可以在 Node.js 环境得到渲染结果了。<figure class=highlight><pre><code class=language-javascript data-lang=javascript><table style="border-spacing: 0"><tr><td class="gutter gl" style="text-align: right"><pre class=lineno>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13</pre><td class=code><pre><span class=kr>const</span> <span class=nx>createBundleRenderer</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>'vue-server-renderer'</span><span class=p>).</span><span class=nx>createBundleRenderer</span><span class=p>;</span>
-<span class=kd>let</span> <span class=nx>bundle</span> <span class=o>=</span> <span class=nx>mfs</span><span class=p>.</span><span class=nx>readFileSync</span><span class=p>(</span><span class=nx>outputPath</span><span class=p>,</span> <span class=s1>'utf-8'</span><span class=p>);</span>
-<span class=c1>// 创建 renderer</span>
-<span class=kd>let</span> <span class=nx>renderer</span> <span class=o>=</span> <span class=nx>createBundleRenderer</span><span class=p>(</span><span class=nx>bundle</span><span class=p>);</span>
-<span class=c1>// 渲染得到 html</span>
-<span class=nx>renderer</span><span class=p>.</span><span class=nx>renderToString</span><span class=p>({},</span> <span class=p>(</span><span class=nx>err</span><span class=p>,</span> <span class=nx>skeletonHtml</span><span class=p>)</span> <span class=o>=&gt;</span> <span class=p>{</span>
-    <span class=k>if</span> <span class=p>(</span><span class=nx>err</span><span class=p>)</span> <span class=p>{</span>
-        <span class=nx>reject</span><span class=p>(</span><span class=nx>err</span><span class=p>);</span>
-    <span class=p>}</span>
-    <span class=k>else</span> <span class=p>{</span>
-        <span class=nx>resolve</span><span class=p>({</span><span class=nx>skeletonHtml</span><span class=p>,</span> <span class=nx>skeletonCss</span><span class=p>});</span>
-    <span class=p>}</span>
-<span class=p>});</span><span class=w>
-</span></pre></table></code></pre></figure><p>另外，为了将样式从 JS 文件中分离，我们使用了<a href=https://github.com/webpack-contrib/extract-text-webpack-plugin> ExtractTextPlugin</a>插件，将样式内容输出到单独的文件中。与 bundle 文件一样，输出样式文件也在内存文件系统中。<figure class=highlight><pre><code class=language-javascript data-lang=javascript><table style="border-spacing: 0"><tr><td class="gutter gl" style="text-align: right"><pre class=lineno>1
-2
-3
-4
-5
-6</pre><td class=code><pre><span class=c1>// vue-skeleton-webpack-plugin/src/ssr.js</span>
+    }</style><header class=intro-header><div class=header-mask></div><div class=container><div class=post-heading><h2>基于vue和webpack的skeleton插件<h3 class=subheading></h3></h2><div class=tags><a class=tag href=/tags#vue title=vue>vue</a> <a class=tag href=/tags#webpack title=webpack>webpack</a></div><span class=meta>Posted by xiaOp的博客 on July 15, 2017</span></div></div></header><article class=post-container><div class=container><blockquote><p>这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。</blockquote><p>如果您还不了解 skeleton，可以参考<a href=https://lavas.baidu.com/guide/vue/doc/vue/advanced/skeleton>App Skeleton 介绍</a>一文。<p>github 地址：<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin>https://github.com/lavas-project/vue-skeleton-webpack-plugin</a><h2 id=问题背景>问题背景</h2><p>参考<a href=https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/#在构建时使用-vue-预渲染骨架屏>饿了么的 PWA 升级实践</a>一文，我们希望在构建时渲染 skeleton 组件，将渲染 DOM 插入 html 的挂载点中，同时将使用的样式通过 style 标签内联。这样在前端 JS 渲染完成之前，用户将看到页面的大致骨架，感知到页面是正在加载的。<p>我们当然可以选择在开发时直接将页面骨架内容写入 html 模版中，但是这会带来两个问题：<ol><li>开发 skeleton 与其他组件体验不一致。<li>多页应用中多个页面可能共用同一个 html 模版，而又有独立的 skeleton。</ol><p>下面我们将看看插件在具体实现中是如何解决这两个问题的。<h2 id=实现思路>实现思路</h2><p>我们希望能够保证一致的开发体验，开发 skeleton 和其他组件没有任何不同。而且开发者不需要关心渲染结果是如何被注入 html 的。 下面我们将从渲染和注入这两方面展开介绍。<h3 id=渲染组件>渲染组件</h3><p>我们使用 vue 的<a href=https://ssr.vuejs.org/zh/ >服务端渲染</a>功能，接受 webpack 配置对象作为输入，输出渲染的 DOM 和样式。<p>一个典型的用于服务端渲染的 webpack 配置对象如下，其中 entry 入口文件中使用了 skeleton 组件：<div><pre class=line-numbers data-line=""><code class=language-javascript>{
+    target: &#39;node&#39;,
+    devtool: false,
+    entry: resolve(&#39;./src/entry-skeleton.js&#39;), // 多页应用中传入数组
+    output: Object.assign({}, baseWebpackConfig.output, {
+        libraryTarget: &#39;commonjs2&#39;
+    }),
+    externals: nodeExternals({
+        whitelist: /\.css$/
+    }),
+    plugins: []
+}</code></pre></div><blockquote><p>多页中的 webpack 配置对象示例，可参考<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples/multipage>多页测试用例</a>或者<a href=https://github.com/lavas-project/lavas-template-vue-mpa>Lavas MPA 模版</a>。</blockquote><p>webpack 将使用传入的配置对象进行编译，由于我们不需要将最终产物保存在硬盘中，使用内存文件系统<a href=https://github.com/webpack/memory-fs>memory-fs</a>能够减少不必要的I/O开销。最终会生成一个 bundle 文件，使用<code class=highlighter-rouge>createBundleRenderer</code>创建一个 renderer，就可以在 Node.js 环境得到渲染结果了。<div><pre class=line-numbers data-line=""><code class=language-javascript>const createBundleRenderer = require(&#39;vue-server-renderer&#39;).createBundleRenderer;
+let bundle = mfs.readFileSync(outputPath, &#39;utf-8&#39;);
+// 创建 renderer
+let renderer = createBundleRenderer(bundle);
+// 渲染得到 html
+renderer.renderToString({}, (err, skeletonHtml) =&gt; {
+    if (err) {
+        reject(err);
+    }
+    else {
+        resolve({skeletonHtml, skeletonCss});
+    }
+});</code></pre></div><p>另外，为了将样式从 JS 文件中分离，我们使用了<a href=https://github.com/webpack-contrib/extract-text-webpack-plugin> ExtractTextPlugin</a>插件，将样式内容输出到单独的文件中。与 bundle 文件一样，输出样式文件也在内存文件系统中。<div><pre class=line-numbers data-line=""><code class=language-javascript>// vue-skeleton-webpack-plugin/src/ssr.js
 
-<span class=c1>// 加入 ExtractTextPlugin 插件到 webpack 配置对象中</span>
-<span class=nx>serverWebpackConfig</span><span class=p>.</span><span class=nx>plugins</span><span class=p>.</span><span class=nx>push</span><span class=p>(</span><span class=k>new</span> <span class=nx>ExtractTextPlugin</span><span class=p>({</span>
-    <span class=na>filename</span><span class=p>:</span> <span class=nx>outputCssBasename</span>
-<span class=p>}));</span><span class=w>
-</span></pre></table></code></pre></figure><p>至此，我们已经得到了全部渲染结果，接下来需要关心注入时机。<h3 id=注入渲染结果>注入渲染结果</h3><p>关于渲染结果的注入时机，我们参考<a href=https://github.com/jantimon/html-webpack-plugin#events>html-webpack-plugin的事件说明</a>，选择在<code class=highlighter-rouge>html-webpack-plugin-before-html-processing</code>事件回调函数中进行。在该回调函数中，插件除了能取得当前的 webpack 编译对象之外，当前处理的 html 内容也作为参数传入，便于插件进行修改。<p>那么我们需要对 html 内容做哪些修改呢？skeleton 组件最终的渲染结果应该包含 DOM 结构和样式两部分，样式可以直接插入<code class=highlighter-rouge>&lt;/head&gt;</code>之前，而 DOM 的插入与挂载点相关（浏览器端渲染完毕后将替换 skeleton 内容），默认使用<code class=highlighter-rouge>&lt;div id="app"&gt;</code>，当然插件使用者可以通过参数传入。<p>在多页应用中，相比单页情况会变的稍稍复杂。多页项目中通常会引入多个 html-webpack-plugin，例如我们在<a href=https://github.com/lavas-project/lavas-template-vue-mpa>Lavas MPA 模版</a>中使用的<a href=https://github.com/mutualofomaha/multipage-webpack-plugin> multipage插件</a>就是如此，这就会导致<code class=highlighter-rouge>html-webpack-plugin-before-html-processing</code>事件被多次触发。我们需要在每次事件触发时识别出当前处理的入口文件，执行 webpack 编译当前页面对应的入口文件，渲染对应的 skeleton 组件。<p>查找当前处理的入口文件过程如下：<figure class=highlight><pre><code class=language-javascript data-lang=javascript><table style="border-spacing: 0"><tr><td class="gutter gl" style="text-align: right"><pre class=lineno>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15</pre><td class=code><pre><span class=c1>// vue-skeleton-webpack-plugin/src/index.js</span>
+// 加入 ExtractTextPlugin 插件到 webpack 配置对象中
+serverWebpackConfig.plugins.push(new ExtractTextPlugin({
+    filename: outputCssBasename
+}));</code></pre></div><p>至此，我们已经得到了全部渲染结果，接下来需要关心注入时机。<h3 id=注入渲染结果>注入渲染结果</h3><p>关于渲染结果的注入时机，我们参考<a href=https://github.com/jantimon/html-webpack-plugin#events>html-webpack-plugin的事件说明</a>，选择在<code class=highlighter-rouge>html-webpack-plugin-before-html-processing</code>事件回调函数中进行。在该回调函数中，插件除了能取得当前的 webpack 编译对象之外，当前处理的 html 内容也作为参数传入，便于插件进行修改。<p>那么我们需要对 html 内容做哪些修改呢？skeleton 组件最终的渲染结果应该包含 DOM 结构和样式两部分，样式可以直接插入<code class=highlighter-rouge>&lt;/head&gt;</code>之前，而 DOM 的插入与挂载点相关（浏览器端渲染完毕后将替换 skeleton 内容），默认使用<code class=highlighter-rouge>&lt;div id="app"&gt;</code>，当然插件使用者可以通过参数传入。<p>在多页应用中，相比单页情况会变的稍稍复杂。多页项目中通常会引入多个 html-webpack-plugin，例如我们在<a href=https://github.com/lavas-project/lavas-template-vue-mpa>Lavas MPA 模版</a>中使用的<a href=https://github.com/mutualofomaha/multipage-webpack-plugin> multipage插件</a>就是如此，这就会导致<code class=highlighter-rouge>html-webpack-plugin-before-html-processing</code>事件被多次触发。我们需要在每次事件触发时识别出当前处理的入口文件，执行 webpack 编译当前页面对应的入口文件，渲染对应的 skeleton 组件。<p>查找当前处理的入口文件过程如下：<div><pre class=line-numbers data-line=""><code class=language-javascript>// vue-skeleton-webpack-plugin/src/index.js
 
-<span class=c1>// 当前页面使用的所有 chunks</span>
-<span class=kd>let</span> <span class=nx>usedChunks</span> <span class=o>=</span> <span class=nx>htmlPluginData</span><span class=p>.</span><span class=nx>plugin</span><span class=p>.</span><span class=nx>options</span><span class=p>.</span><span class=nx>chunks</span><span class=p>;</span>
-<span class=kd>let</span> <span class=nx>entryKey</span><span class=p>;</span>
-<span class=c1>// chunks 和所有入口文件的交集就是当前待处理的入口文件</span>
-<span class=k>if</span> <span class=p>(</span><span class=nb>Array</span><span class=p>.</span><span class=nx>isArray</span><span class=p>(</span><span class=nx>usedChunks</span><span class=p>))</span> <span class=p>{</span>
-    <span class=nx>entryKey</span> <span class=o>=</span> <span class=nb>Object</span><span class=p>.</span><span class=nx>keys</span><span class=p>(</span><span class=nx>skeletonEntries</span><span class=p>);</span>
-    <span class=nx>entryKey</span> <span class=o>=</span> <span class=nx>entryKey</span><span class=p>.</span><span class=nx>filter</span><span class=p>(</span><span class=nx>v</span> <span class=o>=&gt;</span> <span class=nx>usedChunks</span><span class=p>.</span><span class=nx>indexOf</span><span class=p>(</span><span class=nx>v</span><span class=p>)</span> <span class=o>&gt;</span> <span class=o>-</span><span class=mi>1</span><span class=p>)[</span><span class=mi>0</span><span class=p>];</span>
-<span class=p>}</span>
-<span class=c1>// 设置当前的 webpack 配置对象的入口文件和结果输出文件</span>
-<span class=nx>webpackConfig</span><span class=p>.</span><span class=nx>entry</span> <span class=o>=</span> <span class=nx>skeletonEntries</span><span class=p>[</span><span class=nx>entryKey</span><span class=p>];</span>
-<span class=nx>webpackConfig</span><span class=p>.</span><span class=nx>output</span><span class=p>.</span><span class=nx>filename</span> <span class=o>=</span> <span class=err>`</span><span class=nx>skeleton</span><span class=o>-</span><span class=nx>$</span><span class=p>{</span><span class=nx>entryKey</span><span class=p>}.</span><span class=nx>js</span><span class=err>`</span><span class=p>;</span>
-<span class=c1>// 使用配置对象进行服务端渲染</span>
-<span class=nx>ssr</span><span class=p>(</span><span class=nx>webpackConfig</span><span class=p>).</span><span class=nx>then</span><span class=p>(({</span><span class=nx>skeletonHtml</span><span class=p>,</span> <span class=nx>skeletonCss</span><span class=p>})</span> <span class=o>=&gt;</span> <span class=p>{});</span><span class=w>
-</span></pre></table></code></pre></figure><p>这样我们就完成了对多页面入口 skeleton 组件的渲染工作了。<h3 id=开发模式下插入路由>开发模式下插入路由</h3><p>由于 skeleton 的渲染结果在 JS 前端渲染完成后就会被替换，如何在开发时方便的查看呢？ 使用浏览器开发工具设置断点，阻塞前端渲染可以做到，但如果能在开发模式中插入 skeleton 对应的路由规则，使多个页面的 skeleton 能像其他路由组件一样被访问，将使开发调试变得更加方便。<p>向路由文件中注入代码的工作将在<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin/blob/master/src/loader.js> loader</a>中完成。<p>首先明确注入内容，我们希望通过路由组件的形式访问 skeleton，那么首先需要引入各个 skeleton 组件，然后增加对应的路由规则。具体到注入的代码，类似这样：<figure class=highlight><pre><code class=language-javascript data-lang=javascript><table style="border-spacing: 0"><tr><td class="gutter gl" style="text-align: right"><pre class=lineno>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14</pre><td class=code><pre><span class=c1>// router.js</span>
+// 当前页面使用的所有 chunks
+let usedChunks = htmlPluginData.plugin.options.chunks;
+let entryKey;
+// chunks 和所有入口文件的交集就是当前待处理的入口文件
+if (Array.isArray(usedChunks)) {
+    entryKey = Object.keys(skeletonEntries);
+    entryKey = entryKey.filter(v =&gt; usedChunks.indexOf(v) &gt; -1)[0];
+}
+// 设置当前的 webpack 配置对象的入口文件和结果输出文件
+webpackConfig.entry = skeletonEntries[entryKey];
+webpackConfig.output.filename = `skeleton-${entryKey}.js`;
+// 使用配置对象进行服务端渲染
+ssr(webpackConfig).then(({skeletonHtml, skeletonCss}) =&gt; {});</code></pre></div><p>这样我们就完成了对多页面入口 skeleton 组件的渲染工作了。<h3 id=开发模式下插入路由>开发模式下插入路由</h3><p>由于 skeleton 的渲染结果在 JS 前端渲染完成后就会被替换，如何在开发时方便的查看呢？ 使用浏览器开发工具设置断点，阻塞前端渲染可以做到，但如果能在开发模式中插入 skeleton 对应的路由规则，使多个页面的 skeleton 能像其他路由组件一样被访问，将使开发调试变得更加方便。<p>向路由文件中注入代码的工作将在<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin/blob/master/src/loader.js> loader</a>中完成。<p>首先明确注入内容，我们希望通过路由组件的形式访问 skeleton，那么首先需要引入各个 skeleton 组件，然后增加对应的路由规则。具体到注入的代码，类似这样：<div><pre class=line-numbers data-line=""><code class=language-javascript>// router.js
 
-<span class=c1>// 引入 skeleton 组件</span>
-<span class=kr>import</span> <span class=nx>Skeleton</span> <span class=nx>from</span> <span class=s1>'@/pages/Skeleton.vue'</span>
+// 引入 skeleton 组件
+import Skeleton from &#39;@/pages/Skeleton.vue&#39;
 
-<span class=c1>// 插入routes</span>
-<span class=nl>routes</span><span class=p>:</span> <span class=p>[</span>
-    <span class=p>{</span>
-        <span class=na>path</span><span class=p>:</span> <span class=s1>'/skeleton'</span><span class=p>,</span>
-        <span class=na>name</span><span class=p>:</span> <span class=s1>'skeleton'</span><span class=p>,</span>
-        <span class=na>component</span><span class=p>:</span> <span class=nx>Skeleton</span>
-    <span class=p>}</span>
-    <span class=c1>// ...其余路由规则</span>
-<span class=p>]</span><span class=w>
-</span></pre></table></code></pre></figure><p>在多页应用中，使用者可以通过占位符设置依赖语句和路由规则的模版，loader 在运行时会使用这些模版，用真实的 skeleton 名称替换掉占位符，<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin/blob/master/src/loader.js#L27-L39>插入多条语句</a>。<blockquote><p>多页中的具体应用示例，可参考<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples/multipage>多页测试用例</a>或者<a href=https://github.com/lavas-project/lavas-template-vue-mpa>Lavas MPA 模版</a>。</blockquote><h2 id=参数说明>参数说明</h2><p>插件和 loader 使用的参数如下：<h3 id=skeletonwebpackplugin>SkeletonWebpackPlugin</h3><ul><li>webpackConfig <em>必填</em>，渲染 skeleton 的 webpack 配置对象<li>insertAfter <em>选填</em>，渲染 DOM 结果插入位置，默认值为<code class=highlighter-rouge>'&lt;div id="app"&gt;'</code></ul><h3 id=skeletonwebpackpluginloader>SkeletonWebpackPlugin.loader</h3><p>参数分为两类：<ol><li><a href=https://doc.webpack-china.org/configuration/module/#rule>webpack模块规则</a>，skeleton 对应的路由将被插入路由文件中，所以需要指定一个或多个路由文件，使用<code class=highlighter-rouge>resource/include/test</code>皆可指定 loader 应用的文件。<li><code class=highlighter-rouge>options</code> 将被传入 loader 中的参数对象，包含以下属性：<ul><li>entry <em>必填</em>，支持字符串和数组类型，对应页面入口的名称<li>importTemplate <em>选填</em>，引入 skeleton 组件的表达式，默认值为<code class=highlighter-rouge>'import [nameCap] from \'@/pages/[nameCap].vue\';'</code><li>routePathTemplate <em>选填</em>，路由路径，默认值为<code class=highlighter-rouge>'/skeleton-[name]'</code><li>insertAfter <em>选填</em>，路由插入位置，默认值为<code class=highlighter-rouge>'routes: ['</code></ul></ol><p>在<code class=highlighter-rouge>importTemplate</code>和<code class=highlighter-rouge>routePathTemplate</code>中可以使用以下占位符：<ul><li><code class=highlighter-rouge>[name]</code> 和<code class=highlighter-rouge>entry</code>保持一致<li><code class=highlighter-rouge>[nameCap]</code> <code class=highlighter-rouge>entry</code>首字母大写</ul><p>例如使用以下配置，将向路由文件<code class=highlighter-rouge>router.js</code>中插入<code class=highlighter-rouge>'import Page1 from \'@/pages/Page1.vue\';'</code>和<code class=highlighter-rouge>'import Page2 from \'@/pages/Page2.vue\';'</code>两条语句。 同时生成<code class=highlighter-rouge>/skeleton-page1</code>和<code class=highlighter-rouge>/skeleton-page2</code>两条路由规则。<figure class=highlight><pre><code class=language-javascript data-lang=javascript><table style="border-spacing: 0"><tr><td class="gutter gl" style="text-align: right"><pre class=lineno>1
-2
-3
-4
-5
-6
-7
-8</pre><td class=code><pre><span class=p>{</span>
-    <span class=nl>resource</span><span class=p>:</span> <span class=s1>'router.js'</span><span class=p>,</span>
-    <span class=nx>options</span><span class=err>:</span> <span class=p>{</span>
-        <span class=nl>entry</span><span class=p>:</span> <span class=p>[</span><span class=s1>'page1'</span><span class=p>,</span> <span class=s1>'page2'</span><span class=p>],</span>
-        <span class=nx>importTemplate</span><span class=err>:</span> <span class=s1>'import [nameCap] from \'@/pages/[nameCap].vue\';'</span><span class=p>,</span>
-        <span class=nx>routePathTemplate</span><span class=err>:</span> <span class=s1>'/skeleton-[name]'</span>
-    <span class=p>}</span>
-<span class=p>}</span><span class=w>
-</span></pre></table></code></pre></figure><p>更多详细说明可参考<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin#参数说明> github上插件的参数说明部分</a>。<h2 id=贡献代码>贡献代码</h2><p>在开发中遇到任何问题，都欢迎提出<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin/issues> ISSUE</a>讨论。<p>您也可以帮助我们完善<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples>测试用例</a>。</div></article><script>function async(u, c) {
+// 插入routes
+routes: [
+    {
+        path: &#39;/skeleton&#39;,
+        name: &#39;skeleton&#39;,
+        component: Skeleton
+    }
+    // ...其余路由规则
+]</code></pre></div><p>在多页应用中，使用者可以通过占位符设置依赖语句和路由规则的模版，loader 在运行时会使用这些模版，用真实的 skeleton 名称替换掉占位符，<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin/blob/master/src/loader.js#L27-L39>插入多条语句</a>。<blockquote><p>多页中的具体应用示例，可参考<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples/multipage>多页测试用例</a>或者<a href=https://github.com/lavas-project/lavas-template-vue-mpa>Lavas MPA 模版</a>。</blockquote><h2 id=参数说明>参数说明</h2><p>插件和 loader 使用的参数如下：<h3 id=skeletonwebpackplugin>SkeletonWebpackPlugin</h3><ul><li>webpackConfig <em>必填</em>，渲染 skeleton 的 webpack 配置对象<li>insertAfter <em>选填</em>，渲染 DOM 结果插入位置，默认值为<code class=highlighter-rouge>'&lt;div id="app"&gt;'</code></ul><h3 id=skeletonwebpackpluginloader>SkeletonWebpackPlugin.loader</h3><p>参数分为两类：<ol><li><a href=https://doc.webpack-china.org/configuration/module/#rule>webpack模块规则</a>，skeleton 对应的路由将被插入路由文件中，所以需要指定一个或多个路由文件，使用<code class=highlighter-rouge>resource/include/test</code>皆可指定 loader 应用的文件。<li><code class=highlighter-rouge>options</code> 将被传入 loader 中的参数对象，包含以下属性：<ul><li>entry <em>必填</em>，支持字符串和数组类型，对应页面入口的名称<li>importTemplate <em>选填</em>，引入 skeleton 组件的表达式，默认值为<code class=highlighter-rouge>'import [nameCap] from \'@/pages/[nameCap].vue\';'</code><li>routePathTemplate <em>选填</em>，路由路径，默认值为<code class=highlighter-rouge>'/skeleton-[name]'</code><li>insertAfter <em>选填</em>，路由插入位置，默认值为<code class=highlighter-rouge>'routes: ['</code></ul></ol><p>在<code class=highlighter-rouge>importTemplate</code>和<code class=highlighter-rouge>routePathTemplate</code>中可以使用以下占位符：<ul><li><code class=highlighter-rouge>[name]</code> 和<code class=highlighter-rouge>entry</code>保持一致<li><code class=highlighter-rouge>[nameCap]</code> <code class=highlighter-rouge>entry</code>首字母大写</ul><p>例如使用以下配置，将向路由文件<code class=highlighter-rouge>router.js</code>中插入<code class=highlighter-rouge>'import Page1 from \'@/pages/Page1.vue\';'</code>和<code class=highlighter-rouge>'import Page2 from \'@/pages/Page2.vue\';'</code>两条语句。 同时生成<code class=highlighter-rouge>/skeleton-page1</code>和<code class=highlighter-rouge>/skeleton-page2</code>两条路由规则。<div><pre class=line-numbers data-line=""><code class=language-javascript>{
+    resource: &#39;router.js&#39;,
+    options: {
+        entry: [&#39;page1&#39;, &#39;page2&#39;],
+        importTemplate: &#39;import [nameCap] from \&#39;@/pages/[nameCap].vue\&#39;;&#39;,
+        routePathTemplate: &#39;/skeleton-[name]&#39;
+    }
+}</code></pre></div><p>更多详细说明可参考<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin#参数说明> github上插件的参数说明部分</a>。<h2 id=贡献代码>贡献代码</h2><p>在开发中遇到任何问题，都欢迎提出<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin/issues> ISSUE</a>讨论。<p>您也可以帮助我们完善<a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples>测试用例</a>。</div></article><script>function async(u, c) {
       var d = document, t = 'script',
           o = d.createElement(t),
           s = d.getElementsByTagName(t)[0];

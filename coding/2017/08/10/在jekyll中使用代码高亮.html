@@ -1,0 +1,93 @@
+<!DOCTYPE html><meta charset=utf-8><meta name=viewport content="width=device-widthinitial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=keywords content=coding编程javascriptxiaoiverxiaop><meta name=theme-color content=#eee><title>在 jekyll 中使用代码高亮 | xiaOp的博客</title><meta property=og:title content="在 jekyll 中使用代码高亮"><meta property=og:locale content=en_US><meta name=description content="代码高亮是一个技术博客的重要特性，Jekyll 中默认使用 Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的 Pygments也是一个可选方案。"><meta property=og:description content="代码高亮是一个技术博客的重要特性，Jekyll 中默认使用 Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的 Pygments也是一个可选方案。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-08-11T03:21:32+08:00><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"在 jekyll 中使用代码高亮","datePublished":"2017-08-11T03:21:32+08:00","dateModified":"2017-08-11T03:21:32+08:00","description":"代码高亮是一个技术博客的重要特性，Jekyll 中默认使用 Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的 Pygments也是一个可选方案。","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html"},"url":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html"}</script><title>在 jekyll 中使用代码高亮</title><link rel="shortcut icon" href=/img/favicon.ico><link rel=canonical href=https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/style-large.css><link rel=stylesheet href=/css/prism.css><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]--><script src=/js/jquery.min.js></script><script src=/js/Imager.min.js></script><script src=/js/jquery.scrollzer.min.js></script><script src=/js/jquery.scrolly.min.js></script><script src=/js/skel.min.js></script><script src=/js/skel-layers.min.js></script><script src=/js/prism.min.js></script><script src=/js/init.min.js></script><section id=header class=skel-layers-fixed><header><span class="image avatar"><img src=/img/avatar.jpg alt=""></span><h1 id=logo><a href=/ >xiaOp的博客</a></h1><p>想成为一个有趣的人</header><nav id=nav><ul><li><a href=#intro>主页</a><li><a href=#blog>文章</a><li><a href=#contact>兴趣</a></ul></nav><footer><ul class=icons><li><a href=https://github.com/xiaoiver class="icon fa-github"><span class=label>Github</span></a><li><a href=mailto:pyqiverson@gmail.com class="icon fa-envelope"><span class=label>Email</span></a><li><a href=https://www.douban.com/people/150275082/ class=icon>豆</a><li><a href=https://www.zhihu.com/people/pan-yu-qi-20/activities class=icon>知</a></ul></footer></section><div id=wrapper><div id=main><style>header.intro-header {
+        position: relative;
+        background-image: url('/img/post-bg-js-module.jpg');
+        background-size: cover;
+    }
+    
+
+    .post-heading {
+        position: relative;
+        padding: 50px 0;
+        color: white;
+    }
+    .post-heading h2,
+    .post-heading h3,
+    .post-heading h4 {
+        color: white;
+    }
+    .post-heading h2 {
+        font-size: 3em;
+    }
+
+    article {
+        padding-top: 20px;
+    }
+
+    .post-container img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 1.5em auto 1.6em auto;
+    }
+    .post-container a {
+        color: #4acaa8;
+    }</style><header class=intro-header><div class=header-mask></div><div class=container><div class=post-heading><h2>在 jekyll 中使用代码高亮<h3 class=subheading>使用 Prism 配合插件实现</h3></h2><div class=tags><a class=tag href=/tags#ruby title=ruby>ruby</a> <a class=tag href=/tags#jekyll title=jekyll>jekyll</a></div><span class=meta>Posted by xiaOp的博客 on August 10, 2017</span></div></div></header><article class=post-container><div class=container><p>代码高亮是一个技术博客的重要特性，Jekyll 中默认使用<a href=http://jekyllrb.com/docs/templates/#code-snippet-highlighting> Rouge</a>进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的<a href=http://pygments.org/ > Pygments</a>也是一个可选方案。<p>博客作者可以使用如下 markdown 语法插入代码块，其中<code class=highlighter-rouge>linenos</code>表示显示行号：<div><pre class=line-numbers data-line=""><code class=language-ruby>\{\% highlight ruby linenos %}
+    def foo
+      puts &#39;foo&#39;
+    end
+    \{\% endhighlight %}</code></pre></div><p>本来我是采用默认的 Rouge，但是发现样式有点丑，尤其是行号部分。而且有时我需要高亮显示若干行代码，例如这样：<div><pre class=line-numbers data-line=""><code class=language-ruby>\{\% highlight ruby linenos=1-2 %}
+    def foo
+      puts &#39;foo&#39;
+    end
+    \{\% endhighlight %}</code></pre></div><p>此时 Rouge 就做不到了，而且 Rouge 和 Pygments 似乎很久没有更新了，想找一个漂亮的样式也不容易。<p>我在网上搜了一下，发现了<a href=http://prismjs.com/ > Prism</a>这样一个库。MDN，Smashing magazine 很多技术网站都在使用，难怪样式看着有点眼熟。那么如何在 jekyll 中使用呢？<h2 id=编写-jekyll-插件>编写 jekyll 插件</h2><p>参考 Prism 文档，在项目中引入定制后的 JS 和 CSS 文件都很简单。值得一提的是之前提过的高亮特定行数的代码，可以通过<a href=http://prismjs.com/plugins/line-highlight/ > Prism 插件</a>实现。所以我们只需要关注如何通过 jekyll 插件将 markdown 代码块转换成对应的 HTML 代码即可。<p>之前介绍过如何在<a href=/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html> Github Pages 中使用第三方插件</a>。由于我的博客在本地进行编译，所以只需要将插件放在<code class=highlighter-rouge>_plugins</code>文件夹下即可。<p>我搜索到一个<a href=https://github.com/gmurphey/jekyll-prism-plugin> jekyll 插件</a>，已经很久没有维护了，ISSUE 也很久没有回复。看了代码后决定在此基础上进行修改，顺便学习一下自定义插件的相关知识。<h3 id=liquid>Liquid</h3><p><a href=https://github.com/Shopify/liquid>Liquid</a> 是使用 Ruby 编写的模版引擎。jekyll 使用它进行 markdown 语法的解析。通过继承 Liquid 内部封装的类，可以自定义我们的语法块。<p>以下是声明和注册代码，继承<a href=http://www.rubydoc.info/gems/liquid/Liquid/Block> Block</a>而非 Tag 的原因很简单，我们需要使用闭合标签，类似<code class=highlighter-rouge>\{\% endprism %}</code>，否则一旦解析到闭合标签就会报错了。<div><pre class=line-numbers data-line=2,11><code class=language-ruby>module Jekyll
+  class PrismBlock &lt; Liquid::Block
+    include Liquid::StandardFilters
+    def initialize(tag_name, markup, tokens)
+        super
+    end
+
+    def render(context)
+    end
+end
+Liquid::Template.register_tag(&#39;prism&#39;, Jekyll::PrismBlock)</code></pre></div><p>代码中还引入了<code class=highlighter-rouge>StandardFilters</code>，这个后续在输出 HTML 时会使用。<div><pre class=line-numbers data-line=3><code class=language-ruby>module Jekyll
+  class PrismBlock &lt; Liquid::Block
+    include Liquid::StandardFilters
+end
+Liquid::Template.register_tag(&#39;prism&#39;, Jekyll::PrismBlock)</code></pre></div><p>真正的处理逻辑将在两个方法：构造函数<code class=highlighter-rouge>initialize()</code>和<code class=highlighter-rouge>render()</code>中完成。<h3 id=解析行号>解析行号</h3><p>通过方法签名<code class=highlighter-rouge>initialize(tag_name, markup, tokens)</code>可以看出，<code class=highlighter-rouge>markup</code>包含了代码语言和行号的声明。解析工作交给正则完成：<div><pre class=line-numbers data-line=""><code class=language-ruby>`OPTIONS_SYNTAX = %r{^([a-zA-Z0-9.+#-]+)((\s+\w+(=[0-9,-]+)?)*)$}`
+markup.strip =~ OPTIONS_SYNTAX</code></pre></div><p>所以对于<code class=highlighter-rouge>\{\% prism ruby linenos=2,11-13 %}</code>这样的代码块声明，我们能够得到语言<code class=highlighter-rouge>ruby</code>，行号<code class=highlighter-rouge>linenos=2,11-13</code>。这部分基本不需要做修改，相关代码就不贴了。<h3 id=输出-html>输出 HTML</h3><p><code class=highlighter-rouge>render()</code>函数十分简单，我们按照 Prism 接受的 HTML 结构输出即可，这里我根据<code class=highlighter-rouge>linenos</code>决定是否展示全部行号，另外通过<code class=highlighter-rouge>data-line</code>配合 Prism 插件实现高亮特定行：<div><pre class=line-numbers data-line=""><code class=language-ruby># 转义内容
+code = h(super).strip
+linenos = &#39;&#39;
+linenos_content = @options[&quot;linenos&quot;]
+if !linenos_content.nil?
+    linenos = &quot;class=&#39;line-numbers&#39; data-line=&#39;#{linenos_content}&#39;&quot;
+end
+# 返回 HTML 内容
+&lt;&lt;-HTML
+    &lt;div&gt;
+      &lt;pre #{linenos}&gt;&lt;code class=&#39;language-#{@lang}&#39;&gt;#{code}&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+HTML</code></pre></div><p>以上代码有两点需要注意：<ol><li>类似 JS 中的字符串模版功能，Ruby 中也有类似的语法，在上面最终输出 HTML 内容中有使用，但是必须使用双引号包裹。<li>转义标签內的代码内容使用了<code class=highlighter-rouge>h()</code>函数，还记得开头引入的 StandardFilters 嘛，<code class=highlighter-rouge>h()</code>是里面<code class=highlighter-rouge>escape()</code>的<a href=https://github.com/Shopify/liquid/blob/master/lib/liquid/standardfilters.rb#L35-L38>同名函数</a>。这个函数接受输入流（这里就是代码块内容），返回解析后的 HTML 字符串。</ol><h2 id=总结>总结</h2><p>深刻感觉到 jekyll 用的人真的不多了，很多插件都处于无人维护的状态。</div></article><script>function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }</script><script>async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.post-heading h2').remove('.subheading').remove('#logo');
+    })</script><style>/* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -1.25em;
+            font-size: 1.1em;
+        }
+    }</style></div></div>

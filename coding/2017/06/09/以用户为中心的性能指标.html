@@ -1,7 +1,7 @@
-<!DOCTYPE html><meta charset=utf-8><meta name=viewport content="width=device-widthinitial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=keywords content=coding编程javascriptxiaoiverxiaop><meta name=theme-color content=#eee><title>以用户为中心的性能指标 | xiaOp的博客</title><meta property=og:title content=以用户为中心的性能指标><meta property=og:locale content=en_US><meta name=description content=RAIL性能评估模型从以下四个方面提出了要求：><meta property=og:description content=RAIL性能评估模型从以下四个方面提出了要求：><link rel=canonical href=https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-06-10T03:21:32+08:00><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"以用户为中心的性能指标","datePublished":"2017-06-10T03:21:32+08:00","dateModified":"2017-06-10T03:21:32+08:00","description":"RAIL性能评估模型从以下四个方面提出了要求：","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html"},"url":"https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html"}</script><title>以用户为中心的性能指标</title><link rel="shortcut icon" href=/img/favicon.ico><link rel=canonical href=https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/style-large.css><link rel=stylesheet href=/css/highlight.css><!--[if lt IE 9]>
+<!DOCTYPE html><meta charset=utf-8><meta name=viewport content="width=device-widthinitial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=keywords content=coding编程javascriptxiaoiverxiaop><meta name=theme-color content=#eee><title>以用户为中心的性能指标 | xiaOp的博客</title><meta property=og:title content=以用户为中心的性能指标><meta property=og:locale content=en_US><meta name=description content=RAIL性能评估模型从以下四个方面提出了要求：><meta property=og:description content=RAIL性能评估模型从以下四个方面提出了要求：><link rel=canonical href=https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-06-10T03:21:32+08:00><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"以用户为中心的性能指标","datePublished":"2017-06-10T03:21:32+08:00","dateModified":"2017-06-10T03:21:32+08:00","description":"RAIL性能评估模型从以下四个方面提出了要求：","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html"},"url":"https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html"}</script><title>以用户为中心的性能指标</title><link rel="shortcut icon" href=/img/favicon.ico><link rel=canonical href=https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/style-large.css><link rel=stylesheet href=/css/prism.css><!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]--><script src=/js/jquery.min.js></script><script src=/js/Imager.min.js></script><script src=/js/jquery.scrollzer.min.js></script><script src=/js/jquery.scrolly.min.js></script><script src=/js/skel.min.js></script><script src=/js/skel-layers.min.js></script><script src=/js/init.min.js></script><section id=header class=skel-layers-fixed><header><span class="image avatar"><img src=/img/avatar.jpg alt=""></span><h1 id=logo><a href=/ >xiaOp的博客</a></h1><p>想成为一个有趣的人</header><nav id=nav><ul><li><a href=#intro>主页</a><li><a href=#blog>文章</a><li><a href=#contact>兴趣</a></ul></nav><footer><ul class=icons><li><a href=https://github.com/xiaoiver class="icon fa-github"><span class=label>Github</span></a><li><a href=mailto:pyqiverson@gmail.com class="icon fa-envelope"><span class=label>Email</span></a><li><a href=https://www.douban.com/people/150275082/ class=icon>豆</a><li><a href=https://www.zhihu.com/people/pan-yu-qi-20/activities class=icon>知</a></ul></footer></section><div id=wrapper><div id=main><style>header.intro-header {
+    <![endif]--><script src=/js/jquery.min.js></script><script src=/js/Imager.min.js></script><script src=/js/jquery.scrollzer.min.js></script><script src=/js/jquery.scrolly.min.js></script><script src=/js/skel.min.js></script><script src=/js/skel-layers.min.js></script><script src=/js/prism.min.js></script><script src=/js/init.min.js></script><section id=header class=skel-layers-fixed><header><span class="image avatar"><img src=/img/avatar.jpg alt=""></span><h1 id=logo><a href=/ >xiaOp的博客</a></h1><p>想成为一个有趣的人</header><nav id=nav><ul><li><a href=#intro>主页</a><li><a href=#blog>文章</a><li><a href=#contact>兴趣</a></ul></nav><footer><ul class=icons><li><a href=https://github.com/xiaoiver class="icon fa-github"><span class=label>Github</span></a><li><a href=mailto:pyqiverson@gmail.com class="icon fa-envelope"><span class=label>Email</span></a><li><a href=https://www.douban.com/people/150275082/ class=icon>豆</a><li><a href=https://www.zhihu.com/people/pan-yu-qi-20/activities class=icon>知</a></ul></footer></section><div id=wrapper><div id=main><style>header.intro-header {
         position: relative;
         background-image: url('/img/post-bg-js-module.jpg');
         background-size: cover;
@@ -34,124 +34,63 @@
     }
     .post-container a {
         color: #4acaa8;
-    }</style><header class=intro-header><div class=header-mask></div><div class=container><div class=post-heading><h2>以用户为中心的性能指标<h3 class=subheading></h3></h2><div class=tags><a class=tag href=/tags#performance title=performance>performance</a></div><span class=meta>Posted by xiaOp的博客 on June 9, 2017</span></div></div></header><article class=post-container><div class=container><p><a href=https://developers.google.com/web/fundamentals/performance/rail>RAIL</a>性能评估模型从以下四个方面提出了要求：<ul><li>立即响应用户；在 100 毫秒以内确认用户输入。<li>设置动画或滚动时，在 10 毫秒以内生成帧。<li>最大程度增加主线程的空闲时间。<li>持续吸引用户；在 1000 毫秒以内呈现交互内容。</ul><p><img src=/img/rail.png alt=""><p>针对该评估模型，Google 提出了<a href=https://developers.google.com/web/updates/2017/06/user-centric-performance-metrics>以用户为中心</a>的四个衡量指标：<ul><li>Is it happening? First Paint (FP) / First Contentful Paint (FCP)<li>Is it useful? First Meaningful Paint (FMP) / Hero Element Timing<li>Is it usable? Time to Interactive (TTI)<li>Is it delightful? Long Tasks</ul><p>分别对应渲染过程中的若干阶段，截图如下： <img src=/img/perf-metrics-load-timeline.png alt=""><p>那么如何具体统计这些指标呢？<h2 id=旧方法的问题>旧方法的问题</h2><p>过去的某些统计方法是会损耗性能的，例如使用 rAF 检测过长的帧。但是缺点很明显，轮询会影响性能。<figure class=highlight><pre><code class=language-javascript data-lang=javascript><table style="border-spacing: 0"><tr><td class="gutter gl" style="text-align: right"><pre class=lineno>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12</pre><td class=code><pre><span class=p>(</span><span class=kd>function</span> <span class=nx>detectLongFrame</span><span class=p>()</span> <span class=p>{</span>
-    <span class=kd>var</span> <span class=nx>lastFrameTime</span> <span class=o>=</span> <span class=nb>Date</span><span class=p>.</span><span class=nx>now</span><span class=p>();</span>
-    <span class=nx>requestAnimationFrame</span><span class=p>(</span><span class=kd>function</span><span class=p>()</span> <span class=p>{</span>
-        <span class=kd>var</span> <span class=nx>currentFrameTime</span> <span class=o>=</span> <span class=nb>Date</span><span class=p>.</span><span class=nx>now</span><span class=p>();</span>
+    }</style><header class=intro-header><div class=header-mask></div><div class=container><div class=post-heading><h2>以用户为中心的性能指标<h3 class=subheading></h3></h2><div class=tags><a class=tag href=/tags#performance title=performance>performance</a></div><span class=meta>Posted by xiaOp的博客 on June 9, 2017</span></div></div></header><article class=post-container><div class=container><p><a href=https://developers.google.com/web/fundamentals/performance/rail>RAIL</a>性能评估模型从以下四个方面提出了要求：<ul><li>立即响应用户；在 100 毫秒以内确认用户输入。<li>设置动画或滚动时，在 10 毫秒以内生成帧。<li>最大程度增加主线程的空闲时间。<li>持续吸引用户；在 1000 毫秒以内呈现交互内容。</ul><p><img src=/img/rail.png alt=""><p>针对该评估模型，Google 提出了<a href=https://developers.google.com/web/updates/2017/06/user-centric-performance-metrics>以用户为中心</a>的四个衡量指标：<ul><li>Is it happening? First Paint (FP) / First Contentful Paint (FCP)<li>Is it useful? First Meaningful Paint (FMP) / Hero Element Timing<li>Is it usable? Time to Interactive (TTI)<li>Is it delightful? Long Tasks</ul><p>分别对应渲染过程中的若干阶段，截图如下： <img src=/img/perf-metrics-load-timeline.png alt=""><p>那么如何具体统计这些指标呢？<h2 id=旧方法的问题>旧方法的问题</h2><p>过去的某些统计方法是会损耗性能的，例如使用 rAF 检测过长的帧。但是缺点很明显，轮询会影响性能。<div><pre class=line-numbers data-line=""><code class=language-javascript>(function detectLongFrame() {
+    var lastFrameTime = Date.now();
+    requestAnimationFrame(function() {
+        var currentFrameTime = Date.now();
 
-        <span class=k>if</span> <span class=p>(</span><span class=nx>currentFrameTime</span> <span class=o>-</span> <span class=nx>lastFrameTime</span> <span class=o>&gt;</span> <span class=mi>50</span><span class=p>)</span> <span class=p>{</span>
-            <span class=c1>// Report long frame here...</span>
-        <span class=p>}</span>
+        if (currentFrameTime - lastFrameTime &gt; 50) {
+            // Report long frame here...
+        }
 
-        <span class=nx>detectLongFrame</span><span class=p>(</span><span class=nx>currentFrameTime</span><span class=p>);</span>
-    <span class=p>});</span>
-<span class=p>}());</span><span class=w>
-</span></pre></table></code></pre></figure><p>下面来看看具体针对这四个指标的检测方法以及优化方式。<h2 id=fpfcp>FP/FCP</h2><p>跟踪 FP/FCP，监听 paint 事件，不得不说这样的确太方便了。<figure class=highlight><pre><code class=language-javascript data-lang=javascript><table style="border-spacing: 0"><tr><td class="gutter gl" style="text-align: right"><pre class=lineno>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15</pre><td class=code><pre><span class=kr>const</span> <span class=nx>observer</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>PerformanceObserver</span><span class=p>((</span><span class=nx>list</span><span class=p>)</span> <span class=o>=&gt;</span> <span class=p>{</span>
-    <span class=k>for</span> <span class=p>(</span><span class=kr>const</span> <span class=nx>entry</span> <span class=nx>of</span> <span class=nx>list</span><span class=p>.</span><span class=nx>getEntries</span><span class=p>())</span> <span class=p>{</span>
-        <span class=c1>// `name` will be either 'first-paint' or 'first-contentful-paint'.</span>
-        <span class=kr>const</span> <span class=nx>metricName</span> <span class=o>=</span> <span class=nx>entry</span><span class=p>.</span><span class=nx>name</span><span class=p>;</span>
-        <span class=kr>const</span> <span class=nx>time</span> <span class=o>=</span> <span class=nb>Math</span><span class=p>.</span><span class=nx>round</span><span class=p>(</span><span class=nx>entry</span><span class=p>.</span><span class=nx>startTime</span> <span class=o>+</span> <span class=nx>entry</span><span class=p>.</span><span class=nx>duration</span><span class=p>);</span>
+        detectLongFrame(currentFrameTime);
+    });
+}());</code></pre></div><p>下面来看看具体针对这四个指标的检测方法以及优化方式。<h2 id=fpfcp>FP/FCP</h2><p>跟踪 FP/FCP，监听 paint 事件，不得不说这样的确太方便了。<div><pre class=line-numbers data-line=""><code class=language-javascript>const observer = new PerformanceObserver((list) =&gt; {
+    for (const entry of list.getEntries()) {
+        // `name` will be either &#39;first-paint&#39; or &#39;first-contentful-paint&#39;.
+        const metricName = entry.name;
+        const time = Math.round(entry.startTime + entry.duration);
 
-        <span class=nx>ga</span><span class=p>(</span><span class=s1>'send'</span><span class=p>,</span> <span class=s1>'event'</span><span class=p>,</span> <span class=p>{</span>
-            <span class=na>eventCategory</span><span class=p>:</span> <span class=s1>'Performance Metrics'</span><span class=p>,</span>
-            <span class=na>eventAction</span><span class=p>:</span> <span class=nx>metricName</span><span class=p>,</span>
-            <span class=na>eventValue</span><span class=p>:</span> <span class=nx>time</span><span class=p>,</span>
-            <span class=na>nonInteraction</span><span class=p>:</span> <span class=kc>true</span><span class=p>,</span>
-        <span class=p>});</span>
-    <span class=p>}</span>
-<span class=p>});</span>
-<span class=nx>observer</span><span class=p>.</span><span class=nx>observe</span><span class=p>({</span><span class=na>entryTypes</span><span class=p>:</span> <span class=p>[</span><span class=s1>'paint'</span><span class=p>]});</span><span class=w>
-</span></pre></table></code></pre></figure><p>针对 FP，也就是优化首屏方案大致包括以下几种，当然实现难度各异：<ul><li>减少 head 中阻塞的 JS/CSS，这一点已经普遍应用，包括关键路径资源等<li>HTTP/2 push，这就对服务端提出很高要求了，我发现目前 Ele.me 已经应用<li>app shell，整个应用的壳，抽离出来利于离线缓存，<a href=https://lavas.baidu.com>Lavas</a> 中已经应用</ul><h2 id=fmp>FMP</h2><p>关于页面有效内容，或者“Hero element”，由于依赖具体实现，并没有给出通用方法。 具体可以<a href=https://speedcurve.com/blog/user-timing-and-custom-metrics/ >使用performance api</a>度量指标。<h2 id=tti>TTI</h2><p>这个指标我第一次听说，首次可交互时间。不过其实在前端渲染完成之前，例如展示 skeleton 页面骨架时，对于用户而言就是无法交互的状态，只能看不能点。<p>文章中指出在添加到 PerformanceObserver 之前，可以使用<a href=https://github.com/GoogleChrome/tti-polyfill>polyfill</a>完成：<figure class=highlight><pre><code class=language-javascript data-lang=javascript><table style="border-spacing: 0"><tr><td class="gutter gl" style="text-align: right"><pre class=lineno>1
-2
-3
-4
-5
-6
-7
-8
-9
-10</pre><td class=code><pre><span class=kr>import</span> <span class=nx>ttiPolyfill</span> <span class=nx>from</span> <span class=s1>'./path/to/tti-polyfill.js'</span><span class=p>;</span>
+        ga(&#39;send&#39;, &#39;event&#39;, {
+            eventCategory: &#39;Performance Metrics&#39;,
+            eventAction: metricName,
+            eventValue: time,
+            nonInteraction: true,
+        });
+    }
+});
+observer.observe({entryTypes: [&#39;paint&#39;]});</code></pre></div><p>针对 FP，也就是优化首屏方案大致包括以下几种，当然实现难度各异：<ul><li>减少 head 中阻塞的 JS/CSS，这一点已经普遍应用，包括关键路径资源等<li>HTTP/2 push，这就对服务端提出很高要求了，我发现目前 Ele.me 已经应用<li>app shell，整个应用的壳，抽离出来利于离线缓存，<a href=https://lavas.baidu.com>Lavas</a> 中已经应用</ul><h2 id=fmp>FMP</h2><p>关于页面有效内容，或者“Hero element”，由于依赖具体实现，并没有给出通用方法。 具体可以<a href=https://speedcurve.com/blog/user-timing-and-custom-metrics/ >使用performance api</a>度量指标。<h2 id=tti>TTI</h2><p>这个指标我第一次听说，首次可交互时间。不过其实在前端渲染完成之前，例如展示 skeleton 页面骨架时，对于用户而言就是无法交互的状态，只能看不能点。<p>文章中指出在添加到 PerformanceObserver 之前，可以使用<a href=https://github.com/GoogleChrome/tti-polyfill>polyfill</a>完成：<div><pre class=line-numbers data-line=""><code class=language-javascript>import ttiPolyfill from &#39;./path/to/tti-polyfill.js&#39;;
 
-<span class=nx>ttiPolyfill</span><span class=p>.</span><span class=nx>getFirstConsistentlyInteractive</span><span class=p>().</span><span class=nx>then</span><span class=p>((</span><span class=nx>tti</span><span class=p>)</span> <span class=o>=&gt;</span> <span class=p>{</span>
-    <span class=nx>ga</span><span class=p>(</span><span class=s1>'send'</span><span class=p>,</span> <span class=s1>'event'</span><span class=p>,</span> <span class=p>{</span>
-        <span class=na>eventCategory</span><span class=p>:</span> <span class=s1>'Performance Metrics'</span><span class=p>,</span>
-        <span class=na>eventAction</span><span class=p>:</span> <span class=s1>'TTI'</span><span class=p>,</span>
-        <span class=na>eventValue</span><span class=p>:</span> <span class=nx>tti</span><span class=p>,</span>
-        <span class=na>nonInteraction</span><span class=p>:</span> <span class=kc>true</span><span class=p>,</span>
-    <span class=p>});</span>
-<span class=p>});</span><span class=w>
-</span></pre></table></code></pre></figure><h2 id=long-task>long task</h2><p>浏览器在响应用户交互事件时，向队列中添加任务，等待主线程依次执行。 由于主线程还要负责执行 JS，当处理时间过长时，就会导致任务无法及时得到执行，给用户的感觉就是未响应。 通常定义超过 50ms 响应时间的任务就是 long task 了。<p>和 FP 一样，可以直接使用 PerformanceObserver：<figure class=highlight><pre><code class=language-javascript data-lang=javascript><table style="border-spacing: 0"><tr><td class="gutter gl" style="text-align: right"><pre class=lineno>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11</pre><td class=code><pre><span class=kr>const</span> <span class=nx>observer</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>PerformanceObserver</span><span class=p>((</span><span class=nx>list</span><span class=p>)</span> <span class=o>=&gt;</span> <span class=p>{</span>
-    <span class=k>for</span> <span class=p>(</span><span class=kr>const</span> <span class=nx>entry</span> <span class=nx>of</span> <span class=nx>list</span><span class=p>.</span><span class=nx>getEntries</span><span class=p>())</span> <span class=p>{</span>
-        <span class=nx>ga</span><span class=p>(</span><span class=s1>'send'</span><span class=p>,</span> <span class=s1>'event'</span><span class=p>,</span> <span class=p>{</span>
-            <span class=na>eventCategory</span><span class=p>:</span> <span class=s1>'Performance Metrics'</span><span class=p>,</span>
-            <span class=na>eventAction</span><span class=p>:</span> <span class=s1>'longtask'</span><span class=p>,</span>
-            <span class=na>eventValue</span><span class=p>:</span> <span class=nb>Math</span><span class=p>.</span><span class=nx>round</span><span class=p>(</span><span class=nx>entry</span><span class=p>.</span><span class=nx>startTime</span> <span class=o>+</span> <span class=nx>entry</span><span class=p>.</span><span class=nx>duration</span><span class=p>),</span>
-            <span class=na>eventLabel</span><span class=p>:</span> <span class=nx>JSON</span><span class=p>.</span><span class=nx>stringify</span><span class=p>(</span><span class=nx>entry</span><span class=p>.</span><span class=nx>attribution</span><span class=p>),</span>
-        <span class=p>});</span>
-    <span class=p>}</span>
-<span class=p>});</span>
-<span class=nx>observer</span><span class=p>.</span><span class=nx>observe</span><span class=p>({</span><span class=na>entryTypes</span><span class=p>:</span> <span class=p>[</span><span class=s1>'longtask'</span><span class=p>]});</span><span class=w>
-</span></pre></table></code></pre></figure><p>关于优化方式，可以使用<a href=https://developers.google.com/web/updates/2015/08/using-requestidlecallback>requestIdleCallback</a>，不重要的任务例如发送日志等操作可以放在里面执行。但是<a href="https://caniuse.com/#search=requestIdleCallback">支持度不高</a>。<h2 id=input-latency>input latency</h2><p>滚动和动画的延迟是难以统计的，但是针对点击事件的响应延迟，可以采用如下方法统计：事件触发的时间到最终响应时的时间差就是延迟了，当超过 100 毫秒时进行记录：<figure class=highlight><pre><code class=language-javascript data-lang=javascript><table style="border-spacing: 0"><tr><td class="gutter gl" style="text-align: right"><pre class=lineno>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13</pre><td class=code><pre><span class=kr>const</span> <span class=nx>subscribeBtn</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>querySelector</span><span class=p>(</span><span class=s1>'#subscribe'</span><span class=p>);</span>
-<span class=nx>subscribeBtn</span><span class=p>.</span><span class=nx>addEventListener</span><span class=p>(</span><span class=s1>'click'</span><span class=p>,</span> <span class=p>(</span><span class=nx>event</span><span class=p>)</span> <span class=o>=&gt;</span> <span class=p>{</span>
-    <span class=kr>const</span> <span class=nx>lag</span> <span class=o>=</span> <span class=nx>performance</span><span class=p>.</span><span class=nx>now</span><span class=p>()</span> <span class=o>-</span> <span class=nx>event</span><span class=p>.</span><span class=nx>timeStamp</span><span class=p>;</span>
-    <span class=k>if</span> <span class=p>(</span><span class=nx>lag</span> <span class=o>&gt;</span> <span class=mi>100</span><span class=p>)</span> <span class=p>{</span>
-        <span class=nx>ga</span><span class=p>(</span><span class=s1>'send'</span><span class=p>,</span> <span class=s1>'event'</span><span class=p>,</span> <span class=p>{</span>
-            <span class=na>eventCategory</span><span class=p>:</span> <span class=s1>'Performance Metric'</span>
-            <span class=na>eventAction</span><span class=p>:</span> <span class=s1>'input-latency'</span><span class=p>,</span>
-            <span class=na>eventLabel</span><span class=p>:</span> <span class=s1>'#subscribe:click'</span><span class=p>,</span>
-            <span class=na>eventValue</span><span class=p>:</span> <span class=nb>Math</span><span class=p>.</span><span class=nx>round</span><span class=p>(</span><span class=nx>lag</span><span class=p>),</span>
-            <span class=na>nonInteraction</span><span class=p>:</span> <span class=kc>true</span><span class=p>,</span>
-        <span class=p>});</span>
-    <span class=p>}</span>
-<span class=p>});</span><span class=w>
-</span></pre></table></code></pre></figure></div></article><script>function async(u, c) {
+ttiPolyfill.getFirstConsistentlyInteractive().then((tti) =&gt; {
+    ga(&#39;send&#39;, &#39;event&#39;, {
+        eventCategory: &#39;Performance Metrics&#39;,
+        eventAction: &#39;TTI&#39;,
+        eventValue: tti,
+        nonInteraction: true,
+    });
+});</code></pre></div><h2 id=long-task>long task</h2><p>浏览器在响应用户交互事件时，向队列中添加任务，等待主线程依次执行。 由于主线程还要负责执行 JS，当处理时间过长时，就会导致任务无法及时得到执行，给用户的感觉就是未响应。 通常定义超过 50ms 响应时间的任务就是 long task 了。<p>和 FP 一样，可以直接使用 PerformanceObserver：<div><pre class=line-numbers data-line=""><code class=language-javascript>const observer = new PerformanceObserver((list) =&gt; {
+    for (const entry of list.getEntries()) {
+        ga(&#39;send&#39;, &#39;event&#39;, {
+            eventCategory: &#39;Performance Metrics&#39;,
+            eventAction: &#39;longtask&#39;,
+            eventValue: Math.round(entry.startTime + entry.duration),
+            eventLabel: JSON.stringify(entry.attribution),
+        });
+    }
+});
+observer.observe({entryTypes: [&#39;longtask&#39;]});</code></pre></div><p>关于优化方式，可以使用<a href=https://developers.google.com/web/updates/2015/08/using-requestidlecallback>requestIdleCallback</a>，不重要的任务例如发送日志等操作可以放在里面执行。但是<a href="https://caniuse.com/#search=requestIdleCallback">支持度不高</a>。<h2 id=input-latency>input latency</h2><p>滚动和动画的延迟是难以统计的，但是针对点击事件的响应延迟，可以采用如下方法统计：事件触发的时间到最终响应时的时间差就是延迟了，当超过 100 毫秒时进行记录：<div><pre class=line-numbers data-line=""><code class=language-javascript>const subscribeBtn = document.querySelector(&#39;#subscribe&#39;);
+subscribeBtn.addEventListener(&#39;click&#39;, (event) =&gt; {
+    const lag = performance.now() - event.timeStamp;
+    if (lag &gt; 100) {
+        ga(&#39;send&#39;, &#39;event&#39;, {
+            eventCategory: &#39;Performance Metric&#39;
+            eventAction: &#39;input-latency&#39;,
+            eventLabel: &#39;#subscribe:click&#39;,
+            eventValue: Math.round(lag),
+            nonInteraction: true,
+        });
+    }
+});</code></pre></div></div></article><script>function async(u, c) {
       var d = document, t = 'script',
           o = d.createElement(t),
           s = d.getElementsByTagName(t)[0];
