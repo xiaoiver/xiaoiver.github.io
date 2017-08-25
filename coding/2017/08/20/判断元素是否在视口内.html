@@ -69,7 +69,17 @@ let observer = new IntersectionObserver(entries =&gt; {
 // 观测所有图片
 images.forEach(image =&gt; {
     observer.observe(image);
-});</code></pre></div><p>当然，这里还有一些细节，例如：<ol><li>考虑浏览器兼容性，目前<a href="https://caniuse.com/#feat=intersectionobserver">最新版 Chrome 和 Firefox 支持</a>良好。<a href=https://github.com/WICG/IntersectionObserver/tree/gh-pages/polyfill>polyfill</a><li>图片的 src 属性存放在例如 data-src 上<li>全部图片加载完毕，调用观测对象的<code class=highlighter-rouge>disconnect()</code>方法彻底关闭</ol><p>可以参考<a href=https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163>这篇文章</a>的实现。<h2 id=参考资料>参考资料</h2><p><a href=https://developers.google.com/web/updates/2016/04/intersectionobserver>Google Developer</a><p><a href=https://hacks.mozilla.org/2017/08/intersection-observer-comes-to-firefox/ >MDN</a><p><a href=https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163>懒加载图片文章</a></div></article><script>function async(u, c) {
+});</code></pre></div><p>当然，这里还有一些细节，例如：<ol><li>考虑浏览器兼容性，目前<a href="https://caniuse.com/#feat=intersectionobserver">最新版 Chrome 和 Firefox 支持</a>良好。<a href=https://github.com/WICG/IntersectionObserver/tree/gh-pages/polyfill>polyfill</a><li>图片的 src 属性存放在例如 data-src 上<li>全部图片加载完毕，调用观测对象的<code class=highlighter-rouge>disconnect()</code>方法彻底关闭</ol><p>可以参考<a href=https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163>这篇文章</a>的实现。<h2 id=参考资料>参考资料</h2><p><a href=https://developers.google.com/web/updates/2016/04/intersectionobserver>Google Developer</a><p><a href=https://hacks.mozilla.org/2017/08/intersection-observer-comes-to-firefox/ >MDN</a><p><a href=https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163>懒加载图片文章</a></div></article><div id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div><script>function async(u, c) {
       var d = document, t = 'script',
           o = d.createElement(t),
           s = d.getElementsByTagName(t)[0];
