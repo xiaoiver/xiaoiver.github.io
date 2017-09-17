@@ -6,9 +6,296 @@
 </description>
     <link>https://xiaoiver.github.io/</link>
     <atom:link href="https://xiaoiver.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 25 Aug 2017 10:15:49 +0800</pubDate>
-    <lastBuildDate>Fri, 25 Aug 2017 10:15:49 +0800</lastBuildDate>
+    <pubDate>Sun, 17 Sep 2017 20:36:25 +0800</pubDate>
+    <lastBuildDate>Sun, 17 Sep 2017 20:36:25 +0800</lastBuildDate>
     <generator>Jekyll v3.4.5</generator>
+    
+      <item>
+        <title>Node.js 中的消息队列</title>
+        <description>&lt;p&gt;在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。
+通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。&lt;/p&gt;
+
+&lt;p&gt;我们引入消息队列，producer 负责向队列中推送消息，而 worker 负责消费。
+&lt;img src=&quot;/img/work-queue.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;使用消息队列的好处是显而易见的：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;解耦了 producer 和 worker。尤其是像发送邮件这样对实时性要求不高的步骤，如果这一步操作失败，我们显然不需要回滚之前对数据库的修改，只需要在合适的时间重试就行了。&lt;/li&gt;
+  &lt;li&gt;实现重试逻辑变得简单。另外，当进程出现错误，不至于丢失全部状态，甚至可以从错误中恢复。&lt;/li&gt;
+  &lt;li&gt;分布式和扩展性。配合 cluster，创建多个 worker 变得简单。&lt;/li&gt;
+  &lt;li&gt;让外部系统更容易集成进来，相比在一个请求回调函数中完成所有逻辑处理。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;简单的内存队列&quot;&gt;简单的内存队列&lt;/h2&gt;
+
+&lt;p&gt;首先实现一个内存中的队列管理，使用 async 创建队列。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// 创建并发度为1的异步队列
+const queue = async.queue(work, 1);
+
+function work(item, cb) {
+    ensureConnected(function() {
+        domotic.command(item.command, item.options, callback);
+    });
+
+    function callback(err) {
+        // 出错重试
+        if (err &amp;amp;&amp;amp; err.code == &amp;#39;ECONN&amp;#39;) {
+            connected = false;
+            work(item, cb);
+        } else cb(err);
+    }
+}
+// 推送消息到队列中
+queue.push(work, cb);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这样一个简单的 demo 存在的问题就是所有状态存在于内存中，一旦崩溃就无法恢复了。另外内存毕竟有限，对于一个长时间运行的系统，迟早是会超出内存限制的。&lt;/p&gt;
+
+&lt;h2 id=&quot;通过-leveldb-持久化&quot;&gt;通过 LevelDB 持久化&lt;/h2&gt;
+
+&lt;p&gt;持久化队列是个不错的改进方向。LevelDB 是一个键值对数据库，不需要安装，可以在指定目录下创建。另外，使用配套的 &lt;code class=&quot;highlighter-rouge&quot;&gt;level-jobs&lt;/code&gt; 可以快捷的创建队列。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;const level = require(&amp;#39;level&amp;#39;);
+// 创建本地数据库
+const db = level(&amp;#39;./event/db&amp;#39;);
+const Jobs = require(&amp;#39;level-jobs&amp;#39;);
+const maxConcurrency = 1;
+// 创建队列，并发度1
+const queue = Jobs(db, worker, maxConcurrency);
+
+module.exports = queue;
+
+function worker(id, payload, cb) {
+    sendEventToRemoteService(payload, (err) =&amp;gt; {
+        if (err) {
+            console.error(&amp;#39;Error processing event %s: %s&amp;#39;,payload.id, err.message);
+        }
+        else {
+            console.log(&amp;#39;event %s successfully relayed&amp;#39;, payload.id);
+        }
+        cb(err);
+    });
+}
+// 模拟复杂异步处理流程
+function sendEventToRemoteService(payload, cb) {
+    setTimeout(() =&amp;gt; {
+        let err;
+        if (Math.random() &amp;gt; 0.5) {
+            err = Error(&amp;#39;something awful has happened&amp;#39;);
+        }
+        cb(err);
+    }, 100);
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;通过&lt;code class=&quot;highlighter-rouge&quot;&gt;queue.push(payload)&lt;/code&gt;可以向队列中推送消息。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;const relay = require(&amp;#39;./event_relay&amp;#39;);
+for(let i = 0; i &amp;lt; 10; i++) {
+    relay.push({
+        id: i,
+        event: &amp;#39;door opened&amp;#39;
+    });
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;现在我们解决了持久化队列的问题，但是我们的 worker 是单线程运行的。如果任务是 CPU 密集型的，还是需要分配负载到多个线程上。&lt;/p&gt;
+
+&lt;h2 id=&quot;redis-和多线程&quot;&gt;Redis 和多线程&lt;/h2&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;simple-redis-safe-work-queue&lt;/code&gt; 是一个基于 Redis 的分布式 worker/producer 的队列解决方案。
+创建 worker，设置重试次数。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;const request = require(&amp;#39;request&amp;#39;);
+const Queue = require(&amp;#39;simple-redis-safe-work-queue&amp;#39;)
+// 设置重试次数
+const workerOptions = {
+  maxRetries: 2
+};
+
+const worker = Queue.worker(&amp;#39;invoke webhook&amp;#39;, invokeWebhook, workerOptions);
+
+function invokeWebhook(webhook, cb) {
+    console.log(&amp;#39;invoke webhook: %j&amp;#39;, webhook);
+
+    request(webhook, done);
+
+    function done(err, res) {
+        if (!err &amp;amp;&amp;amp; (res.statusCode &amp;lt; 200 || res.statusCode &amp;gt;= 300)) {
+            err = Error(&amp;#39;response status code was &amp;#39; + res.statusCode);
+        }
+        cb(err);
+    }
+}
+
+worker.on(&amp;#39;max retries&amp;#39;, function(err, payload) {
+    console.error(
+        &amp;#39;max retries reached trying to talk to %s.: %s\nrequest params: %j&amp;#39;,
+        payload.url, err.stack, payload);
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;而对于 producer，在一个实际的例子中，在数据库操作完成后向队列推送消息，并在 server 停止时关闭队列。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;const Queue = require(&amp;#39;simple-redis-safe-work-queue&amp;#39;)
+const webhookQueueClient = Queue.client(&amp;#39;invoke webhook&amp;#39;);
+const server = Server();
+server.listen(8080);
+server.post(&amp;#39;/some/important/action&amp;#39;, (req, res, next) =&amp;gt; {
+    db.insert(someDoc, err =&amp;gt; {
+        if (err) res.send(err);
+        else {
+            webhookQueueClient.push({
+                url: &amp;#39;http://example.com&amp;#39;,
+                method: &amp;#39;POST&amp;#39;,
+                json: {
+                    a: 1,
+                    b: 2
+                }
+            }, pushedWebhookWork);
+        }
+
+        function pushedWebhookWork(err) {
+            if (err) res.stats(500).send(err);
+            else res.stats(201).send({ok: true});
+        }
+    });
+});
+// 关闭队列
+server.once(&amp;#39;close&amp;#39;, () =&amp;gt; {
+    webhookQueueClient.quit();
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这样我们可以启动多个 worker 线程消费队列。Redis 在处理简单的场景中足够了，如果对可扩展性和稳定性有更高要求，就需要更为成熟的平台了。&lt;/p&gt;
+
+&lt;h2 id=&quot;rabbitmq&quot;&gt;RabbitMQ&lt;/h2&gt;
+
+&lt;p&gt;通过 homebrew 安装后。启动服务器：&lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local/sbin/rabbitmq-server&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;创建 channel，无论成功与否都会触发回调函数。worker 和 producer 都会通过该方法连接队列。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;const amqp = require(&amp;#39;amqplib/callback_api&amp;#39;);
+const url = process.env.AMQP_URL || &amp;#39;amqp://guest:guest@localhost:5672&amp;#39;;
+
+module.exports = createQueueChannel;
+
+function createQueueChannel(queue, cb) {
+    amqp.connect(url, onceConnected);
+
+    function onceConnected(err, conn) {
+        if (err) {
+            console.error(&amp;#39;Error connecting:&amp;#39;, err.stack);
+        }
+        else {
+            console.log(&amp;#39;connected&amp;#39;);
+            conn.createChannel(onceChannelCreated);
+        }
+
+        function onceChannelCreated(err, channel) {
+            if (err) {
+                cb(err);
+            }
+            else {
+                channel.assertQueue(queue, {durable: true}, onceQueueCreated);
+            }
+
+            function onceQueueCreated(err) {
+                if (err) {
+                    cb(err);
+                }
+                else {
+                    cb(null, channel, conn);
+                }
+            }
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;对于 producer 而言，需要连接 channel，然后向队列发送消息，随后断开连接：&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;const Channel = require(&amp;#39;./channel&amp;#39;);
+const QUEUE = &amp;#39;queue&amp;#39;;
+
+Channel(QUEUE, (err, channel, conn) =&amp;gt; {
+    if (err) {
+        console.error(err.stack);
+    }
+    else {
+        console.log(&amp;#39;channel and queue created&amp;#39;);
+        let work = &amp;#39;make me a sandwich&amp;#39;;
+        channel.sendToQueue(QUEUE, encode(work), {
+            persistent: true
+        });
+        setImmediate(() =&amp;gt; {
+            channel.close();
+            conn.close();
+        });
+    }
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;而对于每一个 worker，连接成功后，取出队列中的消息内容载荷进行消费，完成后通过&lt;code class=&quot;highlighter-rouge&quot;&gt;ack()&lt;/code&gt;通知队列，继续消费下一个消息。而如果队列为空，通过定时器在一定延迟后继续消费。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;Channel(QUEUE, (err, channel, conn) =&amp;gt; {
+    if (err) {
+        console.error(err.stack);
+    }
+    else {
+        console.log(&amp;#39;channel and queue created&amp;#39;);
+        consume();
+    }
+
+    function consume() {
+        channel.get(QUEUE, {}, onConsume);
+
+        function onConsume(err, msg) {
+            if (err) {
+                console.warn(err.message);
+            }
+            else if (msg) {
+                console.log(&amp;#39;consuming %j&amp;#39;, msg.content.toString());
+                setTimeout(() =&amp;gt; {
+                    channel.ack(msg);
+                    consume();
+                }, 1e3);
+            }
+            else {
+                console.log(&amp;#39;no message, waiting...&amp;#39;);
+                setTimeout(consume, 1e3);
+            }
+        }
+    }
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.yld.io/2016/05/10/introducing-queues/#.Wb4dqHeg_2Q&quot;&gt;YLD博客的系列文章&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.rabbitmq.com/documentation.html&quot;&gt;RabbitMQ&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sun, 17 Sep 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html</guid>
+        
+        <category>javascript</category>
+        
+        <category>nodejs</category>
+        
+        <category>leveldb</category>
+        
+        <category>redis</category>
+        
+        <category>rabbitMQ</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
     
       <item>
         <title>判断元素是否在视口内</title>
@@ -903,213 +1190,6 @@ script:
         <category>ava</category>
         
         <category>travis</category>
-        
-        
-        <category>coding</category>
-        
-      </item>
-    
-      <item>
-        <title>基于vue和webpack的skeleton插件</title>
-        <description>&lt;blockquote&gt;
-  &lt;p&gt;这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;如果您还不了解 skeleton，可以参考&lt;a href=&quot;https://lavas.baidu.com/guide/vue/doc/vue/advanced/skeleton&quot;&gt;App Skeleton 介绍&lt;/a&gt;一文。&lt;/p&gt;
-
-&lt;p&gt;github 地址：&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin&quot;&gt;https://github.com/lavas-project/vue-skeleton-webpack-plugin&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;问题背景&quot;&gt;问题背景&lt;/h2&gt;
-
-&lt;p&gt;参考&lt;a href=&quot;https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/#在构建时使用-vue-预渲染骨架屏&quot;&gt;饿了么的 PWA 升级实践&lt;/a&gt;一文，我们希望在构建时渲染 skeleton 组件，将渲染 DOM 插入 html 的挂载点中，同时将使用的样式通过 style 标签内联。这样在前端 JS 渲染完成之前，用户将看到页面的大致骨架，感知到页面是正在加载的。&lt;/p&gt;
-
-&lt;p&gt;我们当然可以选择在开发时直接将页面骨架内容写入 html 模版中，但是这会带来两个问题：&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;开发 skeleton 与其他组件体验不一致。&lt;/li&gt;
-  &lt;li&gt;多页应用中多个页面可能共用同一个 html 模版，而又有独立的 skeleton。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;下面我们将看看插件在具体实现中是如何解决这两个问题的。&lt;/p&gt;
-
-&lt;h2 id=&quot;实现思路&quot;&gt;实现思路&lt;/h2&gt;
-
-&lt;p&gt;我们希望能够保证一致的开发体验，开发 skeleton 和其他组件没有任何不同。而且开发者不需要关心渲染结果是如何被注入 html 的。
-下面我们将从渲染和注入这两方面展开介绍。&lt;/p&gt;
-
-&lt;h3 id=&quot;渲染组件&quot;&gt;渲染组件&lt;/h3&gt;
-
-&lt;p&gt;我们使用 vue 的&lt;a href=&quot;https://ssr.vuejs.org/zh/&quot;&gt;服务端渲染&lt;/a&gt;功能，接受 webpack 配置对象作为输入，输出渲染的 DOM 和样式。&lt;/p&gt;
-
-&lt;p&gt;一个典型的用于服务端渲染的 webpack 配置对象如下，其中 entry 入口文件中使用了 skeleton 组件：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;{
-    target: &amp;#39;node&amp;#39;,
-    devtool: false,
-    entry: resolve(&amp;#39;./src/entry-skeleton.js&amp;#39;), // 多页应用中传入数组
-    output: Object.assign({}, baseWebpackConfig.output, {
-        libraryTarget: &amp;#39;commonjs2&amp;#39;
-    }),
-    externals: nodeExternals({
-        whitelist: /\.css$/
-    }),
-    plugins: []
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;多页中的 webpack 配置对象示例，可参考&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples/multipage&quot;&gt;多页测试用例&lt;/a&gt;或者&lt;a href=&quot;https://github.com/lavas-project/lavas-template-vue-mpa&quot;&gt;Lavas MPA 模版&lt;/a&gt;。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;webpack 将使用传入的配置对象进行编译，由于我们不需要将最终产物保存在硬盘中，使用内存文件系统&lt;a href=&quot;https://github.com/webpack/memory-fs&quot;&gt;memory-fs&lt;/a&gt;能够减少不必要的I/O开销。最终会生成一个 bundle 文件，使用&lt;code class=&quot;highlighter-rouge&quot;&gt;createBundleRenderer&lt;/code&gt;创建一个 renderer，就可以在 Node.js 环境得到渲染结果了。&lt;/p&gt;
-
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;const createBundleRenderer = require(&amp;#39;vue-server-renderer&amp;#39;).createBundleRenderer;
-let bundle = mfs.readFileSync(outputPath, &amp;#39;utf-8&amp;#39;);
-// 创建 renderer
-let renderer = createBundleRenderer(bundle);
-// 渲染得到 html
-renderer.renderToString({}, (err, skeletonHtml) =&amp;gt; {
-    if (err) {
-        reject(err);
-    }
-    else {
-        resolve({skeletonHtml, skeletonCss});
-    }
-});&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;另外，为了将样式从 JS 文件中分离，我们使用了&lt;a href=&quot;https://github.com/webpack-contrib/extract-text-webpack-plugin&quot;&gt; ExtractTextPlugin&lt;/a&gt;插件，将样式内容输出到单独的文件中。与 bundle 文件一样，输出样式文件也在内存文件系统中。&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// vue-skeleton-webpack-plugin/src/ssr.js
-
-// 加入 ExtractTextPlugin 插件到 webpack 配置对象中
-serverWebpackConfig.plugins.push(new ExtractTextPlugin({
-    filename: outputCssBasename
-}));&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;至此，我们已经得到了全部渲染结果，接下来需要关心注入时机。&lt;/p&gt;
-
-&lt;h3 id=&quot;注入渲染结果&quot;&gt;注入渲染结果&lt;/h3&gt;
-
-&lt;p&gt;关于渲染结果的注入时机，我们参考&lt;a href=&quot;https://github.com/jantimon/html-webpack-plugin#events&quot;&gt;html-webpack-plugin的事件说明&lt;/a&gt;，选择在&lt;code class=&quot;highlighter-rouge&quot;&gt;html-webpack-plugin-before-html-processing&lt;/code&gt;事件回调函数中进行。在该回调函数中，插件除了能取得当前的 webpack 编译对象之外，当前处理的 html 内容也作为参数传入，便于插件进行修改。&lt;/p&gt;
-
-&lt;p&gt;那么我们需要对 html 内容做哪些修改呢？skeleton 组件最终的渲染结果应该包含 DOM 结构和样式两部分，样式可以直接插入&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;/head&amp;gt;&lt;/code&gt;之前，而 DOM 的插入与挂载点相关（浏览器端渲染完毕后将替换 skeleton 内容），默认使用&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;div id=&quot;app&quot;&amp;gt;&lt;/code&gt;，当然插件使用者可以通过参数传入。&lt;/p&gt;
-
-&lt;p&gt;在多页应用中，相比单页情况会变的稍稍复杂。多页项目中通常会引入多个 html-webpack-plugin，例如我们在&lt;a href=&quot;https://github.com/lavas-project/lavas-template-vue-mpa&quot;&gt;Lavas MPA 模版&lt;/a&gt;中使用的&lt;a href=&quot;https://github.com/mutualofomaha/multipage-webpack-plugin&quot;&gt; multipage插件&lt;/a&gt;就是如此，这就会导致&lt;code class=&quot;highlighter-rouge&quot;&gt;html-webpack-plugin-before-html-processing&lt;/code&gt;事件被多次触发。我们需要在每次事件触发时识别出当前处理的入口文件，执行 webpack 编译当前页面对应的入口文件，渲染对应的 skeleton 组件。&lt;/p&gt;
-
-&lt;p&gt;查找当前处理的入口文件过程如下：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// vue-skeleton-webpack-plugin/src/index.js
-
-// 当前页面使用的所有 chunks
-let usedChunks = htmlPluginData.plugin.options.chunks;
-let entryKey;
-// chunks 和所有入口文件的交集就是当前待处理的入口文件
-if (Array.isArray(usedChunks)) {
-    entryKey = Object.keys(skeletonEntries);
-    entryKey = entryKey.filter(v =&amp;gt; usedChunks.indexOf(v) &amp;gt; -1)[0];
-}
-// 设置当前的 webpack 配置对象的入口文件和结果输出文件
-webpackConfig.entry = skeletonEntries[entryKey];
-webpackConfig.output.filename = `skeleton-${entryKey}.js`;
-// 使用配置对象进行服务端渲染
-ssr(webpackConfig).then(({skeletonHtml, skeletonCss}) =&amp;gt; {});&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;这样我们就完成了对多页面入口 skeleton 组件的渲染工作了。&lt;/p&gt;
-
-&lt;h3 id=&quot;开发模式下插入路由&quot;&gt;开发模式下插入路由&lt;/h3&gt;
-
-&lt;p&gt;由于 skeleton 的渲染结果在 JS 前端渲染完成后就会被替换，如何在开发时方便的查看呢？
-使用浏览器开发工具设置断点，阻塞前端渲染可以做到，但如果能在开发模式中插入 skeleton 对应的路由规则，使多个页面的 skeleton 能像其他路由组件一样被访问，将使开发调试变得更加方便。&lt;/p&gt;
-
-&lt;p&gt;向路由文件中注入代码的工作将在&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/blob/master/src/loader.js&quot;&gt; loader&lt;/a&gt;中完成。&lt;/p&gt;
-
-&lt;p&gt;首先明确注入内容，我们希望通过路由组件的形式访问 skeleton，那么首先需要引入各个 skeleton 组件，然后增加对应的路由规则。具体到注入的代码，类似这样：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// router.js
-
-// 引入 skeleton 组件
-import Skeleton from &amp;#39;@/pages/Skeleton.vue&amp;#39;
-
-// 插入routes
-routes: [
-    {
-        path: &amp;#39;/skeleton&amp;#39;,
-        name: &amp;#39;skeleton&amp;#39;,
-        component: Skeleton
-    }
-    // ...其余路由规则
-]&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;在多页应用中，使用者可以通过占位符设置依赖语句和路由规则的模版，loader 在运行时会使用这些模版，用真实的 skeleton 名称替换掉占位符，&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/blob/master/src/loader.js#L27-L39&quot;&gt;插入多条语句&lt;/a&gt;。&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;多页中的具体应用示例，可参考&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples/multipage&quot;&gt;多页测试用例&lt;/a&gt;或者&lt;a href=&quot;https://github.com/lavas-project/lavas-template-vue-mpa&quot;&gt;Lavas MPA 模版&lt;/a&gt;。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;参数说明&quot;&gt;参数说明&lt;/h2&gt;
-
-&lt;p&gt;插件和 loader 使用的参数如下：&lt;/p&gt;
-
-&lt;h3 id=&quot;skeletonwebpackplugin&quot;&gt;SkeletonWebpackPlugin&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;webpackConfig &lt;em&gt;必填&lt;/em&gt;，渲染 skeleton 的 webpack 配置对象&lt;/li&gt;
-  &lt;li&gt;insertAfter &lt;em&gt;选填&lt;/em&gt;，渲染 DOM 结果插入位置，默认值为&lt;code class=&quot;highlighter-rouge&quot;&gt;'&amp;lt;div id=&quot;app&quot;&amp;gt;'&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;skeletonwebpackpluginloader&quot;&gt;SkeletonWebpackPlugin.loader&lt;/h3&gt;
-
-&lt;p&gt;参数分为两类：&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://doc.webpack-china.org/configuration/module/#rule&quot;&gt; webpack模块规则&lt;/a&gt;，skeleton 对应的路由将被插入路由文件中，所以需要指定一个或多个路由文件，使用&lt;code class=&quot;highlighter-rouge&quot;&gt;resource/include/test&lt;/code&gt;皆可指定 loader 应用的文件。&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;options&lt;/code&gt; 将被传入 loader 中的参数对象，包含以下属性：
-    &lt;ul&gt;
-      &lt;li&gt;entry &lt;em&gt;必填&lt;/em&gt;，支持字符串和数组类型，对应页面入口的名称&lt;/li&gt;
-      &lt;li&gt;importTemplate &lt;em&gt;选填&lt;/em&gt;，引入 skeleton 组件的表达式，默认值为&lt;code class=&quot;highlighter-rouge&quot;&gt;'import [nameCap] from \'@/pages/[nameCap].vue\';'&lt;/code&gt;&lt;/li&gt;
-      &lt;li&gt;routePathTemplate &lt;em&gt;选填&lt;/em&gt;，路由路径，默认值为&lt;code class=&quot;highlighter-rouge&quot;&gt;'/skeleton-[name]'&lt;/code&gt;&lt;/li&gt;
-      &lt;li&gt;insertAfter &lt;em&gt;选填&lt;/em&gt;，路由插入位置，默认值为&lt;code class=&quot;highlighter-rouge&quot;&gt;'routes: ['&lt;/code&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;在&lt;code class=&quot;highlighter-rouge&quot;&gt;importTemplate&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;routePathTemplate&lt;/code&gt;中可以使用以下占位符：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;[name]&lt;/code&gt; 和&lt;code class=&quot;highlighter-rouge&quot;&gt;entry&lt;/code&gt;保持一致&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;[nameCap]&lt;/code&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;entry&lt;/code&gt;首字母大写&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;例如使用以下配置，将向路由文件&lt;code class=&quot;highlighter-rouge&quot;&gt;router.js&lt;/code&gt;中插入&lt;code class=&quot;highlighter-rouge&quot;&gt;'import Page1 from \'@/pages/Page1.vue\';'&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;'import Page2 from \'@/pages/Page2.vue\';'&lt;/code&gt;两条语句。
-同时生成&lt;code class=&quot;highlighter-rouge&quot;&gt;/skeleton-page1&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;/skeleton-page2&lt;/code&gt;两条路由规则。&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;{
-    resource: &amp;#39;router.js&amp;#39;,
-    options: {
-        entry: [&amp;#39;page1&amp;#39;, &amp;#39;page2&amp;#39;],
-        importTemplate: &amp;#39;import [nameCap] from \&amp;#39;@/pages/[nameCap].vue\&amp;#39;;&amp;#39;,
-        routePathTemplate: &amp;#39;/skeleton-[name]&amp;#39;
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;更多详细说明可参考&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin#参数说明&quot;&gt; github上插件的参数说明部分&lt;/a&gt;。&lt;/p&gt;
-
-&lt;h2 id=&quot;贡献代码&quot;&gt;贡献代码&lt;/h2&gt;
-
-&lt;p&gt;在开发中遇到任何问题，都欢迎提出&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/issues&quot;&gt; ISSUE&lt;/a&gt;讨论。&lt;/p&gt;
-
-&lt;p&gt;您也可以帮助我们完善&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples&quot;&gt;测试用例&lt;/a&gt;。&lt;/p&gt;
-</description>
-        <pubDate>Sun, 16 Jul 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html</guid>
-        
-        <category>vue</category>
-        
-        <category>webpack</category>
         
         
         <category>coding</category>
