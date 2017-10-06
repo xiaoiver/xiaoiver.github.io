@@ -6,9 +6,192 @@
 </description>
     <link>https://xiaoiver.github.io/</link>
     <atom:link href="https://xiaoiver.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 17 Sep 2017 20:36:25 +0800</pubDate>
-    <lastBuildDate>Sun, 17 Sep 2017 20:36:25 +0800</lastBuildDate>
+    <pubDate>Fri, 06 Oct 2017 19:56:54 +0800</pubDate>
+    <lastBuildDate>Fri, 06 Oct 2017 19:56:54 +0800</lastBuildDate>
     <generator>Jekyll v3.4.5</generator>
+    
+      <item>
+        <title>Webpack 中 hotreload 实现原理</title>
+        <description>&lt;p&gt;在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。&lt;/p&gt;
+
+&lt;h2 id=&quot;准备工作&quot;&gt;准备工作&lt;/h2&gt;
+
+&lt;p&gt;首先需要引入 &lt;code class=&quot;highlighter-rouge&quot;&gt;webpack-hot-middleware&lt;/code&gt; 中间件和 &lt;code class=&quot;highlighter-rouge&quot;&gt;HotModuleReplacementPlugin&lt;/code&gt; 插件。当然开发环境下 &lt;code class=&quot;highlighter-rouge&quot;&gt;webpack-dev-middleware&lt;/code&gt; 肯定也是必不可少的。&lt;/p&gt;
+
+&lt;p&gt;启动项目后打开 Chrome Devtools，这个&lt;code class=&quot;highlighter-rouge&quot;&gt;/__webpack_hmr&lt;/code&gt;请求很明显是实现 hotreload 的关键。可以看出请求一直保持连接，并不断接收到“心跳”事件。
+&lt;img src=&quot;/img/hmr.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;客户端发起-socket-连接&quot;&gt;客户端发起 socket 连接&lt;/h2&gt;
+
+&lt;p&gt;首先观察一下请求头&lt;code class=&quot;highlighter-rouge&quot;&gt;text/event-stream&lt;/code&gt;，这个请求是由客户端代码通过&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/EventSource&quot;&gt;EventSource&lt;/a&gt;创建的：&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// webpack-hot-middleware/client.js
+
+function init() {
+    source = new window.EventSource(options.path);
+    source.onopen = handleOnline;
+    source.onerror = handleDisconnect;
+    source.onmessage = handleMessage;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这里提到的“客户端代码”是指使用 webpack-hot-middleware 时，除了使用中间件之外，还需要把&lt;a href=&quot;https://github.com/glenjamin/webpack-hot-middleware/blob/master/client.js#L74-L79&quot;&gt;client.js&lt;/a&gt;加入入口依赖，因此这段代码会被打包到客户端代码中。创建完 EventSource 之后，绑定了若干事件处理函数，我们后续会查看这些细节。&lt;/p&gt;
+
+&lt;h2 id=&quot;服务端中间件响应&quot;&gt;服务端中间件响应&lt;/h2&gt;
+
+&lt;p&gt;在收到客户端请求后，中间件需要进行响应，同时需要管理每一个客户端连接，这里将响应对象通过自增的 ID 保存在&lt;code class=&quot;highlighter-rouge&quot;&gt;clients&lt;/code&gt;中，当连接断开时删除。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// webpack-hot-middleware/middleware.js
+
+function(req, res) {
+    req.socket.setKeepAlive(true);
+    res.writeHead(200, {
+        &amp;#39;Access-Control-Allow-Origin&amp;#39;: &amp;#39;*&amp;#39;,
+        &amp;#39;Content-Type&amp;#39;: &amp;#39;text/event-stream;charset=utf-8&amp;#39;,
+        &amp;#39;Cache-Control&amp;#39;: &amp;#39;no-cache, no-transform&amp;#39;,
+        &amp;#39;Connection&amp;#39;: &amp;#39;keep-alive&amp;#39;,
+        &amp;#39;X-Accel-Buffering&amp;#39;: &amp;#39;no&amp;#39;
+    });
+    res.write(&amp;#39;\n&amp;#39;);
+    var id = clientId++;
+    clients[id] = res;
+    req.on(&amp;quot;close&amp;quot;, function(){
+        delete clients[id];
+    });
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;向每个连接发送心跳事件是通过定时器完成的。值得一提的是&lt;code class=&quot;highlighter-rouge&quot;&gt;unref()&lt;/code&gt;的用法，使这个定时器不会影响事件循环的退出，如果没有其他事件进入队列，事件循环将结束，进程就退出了。更多关于&lt;code class=&quot;highlighter-rouge&quot;&gt;unref()&lt;/code&gt;的说明，可以参考这个&lt;a href=&quot;https://cnodejs.org/topic/570924d294b38dcb3c09a7a0#5709f1b8bc564eaf3c6a48e1&quot;&gt;回答&lt;/a&gt;。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// webpack-hot-middleware/middleware.js
+
+setInterval(function heartbeatTick() {
+    everyClient(function(client) {
+        // 向每个 client 发送心跳字符
+        client.write(&amp;quot;data: \uD83D\uDC93\n\n&amp;quot;);
+    });
+}, heartbeat).unref();&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;那么在代码发生变动时，如何通知客户端呢？在创建中间件时，为 webpack 编译器添加了对应编译阶段的监听函数：&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// webpack-hot-middleware/middleware.js
+
+compiler.plugin(&amp;quot;compile&amp;quot;, function() {
+    eventStream.publish({action: &amp;quot;building&amp;quot;});
+});
+compiler.plugin(&amp;quot;done&amp;quot;, function(statsResult) {
+    eventStream.publish({
+        name: stats.name,
+        action: action,
+        time: stats.time,
+        hash: stats.hash,
+        warnings: stats.warnings || [],
+        errors: stats.errors || [],
+        modules: buildModuleMap(stats.modules)
+    });
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;客户端热更新&quot;&gt;客户端热更新&lt;/h2&gt;
+
+&lt;p&gt;在接收到代码变动后服务端发送的事件后，客户端代码需要进行模块热替换处理。客户端在创建 EventSource 时通过&lt;code class=&quot;highlighter-rouge&quot;&gt;onmessage&lt;/code&gt;定义了处理服务端消息的函数。其中&lt;code class=&quot;highlighter-rouge&quot;&gt;building&lt;/code&gt;事件只是简单的输出控制台信息，我们将着重关注&lt;code class=&quot;highlighter-rouge&quot;&gt;sync&lt;/code&gt;事件。另外通过&lt;code class=&quot;highlighter-rouge&quot;&gt;customHandler&lt;/code&gt;支持自定义事件，例如可以为 html-webpack-plugin 添加自动刷新页面功能，后续将会介绍具体做法。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// webpack-hot-middleware/client.js
+
+case &amp;quot;sync&amp;quot;:
+    processUpdate(obj.hash, obj.modules, options);
+    break;
+default:
+    if (customHandler) {
+        customHandler(obj);
+    }&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们通过比对当前代码的 hash 和服务端发来的 hash 判断代码是否发生了更新。当前代码的 hash 是通过 webpack 的&lt;a href=&quot;https://doc.webpack-china.org/api/module-variables/#__webpack_hash__-webpack-specific-&quot;&gt;全局模块变量&lt;/a&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;/* global window __webpack_hash__ */&lt;/code&gt;在编译时注入。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// webpack-hot-middleware/process-update.js
+
+/* global window __webpack_hash__ */
+function upToDate(hash) {
+    if (hash) lastHash = hash;
+    return lastHash == __webpack_hash__;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;当发现 hash 不匹配，也就是代码发生了更新时，首先需要获取最新的代码，这依赖 webpack 模块的&lt;a href=&quot;https://doc.webpack-china.org/api/hot-module-replacement#check&quot;&gt;hot.check()&lt;/a&gt;接口。调用后将发送一个 HTTP 请求用来获取更新后的模块信息，触发回调函数。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;var result = module.hot.check(false, cb);
+if (result &amp;amp;&amp;amp; result.then) {
+    result.then(function(updatedModules) {
+        cb(null, updatedModules);
+    });
+    result.catch(cb);
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在回调函数中，如果没有报错，就调用模块的 &lt;code class=&quot;highlighter-rouge&quot;&gt;hot.apply()&lt;/code&gt; 进行热替换。要注意正常的热替换是不需要触发浏览器刷新页面的，会执行代码中&lt;code class=&quot;highlighter-rouge&quot;&gt;if (module.hot)&lt;/code&gt;条件分支的热替换逻辑。
+详细信息可以参考&lt;a href=&quot;https://doc.webpack-china.org/guides/hot-module-replacement&quot;&gt; Webpack 文档的介绍&lt;/a&gt;或者 style-loader 的实现。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;var cb = function(err, updatedModules) {
+    if (err) return handleError(err);
+    var applyResult = module.hot.apply(applyOptions, applyCallback);
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;至此我们了解了代码热更新时，服务端和客户端的整个通信流程。&lt;/p&gt;
+
+&lt;h2 id=&quot;为-html-webpack-plugin-添加自动刷新&quot;&gt;为 html-webpack-plugin 添加自动刷新&lt;/h2&gt;
+
+&lt;p&gt;最后让我们来看一个开发中具体的问题。在使用 html-webpack-plugin 插件生成 HTML 的场景中，我们希望做到修改模版自动刷新页面，节省手动刷新的时间。这里使用到了之前 webpack-hot-middleware 客户端代码接收自定义更新事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;customHandler&lt;/code&gt;。在使用中间件的服务端代码中，每次 HTML 生成后，都会向客户端发送一个自定义事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;reload&lt;/code&gt;。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// 使用 webpack-hot-middleware 的服务端代码
+
+compiler.plugin(&amp;#39;compilation&amp;#39;, (compilation) =&amp;gt; {
+    compilation.plugin(&amp;#39;html-webpack-plugin-after-emit&amp;#39;, (data, cb) =&amp;gt; {
+        hotMiddleware.publish({
+            action: &amp;#39;reload&amp;#39;
+        });
+        cb();
+    });
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在客户端 entry 代码中，只需要使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;subscribe&lt;/code&gt; 订阅该自定义事件即可。另外，这里使用到了 Webpack 模块的 query 参数。关于 &lt;code class=&quot;highlighter-rouge&quot;&gt;name&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;noInfo&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;reload&lt;/code&gt; 这些客户端参数的含义，可以参考 webpack-hot-middleware 的&lt;a href=&quot;https://github.com/glenjamin/webpack-hot-middleware#config&quot;&gt;文档说明&lt;/a&gt;。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// 客户端 entry 代码
+
+import &amp;#39;eventsource-polyfill&amp;#39;;
+import hotClient from &amp;#39;webpack-hot-middleware/client?name=compilerName&amp;amp;noInfo=true&amp;amp;reload=true&amp;#39;;
+
+hotClient.subscribe(payload =&amp;gt; {
+    if (payload.action === &amp;#39;reload&amp;#39; || payload.reload === true) {
+        window.location.reload();
+    }
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在 vuejs-templates 官方 Webpack 模版中，就采用了这种做法。但是其中有一个&lt;a href=&quot;https://github.com/vuejs-templates/webpack/issues/751#issuecomment-309955295&quot;&gt;ISSUE&lt;/a&gt;值得关注，包括我自己在使用时，也遇到了同样的问题。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://doc.webpack-china.org/concepts/hot-module-replacement/&quot;&gt;Webpack HMR 官方介绍&lt;/a&gt;
+&lt;a href=&quot;https://github.com/vuejs-templates/webpack/issues/751#issuecomment-309955295&quot;&gt;vuejs-templates issue&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 30 Sep 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html</guid>
+        
+        <category>javascript</category>
+        
+        <category>webpack</category>
+        
+        <category>eventstream</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
     
       <item>
         <title>Node.js 中的消息队列</title>
@@ -394,13 +577,75 @@ images.forEach(image =&amp;gt; {
 
 &lt;p&gt;可以参考&lt;a href=&quot;https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163&quot;&gt;这篇文章&lt;/a&gt;的实现。&lt;/p&gt;
 
+&lt;h2 id=&quot;多个容器中-sticky-的场景&quot;&gt;多个容器中 sticky 的场景&lt;/h2&gt;
+
+&lt;p&gt;同样，在 sticky 的场景中，IntersectionObserver 也有很好的应用。&lt;/p&gt;
+
+&lt;p&gt;首先来看看过去的方式有哪有限制：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;对于开发者而言，通过 CSS 规则&lt;code class=&quot;highlighter-rouge&quot;&gt;position: sticky&lt;/code&gt;将控制行为完全交给浏览器。除了通过手动计算，完全不知道一个元素当前是否处于 sticky 状态，当然这个计算过程，又需要放在滚动事件中重复执行，容易造成 jank。&lt;/li&gt;
+  &lt;li&gt;当涉及到多个独立容器的场景，计算过程将变得十分复杂。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/sticky-regions.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;对于开发者的一种理想状态是，能够监听自定义事件&lt;code class=&quot;highlighter-rouge&quot;&gt;sticky-change&lt;/code&gt;，在元素 sticky 状态发生改变之时进行操作，这样就避免了在滚动事件处理函数中不断轮询。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;document.addEventListener(&amp;#39;sticky-change&amp;#39;, e =&amp;gt; {
+    const header = e.detail.target;  // header became sticky or stopped sticking.
+    const sticking = e.detail.stuck; // true when header is sticky.
+    header.classList.toggle(&amp;#39;shadow&amp;#39;, sticking); // add drop shadow when sticking.
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;首先我们需要为每一个容器建立首尾两个“哨兵” DOM。IO 需要关注它们和视口容器的重合度。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/sentinelanimation.gif&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这里以头部的“哨兵”为例，每次一进入视口容器就需要开始计算位置信息。尾部哨兵略有不同，只有全部在容器中才需要开始计算。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;const observer = new IntersectionObserver((records, observer) =&amp;gt; {
+    for (const record of records) {
+        const targetInfo = record.boundingClientRect;
+        const stickyTarget = record.target.parentElement.querySelector(&amp;#39;.sticky&amp;#39;);
+        const rootBoundsInfo = record.rootBounds;
+
+        // Started sticking.
+        if (targetInfo.bottom &amp;lt; rootBoundsInfo.top) {
+            fireEvent(true, stickyTarget);
+        }
+
+        // Stopped sticking.
+        if (targetInfo.bottom &amp;gt;= rootBoundsInfo.top &amp;amp;&amp;amp;
+            targetInfo.bottom &amp;lt; rootBoundsInfo.bottom) {
+            fireEvent(false, stickyTarget);
+        }
+    }
+}, {threshold: [0], root: container});
+
+// Add the top sentinels to each section and attach an observer.
+const sentinels = addSentinels(container, &amp;#39;sticky_sentinel--top&amp;#39;);
+sentinels.forEach(el =&amp;gt; observer.observe(el));&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;发送自定义事件的代码就省略了。完整代码可参考原文中的&lt;a href=&quot;https://ebidel.github.io/demos/sticky-position-event.html&quot;&gt;DEMO 地址&lt;/a&gt;。&lt;/p&gt;
+
+&lt;p&gt;现在我们可以做到监听元素 sticky 状态的变动，由此引申到另一个问题，那就是元素其他 CSS 属性的变动也能够检测么？
+&lt;code class=&quot;highlighter-rouge&quot;&gt;MutationObserver&lt;/code&gt;可以监听样式类的增减，但是计算出来的样式规则发生变动则不行。未来&lt;a href=&quot;http://xml3d.org/xml3d/specification/styleobserver/&quot;&gt; Style Mutation Observer&lt;/a&gt;将作为一个很好的补充。&lt;/p&gt;
+
+&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
+
+&lt;p&gt;IO 在需要计算两个元素重合状态，尤其是视口元素的场景中，可以完全替代滚动事件轮询的方式。&lt;/p&gt;
+
 &lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://developers.google.com/web/updates/2016/04/intersectionobserver&quot;&gt;Google Developer&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://hacks.mozilla.org/2017/08/intersection-observer-comes-to-firefox/&quot;&gt;MDN&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163&quot;&gt;懒加载图片文章&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163&quot;&gt;懒加载图片原文&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://developers.google.com/web/updates/2017/09/sticky-headers&quot;&gt;sticky场景 原文&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 21 Aug 2017 03:21:32 +0800</pubDate>
         <link>https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html</link>
@@ -1113,83 +1358,6 @@ end&lt;/code&gt;&lt;/pre&gt;
         <category>babel</category>
         
         <category>webpack</category>
-        
-        
-        <category>coding</category>
-        
-      </item>
-    
-      <item>
-        <title>使用ava和travis-ci</title>
-        <description>&lt;p&gt;最近给 &lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin&quot;&gt;skeleton 插件&lt;/a&gt;加上了测试用例，顺便使用了下自动集成工具。&lt;/p&gt;
-
-&lt;h2 id=&quot;ava&quot;&gt;&lt;a href=&quot;https://github.com/avajs/ava&quot;&gt;ava&lt;/a&gt;&lt;/h2&gt;
-
-&lt;p&gt;首先配置基本参数：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;// package.json
-
-&amp;quot;ava&amp;quot;: {
-    &amp;quot;concurrency&amp;quot;: 5,
-    &amp;quot;failFast&amp;quot;: true,
-    &amp;quot;files&amp;quot;: [
-      &amp;quot;test/*.test.js&amp;quot;
-    ],
-    &amp;quot;require&amp;quot;: [
-      &amp;quot;babel-register&amp;quot;
-    ]
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;使用方法也很简单：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;import test from &amp;#39;ava&amp;#39;;
-test(&amp;#39;it should run successfully&amp;#39;, async t =&amp;gt; {
-    let {stats, errors} = webpackBuildStats;
-    t.falsy(stats.hasWarnings() &amp;amp;&amp;amp; errors.hasWarnings());
-});&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;运行时除了会输出测试用例结果，还会输出一张代码覆盖率表格，并标出未覆盖的代码行号。
-测试代码覆盖率其实很有用，出现很低的覆盖率要么是代码本身问题，要么是测试用例覆盖不全。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/ava-log.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;travis-ci&quot;&gt;travis ci&lt;/h2&gt;
-
-&lt;p&gt;使用持续集成工具，每次提交时自动运行测试脚本。&lt;/p&gt;
-
-&lt;p&gt;首先需要有项目的owner权限，授权给travis。&lt;/p&gt;
-
-&lt;p&gt;然后在配置文件中我们可以：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;设置多个 Node.js 版本环境&lt;/li&gt;
-  &lt;li&gt;提供安装依赖和脚本，这里就直接运行测试命令了&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-yml&quot;&gt;//.travis.yml
-
-language: node_js
-node_js:
-  - &amp;quot;4&amp;quot;
-  - &amp;quot;5&amp;quot;
-  - &amp;quot;6&amp;quot;
-install:
-  - npm install
-script:
-  - npm test&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;完成后就可以在&lt;code class=&quot;highlighter-rouge&quot;&gt;README.md&lt;/code&gt;里加上build图标了。&lt;img src=&quot;https://travis-ci.org/lavas-project/vue-skeleton-webpack-plugin.svg?branch=master&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 17 Jul 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html</guid>
-        
-        <category>ava</category>
-        
-        <category>travis</category>
         
         
         <category>coding</category>

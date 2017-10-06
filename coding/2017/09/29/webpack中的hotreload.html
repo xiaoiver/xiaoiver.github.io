@@ -1,0 +1,152 @@
+<!DOCTYPE html><meta charset=utf-8><meta name=viewport content="width=device-widthinitial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=keywords content=coding编程javascriptxiaoiverxiaop><meta name=theme-color content=#eee><title>Webpack 中 hotreload 实现原理 | xiaOp的博客</title><meta property=og:title content="Webpack 中 hotreload 实现原理"><meta property=og:locale content=en_US><meta name=description content="在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。"><meta property=og:description content="在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-09-30T03:21:32+08:00><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Webpack 中 hotreload 实现原理","datePublished":"2017-09-30T03:21:32+08:00","dateModified":"2017-09-30T03:21:32+08:00","description":"在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html"},"url":"https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html"}</script><title>Webpack 中 hotreload 实现原理</title><link rel="shortcut icon" href=/img/favicon.ico><link rel=canonical href=https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/style-large.css><link rel=stylesheet href=/css/prism.css><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]--><script src=/js/jquery.min.js></script><script src=/js/Imager.min.js></script><script src=/js/jquery.scrollzer.min.js></script><script src=/js/jquery.scrolly.min.js></script><script src=/js/skel.min.js></script><script src=/js/skel-layers.min.js></script><script src=/js/prism.min.js></script><script src=/js/init.min.js></script><section id=header class=skel-layers-fixed><header><span class="image avatar"><img src=/img/avatar.jpg alt=""></span><h1 id=logo><a href=/ >xiaOp的博客</a></h1><p>想成为一个有趣的人</header><nav id=nav><ul><li><a href=#intro>主页</a><li><a href=#blog>文章</a><li><a href=#contact>兴趣</a></ul></nav><footer><ul class=icons><li><a href=https://github.com/xiaoiver class="icon fa-github"><span class=label>Github</span></a><li><a href=mailto:pyqiverson@gmail.com class="icon fa-envelope"><span class=label>Email</span></a><li><a href=https://www.douban.com/people/150275082/ class=icon>豆</a><li><a href=https://www.zhihu.com/people/pan-yu-qi-20/activities class=icon>知</a></ul></footer></section><div id=wrapper><div id=main><style>header.intro-header {
+        position: relative;
+        background-image: url('/img/vue-webpack.png');
+        background-size: cover;
+    }
+    
+    header.intro-header .header-mask {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.6);
+    }
+    
+
+    .post-heading {
+        position: relative;
+        padding: 50px 0;
+        color: white;
+    }
+    .post-heading h2,
+    .post-heading h3,
+    .post-heading h4 {
+        color: white;
+    }
+    .post-heading h2 {
+        font-size: 3em;
+    }
+
+    article {
+        padding-top: 20px;
+    }
+
+    .post-container img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 1.5em auto 1.6em auto;
+    }
+    .post-container a {
+        color: #4acaa8;
+    }</style><header class=intro-header><div class=header-mask></div><div class=container><div class=post-heading><h2>Webpack 中 hotreload 实现原理<h3 class=subheading>eventstream</h3></h2><div class=tags><a class=tag href=/tags#javascript title=javascript>javascript</a> <a class=tag href=/tags#webpack title=webpack>webpack</a> <a class=tag href=/tags#eventstream title=eventstream>eventstream</a></div><span class=meta>Posted by xiaOp的博客 on September 29, 2017</span></div></div></header><article class=post-container><div class=container><p>在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。<h2 id=准备工作>准备工作</h2><p>首先需要引入 <code class=highlighter-rouge>webpack-hot-middleware</code> 中间件和 <code class=highlighter-rouge>HotModuleReplacementPlugin</code> 插件。当然开发环境下 <code class=highlighter-rouge>webpack-dev-middleware</code> 肯定也是必不可少的。<p>启动项目后打开 Chrome Devtools，这个<code class=highlighter-rouge>/__webpack_hmr</code>请求很明显是实现 hotreload 的关键。可以看出请求一直保持连接，并不断接收到“心跳”事件。 <img src=/img/hmr.png alt=""><h2 id=客户端发起-socket-连接>客户端发起 socket 连接</h2><p>首先观察一下请求头<code class=highlighter-rouge>text/event-stream</code>，这个请求是由客户端代码通过<a href=https://developer.mozilla.org/en-US/docs/Web/API/EventSource>EventSource</a>创建的：<div><pre class=line-numbers data-line=""><code class=language-javascript>// webpack-hot-middleware/client.js
+
+function init() {
+    source = new window.EventSource(options.path);
+    source.onopen = handleOnline;
+    source.onerror = handleDisconnect;
+    source.onmessage = handleMessage;
+}</code></pre></div><p>这里提到的“客户端代码”是指使用 webpack-hot-middleware 时，除了使用中间件之外，还需要把<a href=https://github.com/glenjamin/webpack-hot-middleware/blob/master/client.js#L74-L79>client.js</a>加入入口依赖，因此这段代码会被打包到客户端代码中。创建完 EventSource 之后，绑定了若干事件处理函数，我们后续会查看这些细节。<h2 id=服务端中间件响应>服务端中间件响应</h2><p>在收到客户端请求后，中间件需要进行响应，同时需要管理每一个客户端连接，这里将响应对象通过自增的 ID 保存在<code class=highlighter-rouge>clients</code>中，当连接断开时删除。<div><pre class=line-numbers data-line=""><code class=language-javascript>// webpack-hot-middleware/middleware.js
+
+function(req, res) {
+    req.socket.setKeepAlive(true);
+    res.writeHead(200, {
+        &#39;Access-Control-Allow-Origin&#39;: &#39;*&#39;,
+        &#39;Content-Type&#39;: &#39;text/event-stream;charset=utf-8&#39;,
+        &#39;Cache-Control&#39;: &#39;no-cache, no-transform&#39;,
+        &#39;Connection&#39;: &#39;keep-alive&#39;,
+        &#39;X-Accel-Buffering&#39;: &#39;no&#39;
+    });
+    res.write(&#39;\n&#39;);
+    var id = clientId++;
+    clients[id] = res;
+    req.on(&quot;close&quot;, function(){
+        delete clients[id];
+    });
+}</code></pre></div><p>向每个连接发送心跳事件是通过定时器完成的。值得一提的是<code class=highlighter-rouge>unref()</code>的用法，使这个定时器不会影响事件循环的退出，如果没有其他事件进入队列，事件循环将结束，进程就退出了。更多关于<code class=highlighter-rouge>unref()</code>的说明，可以参考这个<a href=https://cnodejs.org/topic/570924d294b38dcb3c09a7a0#5709f1b8bc564eaf3c6a48e1>回答</a>。<div><pre class=line-numbers data-line=""><code class=language-javascript>// webpack-hot-middleware/middleware.js
+
+setInterval(function heartbeatTick() {
+    everyClient(function(client) {
+        // 向每个 client 发送心跳字符
+        client.write(&quot;data: \uD83D\uDC93\n\n&quot;);
+    });
+}, heartbeat).unref();</code></pre></div><p>那么在代码发生变动时，如何通知客户端呢？在创建中间件时，为 webpack 编译器添加了对应编译阶段的监听函数：<div><pre class=line-numbers data-line=""><code class=language-javascript>// webpack-hot-middleware/middleware.js
+
+compiler.plugin(&quot;compile&quot;, function() {
+    eventStream.publish({action: &quot;building&quot;});
+});
+compiler.plugin(&quot;done&quot;, function(statsResult) {
+    eventStream.publish({
+        name: stats.name,
+        action: action,
+        time: stats.time,
+        hash: stats.hash,
+        warnings: stats.warnings || [],
+        errors: stats.errors || [],
+        modules: buildModuleMap(stats.modules)
+    });
+});</code></pre></div><h2 id=客户端热更新>客户端热更新</h2><p>在接收到代码变动后服务端发送的事件后，客户端代码需要进行模块热替换处理。客户端在创建 EventSource 时通过<code class=highlighter-rouge>onmessage</code>定义了处理服务端消息的函数。其中<code class=highlighter-rouge>building</code>事件只是简单的输出控制台信息，我们将着重关注<code class=highlighter-rouge>sync</code>事件。另外通过<code class=highlighter-rouge>customHandler</code>支持自定义事件，例如可以为 html-webpack-plugin 添加自动刷新页面功能，后续将会介绍具体做法。<div><pre class=line-numbers data-line=""><code class=language-javascript>// webpack-hot-middleware/client.js
+
+case &quot;sync&quot;:
+    processUpdate(obj.hash, obj.modules, options);
+    break;
+default:
+    if (customHandler) {
+        customHandler(obj);
+    }</code></pre></div><p>我们通过比对当前代码的 hash 和服务端发来的 hash 判断代码是否发生了更新。当前代码的 hash 是通过 webpack 的<a href=https://doc.webpack-china.org/api/module-variables/#__webpack_hash__-webpack-specific->全局模块变量</a><code class=highlighter-rouge>/* global window __webpack_hash__ */</code>在编译时注入。<div><pre class=line-numbers data-line=""><code class=language-javascript>// webpack-hot-middleware/process-update.js
+
+/* global window __webpack_hash__ */
+function upToDate(hash) {
+    if (hash) lastHash = hash;
+    return lastHash == __webpack_hash__;
+}</code></pre></div><p>当发现 hash 不匹配，也就是代码发生了更新时，首先需要获取最新的代码，这依赖 webpack 模块的<a href=https://doc.webpack-china.org/api/hot-module-replacement#check>hot.check()</a>接口。调用后将发送一个 HTTP 请求用来获取更新后的模块信息，触发回调函数。<div><pre class=line-numbers data-line=""><code class=language-javascript>var result = module.hot.check(false, cb);
+if (result &amp;&amp; result.then) {
+    result.then(function(updatedModules) {
+        cb(null, updatedModules);
+    });
+    result.catch(cb);
+}</code></pre></div><p>在回调函数中，如果没有报错，就调用模块的 <code class=highlighter-rouge>hot.apply()</code> 进行热替换。要注意正常的热替换是不需要触发浏览器刷新页面的，会执行代码中<code class=highlighter-rouge>if (module.hot)</code>条件分支的热替换逻辑。 详细信息可以参考<a href=https://doc.webpack-china.org/guides/hot-module-replacement> Webpack 文档的介绍</a>或者 style-loader 的实现。<div><pre class=line-numbers data-line=""><code class=language-javascript>var cb = function(err, updatedModules) {
+    if (err) return handleError(err);
+    var applyResult = module.hot.apply(applyOptions, applyCallback);
+}</code></pre></div><p>至此我们了解了代码热更新时，服务端和客户端的整个通信流程。<h2 id=为-html-webpack-plugin-添加自动刷新>为 html-webpack-plugin 添加自动刷新</h2><p>最后让我们来看一个开发中具体的问题。在使用 html-webpack-plugin 插件生成 HTML 的场景中，我们希望做到修改模版自动刷新页面，节省手动刷新的时间。这里使用到了之前 webpack-hot-middleware 客户端代码接收自定义更新事件 <code class=highlighter-rouge>customHandler</code>。在使用中间件的服务端代码中，每次 HTML 生成后，都会向客户端发送一个自定义事件 <code class=highlighter-rouge>reload</code>。<div><pre class=line-numbers data-line=""><code class=language-javascript>// 使用 webpack-hot-middleware 的服务端代码
+
+compiler.plugin(&#39;compilation&#39;, (compilation) =&gt; {
+    compilation.plugin(&#39;html-webpack-plugin-after-emit&#39;, (data, cb) =&gt; {
+        hotMiddleware.publish({
+            action: &#39;reload&#39;
+        });
+        cb();
+    });
+});</code></pre></div><p>在客户端 entry 代码中，只需要使用 <code class=highlighter-rouge>subscribe</code> 订阅该自定义事件即可。另外，这里使用到了 Webpack 模块的 query 参数。关于 <code class=highlighter-rouge>name</code>, <code class=highlighter-rouge>noInfo</code>, <code class=highlighter-rouge>reload</code> 这些客户端参数的含义，可以参考 webpack-hot-middleware 的<a href=https://github.com/glenjamin/webpack-hot-middleware#config>文档说明</a>。<div><pre class=line-numbers data-line=""><code class=language-javascript>// 客户端 entry 代码
+
+import &#39;eventsource-polyfill&#39;;
+import hotClient from &#39;webpack-hot-middleware/client?name=compilerName&amp;noInfo=true&amp;reload=true&#39;;
+
+hotClient.subscribe(payload =&gt; {
+    if (payload.action === &#39;reload&#39; || payload.reload === true) {
+        window.location.reload();
+    }
+});</code></pre></div><p>在 vuejs-templates 官方 Webpack 模版中，就采用了这种做法。但是其中有一个<a href=https://github.com/vuejs-templates/webpack/issues/751#issuecomment-309955295>ISSUE</a>值得关注，包括我自己在使用时，也遇到了同样的问题。<h2 id=参考资料>参考资料</h2><p><a href=https://doc.webpack-china.org/concepts/hot-module-replacement/ >Webpack HMR 官方介绍</a> <a href=https://github.com/vuejs-templates/webpack/issues/751#issuecomment-309955295>vuejs-templates issue</a></div></article><script>function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }</script><script>async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.post-heading h2').remove('.subheading').remove('#logo');
+    })</script><style>/* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -1.25em;
+            font-size: 1.1em;
+        }
+    }</style></div></div>

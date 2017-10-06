@@ -69,7 +69,32 @@ let observer = new IntersectionObserver(entries =&gt; {
 // 观测所有图片
 images.forEach(image =&gt; {
     observer.observe(image);
-});</code></pre></div><p>当然，这里还有一些细节，例如：<ol><li>考虑浏览器兼容性，目前<a href="https://caniuse.com/#feat=intersectionobserver">最新版 Chrome 和 Firefox 支持</a>良好。<a href=https://github.com/WICG/IntersectionObserver/tree/gh-pages/polyfill>polyfill</a><li>图片的 src 属性存放在例如 data-src 上<li>全部图片加载完毕，调用观测对象的<code class=highlighter-rouge>disconnect()</code>方法彻底关闭</ol><p>可以参考<a href=https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163>这篇文章</a>的实现。<h2 id=参考资料>参考资料</h2><p><a href=https://developers.google.com/web/updates/2016/04/intersectionobserver>Google Developer</a><p><a href=https://hacks.mozilla.org/2017/08/intersection-observer-comes-to-firefox/ >MDN</a><p><a href=https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163>懒加载图片文章</a></div></article><div id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+});</code></pre></div><p>当然，这里还有一些细节，例如：<ol><li>考虑浏览器兼容性，目前<a href="https://caniuse.com/#feat=intersectionobserver">最新版 Chrome 和 Firefox 支持</a>良好。<a href=https://github.com/WICG/IntersectionObserver/tree/gh-pages/polyfill>polyfill</a><li>图片的 src 属性存放在例如 data-src 上<li>全部图片加载完毕，调用观测对象的<code class=highlighter-rouge>disconnect()</code>方法彻底关闭</ol><p>可以参考<a href=https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163>这篇文章</a>的实现。<h2 id=多个容器中-sticky-的场景>多个容器中 sticky 的场景</h2><p>同样，在 sticky 的场景中，IntersectionObserver 也有很好的应用。<p>首先来看看过去的方式有哪有限制：<ul><li>对于开发者而言，通过 CSS 规则<code class=highlighter-rouge>position: sticky</code>将控制行为完全交给浏览器。除了通过手动计算，完全不知道一个元素当前是否处于 sticky 状态，当然这个计算过程，又需要放在滚动事件中重复执行，容易造成 jank。<li>当涉及到多个独立容器的场景，计算过程将变得十分复杂。</ul><p><img src=/img/sticky-regions.png alt=""><p>对于开发者的一种理想状态是，能够监听自定义事件<code class=highlighter-rouge>sticky-change</code>，在元素 sticky 状态发生改变之时进行操作，这样就避免了在滚动事件处理函数中不断轮询。<div><pre class=line-numbers data-line=""><code class=language-javascript>document.addEventListener(&#39;sticky-change&#39;, e =&gt; {
+    const header = e.detail.target;  // header became sticky or stopped sticking.
+    const sticking = e.detail.stuck; // true when header is sticky.
+    header.classList.toggle(&#39;shadow&#39;, sticking); // add drop shadow when sticking.
+});</code></pre></div><p>首先我们需要为每一个容器建立首尾两个“哨兵” DOM。IO 需要关注它们和视口容器的重合度。<p><img src=/img/sentinelanimation.gif alt=""><p>这里以头部的“哨兵”为例，每次一进入视口容器就需要开始计算位置信息。尾部哨兵略有不同，只有全部在容器中才需要开始计算。<div><pre class=line-numbers data-line=""><code class=language-javascript>const observer = new IntersectionObserver((records, observer) =&gt; {
+    for (const record of records) {
+        const targetInfo = record.boundingClientRect;
+        const stickyTarget = record.target.parentElement.querySelector(&#39;.sticky&#39;);
+        const rootBoundsInfo = record.rootBounds;
+
+        // Started sticking.
+        if (targetInfo.bottom &lt; rootBoundsInfo.top) {
+            fireEvent(true, stickyTarget);
+        }
+
+        // Stopped sticking.
+        if (targetInfo.bottom &gt;= rootBoundsInfo.top &amp;&amp;
+            targetInfo.bottom &lt; rootBoundsInfo.bottom) {
+            fireEvent(false, stickyTarget);
+        }
+    }
+}, {threshold: [0], root: container});
+
+// Add the top sentinels to each section and attach an observer.
+const sentinels = addSentinels(container, &#39;sticky_sentinel--top&#39;);
+sentinels.forEach(el =&gt; observer.observe(el));</code></pre></div><p>发送自定义事件的代码就省略了。完整代码可参考原文中的<a href=https://ebidel.github.io/demos/sticky-position-event.html>DEMO 地址</a>。<p>现在我们可以做到监听元素 sticky 状态的变动，由此引申到另一个问题，那就是元素其他 CSS 属性的变动也能够检测么？ <code class=highlighter-rouge>MutationObserver</code>可以监听样式类的增减，但是计算出来的样式规则发生变动则不行。未来<a href=http://xml3d.org/xml3d/specification/styleobserver/ > Style Mutation Observer</a>将作为一个很好的补充。<h2 id=总结>总结</h2><p>IO 在需要计算两个元素重合状态，尤其是视口元素的场景中，可以完全替代滚动事件轮询的方式。<h2 id=参考资料>参考资料</h2><p><a href=https://developers.google.com/web/updates/2016/04/intersectionobserver>Google Developer</a><p><a href=https://hacks.mozilla.org/2017/08/intersection-observer-comes-to-firefox/ >MDN</a><p><a href=https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163>懒加载图片原文</a><p><a href=https://developers.google.com/web/updates/2017/09/sticky-headers>sticky场景 原文</a></div></article><div id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
