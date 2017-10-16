@@ -6,12 +6,35 @@
 </description>
     <link>https://xiaoiver.github.io/</link>
     <atom:link href="https://xiaoiver.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 16 Oct 2017 17:01:35 +0800</pubDate>
-    <lastBuildDate>Mon, 16 Oct 2017 17:01:35 +0800</lastBuildDate>
+    <pubDate>Mon, 16 Oct 2017 19:18:14 +0800</pubDate>
+    <lastBuildDate>Mon, 16 Oct 2017 19:18:14 +0800</lastBuildDate>
     <generator>Jekyll v3.4.5</generator>
     
       <item>
-        <title>Webpack代码分割</title>
+        <title>Code + Cartoon</title>
+        <description>&lt;p&gt;说实话，第一次在&lt;a href=&quot;https://hacks.mozilla.org/&quot;&gt;Hacks&lt;/a&gt;上看到包含如下图片的文章是很意外的。看过不少技术文章，穿插卡通画的还是头一遭，而且这诡异的画风是咋回事。
+&lt;img src=&quot;/img/cartoon.png&quot; alt=&quot;降临中的七肢桶？&quot; /&gt;
+&lt;em&gt;降临中的七肢桶？&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;如果你认为这些图不过是点缀罢了，那么来看看个人看过的对浏览器渲染流程最生动的诠释：
+&lt;img src=&quot;/img/webrender.png&quot; alt=&quot;一图胜千言&quot; /&gt;
+&lt;em&gt;一图胜千言&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;反正我是被这些图吸引着，读完了 WebAssembly 的&lt;a href=&quot;https://hacks.mozilla.org/author/lclarkmozilla-com/&quot;&gt;系列文章&lt;/a&gt;。&lt;/p&gt;
+</description>
+        <pubDate>Mon, 16 Oct 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/coding/2017/10/15/code+cartoon.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/10/15/code+cartoon.html</guid>
+        
+        <category>tech-blog</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
+    
+      <item>
+        <title>Webpack代码分割[未完]</title>
         <description>&lt;p&gt;了解 Webpack 的启动代码对于分析模块和 chunk 是非常有帮助的。&lt;/p&gt;
 
 &lt;h2 id=&quot;webpack-启动代码&quot;&gt;Webpack 启动代码&lt;/h2&gt;
@@ -51,7 +74,7 @@ export function func1() {
 ]);&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;现在可以深入表达式方法细节了。首先定义了 &lt;code class=&quot;highlighter-rouge&quot;&gt;__webpack_require__&lt;/code&gt; 方法，然后在方法上挂了一些属性便于快捷访问，最后调用入口模块也就是模块0。官方的注释非常详细，尤其是 &lt;code class=&quot;highlighter-rouge&quot;&gt;require&lt;/code&gt; 方法的，就不再赘述了。在方法上挂载的属性中，&lt;code class=&quot;highlighter-rouge&quot;&gt;d&lt;/code&gt; 用来处理常量&lt;/p&gt;
+&lt;p&gt;现在可以深入表达式方法细节了。首先定义了 &lt;code class=&quot;highlighter-rouge&quot;&gt;__webpack_require__&lt;/code&gt; 方法，然后在方法上挂了一些属性便于快捷访问，最后调用入口模块也就是模块0。官方的注释非常详细，尤其是 &lt;code class=&quot;highlighter-rouge&quot;&gt;require&lt;/code&gt; 方法的，就不再赘述了。&lt;/p&gt;
 &lt;div&gt;
   &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// The module cache
 var installedModules = {};
@@ -80,14 +103,15 @@ function __webpack_require__(moduleId) {
     return module.exports;
 }
 
+// 省略挂载属性...
 
-// expose the modules object (__webpack_modules__)
-__webpack_require__.m = modules;
+// Load entry module and return exports
+return __webpack_require__(__webpack_require__.s = 0);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-// expose the module cache
-__webpack_require__.c = installedModules;
-
-// define getter function for harmony exports
+&lt;p&gt;在方法上挂载的属性中，&lt;code class=&quot;highlighter-rouge&quot;&gt;d&lt;/code&gt; 用来处理常量&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// define getter function for harmony exports
 __webpack_require__.d = function(exports, name, getter) {
     if(!__webpack_require__.o(exports, name)) {
         Object.defineProperty(exports, name, {
@@ -111,10 +135,7 @@ __webpack_require__.n = function(module) {
 __webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 
 // __webpack_public_path__
-__webpack_require__.p = &amp;quot;&amp;quot;;
-
-// Load entry module and return exports
-return __webpack_require__(__webpack_require__.s = 0);&lt;/code&gt;&lt;/pre&gt;
+__webpack_require__.p = &amp;quot;&amp;quot;;&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
 &lt;div&gt;
@@ -1229,225 +1250,6 @@ HTML&lt;/code&gt;&lt;/pre&gt;
         <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html</guid>
         
         <category>browser</category>
-        
-        
-        <category>coding</category>
-        
-      </item>
-    
-      <item>
-        <title>为vue项目添加骨架屏</title>
-        <description>&lt;p&gt;前段时间阅读了&lt;a href=&quot;https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/&quot;&gt;饿了么的 PWA 升级实践&lt;/a&gt;一文，受益匪浅。其中&lt;a href=&quot;https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/#在构建时使用-vue-预渲染骨架屏&quot;&gt;构建时使用 Vue 预渲染骨架屏&lt;/a&gt;一节，为开发者提供了减少白屏时间，提升用户感知体验的新思路。本文将借鉴这一思路，尝试为 Vue 项目添加骨架屏。&lt;/p&gt;
-
-&lt;h2 id=&quot;骨架屏是什么&quot;&gt;骨架屏是什么？&lt;/h2&gt;
-
-&lt;p&gt;在 Google 提出的&lt;a href=&quot;https://developers.google.com/web/updates/2017/06/user-centric-performance-metrics&quot;&gt;以用户为中心&lt;/a&gt;的四个页面性能衡量指标中，FP/FCP(首屏渲染)可能是开发者最熟悉的了。下图来自&lt;a href=&quot;https://developers.google.com/web/updates/2017/06/user-centric-performance-metrics&quot;&gt;原文&lt;/a&gt;：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://developers.google.com/web/updates/images/2017/06/perf-metrics-load-timeline.png&quot; alt=&quot;google页面在各个阶段的截屏&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;关于尽快渲染出首屏，减少白屏时间，我能想到的优化方式大致有以下几种：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;优化 &lt;a href=&quot;https://developers.google.com/web/fundamentals/performance/critical-rendering-path/&quot;&gt;Critical Rendering Path(关键渲染路径)&lt;/a&gt;，尽可能减少阻塞渲染的 JavaScript 和 CSS。常见做法包括使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;async/defer&lt;/code&gt; 让浏览器下载 JavaScript 的同时不阻塞 HTML 解析，内联页面关键部分的样式到 HTML 中等。&lt;/li&gt;
-  &lt;li&gt;使用 Service Worker 缓存&lt;a href=&quot;https://developers.google.com/web/updates/2015/11/app-shell&quot;&gt; AppShell&lt;/a&gt;，加快后续访问速度。&lt;/li&gt;
-  &lt;li&gt;使用 HTTP/2 Server Push，帮助浏览器尽早发现静态资源，减少请求数。&lt;a href=&quot;https://zhuanlan.zhihu.com/p/26757514&quot;&gt;浅谈 HTTP/2 Server Push&lt;/a&gt;一文介绍了 Ele.me 在这方面的实践，推送 API 请求而非静态资源。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;骨架屏充分利用了前两点。下图来自原文&lt;a href=&quot;https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/#为感知体验奋斗&quot;&gt;为感知体验奋斗&lt;/a&gt;一节。从图中的 Skeleton Screen (骨架屏)中可以看出，在页面完全渲染完成之前，用户会看到一个样式简单，描绘了当前页面的大致框架，感知到页面正在逐步加载，最终骨架屏中各个占位部分被完全替换，体验良好。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://huangxuan.me/img/in-post/post-eleme-pwa/after-skeleton.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;骨架屏可以看成一个简单的关键渲染路径，由于只是页面的大致框架，样式不会太复杂，内联在 HTML 中体积很小。使用 Service Worker 缓存包含骨架屏的 HTML 页面之后，从缓存中取出展示速度更快。&lt;/p&gt;
-
-&lt;h2 id=&quot;实现思路&quot;&gt;实现思路&lt;/h2&gt;
-
-&lt;p&gt;参考原文中&lt;a href=&quot;https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/#在构建时使用-vue-预渲染骨架屏&quot;&gt;在构建时使用 Vue 预渲染骨架屏&lt;/a&gt;一节介绍的思路，我将骨架屏也看成路由组件，在构建时使用 Vue 预渲染功能，将骨架屏组件的渲染结果 HTML 片段插入 HTML 页面模版的挂载点中，将样式内联到 head 标签中。这样等前端渲染完成时，Vue 将使用&lt;a href=&quot;https://ssr.vuejs.org/zh/hydration.html&quot;&gt;客户端混合&lt;/a&gt;，把挂载点中的骨架屏内容替换成真正的页面内容。&lt;/p&gt;
-
-&lt;p&gt;有了以上思路，让我们看看如何为一个简单的 Vue 应用添加骨架屏。&lt;/p&gt;
-
-&lt;h2 id=&quot;具体实现&quot;&gt;具体实现&lt;/h2&gt;
-
-&lt;p&gt;为此我开发了一个 webpack 插件：&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin&quot;&gt;vue-skeleton-webpack-plugin&lt;/a&gt;。下面将从以下三方面介绍部分实现细节：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;使用 Vue 预渲染骨架屏&lt;/li&gt;
-  &lt;li&gt;将骨架屏渲染结果插入 HTML 模版中&lt;/li&gt;
-  &lt;li&gt;开发模式下插入各个骨架屏路由&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;使用-vue-预渲染骨架屏&quot;&gt;使用 Vue 预渲染骨架屏&lt;/h3&gt;
-
-&lt;p&gt;我们使用 Vue 的&lt;a href=&quot;https://ssr.vuejs.org/zh/&quot;&gt;预渲染&lt;/a&gt;功能渲染骨架屏组件，不熟悉的同学可以先阅读官方文档中的&lt;a href=&quot;https://ssr.vuejs.org/zh/basic.html&quot;&gt;基本用法&lt;/a&gt;一节。&lt;/p&gt;
-
-&lt;p&gt;首先需要创建一个仅使用骨架屏组件的入口文件：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// src/entry-skeleton.js
-
-import Skeleton from &amp;#39;./Skeleton.vue&amp;#39;;
-// 创建一个骨架屏 Vue 实例
-export default new Vue({
-    components: {
-        Skeleton
-    },
-    template: &amp;#39;&amp;lt;skeleton /&amp;gt;&amp;#39;
-});&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;接下来创建一个用于服务端渲染的 webpack 配置对象，将刚创建的入口文件指定为 entry 依赖入口：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// webpack.skeleton.conf.js
-{
-    target: &amp;#39;node&amp;#39;, // 区别默认的 &amp;#39;web&amp;#39;
-    entry: resolve(&amp;#39;./src/entry-skeleton.js&amp;#39;), // 多页传入对象
-    output: {
-        libraryTarget: &amp;#39;commonjs2&amp;#39;
-    },
-    externals: nodeExternals({
-        whitelist: /\.css$/
-    }),
-    plugins: []
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;这里只展示单页应用的情况，在多页应用中，指定 entry 为包含各个页面入口的对象即可。关于多页中的 webpack 配置对象示例，可参考&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples/multipage&quot;&gt;插件的多页测试用例&lt;/a&gt;或者&lt;a href=&quot;https://github.com/lavas-project/lavas-template-vue-mpa&quot;&gt;Lavas MPA 模版&lt;/a&gt;。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;然后我们将这个 webpack 配置对象通过参数传入骨架屏插件中。&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// webpack.dev.conf.js
-plugins: [
-    new SkeletonWebpackPlugin({ // 我们编写的插件
-        webpackConfig: require(&amp;#39;./webpack.skeleton.conf&amp;#39;)
-    })
-]&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;骨架屏插件运行时会使用 webpack 编译这个传入的配置对象，得到骨架屏的 bundle 文件。接下来只需要使用这个 bundle 文件内容创建一个 renderer，调用&lt;code class=&quot;highlighter-rouge&quot;&gt;renderToString()&lt;/code&gt;方法就可以得到字符串形式的 HTML 渲染结果了。由于我们不需要将过程中的文件产物保存在硬盘中，使用内存文件系统&lt;a href=&quot;https://github.com/webpack/memory-fs&quot;&gt;memory-fs&lt;/a&gt;即可。&lt;/p&gt;
-
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// vue-skeleton-webpack-plugin/src/ssr.js
-
-const createBundleRenderer = require(&amp;#39;vue-server-renderer&amp;#39;).createBundleRenderer;
-// 从内存文件系统中读取 bundle 文件
-let bundle = mfs.readFileSync(outputPath, &amp;#39;utf-8&amp;#39;);
-// 创建 renderer
-let renderer = createBundleRenderer(bundle);
-// 渲染得到 HTML
-renderer.renderToString({}, (err, skeletonHtml) =&amp;gt; {});&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;默认情况下，webpack 模块引用的样式内容是内嵌在 JavaScript bundle 中的。官方插件&lt;a href=&quot;https://github.com/webpack-contrib/extract-text-webpack-plugin&quot;&gt; ExtractTextPlugin&lt;/a&gt;可以进行样式分离。我们也使用这个插件，将骨架屏样式内容输出到单独的 CSS 文件中。
-关于插件更多用法，可参考&lt;a href=&quot;https://doc.webpack-china.org/plugins/extract-text-webpack-plugin/&quot;&gt;官方文档&lt;/a&gt;或者&lt;a href=&quot;https://github.com/vuejs-templates/webpack/blob/master/template/build/utils.js&quot;&gt; Vue 基于 webpack 的模版&lt;/a&gt;。&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// vue-skeleton-webpack-plugin/src/ssr.js
-
-// 加入 ExtractTextPlugin 插件到 webpack 配置对象插件列表中
-serverWebpackConfig.plugins.push(new ExtractTextPlugin({
-    filename: outputCssBasename // 样式文件名
-}));&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;至此，我们已经得到了骨架屏的渲染结果 HTML 和样式内容，接下来需要关心如何将结果注入 HTML 页面模版中。&lt;/p&gt;
-
-&lt;h3 id=&quot;注入渲染结果&quot;&gt;注入渲染结果&lt;/h3&gt;
-
-&lt;p&gt;Vue webpack 模版项目使用了&lt;a href=&quot;https://github.com/jantimon/html-webpack-plugin&quot;&gt; HTML Webpack Plugin&lt;/a&gt;生成 HTML 文件。参考该插件的&lt;a href=&quot;https://github.com/jantimon/html-webpack-plugin#events&quot;&gt; 事件说明&lt;/a&gt;，我们选择监听&lt;code class=&quot;highlighter-rouge&quot;&gt;html-webpack-plugin-before-html-processing&lt;/code&gt;事件，在事件的回调函数中，插件会传入当前待处理的 HTML 内容供我们进一步修改。&lt;/p&gt;
-
-&lt;p&gt;我们知道骨架屏组件最终的渲染结果包含 HTML 和样式两部分，样式部分可以直接插入 head 标签內，而 HTML 需要插入挂载点中。插件使用者可以通过参数设置这个挂载点位置，默认将使用&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;div id=&quot;app&quot;&amp;gt;&lt;/code&gt;。&lt;/p&gt;
-
-&lt;p&gt;看起来一切都很顺利，但是在多页应用中，情况会变的稍稍复杂。多页项目中通常会引入多个 HTML Webpack Plugin，例如我们在&lt;a href=&quot;https://github.com/lavas-project/lavas-template-vue-mpa&quot;&gt; Lavas MPA 模版&lt;/a&gt;中使用的&lt;a href=&quot;https://github.com/mutualofomaha/multipage-webpack-plugin&quot;&gt; Multipage Webpack 插件&lt;/a&gt;就是如此，这就会导致&lt;code class=&quot;highlighter-rouge&quot;&gt;html-webpack-plugin-before-html-processing&lt;/code&gt;事件被多次触发。&lt;/p&gt;
-
-&lt;p&gt;在多页应用中，我们传给骨架屏插件的 webpack 配置对象是包含多个入口的：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// webpack.skeleton.conf.js
-entry: {
-    page1: resolve(&amp;#39;./src/pages/page1/entry-skeleton.js&amp;#39;),
-    page2: resolve(&amp;#39;./src/pages/page2/entry-skeleton.js&amp;#39;)
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;这就意味着每次&lt;code class=&quot;highlighter-rouge&quot;&gt;html-webpack-plugin-before-html-processing&lt;/code&gt;事件触发时，骨架屏插件都需要识别出当前正在处理的入口文件，执行 webpack 编译当前页面对应的骨架屏入口文件，渲染对应的骨架屏组件。查找当前处理的入口文件过程如下：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// vue-skeleton-webpack-plugin/src/index.js
-
-// 当前页面使用的所有 chunks
-let usedChunks = htmlPluginData.plugin.options.chunks;
-let entryKey;
-// chunks 和所有入口文件的交集就是当前待处理的入口文件
-if (Array.isArray(usedChunks)) {
-    entryKey = Object.keys(skeletonEntries);
-    entryKey = entryKey.filter(v =&amp;gt; usedChunks.indexOf(v) &amp;gt; -1)[0];
-}
-// 设置当前的 webpack 配置对象的入口文件和结果输出文件
-webpackConfig.entry = skeletonEntries[entryKey];
-webpackConfig.output.filename = `skeleton-${entryKey}.js`;
-// 使用配置对象进行服务端渲染
-ssr(webpackConfig).then(({skeletonHtml, skeletonCss}) =&amp;gt; {
-    // 注入骨架屏 HTML 和 CSS 到页面 HTML 中
-});&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;至此，我们已经完成了骨架屏的渲染和注入工作，接下来有一个开发中的小问题需要关注。&lt;/p&gt;
-
-&lt;h3 id=&quot;开发模式下插入路由&quot;&gt;开发模式下插入路由&lt;/h3&gt;
-
-&lt;p&gt;前面说过，由于 Vue 会使用&lt;a href=&quot;https://ssr.vuejs.org/zh/hydration.html&quot;&gt;客户端混合&lt;/a&gt;，骨架屏内容在前端渲染完成后就会被替换，那么如何在开发时方便的查看调试呢？&lt;/p&gt;
-
-&lt;p&gt;使用浏览器开发工具设置断点是一个办法，但如果能在开发模式中向路由文件插入骨架屏组件对应的路由规则，使各个页面的骨架屏能像其他路由组件一样被访问，将使开发调试变得更加方便。向路由文件插入规则代码的工作将在&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/blob/master/src/loader.js&quot;&gt;插件的 loader&lt;/a&gt;中完成。如果您对 webpack loader 还不了解，可以参阅&lt;a href=&quot;https://doc.webpack-china.org/concepts/loaders/&quot;&gt;官方文档&lt;/a&gt;。&lt;/p&gt;
-
-&lt;p&gt;我们需要向路由文件插入两类代码：引入骨架屏组件的代码和对应的路由规则对象。关于代码插入点，引入组件代码相对简单，放在文件顶部就行了，而路由规则需要插入路由对象数组中，目前我使用的是简单的字符串匹配来查找这个数组的起始位置。例如下面的例子中，需要向 loader 传入&lt;code class=&quot;highlighter-rouge&quot;&gt;routes: [&lt;/code&gt;来确定插入路由的位置。&lt;/p&gt;
-
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// router.js
-
-import Skeleton from &amp;#39;@/pages/Skeleton.vue&amp;#39;
-routes: [
-    { // 插入骨架屏路由
-        path: &amp;#39;/skeleton&amp;#39;,
-        name: &amp;#39;skeleton&amp;#39;,
-        component: Skeleton
-    }
-    // ...其余路由规则
-]&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;在多页应用中，每个页面对应的骨架屏都需要插入代码，使用者可以通过占位符设置引入骨架屏组件语句和路由规则的模版。loader 在运行时会使用这些模版，用真实的骨架屏名称替换掉占位符。在下面的例子中，假设我们有&lt;code class=&quot;highlighter-rouge&quot;&gt;Page1.skeleton.vue&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;Page2.skeleton.vue&lt;/code&gt;这两个骨架屏，开发模式下可以通过&lt;code class=&quot;highlighter-rouge&quot;&gt;/skeleton-page1&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;/skeleton-page2&lt;/code&gt;访问这两个骨架屏路由。更多参数说明可以参考&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin#参数说明&quot;&gt;这里&lt;/a&gt;。&lt;/p&gt;
-
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// webpack.dev.conf.js
-
-module: {
-    rules: [] // 其他规则
-        .concat(SkeletonWebpackPlugin.loader({
-            resource: resolve(&amp;#39;src/router.js&amp;#39;), // 目标路由文件
-            options: {
-                entry: [&amp;#39;page1&amp;#39;, &amp;#39;page2&amp;#39;],
-                importTemplate: &amp;#39;import [nameCap] from \&amp;#39;@/pages/[name]/[nameCap].skeleton.vue\&amp;#39;;&amp;#39;,
-                routePathTemplate: &amp;#39;/skeleton-[name]&amp;#39;
-            }
-        }))
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;多页中的具体应用示例，可参考&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples/multipage&quot;&gt;多页测试用例&lt;/a&gt;或者&lt;a href=&quot;https://github.com/lavas-project/lavas-template-vue-mpa&quot;&gt;Lavas MPA 模版&lt;/a&gt;。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
-
-&lt;p&gt;感谢&lt;a href=&quot;https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/&quot;&gt;饿了么的 PWA 升级实践&lt;/a&gt;一文，提供了解决这个问题的思路。当然文章中包含的远不止骨架屏这方面，相信每个读者都会受益匪浅。&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin&quot;&gt;插件&lt;/a&gt;使用中遇到任何问题，都欢迎提出&lt;a href=&quot;https://github.com/lavas-project/vue-skeleton-webpack-plugin/issues&quot;&gt; ISSUE&lt;/a&gt;。&lt;/p&gt;
-
-&lt;p&gt;百度&lt;a href=&quot;https://lavas.baidu.com/&quot;&gt; Lavas&lt;/a&gt;是一个基于 Vue 的 PWA 解决方案，帮助开发者轻松搭建 PWA 站点。其中多个模版也使用了这个插件，欢迎大家试用并提出意见。&lt;/p&gt;
-</description>
-        <pubDate>Mon, 31 Jul 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html</guid>
-        
-        <category>vue</category>
-        
-        <category>webpack</category>
         
         
         <category>coding</category>
