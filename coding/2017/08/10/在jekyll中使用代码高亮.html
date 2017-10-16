@@ -1,12 +1,25 @@
-<!DOCTYPE html><meta charset=utf-8><meta name=viewport content="width=device-widthinitial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=keywords content=coding编程javascriptxiaoiverxiaop><meta name=theme-color content=#eee><title>在 jekyll 中使用代码高亮 | xiaOp的博客</title><meta property=og:title content="在 jekyll 中使用代码高亮"><meta property=og:locale content=en_US><meta name=description content="代码高亮是一个技术博客的重要特性，Jekyll 中默认使用 Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的 Pygments也是一个可选方案。"><meta property=og:description content="代码高亮是一个技术博客的重要特性，Jekyll 中默认使用 Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的 Pygments也是一个可选方案。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-08-11T03:21:32+08:00><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"在 jekyll 中使用代码高亮","datePublished":"2017-08-11T03:21:32+08:00","dateModified":"2017-08-11T03:21:32+08:00","description":"代码高亮是一个技术博客的重要特性，Jekyll 中默认使用 Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的 Pygments也是一个可选方案。","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html"},"url":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html"}</script><title>在 jekyll 中使用代码高亮</title><link rel="shortcut icon" href=/img/favicon.ico><link rel=canonical href=https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/style-large.css><link rel=stylesheet href=/css/prism.css><!--[if lt IE 9]>
+<!DOCTYPE html><meta charset=utf-8><meta name=viewport content="width=device-widthinitial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=keywords content=coding编程javascriptxiaoiverxiaop><meta name=theme-color content=#eee><title>在 jekyll 中使用代码高亮 | xiaOp的博客</title><meta property=og:title content="在 jekyll 中使用代码高亮"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="代码高亮是一个技术博客的重要特性，Jekyll 中默认使用 Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的 Pygments也是一个可选方案。"><meta property=og:description content="代码高亮是一个技术博客的重要特性，Jekyll 中默认使用 Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的 Pygments也是一个可选方案。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-08-11T03:21:32+08:00><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"在 jekyll 中使用代码高亮","author":{"@type":"Person","name":"xiaOp"},"datePublished":"2017-08-11T03:21:32+08:00","dateModified":"2017-08-11T03:21:32+08:00","description":"代码高亮是一个技术博客的重要特性，Jekyll 中默认使用 Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的 Pygments也是一个可选方案。","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html"},"url":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html"}</script><title>在 jekyll 中使用代码高亮</title><link rel="shortcut icon" href=/img/favicon.ico><link rel=canonical href=https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/style-large.css><link rel=stylesheet href=/css/prism.css><!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]--><script src=/js/jquery.min.js></script><script src=/js/Imager.min.js></script><script src=/js/jquery.scrollzer.min.js></script><script src=/js/jquery.scrolly.min.js></script><script src=/js/skel.min.js></script><script src=/js/skel-layers.min.js></script><script src=/js/prism.min.js></script><script src=/js/init.min.js></script><section id=header class=skel-layers-fixed><header><span class="image avatar"><img src=/img/avatar.jpg alt=""></span><h1 id=logo><a href=/ >xiaOp的博客</a></h1><p>想成为一个有趣的人</header><nav id=nav><ul><li><a href=#intro>主页</a><li><a href=#blog>文章</a><li><a href=#contact>兴趣</a></ul></nav><footer><ul class=icons><li><a href=https://github.com/xiaoiver class="icon fa-github"><span class=label>Github</span></a><li><a href=mailto:pyqiverson@gmail.com class="icon fa-envelope"><span class=label>Email</span></a><li><a href=https://www.douban.com/people/150275082/ class=icon>豆</a><li><a href=https://www.zhihu.com/people/pan-yu-qi-20/activities class=icon>知</a></ul></footer></section><div id=wrapper><div id=main><style>header.intro-header {
+    <![endif]--><script src=/js/jquery.min.js></script><script src=/js/Imager.min.js></script><script src=/js/jquery.scrollzer.min.js></script><script src=/js/jquery.scrolly.min.js></script><script src=/js/skel.min.js></script><script src=/js/skel-layers.min.js></script><script src=/js/prism.min.js></script><script src=/js/init.min.js></script><section id=header class=skel-layers-fixed><header><span class="image avatar"><img src=/img/avatar.jpg alt=""></span><h1 id=logo><a href=/ class=secret>xiaOp's Blog</a></h1><p>想成为一个有趣的人</header><nav id=nav><ul><li><a href=#intro>主页</a><li><a href=#blog>文章</a><li><a href=#contact>兴趣</a></ul></nav><footer><ul class=icons><li><a href=https://github.com/xiaoiver class="icon fa-github"><span class=label>Github</span></a><li><a href=mailto:pyqiverson@gmail.com class="icon fa-envelope"><span class=label>Email</span></a><li><a href=https://www.douban.com/people/150275082/ class=icon>豆</a><li><a href=https://www.zhihu.com/people/pan-yu-qi-20/activities class=icon>知</a></ul></footer></section><div id=wrapper><div id=main><style>header.intro-header {
         position: relative;
         background-image: url('/img/post-bg-js-module.jpg');
         background-size: cover;
     }
     
+
+    header.intro-header .icon {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        color: white;
+        background: #4acaa8;
+        border-radius: 50%;
+        height: 2.5em;
+        width: 2.5em;
+        line-height: 2.5em;
+        text-align: center;
+    }
 
     .post-heading {
         position: relative;
@@ -21,6 +34,9 @@
     .post-heading h2 {
         font-size: 3em;
     }
+    .post-heading .meta {
+        transform: translate(0.1em, 0.5em);
+    }
 
     article {
         padding-top: 20px;
@@ -34,7 +50,7 @@
     }
     .post-container a {
         color: #4acaa8;
-    }</style><header class=intro-header><div class=header-mask></div><div class=container><div class=post-heading><h2>在 jekyll 中使用代码高亮<h3 class=subheading>使用 Prism 配合插件实现</h3></h2><div class=tags><a class=tag href=/tags#ruby title=ruby>ruby</a> <a class=tag href=/tags#jekyll title=jekyll>jekyll</a></div><span class=meta>Posted by xiaOp的博客 on August 10, 2017</span></div></div></header><article class=post-container><div class=container><p>代码高亮是一个技术博客的重要特性，Jekyll 中默认使用<a href=http://jekyllrb.com/docs/templates/#code-snippet-highlighting> Rouge</a>进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的<a href=http://pygments.org/ > Pygments</a>也是一个可选方案。<p>博客作者可以使用如下 markdown 语法插入代码块，其中<code class=highlighter-rouge>linenos</code>表示显示行号：<div><pre class=line-numbers data-line=""><code class=language-ruby>\{\% highlight ruby linenos %}
+    }</style><header class=intro-header><div class=header-mask></div><span class="icon fa-code"></span><div class=container><div class=post-heading><h2>在 jekyll 中使用代码高亮<h3 class=subheading>使用 Prism 配合插件实现</h3></h2><div class=tags><a class=tag href=/tags#ruby title=ruby>ruby</a> <a class=tag href=/tags#jekyll title=jekyll>jekyll</a></div><span class="meta secret secret-lg">Posted by xiaOp on August 10, 2017</span></div></div></header><article class=post-container><div class=container><p>代码高亮是一个技术博客的重要特性，Jekyll 中默认使用<a href=http://jekyllrb.com/docs/templates/#code-snippet-highlighting> Rouge</a>进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的<a href=http://pygments.org/ > Pygments</a>也是一个可选方案。<p>博客作者可以使用如下 markdown 语法插入代码块，其中<code class=highlighter-rouge>linenos</code>表示显示行号：<div><pre class=line-numbers data-line=""><code class=language-ruby>\{\% highlight ruby linenos %}
     def foo
       puts &#39;foo&#39;
     end

@@ -1,7 +1,7 @@
-<!DOCTYPE html><meta charset=utf-8><meta name=viewport content="width=device-widthinitial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=keywords content=coding编程javascriptxiaoiverxiaop><meta name=theme-color content=#eee><title>Webpack 中 hotreload 实现原理 | xiaOp的博客</title><meta property=og:title content="Webpack 中 hotreload 实现原理"><meta property=og:locale content=en_US><meta name=description content="在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。"><meta property=og:description content="在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-09-30T03:21:32+08:00><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Webpack 中 hotreload 实现原理","datePublished":"2017-09-30T03:21:32+08:00","dateModified":"2017-09-30T03:21:32+08:00","description":"在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html"},"url":"https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html"}</script><title>Webpack 中 hotreload 实现原理</title><link rel="shortcut icon" href=/img/favicon.ico><link rel=canonical href=https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/style-large.css><link rel=stylesheet href=/css/prism.css><!--[if lt IE 9]>
+<!DOCTYPE html><meta charset=utf-8><meta name=viewport content="width=device-widthinitial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=keywords content=coding编程javascriptxiaoiverxiaop><meta name=theme-color content=#eee><title>Webpack 中的 HMR | xiaOp的博客</title><meta property=og:title content="Webpack 中的 HMR"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。"><meta property=og:description content="在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/09/29/Webpack-%E4%B8%AD%E7%9A%84-HMR.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/09/29/Webpack-%E4%B8%AD%E7%9A%84-HMR.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-09-30T03:21:32+08:00><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Webpack 中的 HMR","author":{"@type":"Person","name":"xiaOp"},"datePublished":"2017-09-30T03:21:32+08:00","dateModified":"2017-09-30T03:21:32+08:00","description":"在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/09/29/Webpack-%E4%B8%AD%E7%9A%84-HMR.html"},"url":"https://xiaoiver.github.io/coding/2017/09/29/Webpack-%E4%B8%AD%E7%9A%84-HMR.html"}</script><title>Webpack 中的 HMR</title><link rel="shortcut icon" href=/img/favicon.ico><link rel=canonical href=https://xiaoiver.github.io/coding/2017/09/29/Webpack-%E4%B8%AD%E7%9A%84-HMR.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/style-large.css><link rel=stylesheet href=/css/prism.css><!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]--><script src=/js/jquery.min.js></script><script src=/js/Imager.min.js></script><script src=/js/jquery.scrollzer.min.js></script><script src=/js/jquery.scrolly.min.js></script><script src=/js/skel.min.js></script><script src=/js/skel-layers.min.js></script><script src=/js/prism.min.js></script><script src=/js/init.min.js></script><section id=header class=skel-layers-fixed><header><span class="image avatar"><img src=/img/avatar.jpg alt=""></span><h1 id=logo><a href=/ >xiaOp的博客</a></h1><p>想成为一个有趣的人</header><nav id=nav><ul><li><a href=#intro>主页</a><li><a href=#blog>文章</a><li><a href=#contact>兴趣</a></ul></nav><footer><ul class=icons><li><a href=https://github.com/xiaoiver class="icon fa-github"><span class=label>Github</span></a><li><a href=mailto:pyqiverson@gmail.com class="icon fa-envelope"><span class=label>Email</span></a><li><a href=https://www.douban.com/people/150275082/ class=icon>豆</a><li><a href=https://www.zhihu.com/people/pan-yu-qi-20/activities class=icon>知</a></ul></footer></section><div id=wrapper><div id=main><style>header.intro-header {
+    <![endif]--><script src=/js/jquery.min.js></script><script src=/js/Imager.min.js></script><script src=/js/jquery.scrollzer.min.js></script><script src=/js/jquery.scrolly.min.js></script><script src=/js/skel.min.js></script><script src=/js/skel-layers.min.js></script><script src=/js/prism.min.js></script><script src=/js/init.min.js></script><section id=header class=skel-layers-fixed><header><span class="image avatar"><img src=/img/avatar.jpg alt=""></span><h1 id=logo><a href=/ class=secret>xiaOp's Blog</a></h1><p>想成为一个有趣的人</header><nav id=nav><ul><li><a href=#intro>主页</a><li><a href=#blog>文章</a><li><a href=#contact>兴趣</a></ul></nav><footer><ul class=icons><li><a href=https://github.com/xiaoiver class="icon fa-github"><span class=label>Github</span></a><li><a href=mailto:pyqiverson@gmail.com class="icon fa-envelope"><span class=label>Email</span></a><li><a href=https://www.douban.com/people/150275082/ class=icon>豆</a><li><a href=https://www.zhihu.com/people/pan-yu-qi-20/activities class=icon>知</a></ul></footer></section><div id=wrapper><div id=main><style>header.intro-header {
         position: relative;
         background-image: url('/img/vue-webpack.png');
         background-size: cover;
@@ -14,6 +14,19 @@
         background: rgba(0,0,0, 0.6);
     }
     
+
+    header.intro-header .icon {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        color: white;
+        background: #4acaa8;
+        border-radius: 50%;
+        height: 2.5em;
+        width: 2.5em;
+        line-height: 2.5em;
+        text-align: center;
+    }
 
     .post-heading {
         position: relative;
@@ -28,6 +41,9 @@
     .post-heading h2 {
         font-size: 3em;
     }
+    .post-heading .meta {
+        transform: translate(0.1em, 0.5em);
+    }
 
     article {
         padding-top: 20px;
@@ -41,7 +57,7 @@
     }
     .post-container a {
         color: #4acaa8;
-    }</style><header class=intro-header><div class=header-mask></div><div class=container><div class=post-heading><h2>Webpack 中 hotreload 实现原理<h3 class=subheading>eventstream</h3></h2><div class=tags><a class=tag href=/tags#javascript title=javascript>javascript</a> <a class=tag href=/tags#webpack title=webpack>webpack</a> <a class=tag href=/tags#eventstream title=eventstream>eventstream</a></div><span class=meta>Posted by xiaOp的博客 on September 29, 2017</span></div></div></header><article class=post-container><div class=container><p>在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。<h2 id=准备工作>准备工作</h2><p>首先需要引入 <code class=highlighter-rouge>webpack-hot-middleware</code> 中间件和 <code class=highlighter-rouge>HotModuleReplacementPlugin</code> 插件。当然开发环境下 <code class=highlighter-rouge>webpack-dev-middleware</code> 肯定也是必不可少的。<p>启动项目后打开 Chrome Devtools，这个<code class=highlighter-rouge>/__webpack_hmr</code>请求很明显是实现 hotreload 的关键。可以看出请求一直保持连接，并不断接收到“心跳”事件。 <img src=/img/hmr.png alt=""><h2 id=客户端发起-socket-连接>客户端发起 socket 连接</h2><p>首先观察一下请求头<code class=highlighter-rouge>text/event-stream</code>，这个请求是由客户端代码通过<a href=https://developer.mozilla.org/en-US/docs/Web/API/EventSource>EventSource</a>创建的：<div><pre class=line-numbers data-line=""><code class=language-javascript>// webpack-hot-middleware/client.js
+    }</style><header class=intro-header><div class=header-mask></div><span class="icon fa-code"></span><div class=container><div class=post-heading><h2>Webpack 中的 HMR<h3 class=subheading>webpack-hot-middleware 中间件实现原理</h3></h2><div class=tags><a class=tag href=/tags#javascript title=javascript>javascript</a> <a class=tag href=/tags#webpack title=webpack>webpack</a> <a class=tag href=/tags#eventstream title=eventstream>eventstream</a></div><span class="meta secret secret-lg">Posted by xiaOp on September 29, 2017</span></div></div></header><article class=post-container><div class=container><p>在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。<h2 id=准备工作>准备工作</h2><p>首先需要引入 <code class=highlighter-rouge>webpack-hot-middleware</code> 中间件和 <code class=highlighter-rouge>HotModuleReplacementPlugin</code> 插件。当然开发环境下 <code class=highlighter-rouge>webpack-dev-middleware</code> 肯定也是必不可少的。<p>启动项目后打开 Chrome Devtools，这个<code class=highlighter-rouge>/__webpack_hmr</code>请求很明显是实现 hotreload 的关键。可以看出请求一直保持连接，并不断接收到“心跳”事件。 <img src=/img/hmr.png alt=""><h2 id=客户端发起-socket-连接>客户端发起 socket 连接</h2><p>首先观察一下请求头<code class=highlighter-rouge>text/event-stream</code>，这个请求是由客户端代码通过<a href=https://developer.mozilla.org/en-US/docs/Web/API/EventSource>EventSource</a>创建的：<div><pre class=line-numbers data-line=""><code class=language-javascript>// webpack-hot-middleware/client.js
 
 function init() {
     source = new window.EventSource(options.path);
@@ -128,7 +144,7 @@ hotClient.subscribe(payload =&gt; {
     if (payload.action === &#39;reload&#39; || payload.reload === true) {
         window.location.reload();
     }
-});</code></pre></div><p>在 vuejs-templates 官方 Webpack 模版中，就采用了这种做法。但是其中有一个<a href=https://github.com/vuejs-templates/webpack/issues/751#issuecomment-309955295>ISSUE</a>值得关注，包括我自己在使用时，也遇到了同样的问题。<h2 id=参考资料>参考资料</h2><p><a href=https://doc.webpack-china.org/concepts/hot-module-replacement/ >Webpack HMR 官方介绍</a> <a href=https://github.com/vuejs-templates/webpack/issues/751#issuecomment-309955295>vuejs-templates issue</a></div></article><script>function async(u, c) {
+});</code></pre></div><p>在 vuejs-templates 官方 Webpack 模版中，就采用了这种做法。但是其中有一个<a href=https://github.com/vuejs-templates/webpack/issues/751#issuecomment-309955295>ISSUE</a>值得关注，包括我自己在使用时，也遇到了同样的问题。<h2 id=参考资料>参考资料</h2><ul><li><a href=https://doc.webpack-china.org/concepts/hot-module-replacement/ >Webpack HMR 官方介绍</a><li><a href=https://github.com/vuejs-templates/webpack/issues/751#issuecomment-309955295>vuejs-templates issue</a></ul></div></article><script>function async(u, c) {
       var d = document, t = 'script',
           o = d.createElement(t),
           s = d.getElementsByTagName(t)[0];

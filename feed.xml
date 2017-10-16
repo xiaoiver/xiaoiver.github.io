@@ -6,12 +6,335 @@
 </description>
     <link>https://xiaoiver.github.io/</link>
     <atom:link href="https://xiaoiver.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 06 Oct 2017 19:56:54 +0800</pubDate>
-    <lastBuildDate>Fri, 06 Oct 2017 19:56:54 +0800</lastBuildDate>
+    <pubDate>Mon, 16 Oct 2017 17:01:35 +0800</pubDate>
+    <lastBuildDate>Mon, 16 Oct 2017 17:01:35 +0800</lastBuildDate>
     <generator>Jekyll v3.4.5</generator>
     
       <item>
-        <title>Webpack 中 hotreload 实现原理</title>
+        <title>Webpack代码分割</title>
+        <description>&lt;p&gt;了解 Webpack 的启动代码对于分析模块和 chunk 是非常有帮助的。&lt;/p&gt;
+
+&lt;h2 id=&quot;webpack-启动代码&quot;&gt;Webpack 启动代码&lt;/h2&gt;
+
+&lt;p&gt;首先从最简单的情况入手，在入口文件 &lt;code class=&quot;highlighter-rouge&quot;&gt;index.js&lt;/code&gt; 中简单引用了一个模块中的方法：&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// index.js
+import {func1} from &amp;#39;./module1&amp;#39;;
+
+// module1.js
+export function func1() {
+    console.log(&amp;#39;func1&amp;#39;);
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;根据以上入口文件，在 &lt;code class=&quot;highlighter-rouge&quot;&gt;target: web&lt;/code&gt;（默认情况）下生成的 chunk 文件只有一个。观察其中包含的 Webpack 启动代码，可以发现由一个 IIFE 构成，其中传入的参数是一个方法数组。从其中每个方法的签名可以看出，类似 AMD。很明显，&lt;code class=&quot;highlighter-rouge&quot;&gt;module1.js&lt;/code&gt; 模块的全部代码都在模块1中，而模块0对应 &lt;code class=&quot;highlighter-rouge&quot;&gt;index.js&lt;/code&gt;，引用了模块1。另外有一点值得注意，&lt;code class=&quot;highlighter-rouge&quot;&gt;module1.js&lt;/code&gt; 中的方法并没有被真正使用到，注释 &lt;code class=&quot;highlighter-rouge&quot;&gt;/* unused harmony export func1 */&lt;/code&gt; 也反映了这一点，后续在生产环境配合 &lt;code class=&quot;highlighter-rouge&quot;&gt;UglifyJSPlugin&lt;/code&gt; 插件使用时，依托 &lt;a href=&quot;https://doc.webpack-china.org/guides/tree-shaking/&quot;&gt;TreeShaking 技术&lt;/a&gt;，这段无用代码会被移除。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;(function(modules) { // IIFE
+ 	// 暂时省略处理模块的逻辑
+})
+([
+/* 模块0 */
+(function(module, __webpack_exports__, __webpack_require__) {
+    &amp;quot;use strict&amp;quot;;
+    Object.defineProperty(__webpack_exports__, &amp;quot;__esModule&amp;quot;, { value: true });
+    /* harmony import */
+    var __WEBPACK_IMPORTED_MODULE_0__module1__ = __webpack_require__(1);
+}),
+/* 模块1 */
+(function(module, __webpack_exports__, __webpack_require__) {
+    &amp;quot;use strict&amp;quot;;
+    /* unused harmony export func1 */
+    function func1() {
+        console.log(&amp;#39;func1&amp;#39;);
+    }
+})
+]);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;现在可以深入表达式方法细节了。首先定义了 &lt;code class=&quot;highlighter-rouge&quot;&gt;__webpack_require__&lt;/code&gt; 方法，然后在方法上挂了一些属性便于快捷访问，最后调用入口模块也就是模块0。官方的注释非常详细，尤其是 &lt;code class=&quot;highlighter-rouge&quot;&gt;require&lt;/code&gt; 方法的，就不再赘述了。在方法上挂载的属性中，&lt;code class=&quot;highlighter-rouge&quot;&gt;d&lt;/code&gt; 用来处理常量&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// The module cache
+var installedModules = {};
+
+// The require function
+function __webpack_require__(moduleId) {
+
+    // Check if module is in cache
+    if(installedModules[moduleId]) {
+        return installedModules[moduleId].exports;
+    }
+    // Create a new module (and put it into the cache)
+    var module = installedModules[moduleId] = {
+        i: moduleId,
+        l: false,
+        exports: {}
+    };
+
+    // Execute the module function
+    modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+    // Flag the module as loaded
+    module.l = true;
+
+    // Return the exports of the module
+    return module.exports;
+}
+
+
+// expose the modules object (__webpack_modules__)
+__webpack_require__.m = modules;
+
+// expose the module cache
+__webpack_require__.c = installedModules;
+
+// define getter function for harmony exports
+__webpack_require__.d = function(exports, name, getter) {
+    if(!__webpack_require__.o(exports, name)) {
+        Object.defineProperty(exports, name, {
+            configurable: false,
+            enumerable: true,
+            get: getter
+        });
+    }
+};
+
+// getDefaultExport function for compatibility with non-harmony modules
+__webpack_require__.n = function(module) {
+    var getter = module &amp;amp;&amp;amp; module.__esModule ?
+        function getDefault() { return module[&amp;#39;default&amp;#39;]; } :
+        function getModuleExports() { return module; };
+    __webpack_require__.d(getter, &amp;#39;a&amp;#39;, getter);
+    return getter;
+};
+
+// Object.prototype.hasOwnProperty.call
+__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+
+// __webpack_public_path__
+__webpack_require__.p = &amp;quot;&amp;quot;;
+
+// Load entry module and return exports
+return __webpack_require__(__webpack_require__.s = 0);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// index.js
+
+import(/* webpackChunkName: &amp;quot;lodash&amp;quot; */ &amp;#39;lodash&amp;#39;).then(_ =&amp;gt; {
+    return _.version();
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在 Webpack 中，chunk 一共有&lt;a href=&quot;https://survivejs.com/webpack/building/bundle-splitting/#chunk-types-in-webpack&quot;&gt;三类&lt;/a&gt;：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Entry chunk:&lt;/li&gt;
+  &lt;li&gt;Normal chunk:&lt;/li&gt;
+  &lt;li&gt;Initial chunk:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://survivejs.com/webpack/building/bundle-splitting/&quot;&gt;SurviveJS Webpack Book&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/TheLarkInn/artsy-webpack-tour&quot;&gt;Webpack 核心开发者基于源码的解析&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/lcxfs1991/blog/issues/14&quot;&gt;Webpack runtime 代码分析&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://developers.google.com/web/fundamentals/performance/prpl-pattern/&quot;&gt;PRPL Pattern&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sat, 07 Oct 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/coding/2017/10/06/Webpack%E4%BB%A3%E7%A0%81%E5%88%86%E5%89%B2.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/10/06/Webpack%E4%BB%A3%E7%A0%81%E5%88%86%E5%89%B2.html</guid>
+        
+        <category>webpack</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
+    
+      <item>
+        <title>简单生活节</title>
+        <description>&lt;p&gt;第一次去音乐节，站了一天真的是累，幸亏没买3天的套票。&lt;/p&gt;
+
+&lt;p&gt;首先这个“Simple Life 简单生活节”的名字我不知道跟热狗的歌有没有关系。但至少 10.4 这场的主基调是嘻哈无疑了，&lt;a href=&quot;http://i.xiami.com/jfever&quot;&gt;小老虎&lt;/a&gt;，&lt;a href=&quot;http://i.xiami.com/luirap&quot;&gt;Lu1&lt;/a&gt;，&lt;a href=&quot;http://www.xiami.com/artist/bgqsdcca4&quot;&gt;蛋堡&lt;/a&gt;，&lt;a href=&quot;http://i.xiami.com/higherbrothers&quot;&gt;Higher Brothers&lt;/a&gt;和压轴登场的&lt;a href=&quot;http://www.xiami.com/artist/724&quot;&gt;MC Hotdog&lt;/a&gt;都被集中到了大地舞台。&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;一堆文青 想要过着简单的生活节&lt;/p&gt;
+
+  &lt;p&gt;你想要生活更复杂点 显然你得跟我学
+——《贫民百万歌星》&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&quot;房东的猫&quot;&gt;房东的猫&lt;/h4&gt;
+
+&lt;p&gt;下午1点多表演从果实舞台首先开始，一个叫&lt;a href=&quot;http://i.xiami.com/fangdongdemao&quot;&gt;房东的猫&lt;/a&gt;的校园乐队，唱了一首&lt;a href=&quot;http://www.xiami.com/song/1796526633&quot;&gt;『你是我最愚蠢的一次浪漫』&lt;/a&gt;，声音很像陈老师，听着很舒服。看看&lt;a href=&quot;http://dashi.streetvoice.cn/article/%E6%88%BF%E4%B8%9C%E7%9A%84%E7%8C%AB%E8%B6%81%E5%B9%B4%E8%BD%BB%E5%8E%BB%E8%BF%87%E5%96%9C%E6%AC%A2%E7%9A%84%E7%94%9F%E6%B4%BB/&quot;&gt;这篇专访&lt;/a&gt;了解更多她们的故事。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/music/mao.jpg&quot; alt=&quot;你是我最愚蠢的一次浪漫&quot; /&gt;
+&lt;em&gt;房东的猫&lt;/em&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;小老虎&quot;&gt;小老虎&lt;/h4&gt;
+
+&lt;p&gt;大概一点半，很多人就都开始往大地舞台走，小老虎的表演就要开始了。&lt;a href=&quot;/music/2017/06/03/%E6%9C%80%E8%BF%91%E5%90%AC%E7%9A%84%E8%AF%B4%E5%94%B1.html&quot;&gt;大学里从跑火车电台听到&lt;/a&gt;小老虎，『为你出生入死九十九次』几乎能背出来。看到穿的跟烤串买买提似的小老虎蹦跳着从后台出来，置身欢呼的人群不禁有点激动。可能有些歌不适合现场吧，除了结尾的&lt;a href=&quot;http://www.xiami.com/song/1772491213&quot;&gt;『无人喝彩』&lt;/a&gt;，其他的我都没听过。人群里每一首都能跟唱的也就前两排吧，不过这也不妨碍大家用自己舒服的姿势跟着摇摆。我很喜欢小老虎说的“我不会要求你们把手借给我”。&lt;/p&gt;
+
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/jfever.png&quot; alt=&quot;小老虎&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/jfever.png&quot; data-alt=&quot;小老虎&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;小老虎&lt;/em&gt;
+&lt;/p&gt;
+
+&lt;script&gt;
+    new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });
+&lt;/script&gt;
+
+&lt;h4 id=&quot;lu1&quot;&gt;Lu1&lt;/h4&gt;
+
+&lt;p&gt;接下来是 Lu1，一个货真价实的学霸，同为程序员有种天生的好感。之前只听过一首他和蛋堡，Cee 合作的&lt;a href=&quot;http://www.xiami.com/song/1776221807&quot;&gt;『Highlight』&lt;/a&gt;，他的那段 verse 用词真的很特别。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;从这里，他们flip a page，对事&lt;/p&gt;
+
+  &lt;p&gt;重新做考估，难免有分歧或对峙
+——《Highlight》&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/music/lu1.jpg&quot; alt=&quot;Lu1&quot; /&gt;
+&lt;em&gt;Lu1&lt;/em&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;蛋堡--李英宏&quot;&gt;蛋堡 &amp;amp; 李英宏&lt;/h4&gt;
+
+&lt;p&gt;蛋堡的歌个人感觉其实不太适合现场，尤其是整体偏燥的氛围下有些昏昏欲睡。但是惊喜的是另一位嘉宾歌手&lt;a href=&quot;http://www.xiami.com/artist/yhD1O0b734b&quot;&gt;李英宏&lt;/a&gt;，&lt;a href=&quot;http://www.xiami.com/song/mQXlXIcd689&quot;&gt;『台北直直撞』&lt;/a&gt;如同他的泡面头+大红色一样骚气十足。十分不能理解边上传出的“蛋堡还不上来啊，这谁赶紧下去”之类的声音，个人很喜欢他的风格。&lt;/p&gt;
+
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/softlipa.png&quot; alt=&quot;蛋堡&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/softlipa.png&quot; data-alt=&quot;蛋堡&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;蛋堡&lt;/em&gt;
+&lt;/p&gt;
+
+&lt;script&gt;
+    new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });
+&lt;/script&gt;
+
+&lt;h4 id=&quot;higher-brothers&quot;&gt;Higher Brothers&lt;/h4&gt;
+
+&lt;p&gt;吃了点东西，就到了海尔兄弟。从每一遍垫场广告里“made in china”都有人跟唱就能看出，他们的人气真的高的恐怖。视野里每个人几乎都处于全程跳跃状态。由于已经是傍晚，在舞台灯光配合下真的有一种迷幻的感觉。海尔兄弟已经走向世界，我还是最喜欢 masiwei 的崂山道士。&lt;/p&gt;
+
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/higherbrothers.png&quot; alt=&quot;Higher Brothers: dz &amp;amp; masiwei&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/higherbrothers.png&quot; data-alt=&quot;Higher Brothers: dz &amp;amp; masiwei&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;Higher Brothers: dz &amp;amp; masiwei&lt;/em&gt;
+&lt;/p&gt;
+
+&lt;script&gt;
+    new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });
+&lt;/script&gt;
+
+&lt;h4 id=&quot;万芳&quot;&gt;万芳&lt;/h4&gt;
+
+&lt;p&gt;由于热狗迟到一小时，等待的间隙去微风舞台看了&lt;a href=&quot;http://dashi.streetvoice.cn/article/20171002/002/&quot;&gt;万芳&lt;/a&gt;的表演。我就是她说的“只知道我的『新不了情』的新朋友”，听了几首感觉嗓子保养的真好，与之形成鲜明对比的是另一个星空舞台上的高旗，虽然唱摇滚不好这样简单对比，但听着着实感到吃力。推荐一首&lt;a href=&quot;http://www.xiami.com/song/bf0Ho8u305cd&quot;&gt;『落音』&lt;/a&gt;。&lt;/p&gt;
+
+&lt;h4 id=&quot;mc-hotdog&quot;&gt;MC Hotdog&lt;/h4&gt;
+
+&lt;p&gt;热狗的压轴演出对得起观众老爷们的等待，&lt;a href=&quot;http://www.xiami.com/song/erWf62e123&quot;&gt;『谢谢哑虎』&lt;/a&gt;，&lt;a href=&quot;http://www.xiami.com/song/mQC67x9545a&quot;&gt;『贫民百万歌星』&lt;/a&gt;，&lt;a href=&quot;http://www.xiami.com/song/8Gi4kAf3809&quot;&gt;『轻熟女』&lt;/a&gt;，&lt;a href=&quot;http://www.xiami.com/song/bAgql12f94&quot;&gt;『差不多先生』&lt;/a&gt;，&lt;a href=&quot;http://www.xiami.com/song/mQC67ycfb9a&quot;&gt;『不吃早餐才是一件很嘻哈的事』&lt;/a&gt;应该是很多人的回忆吧。说实话他现在的兄弟本色一首都没听过。。。&lt;/p&gt;
+
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/mchotdog.png&quot; alt=&quot;MC Hotdog&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/mchotdog.png&quot; data-alt=&quot;MC Hotdog&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;MC Hotdog&lt;/em&gt;
+&lt;/p&gt;
+
+&lt;script&gt;
+    new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });
+&lt;/script&gt;
+
+&lt;p&gt;部分图片来自&lt;a href=&quot;http://dashi.streetvoice.cn/article/20171012/001/&quot;&gt;图集&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Fri, 06 Oct 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/music/2017/10/05/%E7%AE%80%E5%8D%95%E7%94%9F%E6%B4%BB%E8%8A%82.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/music/2017/10/05/%E7%AE%80%E5%8D%95%E7%94%9F%E6%B4%BB%E8%8A%82.html</guid>
+        
+        <category>hiphop</category>
+        
+        
+        <category>music</category>
+        
+      </item>
+    
+      <item>
+        <title>火车和出租车</title>
+        <description>&lt;p&gt;看着火车这一意象不断出现在一幕幕闪回中，观众们对男主角的唏嘘也愈发被强化。命运是在哪一步被搬了道岔，驶向了万劫不复的终结呢。明明曾经有着美好的初恋，也怀着梦想参军，却莫名地被大事件裹挟，如同粗暴的被上级士官一脚踹飞而散落一地的薄荷糖，被无数慌乱的脚步踩的稀碎。&lt;/p&gt;
+
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/mint.jpg&quot; alt=&quot;《薄荷糖》&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/mint.jpg&quot; data-alt=&quot;《薄荷糖》&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;《薄荷糖》&lt;/em&gt;
+&lt;/p&gt;
+
+&lt;script&gt;
+    new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });
+&lt;/script&gt;
+
+&lt;p&gt;谈起韩国的伤痕文学，“光州事件”是永远无法绕开的。《薄荷糖》展现了一个木讷士兵的视角，明明脚中了流弹还以为靴子里灌满了水，慌乱中误杀女学生成了一切悲剧的根源。这是我第一次看薛景求的片子，男主各阶段的状态就如同他的发型，被他演绎的令人无比信服，人物转变没有一丝突兀。结尾处男主独自离开众人潸然泪下的场景，呼应开头又透出浓浓的宿命味道。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/movie/mint2.jpg&quot; alt=&quot;我要回去&quot; /&gt;
+&lt;em&gt;薛景求：“我要回去！”&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;最近另一部涉及同题材的片子在网络上遭遇大面积封禁。除了都大量出现了交通工具，男主宋康昊也展现了自己的纯熟演技。虽然个人不喜欢大事件之后某些过度煽情的场景，但片子传达出媒体和政府的反思不得不说令人欣羨。&lt;/p&gt;
+
+&lt;p&gt;其实我一直很奇怪的一点是同属文艺作品，相比电影的审查尺度，书却宽松许多。最近看完了冯骥才的《一百个人的十年》，作者一直在思考一个问题：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;为什么人性的弱点，如人的自私、贪欲、怯弱、妒忌、虚荣等被“文革”利用；人性的优点，如忠诚、勇敢、淳朴、无私、诚实也成为“文革”推波助澜的动力？在人性的两极都被“文革”利用的同时，那些真正属于人性的人道、人权、人的尊严、人的价值等所有人的最高贵的成分，都受到“文革”公开的践踏？&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;在面对历史的时候我觉得至少要保持自信和诚实。且不说能不能拍和拍好，现在连评论他国的作品都要噤声了，买菜市民真的那么可怕吗？&lt;/p&gt;
+</description>
+        <pubDate>Wed, 04 Oct 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/movie/2017/10/03/%E7%81%AB%E8%BD%A6%E5%92%8C%E5%87%BA%E7%A7%9F%E8%BD%A6.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/movie/2017/10/03/%E7%81%AB%E8%BD%A6%E5%92%8C%E5%87%BA%E7%A7%9F%E8%BD%A6.html</guid>
+        
+        <category>movie</category>
+        
+        
+        <category>movie</category>
+        
+      </item>
+    
+      <item>
+        <title>Webpack 中的 HMR</title>
         <description>&lt;p&gt;在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。&lt;/p&gt;
 
 &lt;h2 id=&quot;准备工作&quot;&gt;准备工作&lt;/h2&gt;
@@ -175,12 +498,14 @@ hotClient.subscribe(payload =&amp;gt; {
 
 &lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://doc.webpack-china.org/concepts/hot-module-replacement/&quot;&gt;Webpack HMR 官方介绍&lt;/a&gt;
-&lt;a href=&quot;https://github.com/vuejs-templates/webpack/issues/751#issuecomment-309955295&quot;&gt;vuejs-templates issue&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://doc.webpack-china.org/concepts/hot-module-replacement/&quot;&gt;Webpack HMR 官方介绍&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/vuejs-templates/webpack/issues/751#issuecomment-309955295&quot;&gt;vuejs-templates issue&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         <pubDate>Sat, 30 Sep 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/09/29/webpack%E4%B8%AD%E7%9A%84hotreload.html</guid>
+        <link>https://xiaoiver.github.io/coding/2017/09/29/Webpack-%E4%B8%AD%E7%9A%84-HMR.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/09/29/Webpack-%E4%B8%AD%E7%9A%84-HMR.html</guid>
         
         <category>javascript</category>
         
@@ -520,16 +845,19 @@ Channel(QUEUE, (err, channel, conn) =&amp;gt; {
   &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;intersectionRatio&lt;/code&gt;，被观测元素被覆盖的比例，如下图所示：&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;div class=&quot;responsive-image&quot;&gt;
-    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/intersectratio.png&quot; /&gt;
-    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/intersectratio.png&quot;&gt;&lt;/div&gt;
-&lt;/div&gt;
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/intersectratio.png&quot; alt=&quot;&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/intersectratio.png&quot; data-alt=&quot;&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;&lt;/em&gt;
+&lt;/p&gt;
 
 &lt;script&gt;
     new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
+
         }
     });
 &lt;/script&gt;
@@ -639,13 +967,12 @@ sentinels.forEach(el =&amp;gt; observer.observe(el));&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://developers.google.com/web/updates/2016/04/intersectionobserver&quot;&gt;Google Developer&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://hacks.mozilla.org/2017/08/intersection-observer-comes-to-firefox/&quot;&gt;MDN&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163&quot;&gt;懒加载图片原文&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://developers.google.com/web/updates/2017/09/sticky-headers&quot;&gt;sticky场景 原文&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://developers.google.com/web/updates/2016/04/intersectionobserver&quot;&gt;Google Developer&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://hacks.mozilla.org/2017/08/intersection-observer-comes-to-firefox/&quot;&gt;MDN&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163&quot;&gt;懒加载图片原文&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://developers.google.com/web/updates/2017/09/sticky-headers&quot;&gt;sticky场景 原文&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         <pubDate>Mon, 21 Aug 2017 03:21:32 +0800</pubDate>
         <link>https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html</link>
@@ -778,32 +1105,38 @@ HTML&lt;/code&gt;&lt;/pre&gt;
         <title>垃圾围城</title>
         <description>&lt;p&gt;前两天听《反派影评》，节目里说到西宁 FIRST 电影展播放了纪录片《塑料王国》完整版。很早之前我看过半小时的&lt;a href=&quot;https://www.youtube.com/watch?v=TUmuOmEqXZQ&quot;&gt;媒体版本&lt;/a&gt;，但现在豆瓣此片的页面已经没了，据说影展结束后也不允许媒体再提这部片子。&lt;/p&gt;
 
-&lt;div class=&quot;responsive-image&quot;&gt;
-    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/plastic-china-post.jpg&quot; /&gt;
-    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/plastic-china-post.jpg&quot;&gt;&lt;/div&gt;
-&lt;/div&gt;
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/plastic-china-post.jpg&quot; alt=&quot;&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/plastic-china-post.jpg&quot; data-alt=&quot;&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;&lt;/em&gt;
+&lt;/p&gt;
 
 &lt;script&gt;
     new Imager('.responsive-image__delayed', {
         availableWidths: [480],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
+
         }
     });
 &lt;/script&gt;
 
 &lt;p&gt;在我看的半小时版本中，影片讲述了大量“洋垃圾”漂洋过海来到中国某个小山村，村民们在及其恶劣的环境中，使用及其原始的方式手工进行分拣。整个村子的环境也被破坏。最震撼的一幕就是孩子们在垃圾堆中玩耍，其中一个随手捡起一个注射器就吸里面的水。&lt;/p&gt;
 
-&lt;div class=&quot;responsive-image&quot;&gt;
-    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/plastic-china.jpg&quot; /&gt;
-    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/plastic-china.jpg&quot;&gt;&lt;/div&gt;
-&lt;/div&gt;
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/plastic-china.jpg&quot; alt=&quot;&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/plastic-china.jpg&quot; data-alt=&quot;&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;&lt;/em&gt;
+&lt;/p&gt;
 
 &lt;script&gt;
     new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800, 1400],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
+
         }
     });
 &lt;/script&gt;
@@ -814,16 +1147,19 @@ HTML&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;北京被周边的几百个垃圾处理场包围。人们从大山中开采城市化需要的砂石，挖出一个个大坑，然后将城市产生的垃圾回填。垃圾填埋场周边的地下地上水源都遭到了不同程度的污染。&lt;/p&gt;
 
-&lt;div class=&quot;responsive-image&quot;&gt;
-    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/garbage.jpg&quot; /&gt;
-    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/garbage.jpg&quot;&gt;&lt;/div&gt;
-&lt;/div&gt;
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/garbage.jpg&quot; alt=&quot;&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/garbage.jpg&quot; data-alt=&quot;&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;&lt;/em&gt;
+&lt;/p&gt;
 
 &lt;script&gt;
     new Imager('.responsive-image__delayed', {
         availableWidths: [480],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
+
         }
     });
 &lt;/script&gt;
@@ -1085,7 +1421,7 @@ module: {
         .concat(SkeletonWebpackPlugin.loader({
             resource: resolve(&amp;#39;src/router.js&amp;#39;), // 目标路由文件
             options: {
-                entry: [&amp;#39;page1&amp;#39;, &amp;#39;page2&amp;#39;], 
+                entry: [&amp;#39;page1&amp;#39;, &amp;#39;page2&amp;#39;],
                 importTemplate: &amp;#39;import [nameCap] from \&amp;#39;@/pages/[name]/[nameCap].skeleton.vue\&amp;#39;;&amp;#39;,
                 routePathTemplate: &amp;#39;/skeleton-[name]&amp;#39;
             }
@@ -1110,252 +1446,6 @@ module: {
         <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html</guid>
         
         <category>vue</category>
-        
-        <category>webpack</category>
-        
-        
-        <category>coding</category>
-        
-      </item>
-    
-      <item>
-        <title>无用的keywords</title>
-        <description>&lt;p&gt;我在博客中试用了一下&lt;a href=&quot;https://github.com/jekyll/jekyll-seo-tag/&quot;&gt; jekyll-seo-tag 插件&lt;/a&gt;。它会从 jekyll &lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;配置文件中提取字段，生成机器可读的元数据，供搜索引擎和社交工具使用。&lt;/p&gt;
-
-&lt;p&gt;包括以下字段，此时打开控制台也能看到本页面中&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;!-- Begin Jekyll SEO tag v2.2.3 --&amp;gt;&lt;/code&gt;开始就是这个插件添加的：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;title，页面标题加上站点名称&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;meta name=description&amp;gt;&lt;/code&gt; 目测是取内容第一段，这就意味着文章不能以&lt;code class=&quot;highlighter-rouge&quot;&gt;## 第一段标题&lt;/code&gt;这样开头了，否则&lt;code class=&quot;highlighter-rouge&quot;&gt;description&lt;/code&gt;中就只有&lt;code class=&quot;highlighter-rouge&quot;&gt;第一段标题&lt;/code&gt;这点内容了&lt;/li&gt;
-  &lt;li&gt;Canonical URL 标准格式&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://developers.google.com/structured-data/&quot;&gt;JSON-LD&lt;/a&gt;格式的站点数据，供搜索引擎使用&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://ogp.me/&quot;&gt;Open Graph&lt;/a&gt;数据，供社交工具使用&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;然后我发现这里面居然不包括&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;meta name=keywords&amp;gt;&lt;/code&gt;，我之前一直认为这个标签在 SEO 中很重要。&lt;/p&gt;
-
-&lt;p&gt;有相同疑问的肯定不止我一个，有人就对这个问题提出了&lt;a href=&quot;https://github.com/jekyll/jekyll-seo-tag/issues/9&quot;&gt;ISSUE&lt;/a&gt;。插件作者甩出了用 Google 搜索&lt;code class=&quot;highlighter-rouge&quot;&gt;meta tags seo&lt;/code&gt;关键词的前两个链接，然后提问者就默默关闭了 ISSUE。&lt;/p&gt;
-
-&lt;h2 id=&quot;无用的-keywords&quot;&gt;无用的 keywords&lt;/h2&gt;
-
-&lt;p&gt;我看了下搜索结果中的&lt;a href=&quot;http://www.wordstream.com/meta-tags&quot;&gt;第一篇文章&lt;/a&gt;，这才恍然大悟。&lt;/p&gt;
-
-&lt;p&gt;文章指出 Google 在 ranking 时，已经不考虑&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;meta name=keywords&amp;gt;&lt;/code&gt;这个标签了。原因是这个标签过去被滥用太多了，而且也很容易被滥用。。。&lt;/p&gt;
-
-&lt;p&gt;但是 meta 家族中的&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;meta name=description&amp;gt;&lt;/code&gt;毕竟会被直接展示在搜索结果中，所以作为页面开发者不能忽略。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://www.wordstream.com/images/screenshots/meta-description-tag.gif&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;那 Baidu 是怎么做的呢？&lt;a href=&quot;https://www.quora.com/Is-the-meta-keyword-tag-a-factor-in-Baidu&quot;&gt;Quora上有相应的一个问题&lt;/a&gt;，里面有答主给出了一份巨详细的&lt;a href=&quot;http://www.dragonmetrics.com/baidu-seo-guide/&quot;&gt;研究报告&lt;/a&gt;，分成10个章节介绍百度的 SEO 问题。&lt;/p&gt;
-
-&lt;p&gt;从&lt;a href=&quot;http://www.dragonmetrics.com/baidu-seo-guide/#ch1&quot;&gt;第一节&lt;/a&gt;的内容来看，Baidu 并没有完全放弃 keywords，并且疑似将 descripton 也纳入 ranking，虽然可能权重不一定很高。&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;However, Baidu may still use meta keywords as a ranking signal. There is also some evidence that supports the possibility that meta descriptions may even affect rankings on Baidu, in addition to being used for the SERP snippet.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-</description>
-        <pubDate>Mon, 24 Jul 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/coding/2017/07/23/%E6%97%A0%E7%94%A8%E7%9A%84keywords.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/23/%E6%97%A0%E7%94%A8%E7%9A%84keywords.html</guid>
-        
-        <category>ruby</category>
-        
-        <category>jekyll</category>
-        
-        
-        <category>coding</category>
-        
-      </item>
-    
-      <item>
-        <title>在Github Pages中使用第三方插件</title>
-        <description>&lt;p&gt;&lt;a href=&quot;https://pages.github.com/&quot;&gt;Github Pages&lt;/a&gt;能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。&lt;/p&gt;
-
-&lt;p&gt;jekyll 项目不可避免的会使用各种各样的插件，而 Github Pages 目前仅支持到 jekyll 3.4.5 版本，新版本在&lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;中对插件的使用方法发生了变更，使用&lt;code class=&quot;highlighter-rouge&quot;&gt;plugins&lt;/code&gt;代替旧版本的属性&lt;code class=&quot;highlighter-rouge&quot;&gt;gems&lt;/code&gt;。所以为了兼容 Github Pages，本地新版本的警告提示信息只能选择忽略了。&lt;/p&gt;
-
-&lt;p&gt;和在本地构建不同的一点是，github 构建时会加上&lt;code class=&quot;highlighter-rouge&quot;&gt;--save&lt;/code&gt;参数，只运行&lt;a href=&quot;https://pages.github.com/versions/&quot;&gt;信任的插件&lt;/a&gt;。这就导致如果我们的博客使用了不在白名单中的插件，github 构建时就会提示警告（在项目标签页 Setting -&amp;gt; GitHub Pages 中），构建失败也就看不到最新的博客内容了。&lt;/p&gt;
-
-&lt;p&gt;Github Pages 给出一种建议是，让用户在本地构建站点，然后仅将构建结果纳入版本控制，提交到指定分支。避免 github 构建，只需要在根目录下放一个空文件&lt;code class=&quot;highlighter-rouge&quot;&gt;.nojekyll&lt;/code&gt;。&lt;/p&gt;
-
-&lt;p&gt;至于本地构建，熟悉 Node.js 的开发者完全可以采用 gulp/grunt 工作流，调用&lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll build&lt;/code&gt;构建站点，顺便还能做一些静态资源压缩的工作。我在网上找到一种使用 rakefile 的&lt;a href=&quot;https://www.sitepoint.com/jekyll-plugins-github/&quot;&gt;简单方法&lt;/a&gt;，决定一试。&lt;/p&gt;
-
-&lt;h2 id=&quot;使用-rakefile-构建&quot;&gt;使用 Rakefile 构建&lt;/h2&gt;
-
-&lt;p&gt;首先我们需要拷贝原有 repo 内容到一个新文件夹中，以后这个新文件夹将成为我们的工作文件夹。由于以后我们不会再在原有 repo 中进行写作，所以此时可以在 repo 中执行&lt;code class=&quot;highlighter-rouge&quot;&gt;git rm -r ./&lt;/code&gt;清空所有版本控制。&lt;/p&gt;
-
-&lt;p&gt;在新文件夹中增加 Rakefile，进行如下操作：&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;使用&lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll build&lt;/code&gt;构建站点&lt;/li&gt;
-  &lt;li&gt;清空真正的 repo 内容，拷贝&lt;code class=&quot;highlighter-rouge&quot;&gt;_site&lt;/code&gt;文件夹内容到里面。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;GH_PAGES_DIR = &amp;quot;xiaoiver.github.io&amp;quot;
-
-desc &amp;quot;Build Jekyll site and copy files&amp;quot;
-task :build do
-  system &amp;quot;jekyll build&amp;quot;
-  system &amp;quot;rm -r ../#{GH_PAGES_DIR}/*&amp;quot; unless Dir[&amp;#39;../#{GH_PAGES_DIR}/*&amp;#39;].empty?
-  system &amp;quot;cp -r _site/* ../#{GH_PAGES_DIR}/&amp;quot;
-end&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Rakefile 只在构建时使用，所以需要在&lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;中过滤掉，避免拷贝到结果文件夹中：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-yml&quot;&gt;exclude: [Rakefile]&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;然后回到 repo 中，提交修改即可。&lt;/p&gt;
-
-&lt;h2 id=&quot;使用-gulp-工作流构建&quot;&gt;使用 gulp 工作流构建&lt;/h2&gt;
-
-&lt;p&gt;例如这个基于 yeoman 的&lt;a href=&quot;https://github.com/nirgn975/generator-jekyll-starter-kit&quot;&gt;模版项目&lt;/a&gt;，包含了对 PWA 的支持。&lt;/p&gt;
-
-&lt;p&gt;这个模版在构建时使用 gulp 通过 sw-precache 生成&lt;code class=&quot;highlighter-rouge&quot;&gt;service-worker.js&lt;/code&gt;，缓存&lt;code class=&quot;highlighter-rouge&quot;&gt;_site&lt;/code&gt;文件夹内全部静态资源。同时也定义了其他 task 用于压缩静态文件。&lt;/p&gt;
-
-&lt;p&gt;我在博客中也使用了这种方式。&lt;/p&gt;
-</description>
-        <pubDate>Sun, 23 Jul 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html</guid>
-        
-        <category>ruby</category>
-        
-        <category>jekyll</category>
-        
-        <category>github-pages</category>
-        
-        
-        <category>coding</category>
-        
-      </item>
-    
-      <item>
-        <title>为npm包提供多入口</title>
-        <description>&lt;h2 id=&quot;问题背景&quot;&gt;问题背景&lt;/h2&gt;
-
-&lt;p&gt;之前给&lt;a href=&quot;https://github.com/van-nguyen/webpack-cdn-plugin&quot;&gt;webpack-cdn-plugin&lt;/a&gt;提PR时，遇到这样一个问题，入口文件使用了部分 ES6 特性，而作者不想直接提供转译版本，这就导致在低版本 Node.js 环境无法直接运行。&lt;/p&gt;
-
-&lt;p&gt;首先想到的办法是，能不能提供多个版本。但是&lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt;中的&lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;只能支持单文件，无法提供多入口供使用者根据自身环境选择。&lt;/p&gt;
-
-&lt;p&gt;后来采用的做法是在入口文件中判断当前运行环境，使用动态&lt;code class=&quot;highlighter-rouge&quot;&gt;require&lt;/code&gt;来选择转译或非转译版本。等于说模块开发者需要判断使用者当前的运行环境，总感觉不太优雅。&lt;/p&gt;
-
-&lt;p&gt;前段时间刚好看到&lt;a href=&quot;http://2ality.com/2017/04/setting-up-multi-platform-packages.html&quot;&gt;这一系列文章&lt;/a&gt;，里面针对这个问题给出了较为全面的解决方案。&lt;/p&gt;
-
-&lt;h2 id=&quot;多种模块格式版本&quot;&gt;多种模块格式版本&lt;/h2&gt;
-
-&lt;p&gt;我们都知道模块格式包括了以下几种：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;AMD 浏览器端异步模块机制&lt;/li&gt;
-  &lt;li&gt;CJS Node.js同步模块机制，浏览器端想使用必须先使用类似 webpack 之类的工具编译成异步的&lt;/li&gt;
-  &lt;li&gt;ESM ES6提出的内置机制，支持同步和异步，部分浏览器已支持，Node.js 计划2018年实现&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;作为模块提供者，我们自然希望兼容更多模块格式，还好 UMD 提供了一系列兼容 AMD 和 CJS 的方案，例如支持&lt;a href=&quot;https://github.com/umdjs/umd/blob/master/templates/nodeAdapter.js&quot;&gt;在 Node.js 中写 AMD 标准的代码&lt;/a&gt;。这些模版范式为模块提供者提供了极大便利。&lt;/p&gt;
-
-&lt;p&gt;是时候说说 ESM 了。它提供了统一的&lt;code class=&quot;highlighter-rouge&quot;&gt;import/export&lt;/code&gt;，真正统一了浏览器和 Node.js 端的模块标准。而且配合 Webpack 和 Rollup 提供的 &lt;a href=&quot;https://webpack.js.org/guides/tree-shaking/&quot;&gt;Tree-shaking&lt;/a&gt; 技术可以最大程度精简代码。那么问题来了，在 ESM 一统天下之前，如何提供使用 ESM 编写的代码给先进的打包工具，同时又不至于完全失去兼容性。换句话说，&lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt;中真的只有&lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;这一个暴露模块入口文件的属性吗？&lt;/p&gt;
-
-&lt;p&gt;显然不是，来看看这两个属性吧：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;module，还&lt;a href=&quot;https://github.com/dherman/defense-of-dot-js/blob/master/proposal.md&quot;&gt;处于提案阶段&lt;/a&gt;，提供使用 ESM 编写的版本&lt;/li&gt;
-  &lt;li&gt;browser，提供仅针对浏览器环境版本&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;对于打包工具来说，就不能只考虑&lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;入口了。
-在 webpack 中，可以通过&lt;code class=&quot;highlighter-rouge&quot;&gt;resolve.mainFields&lt;/code&gt;来指定模块查找优先级。
-而这个优先级又是根据目标环境确定的，例如针对浏览器环境，即&lt;code class=&quot;highlighter-rouge&quot;&gt;target: 'web'&lt;/code&gt;，默认的优先级为：&lt;code class=&quot;highlighter-rouge&quot;&gt;[&quot;browser&quot;, &quot;module&quot;, &quot;main&quot;]&lt;/code&gt;。而服务端渲染中常用的&lt;code class=&quot;highlighter-rouge&quot;&gt;target: 'node'&lt;/code&gt;查找优先级为&lt;code class=&quot;highlighter-rouge&quot;&gt;[&quot;module&quot;, &quot;main&quot;]&lt;/code&gt;。可以看出，webpack 会优先使用 ESM 标准的代码。&lt;/p&gt;
-
-&lt;p&gt;看起来支持不同模块格式的问题解决了。&lt;/p&gt;
-
-&lt;h2 id=&quot;转译和非转译版本&quot;&gt;转译和非转译版本&lt;/h2&gt;
-
-&lt;p&gt;除了支持不同的模块格式，代码中使用了新特性，是否需要转译也是一个问题。&lt;/p&gt;
-
-&lt;p&gt;Angular 提出在&lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt;中新增&lt;code class=&quot;highlighter-rouge&quot;&gt;es2015&lt;/code&gt;属性，用来指定使用 ES6 的非转译代码入口。&lt;/p&gt;
-
-&lt;p&gt;当然，最好能参考 babel-preset-env 的做法，也根据运行环境决定是否需要使用转译版本的代码。&lt;/p&gt;
-
-&lt;h3 id=&quot;babel-preset-env&quot;&gt;babel-preset-env&lt;/h3&gt;
-
-&lt;p&gt;首先看看&lt;code class=&quot;highlighter-rouge&quot;&gt;babel-preset-env&lt;/code&gt;是如何使用的。针对浏览器环境：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;&amp;quot;babel&amp;quot;: {
-    &amp;quot;presets&amp;quot;: [
-        [
-            &amp;quot;env&amp;quot;,
-            {
-                &amp;quot;targets&amp;quot;: {
-                    &amp;quot;browsers&amp;quot;: [&amp;quot;last 2 versions&amp;quot;, &amp;quot;ie &amp;gt;= 7&amp;quot;]
-                }
-            }
-        ]
-    ]
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;针对 Node.js 环境：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;&amp;quot;babel&amp;quot;: {
-    &amp;quot;presets&amp;quot;: [
-        [
-            &amp;quot;env&amp;quot;,
-            {
-                &amp;quot;targets&amp;quot;: {
-                    &amp;quot;node&amp;quot;: &amp;quot;current&amp;quot;
-                }
-            }
-        ]
-    ]
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;其他重要的参数包括：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;modules 默认CJS，不转译&lt;code class=&quot;highlighter-rouge&quot;&gt;false&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;useBuiltIns 使用polyfill，注入类似&lt;code class=&quot;highlighter-rouge&quot;&gt;import &quot;core-js/modules/es7.string.pad-start&quot;;&lt;/code&gt;的代码&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;esnext&quot;&gt;esnext&lt;/h3&gt;
-
-&lt;p&gt;增加一个新的入口&lt;code class=&quot;highlighter-rouge&quot;&gt;esnext&lt;/code&gt;。直接提供支持 stage4 以上特性的代码，不使用转译，使用ESM：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-    ···
-    &amp;quot;main&amp;quot;: &amp;quot;main.js&amp;quot;,
-    &amp;quot;esnext&amp;quot;: {
-        &amp;quot;main&amp;quot;: &amp;quot;main-esnext.js&amp;quot;,
-        &amp;quot;browser&amp;quot;: &amp;quot;browser-specific-main-esnext.js&amp;quot;
-    },
-    ···
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://2ality.com/2017/06/pkg-esnext.html&quot;&gt;具体做法&lt;/a&gt;是：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;对于模块开发者，提供非转译版本的&lt;code class=&quot;highlighter-rouge&quot;&gt;esnext&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;对于使用者，通过&lt;code class=&quot;highlighter-rouge&quot;&gt;resolve.mainFields&lt;/code&gt;将&lt;code class=&quot;highlighter-rouge&quot;&gt;esnext&lt;/code&gt;加入，赋予最高优先级，同时告知 babel-loader 转译提供&lt;code class=&quot;highlighter-rouge&quot;&gt;esnext&lt;/code&gt;的代码。剩下的就交给&lt;a href=&quot;http://2ality.com/2017/02/babel-preset-env.html&quot;&gt;babel-preset-env&lt;/a&gt;根据提供的配置环境自动引入需要的插件。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;其他做法&quot;&gt;其他做法&lt;/h3&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;全部转译，耗时但是配置简单。webpack 插件大多采用这种方式。&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://gist.github.com/developit/081148d83348ebe9a1bc1ba0707e1bb8&quot;&gt;配置 babel-loader，只转译提供了 module 字段的依赖&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;根据文件后缀决定，&lt;code class=&quot;highlighter-rouge&quot;&gt;.js&lt;/code&gt;不转译，&lt;code class=&quot;highlighter-rouge&quot;&gt;.esm&lt;/code&gt;转译&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
-
-&lt;p&gt;作为模块提供者，我会采用&lt;code class=&quot;highlighter-rouge&quot;&gt;esnext&lt;/code&gt;的方式，即额外提供非转译版本。然后让使用者通过配置，根据自身运行环境选择使用不同的版本。&lt;/p&gt;
-</description>
-        <pubDate>Tue, 18 Jul 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html</guid>
-        
-        <category>javascript</category>
-        
-        <category>nodejs</category>
-        
-        <category>babel</category>
         
         <category>webpack</category>
         
