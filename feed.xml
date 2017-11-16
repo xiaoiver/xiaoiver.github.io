@@ -6,9 +6,626 @@
 </description>
     <link>https://xiaoiver.github.io/</link>
     <atom:link href="https://xiaoiver.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 16 Oct 2017 19:18:14 +0800</pubDate>
-    <lastBuildDate>Mon, 16 Oct 2017 19:18:14 +0800</lastBuildDate>
+    <pubDate>Thu, 16 Nov 2017 23:34:23 +0800</pubDate>
+    <lastBuildDate>Thu, 16 Nov 2017 23:34:23 +0800</lastBuildDate>
     <generator>Jekyll v3.4.5</generator>
+    
+      <item>
+        <title>SSR 中的离线可用（三）</title>
+        <description>&lt;p&gt;本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;本文是第三部分，将使用 Vue SSR 和 Workbox 实践这一思路。&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html&quot;&gt;第一部分&lt;/a&gt;以 PWA-Directory 为例进行分析。&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/coding/2017/10/28/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%BA%8C.html&quot;&gt;第二部分&lt;/a&gt;研究了一个 WordPress 主题项目。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;思路回顾&quot;&gt;思路回顾&lt;/h3&gt;
+
+&lt;p&gt;我们之前提供了一种 SSR 架构下通用的离线缓存思路：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;改造后端模板以支持返回完整页面和内容片段&lt;/li&gt;
+  &lt;li&gt;服务端增加一条针对 App Shell 的路由规则，返回仅包含 App Shell 的 HTML 页面&lt;/li&gt;
+  &lt;li&gt;预缓存 App Shell 页面&lt;/li&gt;
+  &lt;li&gt;Service Worker 拦截所有 HTML 请求，统一返回缓存的 App Shell 页面。同时向服务端请求当前页面需要的内容片段并写入缓存&lt;/li&gt;
+  &lt;li&gt;前端路由向服务端请求内容片段，发现缓存中已存在，将其填充进 App Shell 中，完成前端渲染&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;将这一思路应用到 Vue SSR 项目中时，需要做一些改变。&lt;/p&gt;
+
+&lt;p&gt;首先在 Vue 同构项目中，同一套代码在 Node 端和浏览器端都能运行，是没有“后端模板”的概念的，同样对于“内容片段”也是如此。在首屏使用服务端渲染直出 HTML 后，浏览器端进行 Hydrate，绑定事件使页面真正可响应，除非刷新页面，否则后续的路由切换都将由前端路由器完成。&lt;/p&gt;
+
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/vue-ssr.png&quot; alt=&quot;Vue SSR&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/vue-ssr.png&quot; data-alt=&quot;Vue SSR&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;Vue SSR&lt;/em&gt;
+&lt;/p&gt;
+
+&lt;script&gt;
+    new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });
+&lt;/script&gt;
+
+</description>
+        <pubDate>Mon, 13 Nov 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html</guid>
+        
+        <category>PWA</category>
+        
+        <category>ServiceWorker</category>
+        
+        <category>vue</category>
+        
+        <category>workbox</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
+    
+      <item>
+        <title>在 Jekyll 中使用离线缓存</title>
+        <description>&lt;p&gt;Jekyll 默认生成的站点由多个静态页面组成（虽然可以通过某些插件实现 SPA）。不同于之前介绍的 SSR，对于这类静态站点的缓存思路并不复杂，几乎不需要对已有站点结构进行任何改造：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;预缓存静态资源和部分关键页面，例如主页和最新的文章&lt;/li&gt;
+  &lt;li&gt;对于非关键页面，进行访问后的动态缓存&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;以上思路需要在 Service Worker 中实现预缓存和动态缓存机制，使用 Workbox 将让一切变得简单。&lt;/p&gt;
+
+&lt;h3 id=&quot;workbox-是什么&quot;&gt;Workbox 是什么？&lt;/h3&gt;
+
+&lt;p&gt;Workbox 吸收了之前包括 sw-precache 和 sw-toolbox 在内的类库，也就是预缓存和动态缓存的实现。提供了一系列工具帮助开发者快速生成 Service Worker。根据项目的构建流程，可以选择对应的 Webpack 或者 Gulp 插件，如果没有使用这类构建工具，也可以选择使用 Workbox-CLI 命令行工具。对于想自己编写 SW 的开发者，也可以直接调用封装好的 API，包括预缓存的方案细节，根据资源类型选择不同的策略。总之 Workbox 能极大减少开发 SW 的成本。&lt;/p&gt;
+
+&lt;p&gt;可以观看开发者在&lt;a href=&quot;https://www.youtube.com/watch?v=DtuJ55tmjps&quot;&gt;Google Dev Summit 上的介绍&lt;/a&gt;或者前往官网了解更多技术细节。&lt;/p&gt;
+
+&lt;p&gt;值得一提的是 Workbox 拆分成了多个功能模块，例如预缓存、动态缓存、策略、缓存更新插件等。由于项目仍处于开发阶段，部分文档还不是很全面，有些配置需要深入代码才能搞懂。我在使用时对其中的更新插件产生了理解上的偏差，通过&lt;a href=&quot;https://github.com/GoogleChrome/workbox/issues/1001&quot;&gt;ISSUE&lt;/a&gt;得到作者的回应才搞清楚。在看代码的过程中，我深刻感受到 Google 开发者对于问题考虑的全面性，就拿跨域资源的动态缓存来说，&lt;/p&gt;
+
+&lt;h3 id=&quot;插件细节&quot;&gt;插件细节&lt;/h3&gt;
+
+&lt;p&gt;我的博客使用了 Gulp 作为构建工具，按理说使用 Workbox 提供的插件足矣。但是考虑到不是所有使用者都会使用基于 Node.js 的构建工具，而且类似“缓存最近5篇文章”这样的需求是和 Jekyll 本身构建流程密切相关的，所以集成到默认的构建流程中是很有必要的。&lt;/p&gt;
+
+&lt;p&gt;之前在&lt;a href=&quot;/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html&quot;&gt;在 Jekyll 中使用代码高亮&lt;/a&gt;一文中，我使用了 Jekyll 插件中的&lt;a href=&quot;https://jekyllrb.com/docs/plugins/#tags&quot;&gt;Tags&lt;/a&gt;类型来处理 Markdown 中的代码块。这次我们将使用&lt;a href=&quot;https://jekyllrb.com/docs/plugins/#hooks&quot;&gt;Hooks&lt;/a&gt;类型插件介入构建流程。&lt;/p&gt;
+
+&lt;h4 id=&quot;jekyll-hooks&quot;&gt;Jekyll Hooks&lt;/h4&gt;
+
+&lt;p&gt;Jekyll 暴露了多个构建阶段的钩子，我们要介入的阶段包括：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;在站点生成阶段，生成 sw-register.js，负责为当前页面注册 Service Worker&lt;/li&gt;
+  &lt;li&gt;在站点生成阶段，生成 service-worker.js，根据配置项，调用 Workbox API 注入预缓存和动态缓存代码&lt;/li&gt;
+  &lt;li&gt;在每一个页面生成阶段，插入引入 sw-register.js 的代码块&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Jekyll
+
+    Hooks.register :pages, :post_render do |page|
+        # append &amp;lt;script&amp;gt; for sw-register.js in &amp;lt;body&amp;gt;
+        SWHelper.insert_sw_register_into_body(page)
+    end
+
+    Hooks.register :documents, :post_render do |document|
+        # append &amp;lt;script&amp;gt; for sw-register.js in &amp;lt;body&amp;gt;
+        SWHelper.insert_sw_register_into_body(document)
+    end
+
+    Hooks.register :site, :post_write do |site|
+        pwa_config = site.config[&amp;#39;pwa&amp;#39;] || {}
+        sw_helper = SWHelper.new(site, pwa_config)
+
+        sw_helper.write_sw_register()
+        sw_helper.generate_workbox_precache()
+        sw_helper.write_sw()
+    end
+
+end&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这里有一个问题，为什么要额外生成一个 sw-register.js 负责注册 Service Worker 呢？
+在页面中，我们会加上时间戳类似&lt;code class=&quot;highlighter-rouge&quot;&gt;sw-register.js?v= new Date()&lt;/code&gt;保证浏览器不会对&lt;code class=&quot;highlighter-rouge&quot;&gt;sw-register.js&lt;/code&gt;进行缓存。而&lt;code class=&quot;highlighter-rouge&quot;&gt;sw-register.js&lt;/code&gt;中注册&lt;code class=&quot;highlighter-rouge&quot;&gt;service-worker.js&lt;/code&gt;时，会加上构建版本号保证&lt;code class=&quot;highlighter-rouge&quot;&gt;service-worker.js&lt;/code&gt;的更新。
+更多详细细节可以参考之前同事写的&lt;a href=&quot;https://zhuanlan.zhihu.com/p/28161855&quot;&gt;如何优雅注册 SW&lt;/a&gt;这篇文章。&lt;/p&gt;
+
+&lt;h4 id=&quot;预缓存资源的注入&quot;&gt;预缓存资源的注入&lt;/h4&gt;
+
+&lt;p&gt;首先根据配置项中的 glob 过滤出要缓存的资源，这一点通过标准库&lt;code class=&quot;highlighter-rouge&quot;&gt;Dir.glob&lt;/code&gt;就能完成：&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;# find precache files with glob
+precache_files = []
+patterns.each do |pattern|
+    Dir.glob(File.join(directory, pattern)) do |filepath|
+        precache_files.push(filepath)
+    end
+end
+precache_files = precache_files.uniq&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;然后我们可以加上最近 N 篇文章，由于&lt;code class=&quot;highlighter-rouge&quot;&gt;.md&lt;/code&gt;文件最终会生成&lt;code class=&quot;highlighter-rouge&quot;&gt;.html&lt;/code&gt;页面，我们需要同时记录下&lt;code class=&quot;highlighter-rouge&quot;&gt;url&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;path&lt;/code&gt;。要注意，最终添加进预缓存列表的是&lt;code class=&quot;highlighter-rouge&quot;&gt;url&lt;/code&gt;，而&lt;code class=&quot;highlighter-rouge&quot;&gt;path&lt;/code&gt;是根据文件内容生成版本号时用到的。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;# precache recent n posts
+posts_path_url_map = {}
+if recent_posts_num
+    precache_files.concat(
+        @site.posts.docs
+            .reverse.take(recent_posts_num)
+            .map do |post|
+                posts_path_url_map[post.path] = post.url
+                post.path
+            end
+    )
+end&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;最后就是关键的步骤了，我们需要根据静态资源的内容生成 md5 版本号，这样能够保证每次 Service Worker 安装时，只会请求发生变动的新资源并缓存，同时清理掉已经不在列表中的旧资源。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;# generate md5 for each precache file
+md5 = Digest::MD5.new
+precache_files.each do |filepath|
+    md5.reset
+    md5 &amp;lt;&amp;lt; File.read(filepath)
+    if posts_path_url_map[filepath]
+        url = posts_path_url_map[filepath]
+    else
+        url = filepath.sub(@site.dest, &amp;#39;&amp;#39;)
+    end
+    @precache_list.push({
+        url: @site.baseurl + url,
+        revision: md5.hexdigest
+    })
+end&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这样我们就完成了预缓存列表的创建，由于符合&lt;code class=&quot;highlighter-rouge&quot;&gt;Workbox.precache&lt;/code&gt;的参数要求，我们直接把列表序列化作为参数传入就行了，在运行时 Workbox 会完成请求资源，清理缓存的工作。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;# generate precache list
+precache_list_str = @precache_list.map do |precache_item|
+    precache_item.to_json
+end
+.join(&amp;quot;,&amp;quot;)
+
+# insert into precache function
+&amp;lt;&amp;lt;-SCRIPT
+    workboxSW.precache([#{precache_list_str}]);
+SCRIPT&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;动态缓存也是根据配置项，调用&lt;code class=&quot;highlighter-rouge&quot;&gt;workboxSW.router.registerRoute&lt;/code&gt;，这里就不再赘述了。&lt;/p&gt;
+
+&lt;h4 id=&quot;使用-rubygem-发布&quot;&gt;使用 RubyGem 发布&lt;/h4&gt;
+
+&lt;p&gt;说起来这是我第一次发布一个 RubyGem，不过按照文档说明就行了。gemspec 类似 npm 中的 package.json，虽然按照出现的时间顺序应该是反过来。Ruby 中有很多东西都被其他语言借鉴，我记得以前类似 Hibernate 这样的 ORM 都是有参考 RoR 中的 ActiveRecord。里面大部分字段都很熟悉，甚至和 package.json 都是一致的，&lt;code class=&quot;highlighter-rouge&quot;&gt;name&lt;/code&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;version&lt;/code&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;files&lt;/code&gt;等等。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;# jekyll-pwa-plugin.gemspec
+
+Gem::Specification.new do |s|
+  s.name        = &amp;#39;jekyll-pwa-plugin&amp;#39;
+  s.version     = &amp;#39;1.0.0&amp;#39;
+  s.date        = &amp;#39;2017-11-09&amp;#39;
+  s.summary     = &amp;quot;PWA support for Jekyll.&amp;quot;
+  s.description = &amp;quot;This plugin provides PWA support for Jekyll. Generate a service worker and provides precache with Google Workbox.&amp;quot;
+  s.authors     = [&amp;quot;Pan Yuqi&amp;quot;]
+  s.email       = &amp;#39;pyqiverson@gmail.com&amp;#39;
+  s.files       = [&amp;quot;lib/jekyll-pwa-plugin.rb&amp;quot;, &amp;quot;lib/vendor/broadcast-channel-polyfill.js&amp;quot;, &amp;quot;lib/vendor/workbox-sw.prod.v2.1.1.js&amp;quot;]
+  s.homepage    =
+    &amp;#39;https://github.com/lavas-project/jekyll-pwa&amp;#39;
+  s.license       = &amp;#39;MIT&amp;#39;
+end&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在发布之前当然要先做好测试工作，我是直接把写好的插件放在项目&lt;code class=&quot;highlighter-rouge&quot;&gt;/_plugins&lt;/code&gt;下，确认本地可以正常使用。&lt;/p&gt;
+
+&lt;h3 id=&quot;后续优化&quot;&gt;后续优化&lt;/h3&gt;
+
+&lt;p&gt;目前至少有三点可以优化：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;提供一个离线页面，当用户离线访问不在缓存中的页面时展示&lt;/li&gt;
+  &lt;li&gt;目前的 Service Worker 根据配置自动生成，可以支持用户传入自定义的模板，使用占位符的方式注入预缓存和动态缓存内容，这样更加灵活&lt;/li&gt;
+  &lt;li&gt;开发模式下禁用缓存，不然在写作过程中使用 browser-sync 之类自动刷新的功能就无效了&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/lavas-project/jekyll-pwa&quot;&gt;插件项目地址&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Fri, 10 Nov 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html</guid>
+        
+        <category>jekyll</category>
+        
+        <category>ruby</category>
+        
+        <category>workbox</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
+    
+      <item>
+        <title>SSR 中的离线可用（二）</title>
+        <description>&lt;p&gt;本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html&quot;&gt;第一部分&lt;/a&gt;以 PWA-Directory 为例。&lt;/li&gt;
+  &lt;li&gt;本文将研究一个 WordPress 主题项目。这个项目是&lt;a href=&quot;https://developer.chrome.com/devsummit/schedule/sessions/wordpress-pwa&quot;&gt;Google Dev Summit 2017&lt;/a&gt;上的一个分享主题。
+&lt;a href=&quot;https://github.com/GoogleChromeLabs/ProgressiveWordPress&quot;&gt;代码&lt;/a&gt;可以通过 Docker 启动。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;sw-缓存思路&quot;&gt;SW 缓存思路&lt;/h3&gt;
+
+&lt;p&gt;WordPress 本质上也是一个服务端渲染项目。因此也适用第一部分中提出的缓存思路：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;改造后端模板以支持返回完整页面和内容片段&lt;/li&gt;
+  &lt;li&gt;服务端增加一条针对 App Shell 的路由规则，返回仅包含 App Shell 的 HTML 页面&lt;/li&gt;
+  &lt;li&gt;预缓存 App Shell 页面&lt;/li&gt;
+  &lt;li&gt;SW 拦截所有 HTML 请求，统一返回缓存的 App Shell 页面&lt;/li&gt;
+  &lt;li&gt;前端路由负责代码片段的填充，完成前端渲染&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;按照这个思路，首先需要对模板进行改造。未来将以主题形式发布。其中使用了&lt;code class=&quot;highlighter-rouge&quot;&gt;get_template_part()&lt;/code&gt;分别获取头部和底部模板片段，也就是 App Shell 了。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-php&quot;&gt;// index.php
+
+&amp;lt;?php
+    etag_start();
+    if(!is_fragment()) get_template_part(&amp;#39;header&amp;#39;);
+?&amp;gt;
+&amp;lt;?php if(have_posts()): ?&amp;gt;
+    &amp;lt;?php while(have_posts()): the_post() ?&amp;gt;
+        &amp;lt;?php include(&amp;#39;fragment-post-preview.php&amp;#39;); ?&amp;gt;
+    &amp;lt;?php endwhile; ?&amp;gt;
+&amp;lt;?php else: ?&amp;gt;
+    Nothing here :(
+&amp;lt;?php endif; ?&amp;gt;
+&amp;lt;?php
+    if(!is_fragment()) get_template_part(&amp;#39;footer&amp;#39;);
+    etag_end();
+?&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;通过 query 中&lt;code class=&quot;highlighter-rouge&quot;&gt;fragment&lt;/code&gt;参数区分完整页面 OR 页面内容片段。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-php&quot;&gt;// functions.php
+
+function is_fragment() {
+    return isset( $_GET[&amp;#39;fragment&amp;#39;] ) &amp;amp;&amp;amp; &amp;#39;true&amp;#39; === $_GET[&amp;#39;fragment&amp;#39;];
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在&lt;code class=&quot;highlighter-rouge&quot;&gt;index.php&lt;/code&gt;模板中使用到了&lt;code class=&quot;highlighter-rouge&quot;&gt;etag_start/end()&lt;/code&gt;，顾名思义使用了 Etag 比对浏览器请求头中的 HTTP_IF_NONE_MATCH ，如果发现内容没有改变，直接返回304状态码。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-php&quot;&gt;// functions.php
+
+function etag_start() {
+    global $etag_depth;
+
+    if ( $etag_depth == 0 ) ob_start();
+    $etag_depth++;
+}
+
+function etag_end() {
+    global $etag_depth;
+    $etag_depth--;
+    if ( $etag_depth &amp;gt; 0 ) return;
+
+    $content = ob_get_clean();
+    $etag = hash(&amp;#39;sha256&amp;#39;, $content);
+    $request = isset( $_SERVER[&amp;#39;HTTP_IF_NONE_MATCH&amp;#39;] ) &amp;amp;&amp;amp; $_SERVER[&amp;#39;HTTP_IF_NONE_MATCH&amp;#39;];
+    if ( $etag == $request ) {
+        http_response_code(304);
+        return;
+    }
+
+    header(&amp;#39;Etag: &amp;#39; . $etag);
+    echo $content;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+</description>
+        <pubDate>Sun, 29 Oct 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/coding/2017/10/28/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%BA%8C.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/10/28/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%BA%8C.html</guid>
+        
+        <category>PWA</category>
+        
+        <category>ServiceWorker</category>
+        
+        <category>PHP</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
+    
+      <item>
+        <title>SSR 中的离线可用（一）</title>
+        <description>&lt;p&gt;本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;本文是第一部分，以&lt;a href=&quot;https://pwa-directory.appspot.com&quot;&gt;PWA-Directory&lt;/a&gt;为例。&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/coding/2017/10/28/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%BA%8C.html&quot;&gt;第二部分&lt;/a&gt;将研究一个 WordPress 主题项目。&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html&quot;&gt;第三部分&lt;/a&gt;将使用 Vue SSR 实践这一思路。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;PWA-Directory 是一个陈列 PWA 的站点，同时展示项目 Lighthouse 分数及其他页面性能数据。&lt;/p&gt;
+
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/PWA-Directory.png&quot; alt=&quot;PWA-Directory&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/PWA-Directory.png&quot; data-alt=&quot;PWA-Directory&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;PWA-Directory&lt;/em&gt;
+&lt;/p&gt;
+
+&lt;script&gt;
+    new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800, 1400],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });
+&lt;/script&gt;
+
+&lt;p&gt;本文假设读者对 PWA 相关技术尤其是 Service Worker 的基础知识已有一定了解。&lt;/p&gt;
+
+&lt;h3 id=&quot;app-shell-模型&quot;&gt;App Shell 模型&lt;/h3&gt;
+
+&lt;p&gt;App Shell 是支持用户界面所需的最小的 HTML、CSS 和 JavaScript。对其进行离线缓存，可确保在用户重复访问时提供即时、可靠的良好性能。这意味着并不是每次用户访问时都要从网络加载 App Shell。 只需要从网络中加载必要的内容。&lt;/p&gt;
+
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/appshell.png&quot; alt=&quot;App Shell 模型&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/appshell.png&quot; data-alt=&quot;App Shell 模型&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;App Shell 模型&lt;/em&gt;
+&lt;/p&gt;
+
+&lt;script&gt;
+    new Imager('.responsive-image__delayed', {
+        availableWidths: [480],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });
+&lt;/script&gt;
+
+&lt;p&gt;PWA-Directory 包括我们后续的讨论都基于 App Shell 模型。下面我们需要了解一下缓存的细节。&lt;/p&gt;
+
+&lt;h3 id=&quot;预缓存&quot;&gt;预缓存&lt;/h3&gt;
+
+&lt;p&gt;Service Worker 最重要的功能便是控制缓存。这里先简单介绍下预缓存或者说 sw-precache 插件的基本工作原理。&lt;/p&gt;
+
+&lt;p&gt;在项目构建阶段，将静态资源列表（数组形式）及本次构建版本号注入 Service Worker 代码中。在 SW 运行时（Install 阶段）依次发送请求获取静态资源列表中的资源（JS,CSS,HTML,IMG,FONT…），成功后放入缓存并进入下一阶段（Activated）。这个在实际请求之前进行缓存的过程就是预缓存。&lt;/p&gt;
+
+&lt;p&gt;在 SPA/MPA 架构的应用中，App Shell 通常包含在 HTML 页面中，连同页面一并被预缓存，保证了离线可访问。但是在 SSR 架构场景下，情况就不一样了。所有页面首屏均是服务端渲染，预缓存的页面不再是有限且固定的。如果预缓存全部页面，SW 需要发送大量请求不说，每个页面都包含的 App Shell 部分都被重复缓存，也造成了缓存空间的浪费。&lt;/p&gt;
+
+&lt;p&gt;既然针对全部页面的预缓存行不通，我们能不能将 App Shell 剥离出来，单独缓存仅包含这个空壳的页面呢？要实现这一点，就需要对后端模板进行修改，通过传入参数控制返回包含 App Shell 的完整页面 OR 代码片段。这样首屏使用完整页面，而后续页面切换交给前端路由完成，请求代码片段进行填充。这也是基于 React、Vue 等技术实现的同构项目的基本思路。&lt;/p&gt;
+
+&lt;p&gt;对于模板的修改并不复杂，例如在 PWA-Directory 中，使用 Handlebars 作为后端模板，通过自定义的 contentOnly 参数就能适应首屏和后续 HTML 片段两种请求。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-html&quot;&gt;// list.hbs
+
+{{#unless contentOnly}}
+&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;html lang=&amp;quot;en&amp;quot;&amp;gt;
+  &amp;lt;head&amp;gt;
+    {{&amp;gt; head}}
+  &amp;lt;/head&amp;gt;
+  &amp;lt;body&amp;gt;
+    {{&amp;gt; header}}
+    &amp;lt;div class=&amp;quot;page-holder&amp;quot;&amp;gt;
+      &amp;lt;main class=&amp;quot;page&amp;quot;&amp;gt;
+{{/unless}}
+... 页面具体内容
+{{#unless contentOnly}}
+      &amp;lt;/main&amp;gt;
+      &amp;lt;div class=&amp;#39;page-loader&amp;#39;&amp;gt;
+      &amp;lt;/div&amp;gt;
+    &amp;lt;/div&amp;gt;
+    {{&amp;gt; footer}}
+  &amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+{{/unless}}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;然后在 SW 中我们需要对 App Shell 页面和 Offline 页面进行预缓存，这里使用了 sw-toolbox 。同时后端需要增加返回 App Shell 的路由规则，这里是&lt;code class=&quot;highlighter-rouge&quot;&gt;/.app/shell&lt;/code&gt;。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// service-worker.js
+
+const SHELL_URL = &amp;#39;/.app/shell&amp;#39;;
+const ASSETS = [
+   SHELL_URL,
+   &amp;#39;/favicons/android-chrome-72x72.png&amp;#39;,
+   &amp;#39;/manifest.json&amp;#39;,
+   ...
+];
+// 使用 sw-toolbox 缓存静态资源
+toolbox.precache(ASSETS);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;最后我们拦截掉所有 HTML 请求，请求目标页面的内容片段而非完整代码（getContentOnlyUrl 执行了 contentOnly 参数拼接工作），返回之前缓存的 App Shell 页面。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// service-worker.js
+
+toolbox.router.default = (request, values, options) =&amp;gt; {
+    // 拦截 HTML 请求
+    if (request.mode === &amp;#39;navigate&amp;#39;) {
+        // 请求代码片段
+        toolbox.cacheFirst(new Request(getContentOnlyUrl(request.url)), values, options);
+        // 返回 App Shell 页面
+        return getFromCache(SHELL_URL)
+            .then(response =&amp;gt; response || gulliverHandler(request, values, options));
+    }
+    return gulliverHandler(request, values, options);
+};&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;有一点值得注意，通常请求目标页面内容片段是放在前端路由中完成的，而这里放在了 SW 中，有什么好处呢？这一点 PWA-Directory 开发者有一篇文章进行了专门讨论，这里就直接使用文中的图片进行说明了。
+先看看之前的做法，也就是在前端路由中：&lt;/p&gt;
+
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/pwa-directory-1.png&quot; alt=&quot;前端路由请求代码片段流程图&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/pwa-directory-1.png&quot; data-alt=&quot;前端路由请求代码片段流程图&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;前端路由请求代码片段流程图&lt;/em&gt;
+&lt;/p&gt;
+
+&lt;script&gt;
+    new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800, 1400],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });
+&lt;/script&gt;
+
+&lt;p&gt;可以看出，&lt;code class=&quot;highlighter-rouge&quot;&gt;app.js&lt;/code&gt;加载并执行时才会发出 HTML 代码片段请求，然后等待服务端响应。整个过程中 SW 处于空闲状态，而事实上第一次拦截到 HTML 请求时，SW 就完全可以先请求代码片段了（拼上参数），拿到响应后放入缓存中。这样当&lt;code class=&quot;highlighter-rouge&quot;&gt;app.js&lt;/code&gt;前端路由执行发出请求时，浏览器发现已经在缓存中，就可以直接使用。当然为了实现这一点，需要在服务端通过设置响应头&lt;code class=&quot;highlighter-rouge&quot;&gt;Cache-Control: max-age&lt;/code&gt;保证内容片段的缓存时间。&lt;/p&gt;
+
+&lt;p class=&quot;responsive-image&quot;&gt;
+    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/pwa-directory-2.png&quot; alt=&quot;SW 请求代码片段流程图&quot; /&gt;
+    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/pwa-directory-2.png&quot; data-alt=&quot;SW 请求代码片段流程图&quot;&gt;
+    &lt;/div&gt;
+    &lt;em&gt;SW 请求代码片段流程图&lt;/em&gt;
+&lt;/p&gt;
+
+&lt;script&gt;
+    new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800, 1400],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });
+&lt;/script&gt;
+
+&lt;p&gt;总结一下这个思路：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;改造后端模板以支持返回完整页面和内容片段&lt;/li&gt;
+  &lt;li&gt;服务端增加一条针对 App Shell 的路由规则，返回仅包含 App Shell 的 HTML 页面&lt;/li&gt;
+  &lt;li&gt;预缓存 App Shell 页面&lt;/li&gt;
+  &lt;li&gt;SW 拦截所有 HTML 请求，统一返回缓存的 App Shell 页面&lt;/li&gt;
+  &lt;li&gt;前端路由负责代码片段的填充，完成前端渲染&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;实际效果是，用户第一次访问应用站点时，首屏由服务端渲染，随后 SW 安装成功后，后续的路由切换包括刷新页面都将由前端渲染完成，服务端将只负责提供 HTML 代码片段的响应。&lt;/p&gt;
+
+&lt;p&gt;解决了预缓存问题，下面我们需要关注另外一个离线可用目标中涉及的关键问题。&lt;/p&gt;
+
+&lt;h3 id=&quot;数据统计&quot;&gt;数据统计&lt;/h3&gt;
+
+&lt;p&gt;在衡量 PWA 效果时，至少有以下几个指标可以考量：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;当弹出添加到桌面的 banner 时，用户是否选择了同意&lt;/li&gt;
+  &lt;li&gt;当前的操作是否是来自添加到桌面之后&lt;/li&gt;
+  &lt;li&gt;当前的操作是否发生在离线状态下&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;通过&lt;code class=&quot;highlighter-rouge&quot;&gt;beforeinstallprompt&lt;/code&gt;事件，可以轻易获取用户对添加到桌面 banner 的反应：&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;window.addEventListener(&amp;#39;beforeinstallprompt&amp;#39;, e =&amp;gt; {
+    console.log(e.platforms); // e.g., [&amp;quot;web&amp;quot;, &amp;quot;android&amp;quot;, &amp;quot;windows&amp;quot;]
+    e.userChoice.then(outcome =&amp;gt; {
+        console.log(outcome); // either &amp;quot;installed&amp;quot;, &amp;quot;dismissed&amp;quot;, etc.
+    }, handleError);
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;通过在&lt;code class=&quot;highlighter-rouge&quot;&gt;manifest.json&lt;/code&gt;的&lt;code class=&quot;highlighter-rouge&quot;&gt;start_url&lt;/code&gt;中添加参数，很容易标识出当前的用户访问来自添加后的桌面快捷方式。例如使用&lt;a href=&quot;https://support.google.com/analytics/answer/1033863?hl=en&quot;&gt;GA Custom campaigns&lt;/a&gt;。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;// manifest.json
+
+{
+    &amp;quot;start_url&amp;quot;: &amp;quot;/?utm_source=homescreen&amp;quot;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;判断当前是否处于离线状态，&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/NavigatorOnLine/onLine&quot;&gt;navigator.onLine&lt;/a&gt;可以实现。但是要注意，返回&lt;code class=&quot;highlighter-rouge&quot;&gt;true&lt;/code&gt;时不代表真的可以访问互联网。&lt;/p&gt;
+
+&lt;p&gt;现在我们有了这些统计指标，接下来的问题就是如何保证离线状态下产生的统计数据不丢失。一个很自然的想法是，在 SW 中拦截所有统计请求，离线时将统计数据存储在本地 LocalStorage 或者 IndexedDB 中，上线后再进行数据的同步。&lt;/p&gt;
+
+&lt;p&gt;Google 之前针对 GA 开发了 sw-offline-google-analytics 类库实现了这一功能，现在已经移到了 Workbox &lt;a href=&quot;https://workboxjs.org/reference-docs/latest/module-workbox-google-analytics.html&quot;&gt;相关模块&lt;/a&gt;中，可以很方便地使用：&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// service-worker.js
+
+importScripts(&amp;#39;path/to/offline-google-analytics-import.js&amp;#39;);
+workbox.googleAnalytics.initialize();&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这样离线统计的问题就解决了。以上部分代码以 GA 为例，不过其他统计脚本思路也是一致的。&lt;/p&gt;
+
+&lt;h3 id=&quot;离线体验&quot;&gt;离线体验&lt;/h3&gt;
+
+&lt;p&gt;最后说说这个项目在离线用户体验上的亮点。PWA 中的离线用户体验绝不仅仅只是展示离线页面代替浏览器“恐龙”而已。离线时，“我究竟能使用哪些功能？”往往是用户最关心的。让我们来看看 PWA-Directory 在这一点上是怎么做的。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/pwa-directory-screenshot.png&quot; alt=&quot;离线体验&quot; /&gt;
+&lt;em&gt;离线体验&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;在离线时，可以弹出 Toast（图中下方红色部分）给予用户提示。要实现这一点并不难，通过监听&lt;code class=&quot;highlighter-rouge&quot;&gt;online/offline&lt;/code&gt;事件就能做到，接下来才是亮点。&lt;/p&gt;
+
+&lt;p&gt;前面说过，离线时用户很关心能访问哪些内容，如果能通过样式显式标注就再好不过了。在上图中，我访问过第一个 Tab “New” 下列表中的第一个项目，所以此时离线时，页面中其余部分都被置灰且不可点击，只有缓存过的内容被保留了下来，用户将不再有四处点击遇到同样离线页面的挫败感。&lt;/p&gt;
+
+&lt;p&gt;要实现这一点可以从两方面入手，首先从全局样式上，离线时给&lt;code class=&quot;highlighter-rouge&quot;&gt;body&lt;/code&gt;或者具体页面容器加个自定义属性，关心离线功能的组件在这个规则下定义自己的离线样式就行了。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// 监听 offline
+window.addEventListener(&amp;#39;offline&amp;#39;, () =&amp;gt; {
+    // 给容器加上自定义属性
+    document.body.setAttribute(&amp;#39;offline&amp;#39;, &amp;#39;true&amp;#39;);
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;另外具体到某些特定组件，例如这个项目中的列表项，点击每个 PWA 项目的链接都将进入对应的详情页，首次访问会被加入 runtimeCache，因此只需要在缓存中按链接地址进行查询，就能知道这个列表项是否应该置灰。&lt;/p&gt;
+&lt;div&gt;
+  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// 判断链接是否访问过
+isAvailable(href) {
+    if (!href || this.window.navigator.onLine) return Promise.resolve(true);
+    return caches.match(href)
+        .then(response =&amp;gt; response.status === 200)
+        .catch(() =&amp;gt; false);
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;总之，离线用户体验是需要根据实际项目情况进行精心设计的。&lt;/p&gt;
+
+&lt;h3 id=&quot;总结&quot;&gt;总结&lt;/h3&gt;
+
+&lt;p&gt;从 PWA 特性尤其是离线缓存来看，对于 SSR 架构的项目，进行 App Shell 的分离是很有必要的。相比 SPA/MPA 的预缓存方案，SSR 需要对后端模板，前端路由进行一些改造。另外，对于 PWA 相关数据的统计和离线同步，可以借鉴应用 Google 的 Workbox 方案。最后，离线用户体验也是需要仔细考量的。&lt;/p&gt;
+
+&lt;p&gt;如果感兴趣，可以深入了解一下 PWA-Directory 的&lt;a href=&quot;https://github.com/GoogleChromeLabs/gulliver/&quot;&gt;代码&lt;/a&gt;，同时结合开发者的几篇技术文章：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://medium.com/dev-channel/pwa-directory-loading-content-faster-in-the-application-shell-e35a485b8f4e&quot;&gt;结合 App Shell 优化内容加载速度&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://medium.com/dev-channel/building-a-hybrid-rendered-pwa-c9d645baf158&quot;&gt;PWA-Directory 的设计思路&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;下面我们将继续研究一个 WordPress 主题项目。&lt;/p&gt;
+
+&lt;h3 id=&quot;参考资料&quot;&gt;参考资料&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://developers.google.cn/web/fundamentals/architecture/app-shell&quot;&gt;App Shell 模型&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://medium.com/dev-channel/pwa-directory-loading-content-faster-in-the-application-shell-e35a485b8f4e&quot;&gt;PWA-Directory 关于请求内容片段的优化&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://medium.com/dev-channel/tracking-pwa-events-with-google-analytics-3b50030d8922&quot;&gt;基于 GA 的 PWA 指标统计&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://developers.google.com/web/updates/2016/07/offline-google-analytics&quot;&gt;GA 离线统计&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://workboxjs.org/overview.html&quot;&gt;Workbox&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook&quot;&gt;Offline Cookbook&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Wed, 25 Oct 2017 03:21:32 +0800</pubDate>
+        <link>https://xiaoiver.github.io/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html</link>
+        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html</guid>
+        
+        <category>PWA</category>
+        
+        <category>ServiceWorker</category>
+        
+        
+        <category>coding</category>
+        
+      </item>
     
       <item>
         <title>Code + Cartoon</title>
@@ -820,436 +1437,6 @@ Channel(QUEUE, (err, channel, conn) =&amp;gt; {
         <category>redis</category>
         
         <category>rabbitMQ</category>
-        
-        
-        <category>coding</category>
-        
-      </item>
-    
-      <item>
-        <title>判断元素是否在视口内</title>
-        <description>&lt;p&gt;在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;function inViewport( el, h ) {
-    var elH = el.offsetHeight, // 元素高度
-        scrolled = scrollY(), // 视口顶部距离document顶部的距离
-        viewed = scrolled + getViewportH(), // 视口底部距离document的距离
-        elTop = el.getBoundingClientRect().top, // 元素顶部距离document顶部的距离
-        elBottom = elTop + elH, // 元素底部距离document顶部的距离
-        h = h || 0; // 高度系数
-    return (elTop + elH * h) &amp;lt;= viewed &amp;amp;&amp;amp; (elBottom) &amp;gt;= scrolled;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;这种方法的问题是使用&lt;code class=&quot;highlighter-rouge&quot;&gt;getBoundingClientRect()&lt;/code&gt;读取元素尺寸数据时，会造成 re-layout，在滚动过程中会导致页面卡顿(jank)。&lt;/p&gt;
-
-&lt;h2 id=&quot;intersectionobserver&quot;&gt;IntersectionObserver&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://wicg.github.io/IntersectionObserver/&quot;&gt;IntersectionObserver&lt;/a&gt; 作为新引入的 API，异步查询元素相对于另一个元素（例如视口）的位置，不会影响主线程，可以解决检测方法带来的性能问题。&lt;/p&gt;
-
-&lt;p&gt;首先我们需要创建一个观察对象，构造函数方法签名如下：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;new IntersectionObserver(entries =&amp;gt; {}, options);&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;随后将使用这个观察对象对元素的位置变化进行观测：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;io.observe(element);&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;观察对象构造函数的第一个参数便是回调函数，这能避免旧方法中轮询带来的性能问题。
-在回调函数中，传入的参数是一个数组（可以观测多个元素），每个元素对象包含以下属性：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;rootBounds&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;ClientRect&lt;/code&gt;对象，等同于对根元素（默认值为视口）调用&lt;code class=&quot;highlighter-rouge&quot;&gt;getBoundingClientRect()&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;boundingClientRect&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;ClientRect&lt;/code&gt;对象，等同于对被观测元素调用&lt;code class=&quot;highlighter-rouge&quot;&gt;getBoundingClientRect()&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;intersectionRect&lt;/code&gt;，以上两个矩形的交集&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;intersectionRatio&lt;/code&gt;，被观测元素被覆盖的比例，如下图所示：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p class=&quot;responsive-image&quot;&gt;
-    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/intersectratio.png&quot; alt=&quot;&quot; /&gt;
-    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/intersectratio.png&quot; data-alt=&quot;&quot;&gt;
-    &lt;/div&gt;
-    &lt;em&gt;&lt;/em&gt;
-&lt;/p&gt;
-
-&lt;script&gt;
-    new Imager('.responsive-image__delayed', {
-        availableWidths: [480, 800],
-        onImagesReplaced: function() {
-            $('.responsive-image__placeholder').hide();
-
-        }
-    });
-&lt;/script&gt;
-
-&lt;p&gt;现在来看看观察对象的第二个参数，这是一个配置对象，其中包含3个重要的配置项：&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;root&lt;/code&gt;，默认值为视口，在容器内滚动的场景中，我们可以指定根元素为容器&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;rootMargin&lt;/code&gt;，顾名思义，值的格式与&lt;code class=&quot;highlighter-rouge&quot;&gt;margin&lt;/code&gt;一样&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;threshold&lt;/code&gt;，这个阈值甚至可以是一个列表，每次达到其中的一个阈值时都会触发回调函数，取值范围为[0-1]&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;最后，相对于&lt;code class=&quot;highlighter-rouge&quot;&gt;observe()&lt;/code&gt;观测方法，自然也有解除观测方法&lt;code class=&quot;highlighter-rouge&quot;&gt;unobserve()&lt;/code&gt;。&lt;/p&gt;
-
-&lt;p&gt;以上就是这个新 API 的全部内容了，下面让我们看看在实际场景中如何应用吧。&lt;/p&gt;
-
-&lt;h2 id=&quot;懒加载图片&quot;&gt;懒加载图片&lt;/h2&gt;
-
-&lt;p&gt;有了这个新的 API，实现滚动到视口内加载图片就十分简单了，其实就是多了新的判断方法，不再需要在滚动事件中获取了。&lt;/p&gt;
-
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;// 创建观测对象
-let observer = new IntersectionObserver(entries =&amp;gt; {
-    entries.forEach(entry =&amp;gt; {
-        // 图片和视口有交集了
-        if (entry.intersectionRatio &amp;gt; 0) {
-            // 停止继续观测，直接加载
-            observer.unobserve(entry.target);
-            loadImage(entry.target);
-        }
-    });
-}, {threshold: 0.01});
-
-// 观测所有图片
-images.forEach(image =&amp;gt; {
-    observer.observe(image);
-});&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;当然，这里还有一些细节，例如：&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;考虑浏览器兼容性，目前&lt;a href=&quot;https://caniuse.com/#feat=intersectionobserver&quot;&gt;最新版 Chrome 和 Firefox 支持&lt;/a&gt;良好。&lt;a href=&quot;https://github.com/WICG/IntersectionObserver/tree/gh-pages/polyfill&quot;&gt;polyfill&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;图片的 src 属性存放在例如 data-src 上&lt;/li&gt;
-  &lt;li&gt;全部图片加载完毕，调用观测对象的&lt;code class=&quot;highlighter-rouge&quot;&gt;disconnect()&lt;/code&gt;方法彻底关闭&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;可以参考&lt;a href=&quot;https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163&quot;&gt;这篇文章&lt;/a&gt;的实现。&lt;/p&gt;
-
-&lt;h2 id=&quot;多个容器中-sticky-的场景&quot;&gt;多个容器中 sticky 的场景&lt;/h2&gt;
-
-&lt;p&gt;同样，在 sticky 的场景中，IntersectionObserver 也有很好的应用。&lt;/p&gt;
-
-&lt;p&gt;首先来看看过去的方式有哪有限制：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;对于开发者而言，通过 CSS 规则&lt;code class=&quot;highlighter-rouge&quot;&gt;position: sticky&lt;/code&gt;将控制行为完全交给浏览器。除了通过手动计算，完全不知道一个元素当前是否处于 sticky 状态，当然这个计算过程，又需要放在滚动事件中重复执行，容易造成 jank。&lt;/li&gt;
-  &lt;li&gt;当涉及到多个独立容器的场景，计算过程将变得十分复杂。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/sticky-regions.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;对于开发者的一种理想状态是，能够监听自定义事件&lt;code class=&quot;highlighter-rouge&quot;&gt;sticky-change&lt;/code&gt;，在元素 sticky 状态发生改变之时进行操作，这样就避免了在滚动事件处理函数中不断轮询。&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;document.addEventListener(&amp;#39;sticky-change&amp;#39;, e =&amp;gt; {
-    const header = e.detail.target;  // header became sticky or stopped sticking.
-    const sticking = e.detail.stuck; // true when header is sticky.
-    header.classList.toggle(&amp;#39;shadow&amp;#39;, sticking); // add drop shadow when sticking.
-});&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;首先我们需要为每一个容器建立首尾两个“哨兵” DOM。IO 需要关注它们和视口容器的重合度。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/sentinelanimation.gif&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;这里以头部的“哨兵”为例，每次一进入视口容器就需要开始计算位置信息。尾部哨兵略有不同，只有全部在容器中才需要开始计算。&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;const observer = new IntersectionObserver((records, observer) =&amp;gt; {
-    for (const record of records) {
-        const targetInfo = record.boundingClientRect;
-        const stickyTarget = record.target.parentElement.querySelector(&amp;#39;.sticky&amp;#39;);
-        const rootBoundsInfo = record.rootBounds;
-
-        // Started sticking.
-        if (targetInfo.bottom &amp;lt; rootBoundsInfo.top) {
-            fireEvent(true, stickyTarget);
-        }
-
-        // Stopped sticking.
-        if (targetInfo.bottom &amp;gt;= rootBoundsInfo.top &amp;amp;&amp;amp;
-            targetInfo.bottom &amp;lt; rootBoundsInfo.bottom) {
-            fireEvent(false, stickyTarget);
-        }
-    }
-}, {threshold: [0], root: container});
-
-// Add the top sentinels to each section and attach an observer.
-const sentinels = addSentinels(container, &amp;#39;sticky_sentinel--top&amp;#39;);
-sentinels.forEach(el =&amp;gt; observer.observe(el));&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;发送自定义事件的代码就省略了。完整代码可参考原文中的&lt;a href=&quot;https://ebidel.github.io/demos/sticky-position-event.html&quot;&gt;DEMO 地址&lt;/a&gt;。&lt;/p&gt;
-
-&lt;p&gt;现在我们可以做到监听元素 sticky 状态的变动，由此引申到另一个问题，那就是元素其他 CSS 属性的变动也能够检测么？
-&lt;code class=&quot;highlighter-rouge&quot;&gt;MutationObserver&lt;/code&gt;可以监听样式类的增减，但是计算出来的样式规则发生变动则不行。未来&lt;a href=&quot;http://xml3d.org/xml3d/specification/styleobserver/&quot;&gt; Style Mutation Observer&lt;/a&gt;将作为一个很好的补充。&lt;/p&gt;
-
-&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
-
-&lt;p&gt;IO 在需要计算两个元素重合状态，尤其是视口元素的场景中，可以完全替代滚动事件轮询的方式。&lt;/p&gt;
-
-&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://developers.google.com/web/updates/2016/04/intersectionobserver&quot;&gt;Google Developer&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://hacks.mozilla.org/2017/08/intersection-observer-comes-to-firefox/&quot;&gt;MDN&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163&quot;&gt;懒加载图片原文&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://developers.google.com/web/updates/2017/09/sticky-headers&quot;&gt;sticky场景 原文&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Mon, 21 Aug 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html</guid>
-        
-        <category>javascript</category>
-        
-        
-        <category>coding</category>
-        
-      </item>
-    
-      <item>
-        <title>在 jekyll 中使用代码高亮</title>
-        <description>&lt;p&gt;代码高亮是一个技术博客的重要特性，Jekyll 中默认使用&lt;a href=&quot;http://jekyllrb.com/docs/templates/#code-snippet-highlighting&quot;&gt; Rouge&lt;/a&gt;进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的&lt;a href=&quot;http://pygments.org/&quot;&gt; Pygments&lt;/a&gt;也是一个可选方案。&lt;/p&gt;
-
-&lt;p&gt;博客作者可以使用如下 markdown 语法插入代码块，其中&lt;code class=&quot;highlighter-rouge&quot;&gt;linenos&lt;/code&gt;表示显示行号：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;\{\% highlight ruby linenos %}
-    def foo
-      puts &amp;#39;foo&amp;#39;
-    end
-    \{\% endhighlight %}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;本来我是采用默认的 Rouge，但是发现样式有点丑，尤其是行号部分。而且有时我需要高亮显示若干行代码，例如这样：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;\{\% highlight ruby linenos=1-2 %}
-    def foo
-      puts &amp;#39;foo&amp;#39;
-    end
-    \{\% endhighlight %}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;此时 Rouge 就做不到了，而且 Rouge 和 Pygments 似乎很久没有更新了，想找一个漂亮的样式也不容易。&lt;/p&gt;
-
-&lt;p&gt;我在网上搜了一下，发现了&lt;a href=&quot;http://prismjs.com/&quot;&gt; Prism&lt;/a&gt;这样一个库。MDN，Smashing magazine 很多技术网站都在使用，难怪样式看着有点眼熟。那么如何在 jekyll 中使用呢？&lt;/p&gt;
-
-&lt;h2 id=&quot;编写-jekyll-插件&quot;&gt;编写 jekyll 插件&lt;/h2&gt;
-
-&lt;p&gt;参考 Prism 文档，在项目中引入定制后的 JS 和 CSS 文件都很简单。值得一提的是之前提过的高亮特定行数的代码，可以通过&lt;a href=&quot;http://prismjs.com/plugins/line-highlight/&quot;&gt; Prism 插件&lt;/a&gt;实现。所以我们只需要关注如何通过 jekyll 插件将 markdown 代码块转换成对应的 HTML 代码即可。&lt;/p&gt;
-
-&lt;p&gt;之前介绍过如何在&lt;a href=&quot;/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html&quot;&gt; Github Pages 中使用第三方插件&lt;/a&gt;。由于我的博客在本地进行编译，所以只需要将插件放在&lt;code class=&quot;highlighter-rouge&quot;&gt;_plugins&lt;/code&gt;文件夹下即可。&lt;/p&gt;
-
-&lt;p&gt;我搜索到一个&lt;a href=&quot;https://github.com/gmurphey/jekyll-prism-plugin&quot;&gt; jekyll 插件&lt;/a&gt;，已经很久没有维护了，ISSUE 也很久没有回复。看了代码后决定在此基础上进行修改，顺便学习一下自定义插件的相关知识。&lt;/p&gt;
-
-&lt;h3 id=&quot;liquid&quot;&gt;Liquid&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/Shopify/liquid&quot;&gt;Liquid&lt;/a&gt; 是使用 Ruby 编写的模版引擎。jekyll 使用它进行 markdown 语法的解析。通过继承 Liquid 内部封装的类，可以自定义我们的语法块。&lt;/p&gt;
-
-&lt;p&gt;以下是声明和注册代码，继承&lt;a href=&quot;http://www.rubydoc.info/gems/liquid/Liquid/Block&quot;&gt; Block&lt;/a&gt;而非 Tag 的原因很简单，我们需要使用闭合标签，类似&lt;code class=&quot;highlighter-rouge&quot;&gt;\{\% endprism %}&lt;/code&gt;，否则一旦解析到闭合标签就会报错了。&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;2,11&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Jekyll
-  class PrismBlock &amp;lt; Liquid::Block
-    include Liquid::StandardFilters
-    def initialize(tag_name, markup, tokens)
-        super
-    end
-
-    def render(context)
-    end
-end
-Liquid::Template.register_tag(&amp;#39;prism&amp;#39;, Jekyll::PrismBlock)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;代码中还引入了&lt;code class=&quot;highlighter-rouge&quot;&gt;StandardFilters&lt;/code&gt;，这个后续在输出 HTML 时会使用。&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;3&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Jekyll
-  class PrismBlock &amp;lt; Liquid::Block
-    include Liquid::StandardFilters
-end
-Liquid::Template.register_tag(&amp;#39;prism&amp;#39;, Jekyll::PrismBlock)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;真正的处理逻辑将在两个方法：构造函数&lt;code class=&quot;highlighter-rouge&quot;&gt;initialize()&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;render()&lt;/code&gt;中完成。&lt;/p&gt;
-
-&lt;h3 id=&quot;解析行号&quot;&gt;解析行号&lt;/h3&gt;
-
-&lt;p&gt;通过方法签名&lt;code class=&quot;highlighter-rouge&quot;&gt;initialize(tag_name, markup, tokens)&lt;/code&gt;可以看出，&lt;code class=&quot;highlighter-rouge&quot;&gt;markup&lt;/code&gt;包含了代码语言和行号的声明。解析工作交给正则完成：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;`OPTIONS_SYNTAX = %r{^([a-zA-Z0-9.+#-]+)((\s+\w+(=[0-9,-]+)?)*)$}`
-markup.strip =~ OPTIONS_SYNTAX&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;所以对于&lt;code class=&quot;highlighter-rouge&quot;&gt;\{\% prism ruby linenos=2,11-13 %}&lt;/code&gt;这样的代码块声明，我们能够得到语言&lt;code class=&quot;highlighter-rouge&quot;&gt;ruby&lt;/code&gt;，行号&lt;code class=&quot;highlighter-rouge&quot;&gt;linenos=2,11-13&lt;/code&gt;。这部分基本不需要做修改，相关代码就不贴了。&lt;/p&gt;
-
-&lt;h3 id=&quot;输出-html&quot;&gt;输出 HTML&lt;/h3&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;render()&lt;/code&gt;函数十分简单，我们按照 Prism 接受的 HTML 结构输出即可，这里我根据&lt;code class=&quot;highlighter-rouge&quot;&gt;linenos&lt;/code&gt;决定是否展示全部行号，另外通过&lt;code class=&quot;highlighter-rouge&quot;&gt;data-line&lt;/code&gt;配合 Prism 插件实现高亮特定行：&lt;/p&gt;
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;# 转义内容
-code = h(super).strip
-linenos = &amp;#39;&amp;#39;
-linenos_content = @options[&amp;quot;linenos&amp;quot;]
-if !linenos_content.nil?
-    linenos = &amp;quot;class=&amp;#39;line-numbers&amp;#39; data-line=&amp;#39;#{linenos_content}&amp;#39;&amp;quot;
-end
-# 返回 HTML 内容
-&amp;lt;&amp;lt;-HTML
-    &amp;lt;div&amp;gt;
-      &amp;lt;pre #{linenos}&amp;gt;&amp;lt;code class=&amp;#39;language-#{@lang}&amp;#39;&amp;gt;#{code}&amp;lt;/code&amp;gt;&amp;lt;/pre&amp;gt;
-    &amp;lt;/div&amp;gt;
-HTML&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;以上代码有两点需要注意：&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;类似 JS 中的字符串模版功能，Ruby 中也有类似的语法，在上面最终输出 HTML 内容中有使用，但是必须使用双引号包裹。&lt;/li&gt;
-  &lt;li&gt;转义标签內的代码内容使用了&lt;code class=&quot;highlighter-rouge&quot;&gt;h()&lt;/code&gt;函数，还记得开头引入的 StandardFilters 嘛，&lt;code class=&quot;highlighter-rouge&quot;&gt;h()&lt;/code&gt;是里面&lt;code class=&quot;highlighter-rouge&quot;&gt;escape()&lt;/code&gt;的&lt;a href=&quot;https://github.com/Shopify/liquid/blob/master/lib/liquid/standardfilters.rb#L35-L38&quot;&gt;同名函数&lt;/a&gt;。这个函数接受输入流（这里就是代码块内容），返回解析后的 HTML 字符串。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
-
-&lt;p&gt;深刻感觉到 jekyll 用的人真的不多了，很多插件都处于无人维护的状态。&lt;/p&gt;
-</description>
-        <pubDate>Fri, 11 Aug 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html</guid>
-        
-        <category>ruby</category>
-        
-        <category>jekyll</category>
-        
-        
-        <category>coding</category>
-        
-      </item>
-    
-      <item>
-        <title>垃圾围城</title>
-        <description>&lt;p&gt;前两天听《反派影评》，节目里说到西宁 FIRST 电影展播放了纪录片《塑料王国》完整版。很早之前我看过半小时的&lt;a href=&quot;https://www.youtube.com/watch?v=TUmuOmEqXZQ&quot;&gt;媒体版本&lt;/a&gt;，但现在豆瓣此片的页面已经没了，据说影展结束后也不允许媒体再提这部片子。&lt;/p&gt;
-
-&lt;p class=&quot;responsive-image&quot;&gt;
-    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/plastic-china-post.jpg&quot; alt=&quot;&quot; /&gt;
-    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/plastic-china-post.jpg&quot; data-alt=&quot;&quot;&gt;
-    &lt;/div&gt;
-    &lt;em&gt;&lt;/em&gt;
-&lt;/p&gt;
-
-&lt;script&gt;
-    new Imager('.responsive-image__delayed', {
-        availableWidths: [480],
-        onImagesReplaced: function() {
-            $('.responsive-image__placeholder').hide();
-
-        }
-    });
-&lt;/script&gt;
-
-&lt;p&gt;在我看的半小时版本中，影片讲述了大量“洋垃圾”漂洋过海来到中国某个小山村，村民们在及其恶劣的环境中，使用及其原始的方式手工进行分拣。整个村子的环境也被破坏。最震撼的一幕就是孩子们在垃圾堆中玩耍，其中一个随手捡起一个注射器就吸里面的水。&lt;/p&gt;
-
-&lt;p class=&quot;responsive-image&quot;&gt;
-    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/plastic-china.jpg&quot; alt=&quot;&quot; /&gt;
-    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/plastic-china.jpg&quot; data-alt=&quot;&quot;&gt;
-    &lt;/div&gt;
-    &lt;em&gt;&lt;/em&gt;
-&lt;/p&gt;
-
-&lt;script&gt;
-    new Imager('.responsive-image__delayed', {
-        availableWidths: [480, 800, 1400],
-        onImagesReplaced: function() {
-            $('.responsive-image__placeholder').hide();
-
-        }
-    });
-&lt;/script&gt;
-
-&lt;p&gt;这个版本并没有类似抨击政府不作为这样的激进作者表达，只是希望唤起社会对这些分拣垃圾村民的关注，而且国家已经出台法律禁止进口这些“洋垃圾”，所以被禁播很让人费解，到底在担心什么呢？&lt;/p&gt;
-
-&lt;p&gt;不过相比《塑料王国》，导演王久良之前的另一部&lt;a href=&quot;https://www.youtube.com/watch?v=7zZ2K1rrqpE&quot;&gt;《垃圾围城》&lt;/a&gt;就没有这么克制了，直接将矛头对准了北京的垃圾处理机制。&lt;/p&gt;
-
-&lt;p&gt;北京被周边的几百个垃圾处理场包围。人们从大山中开采城市化需要的砂石，挖出一个个大坑，然后将城市产生的垃圾回填。垃圾填埋场周边的地下地上水源都遭到了不同程度的污染。&lt;/p&gt;
-
-&lt;p class=&quot;responsive-image&quot;&gt;
-    &lt;img class=&quot;responsive-image__placeholder&quot; src=&quot;/img/resized/480/garbage.jpg&quot; alt=&quot;&quot; /&gt;
-    &lt;div class=&quot;responsive-image__delayed&quot; data-src=&quot;/img/resized/{width}/garbage.jpg&quot; data-alt=&quot;&quot;&gt;
-    &lt;/div&gt;
-    &lt;em&gt;&lt;/em&gt;
-&lt;/p&gt;
-
-&lt;script&gt;
-    new Imager('.responsive-image__delayed', {
-        availableWidths: [480],
-        onImagesReplaced: function() {
-            $('.responsive-image__placeholder').hide();
-
-        }
-    });
-&lt;/script&gt;
-
-&lt;p&gt;随着城市的不断扩张，终于需要在垃圾场上建起学校，廉租房。看着挖开地基后，显露出的一层层厚厚的垃圾，不禁让人感慨，曾经被我们丢弃的垃圾，换了一种面目又回到了我们身边。&lt;/p&gt;
-
-&lt;p&gt;在影片中，作者看着被严重污染的通榆河，感慨为了解决北京的缺水问题，我们实现了南水北调，却对身边的水源毫不珍惜。从谷歌地图的历史照片中可以发现短短几年间，几片水域的颜色就由绿变黑。&lt;/p&gt;
-
-&lt;p&gt;有一群人不得不终日与垃圾为邻，那就是来自全国各地的拾荒者。他们用垃圾中的建筑材料盖起了简易窝棚，从中获取衣物甚至是食物，将手工分拣出来的材料低价卖给回收站。&lt;/p&gt;
-
-&lt;p&gt;我其实很好奇，对于这些垃圾，国际上先进的方法到底是什么，难道只有填埋这一种么。&lt;/p&gt;
-</description>
-        <pubDate>Sun, 06 Aug 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/movie/2017/08/05/%E5%9E%83%E5%9C%BE%E5%9B%B4%E5%9F%8E.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/movie/2017/08/05/%E5%9E%83%E5%9C%BE%E5%9B%B4%E5%9F%8E.html</guid>
-        
-        <category>movie</category>
-        
-        
-        <category>movie</category>
-        
-      </item>
-    
-      <item>
-        <title>浏览器的恢复滚动行为</title>
-        <description>&lt;p&gt;平常使用浏览器的后退功能时，常常会发现返回的页面滚动到了之前的位置，而不是简单的回到顶部。这是由于浏览器在导航跳转和通过 History API 创建历史记录时，都会记录当前的垂直滚动距离，在重新访问时恢复这个距离。值得一提的是，在&lt;a href=&quot;http://www.w3.org/TR/html51/browsers.html#history&quot;&gt; HTML History Spec&lt;/a&gt;中并没有强制要求浏览器记录与恢复滚动距离。在传统的页面中，这一默认行为非常贴心，但是在 SPA 中存在以下问题：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;浏览器试图恢复滚动距离时，页面可能还没有加载完毕，可能存在异步加载的部分。这样恢复之后，页面会出现跳动。&lt;/li&gt;
-  &lt;li&gt;点击链接进入页面就不会应用恢复滚动这一行为。对于开发者而言，希望提供统一的恢复滚动实现，而不是后退等历史记录这部分依赖浏览器。&lt;/li&gt;
-  &lt;li&gt;浏览器的滚动行为让开发者无法实现滚动过程的动画。而且对于容器内滚动的设计，浏览器是无法帮助恢复的。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;按照&lt;a href=&quot;https://majido.github.io/scroll-restoration-proposal/&quot;&gt;《浏览器恢复滚动提案》&lt;/a&gt;的介绍，针对这一问题，现在常见的解决方案包括：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;不使用 body 滚动，采用容器内滚动的方式。但显然，这样会丢失一部分浏览器默认行为，例如滑动隐藏顶部地址栏。&lt;/li&gt;
-  &lt;li&gt;在浏览器恢复滚动行为之后，进行第二次滚动。缺点是会有明显的用户感知。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;疑似方案&quot;&gt;疑似方案？&lt;/h2&gt;
-
-&lt;p&gt;话说我们能监听到浏览器恢复滚动的行为么？&lt;/p&gt;
-
-&lt;p&gt;浏览器恢复滚动时会触发 scroll 事件。但这里涉及到 scroll 和 popState 事件的触发顺序。Chrome 在恢复滚动之前会先触发 popState 事件，这就意味着我们可以在此时记录下页面的滚动距离，然后触发 scroll 时我们就能使用类似&lt;code class=&quot;highlighter-rouge&quot;&gt;window.scrollTo&lt;/code&gt;来手动恢复了。但是 Firefox 刚好相反，这样在 popState 中我们已经无法获取旧的滚动距离了，因为浏览器已经自动恢复了。&lt;/p&gt;
-
-&lt;p&gt;事实上，在前端路由的设计中，通常都包含 hash 和 History 模式。在&lt;a href=&quot;https://github.com/ReactTraining/react-router/issues/707&quot;&gt; react-router的这个 ISSUE&lt;/a&gt;中，列举了 hashchange/popState 与 scroll 事件在 Chrome/Firefox 中的触发顺序，可以看出并不统一。
-所以这个方案至少在兼容性上并不可行。&lt;/p&gt;
-
-&lt;h2 id=&quot;引入新的-api&quot;&gt;引入新的 API&lt;/h2&gt;
-
-&lt;p&gt;为了让开发者能够通过编程方式关闭这一浏览器行为，&lt;a href=&quot;https://majido.github.io/scroll-restoration-proposal/&quot;&gt;《浏览器恢复滚动提案》&lt;/a&gt;引入了新的 API：&lt;/p&gt;
-
-&lt;div&gt;
-  &lt;pre class=&quot;line-numbers&quot; data-line=&quot;&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;if (&amp;#39;scrollRestoration&amp;#39; in history) {
-    // 默认值为&amp;#39;auto&amp;#39;
-    history.scrollRestoration = &amp;#39;manual&amp;#39;;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;根据&lt;a href=&quot;https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration&quot;&gt; Google 开发者文档&lt;/a&gt;，Chrome 46 以上已经实装。&lt;/p&gt;
-
-&lt;p&gt;我自己也写了一个 demo 测试了一下确实可行，这或许才是最好的解决方案，等待其他浏览器厂商支持吧。&lt;/p&gt;
-</description>
-        <pubDate>Fri, 04 Aug 2017 03:21:32 +0800</pubDate>
-        <link>https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html</link>
-        <guid isPermaLink="true">https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html</guid>
-        
-        <category>browser</category>
         
         
         <category>coding</category>

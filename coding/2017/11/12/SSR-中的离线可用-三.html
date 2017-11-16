@@ -1,0 +1,106 @@
+<!DOCTYPE html><meta charset=utf-8><meta name=viewport content="width=device-widthinitial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=keywords content=coding编程javascriptxiaoiverxiaop><meta name=theme-color content=#eee><meta name=msapplication-TileColor content=#eee><meta name=msapplication-TileImage content=/img/manifest/ms-icon-144x144.png><title>SSR 中的离线可用（三） | xiaOp的博客</title><meta property=og:title content="SSR 中的离线可用（三）"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。"><meta property=og:description content="本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-11-13T03:21:32+08:00><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"SSR 中的离线可用（三）","author":{"@type":"Person","name":"xiaOp"},"datePublished":"2017-11-13T03:21:32+08:00","dateModified":"2017-11-13T03:21:32+08:00","description":"本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html"},"url":"https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html"}</script><title>SSR 中的离线可用（三）</title><link rel=apple-touch-icon sizes=57x57 href=/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/style-large.css><link rel=stylesheet href=/css/prism.css><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]--><script src=/js/jquery.min.js></script><script src=/js/Imager.min.js></script><script src=/js/jquery.scrollzer.min.js></script><script src=/js/jquery.scrolly.min.js></script><script src=/js/skel.min.js></script><script src=/js/skel-layers.min.js></script><script src=/js/prism.min.js></script><script src=/js/init.min.js></script><section id=header class=skel-layers-fixed><header><span class="image avatar"><img src=/img/avatar.jpg alt=""></span><h1 id=logo><a href=/ class=secret>xiaOp's Blog</a></h1><p>想成为一个有趣的人</header><nav id=nav><ul><li><a href=#intro>主页</a><li><a href=#blog>文章</a><li><a href=#contact>兴趣</a></ul></nav><footer><ul class=icons><li><a href=https://github.com/xiaoiver class="icon fa-github"><span class=label>Github</span></a><li><a href=mailto:pyqiverson@gmail.com class="icon fa-envelope"><span class=label>Email</span></a><li><a href=https://www.douban.com/people/150275082/ class=icon>豆</a><li><a href=https://www.zhihu.com/people/pan-yu-qi-20/activities class=icon>知</a></ul></footer></section><div id=wrapper><div id=main><style>header.intro-header {
+        position: relative;
+        background-image: url('/img/vue-ssr.png');
+        background-size: contain;;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+    
+    header.intro-header .header-mask {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.8);
+    }
+    
+
+    header.intro-header .icon {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        color: white;
+        background: #4acaa8;
+        border-radius: 50%;
+        height: 2.5em;
+        width: 2.5em;
+        line-height: 2.5em;
+        text-align: center;
+    }
+
+    .post-heading {
+        position: relative;
+        padding: 50px 0;
+        color: white;
+    }
+    .post-heading h2,
+    .post-heading h3,
+    .post-heading h4 {
+        color: white;
+    }
+    .post-heading h2 {
+        font-size: 3em;
+    }
+    .post-heading .meta {
+        transform: translate(0.1em, 0.5em);
+    }
+
+    article {
+        padding-top: 20px;
+    }
+
+    .post-container img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 1.5em auto 1.6em auto;
+    }
+    .post-container a {
+        color: #4acaa8;
+    }</style><header class=intro-header><div class=header-mask></div><span class="icon fa-code"></span><div class=container><div class=post-heading><h2>SSR 中的离线可用（三）<h3 class=subheading>实践：Vue + Workbox</h3></h2><div class=tags><a class=tag href=/tags#PWA title=PWA>PWA</a> <a class=tag href=/tags#ServiceWorker title=ServiceWorker>ServiceWorker</a> <a class=tag href=/tags#vue title=vue>vue</a> <a class=tag href=/tags#workbox title=workbox>workbox</a></div><span class="meta secret secret-lg">Posted by xiaOp on November 12, 2017</span></div></div></header><article class=post-container><div class=container><p>本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。<ul><li>本文是第三部分，将使用 Vue SSR 和 Workbox 实践这一思路。<li><a href=/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html>第一部分</a>以 PWA-Directory 为例进行分析。<li><a href=/coding/2017/10/28/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%BA%8C.html>第二部分</a>研究了一个 WordPress 主题项目。</ul><h3 id=思路回顾>思路回顾</h3><p>我们之前提供了一种 SSR 架构下通用的离线缓存思路：<ol><li>改造后端模板以支持返回完整页面和内容片段<li>服务端增加一条针对 App Shell 的路由规则，返回仅包含 App Shell 的 HTML 页面<li>预缓存 App Shell 页面<li>Service Worker 拦截所有 HTML 请求，统一返回缓存的 App Shell 页面。同时向服务端请求当前页面需要的内容片段并写入缓存<li>前端路由向服务端请求内容片段，发现缓存中已存在，将其填充进 App Shell 中，完成前端渲染</ol><p>将这一思路应用到 Vue SSR 项目中时，需要做一些改变。<p>首先在 Vue 同构项目中，同一套代码在 Node 端和浏览器端都能运行，是没有“后端模板”的概念的，同样对于“内容片段”也是如此。在首屏使用服务端渲染直出 HTML 后，浏览器端进行 Hydrate，绑定事件使页面真正可响应，除非刷新页面，否则后续的路由切换都将由前端路由器完成。<p class=responsive-image><img class=responsive-image__placeholder src=/img/resized/480/vue-ssr.png alt="Vue SSR"><div class=responsive-image__delayed data-src=/img/resized/{width}/vue-ssr.png data-alt="Vue SSR"></div><em>Vue SSR</em><p></p><script>new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });</script></div></article><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div><script>function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }</script><script>async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.post-heading h2').remove('.subheading').remove('#logo');
+    })</script><style>/* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -1.25em;
+            font-size: 1.1em;
+        }
+    }</style></div></div><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>
