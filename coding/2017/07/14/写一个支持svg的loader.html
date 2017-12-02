@@ -1,7 +1,98 @@
-<!DOCTYPE html><meta charset=utf-8><meta name=viewport content="width=device-widthinitial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=keywords content=coding编程javascriptxiaoiverxiaop><meta name=theme-color content=#eee><meta name=msapplication-TileColor content=#eee><meta name=msapplication-TileImage content=/img/manifest/ms-icon-144x144.png><title>写一个支持svg的loader | xiaOp的博客</title><meta property=og:title content=写一个支持svg的loader><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="在 如何在项目中使用图标 一节中，我们介绍了开发时引入自定义 svg 图标的方法，例如："><meta property=og:description content="在 如何在项目中使用图标 一节中，我们介绍了开发时引入自定义 svg 图标的方法，例如："><link rel=canonical href=https://xiaoiver.github.io/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-07-15T03:21:32+08:00><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"写一个支持svg的loader","author":{"@type":"Person","name":"xiaOp"},"datePublished":"2017-07-15T03:21:32+08:00","dateModified":"2017-07-15T03:21:32+08:00","description":"在 如何在项目中使用图标 一节中，我们介绍了开发时引入自定义 svg 图标的方法，例如：","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html"},"url":"https://xiaoiver.github.io/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html"}</script><title>写一个支持svg的loader</title><link rel=apple-touch-icon sizes=57x57 href=/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/style-large.css><link rel=stylesheet href=/css/prism.css><!--[if lt IE 9]>
+<!DOCTYPE html>
+<html>
+
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="coding编程javascriptxiaoiverxiaop">
+    <meta name="theme-color" content="#eee">
+    <meta name="msapplication-TileColor" content="#eee">
+    <meta name="msapplication-TileImage" content="/img/manifest/ms-icon-144x144.png">
+    <!-- Begin Jekyll SEO tag v2.2.3 -->
+<title>写一个支持svg的loader | xiaOp的博客</title>
+<meta property="og:title" content="写一个支持svg的loader" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="在 如何在项目中使用图标 一节中，我们介绍了开发时引入自定义 svg 图标的方法，例如：" />
+<meta property="og:description" content="在 如何在项目中使用图标 一节中，我们介绍了开发时引入自定义 svg 图标的方法，例如：" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-07-15T03:21:32+08:00" />
+<script type="application/ld+json">
+{"@context":"http://schema.org","@type":"BlogPosting","headline":"写一个支持svg的loader","author":{"@type":"Person","name":"xiaOp"},"datePublished":"2017-07-15T03:21:32+08:00","dateModified":"2017-07-15T03:21:32+08:00","description":"在 如何在项目中使用图标 一节中，我们介绍了开发时引入自定义 svg 图标的方法，例如：","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html"},"url":"https://xiaoiver.github.io/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <title>写一个支持svg的loader</title>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/style-large.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]--><script src=/js/jquery.min.js></script><script src=/js/Imager.min.js></script><script src=/js/jquery.scrollzer.min.js></script><script src=/js/jquery.scrolly.min.js></script><script src=/js/skel.min.js></script><script src=/js/skel-layers.min.js></script><script src=/js/prism.min.js></script><script src=/js/init.min.js></script><section id=header class=skel-layers-fixed><header><span class="image avatar"><img src=/img/avatar.jpg alt=""></span><h1 id=logo><a href=/ class=secret>xiaOp's Blog</a></h1><p>想成为一个有趣的人</header><nav id=nav><ul><li><a href=#intro>主页</a><li><a href=#blog>文章</a><li><a href=#contact>兴趣</a></ul></nav><footer><ul class=icons><li><a href=https://github.com/xiaoiver class="icon fa-github"><span class=label>Github</span></a><li><a href=mailto:pyqiverson@gmail.com class="icon fa-envelope"><span class=label>Email</span></a><li><a href=https://www.douban.com/people/150275082/ class=icon>豆</a><li><a href=https://www.zhihu.com/people/pan-yu-qi-20/activities class=icon>知</a></ul></footer></section><div id=wrapper><div id=main><style>header.intro-header {
+    <![endif]-->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/Imager.min.js"></script>
+    <script src="/js/jquery.scrollzer.min.js"></script>
+    <script src="/js/jquery.scrolly.min.js"></script>
+    <script src="/js/skel.min.js"></script>
+    <script src="/js/skel-layers.min.js"></script>
+    <script src="/js/prism.min.js"></script>
+    <script src="/js/init.min.js"></script>
+</head>
+
+
+    <body>
+
+        <section id="header" class="skel-layers-fixed">
+    <header>
+        <span class="image avatar"><img src="/img/avatar.jpg" alt="" /></span>
+        <h1 id="logo"><a href="/" class="secret">xiaOp's Blog</a></h1>
+        <p>想成为一个有趣的人</p>
+    </header>
+    <nav id="nav">
+        <ul>
+            <li><a href="#intro">主页</a></li>
+            <li><a href="#blog">文章</a></li>
+            <li><a href="#contact">兴趣</a></li>
+        </ul>
+    </nav>
+    <footer>
+        <ul class="icons">
+            <li><a href="https://github.com/xiaoiver" class="icon fa-github"><span class="label">Github</span></a></li>
+            <li><a href="mailto:pyqiverson@gmail.com" class="icon fa-envelope"><span class="label">Email</span></a></li>
+            <li><a href="https://www.douban.com/people/150275082/" class="icon">豆</a></li>
+            <li><a href="https://www.zhihu.com/people/pan-yu-qi-20/activities" class="icon">知</a></li>
+        </ul>
+    </footer>
+</section>
+
+
+        <div id="wrapper">
+            <div id="main">
+                <style type="text/css">
+    header.intro-header {
         position: relative;
         background-image: url('/img/vue-webpack.png');
         background-size: contain;;
@@ -59,7 +150,54 @@
     }
     .post-container a {
         color: #4acaa8;
-    }</style><header class=intro-header><div class=header-mask></div><span class="icon fa-code"></span><div class=container><div class=post-heading><h2>写一个支持svg的loader<h3 class=subheading></h3></h2><div class=tags><a class=tag href=/tags#webpack title=webpack>webpack</a></div><span class="meta secret secret-lg">Posted by xiaOp on July 14, 2017</span></div></div></header><article class=post-container><div class=container><p>在<a href=https://lavas.baidu.com/guide/vue/doc/vue/advanced/how-to-use-icon> 如何在项目中使用图标 </a>一节中，我们介绍了开发时引入自定义 svg 图标的方法，例如：<ul><li>将自定义 svg 文件放入指定文件夹下，自动完成注册<li>修改 <code class=highlighter-rouge>config/icon.js</code> 配置文件引入 svg 格式的 fontawesome 图标</ul><p>以上修改甚至都不需要重启开发服务器，这一切都是通过模版项目中的 <code class=highlighter-rouge>build/loaders/svg-loader</code> 完成的，本文将介绍其实现原理。<h2 id=loader-是什么>loader 是什么</h2><p>在 webpack 中，<a href=https://doc.webpack-china.org/concepts/loaders/ >loader</a> 用于对模块的源代码进行转换。例如我们熟悉的 <a href=https://github.com/babel/babel-loader>babel-loader</a> 使用 Babel 转译源代码，<a href=https://github.com/webpack-contrib/style-loader>style-loader</a> 通过向 html 代码中注入 style 标签添加样式。<p>在我们的场景中，需要向源代码中注入 svg 的注册代码，此时使用 loader 再合适不过了。<p>我们使用 webpack 推荐的 <a href=https://doc.webpack-china.org/concepts/loaders/#-configuration->配置方式</a>：<ul><li>在 <code class=highlighter-rouge>module.rules</code> 中添加一条规则，表示我们要修改的是 <code class=highlighter-rouge>src/app.js</code> 文件<li>在 <code class=highlighter-rouge>resolveLoader.alias</code> 中声明解析路径，保证 webpack 能找到 loader 路径</ul><div><pre class=line-numbers data-line=""><code class=language-js>// build/webpack.base.conf.js
+    }
+</style>
+
+<header class="intro-header" >
+    <div class="header-mask"></div>
+    <span class="icon fa-code"></span>
+    <div class="container">
+        <div class="post-heading">
+            <h2>
+                写一个支持svg的loader
+            </h1>
+            <h3 class="subheading"></h2>
+            <div class="tags">
+                
+                <a class="tag" href="/tags#webpack" title="webpack">webpack</a>
+                
+            </div>
+            <span class="meta secret secret-lg">Posted by xiaOp on July 14, 2017</span>
+        </div>
+    </div>
+</header>
+
+<article class="post-container">
+    <div class="container">
+        <p>在<a href="https://lavas.baidu.com/guide/vue/doc/vue/advanced/how-to-use-icon"> 如何在项目中使用图标 </a>一节中，我们介绍了开发时引入自定义 svg 图标的方法，例如：</p>
+
+<ul>
+  <li>将自定义 svg 文件放入指定文件夹下，自动完成注册</li>
+  <li>修改 <code class="highlighter-rouge">config/icon.js</code> 配置文件引入 svg 格式的 fontawesome 图标</li>
+</ul>
+
+<p>以上修改甚至都不需要重启开发服务器，这一切都是通过模版项目中的 <code class="highlighter-rouge">build/loaders/svg-loader</code> 完成的，本文将介绍其实现原理。</p>
+
+<h2 id="loader-是什么">loader 是什么</h2>
+
+<p>在 webpack 中，<a href="https://doc.webpack-china.org/concepts/loaders/">loader</a> 用于对模块的源代码进行转换。例如我们熟悉的 <a href="https://github.com/babel/babel-loader">babel-loader</a> 使用 Babel 转译源代码，<a href="https://github.com/webpack-contrib/style-loader">style-loader</a> 通过向 html 代码中注入 style 标签添加样式。</p>
+
+<p>在我们的场景中，需要向源代码中注入 svg 的注册代码，此时使用 loader 再合适不过了。</p>
+
+<p>我们使用 webpack 推荐的 <a href="https://doc.webpack-china.org/concepts/loaders/#-configuration-">配置方式</a>：</p>
+
+<ul>
+  <li>在 <code class="highlighter-rouge">module.rules</code> 中添加一条规则，表示我们要修改的是 <code class="highlighter-rouge">src/app.js</code> 文件</li>
+  <li>在 <code class="highlighter-rouge">resolveLoader.alias</code> 中声明解析路径，保证 webpack 能找到 loader 路径</li>
+</ul>
+
+<div>
+  <pre class="line-numbers" data-line=""><code class="language-js">// build/webpack.base.conf.js
 module: {
     rules: [
         {
@@ -73,7 +211,21 @@ resolveLoader: {
     alias: {
         &#39;svg-loader&#39;: path.join(__dirname, &#39;./loaders/svg-loader&#39;)
     }
-}</code></pre></div><blockquote><p>在<code class=highlighter-rouge>module.rules</code>规则中，使用了<code class=highlighter-rouge>enforce: 'pre'</code>，这是为了保证 svg-loader 的执行时机在所有 loader 之前。例如待修改的<code class=highlighter-rouge>src/app.js</code>，也满足下面 babel-loader 的规则，将在 svg-loader 处理（注入了使用ES6语法的代码）之后执行。</blockquote><h2 id=处理流程>处理流程</h2><p>现在我们已经完成了 svg-loader 的注册，下面将涉及内部具体的处理流程。<p>首先要明确我们需要注入的代码内容。之前在<a href=https://lavas.baidu.com/guide/vue/doc/vue/advanced/how-to-use-icon> 如何在项目中使用图标 </a>一节中提到过，我们使用<a href=https://github.com/Justineo/vue-awesome> vue-awesome</a>注册自定义 svg 以及使用 svg 格式的 fontawesome 图标。所以以下两类代码就是我们需要注入的：<div><pre class=line-numbers data-line=""><code class=language-js>// 使用 svg 格式的 fontawesome 图标
+}</code></pre>
+</div>
+
+<blockquote>
+  <p>在<code class="highlighter-rouge">module.rules</code>规则中，使用了<code class="highlighter-rouge">enforce: 'pre'</code>，这是为了保证 svg-loader 的执行时机在所有 loader 之前。例如待修改的<code class="highlighter-rouge">src/app.js</code>，也满足下面 babel-loader 的规则，将在 svg-loader 处理（注入了使用ES6语法的代码）之后执行。</p>
+</blockquote>
+
+<h2 id="处理流程">处理流程</h2>
+
+<p>现在我们已经完成了 svg-loader 的注册，下面将涉及内部具体的处理流程。</p>
+
+<p>首先要明确我们需要注入的代码内容。之前在<a href="https://lavas.baidu.com/guide/vue/doc/vue/advanced/how-to-use-icon"> 如何在项目中使用图标 </a>一节中提到过，我们使用<a href="https://github.com/Justineo/vue-awesome"> vue-awesome</a>注册自定义 svg 以及使用 svg 格式的 fontawesome 图标。所以以下两类代码就是我们需要注入的：</p>
+
+<div>
+  <pre class="line-numbers" data-line=""><code class="language-js">// 使用 svg 格式的 fontawesome 图标
 import &#39;vue-awesome/icons/envelope&#39;;
 
 // 注册自定义 svg 图标
@@ -83,7 +235,18 @@ Icon.register({
         height: 100,
         d: &#39;M...&#39;
     }
-});</code></pre></div><p>这样 loader 中的逻辑就很清晰了：<ul><li>对于自定义的 svg 文件，遍历 <code class=highlighter-rouge>config/icon.js</code> 配置文件中设置的 svg 文件夹<li>对于 fontawesome ，遍历 <code class=highlighter-rouge>config/icon.js</code> 配置文件中的 <code class=highlighter-rouge>icons</code></ul><div><pre class=line-numbers data-line=""><code class=language-js>module.exports = function (source) {
+});</code></pre>
+</div>
+
+<p>这样 loader 中的逻辑就很清晰了：</p>
+
+<ul>
+  <li>对于自定义的 svg 文件，遍历 <code class="highlighter-rouge">config/icon.js</code> 配置文件中设置的 svg 文件夹</li>
+  <li>对于 fontawesome ，遍历 <code class="highlighter-rouge">config/icon.js</code> 配置文件中的 <code class="highlighter-rouge">icons</code></li>
+</ul>
+
+<div>
+  <pre class="line-numbers" data-line=""><code class="language-js">module.exports = function (source) {
 
     // 从vue-awesome中导入
     if (icons) {
@@ -105,7 +268,38 @@ Icon.register({
             });`;
     });
     return source;
-};</code></pre></div><p>至此 svg-loader 中的主要流程已经介绍完了，下面我们将关注开发中的文件更新问题。<h2 id=监听文件更新>监听文件更新</h2><p>在开发模式下使用 svg 图标的场景中，会出现两种文件更新情况：<ol><li>向自定义 svg 文件夹中放入新文件，此时文件夹内容发生更新<li>添加 fontawesome 图标，此时<code class=highlighter-rouge>config/icon.js</code>文件内容发生更新</ol><p>在发生以上两类文件更新时，如果能够自动触发 webpack 重新编译，不需要手动重启服务器，将节省宝贵的开发时间。<p>webpack 的文件监听机制比较复杂，简单来说就是在 <a href=https://github.com/webpack/webpack/blob/master/lib/Compiler.js#L107>Compiler</a> 中通过 <a href=https://github.com/webpack/watchpack>Watchpack (底层依赖 chokidar )</a> 监听了 <code class=highlighter-rouge>compilation.fileDependencies</code> (单个文件) 和 <code class=highlighter-rouge>compilation.contextDependencies</code> (文件夹)，两者发生变化均会触发重新编译。<blockquote><p>在开发模式中，webpack-dev-middleware 已经默认 <a href=https://doc.webpack-china.org/configuration/watch/ >开启了监听模式</a>。</blockquote><p>在 loader 执行方法中，<code class=highlighter-rouge>this</code> 指向 <a href=https://doc.webpack-china.org/api/loaders/#the-loader-context>loader 上下文</a>，其中包含了许多重要的属性和方法，这里只关心两个：<ul><li><code class=highlighter-rouge>addDependency()</code>，向 <code class=highlighter-rouge>compilation.fileDependencies</code> 中添加监听文件<li><code class=highlighter-rouge>addContextDependency()</code>，向 <code class=highlighter-rouge>compilation.contextDependencies</code> 中添加监听文件夹</ul><p>直接使用这两个方法，就能实现文件更新时触发重新编译了。另外有一点需要注意，<code class=highlighter-rouge>config/icon.js</code> 中的 <code class=highlighter-rouge>icons</code> 数组内容发生变动后，需要删除 require 之前的缓存，否则取到的还是旧数据。<div><pre class=line-numbers data-line=""><code class=language-javascript>const iconConfigPath = require.resolve(&#39;../../config/icon&#39;);
+};</code></pre>
+</div>
+
+<p>至此 svg-loader 中的主要流程已经介绍完了，下面我们将关注开发中的文件更新问题。</p>
+
+<h2 id="监听文件更新">监听文件更新</h2>
+
+<p>在开发模式下使用 svg 图标的场景中，会出现两种文件更新情况：</p>
+<ol>
+  <li>向自定义 svg 文件夹中放入新文件，此时文件夹内容发生更新</li>
+  <li>添加 fontawesome 图标，此时<code class="highlighter-rouge">config/icon.js</code>文件内容发生更新</li>
+</ol>
+
+<p>在发生以上两类文件更新时，如果能够自动触发 webpack 重新编译，不需要手动重启服务器，将节省宝贵的开发时间。</p>
+
+<p>webpack 的文件监听机制比较复杂，简单来说就是在 <a href="https://github.com/webpack/webpack/blob/master/lib/Compiler.js#L107">Compiler</a> 中通过 <a href="https://github.com/webpack/watchpack">Watchpack (底层依赖 chokidar )</a> 监听了 <code class="highlighter-rouge">compilation.fileDependencies</code> (单个文件) 和 <code class="highlighter-rouge">compilation.contextDependencies</code> (文件夹)，两者发生变化均会触发重新编译。</p>
+
+<blockquote>
+  <p>在开发模式中，webpack-dev-middleware 已经默认 <a href="https://doc.webpack-china.org/configuration/watch/">开启了监听模式</a>。</p>
+</blockquote>
+
+<p>在 loader 执行方法中，<code class="highlighter-rouge">this</code> 指向 <a href="https://doc.webpack-china.org/api/loaders/#the-loader-context">loader 上下文</a>，其中包含了许多重要的属性和方法，这里只关心两个：</p>
+
+<ul>
+  <li><code class="highlighter-rouge">addDependency()</code>，向 <code class="highlighter-rouge">compilation.fileDependencies</code> 中添加监听文件</li>
+  <li><code class="highlighter-rouge">addContextDependency()</code>，向 <code class="highlighter-rouge">compilation.contextDependencies</code> 中添加监听文件夹</li>
+</ul>
+
+<p>直接使用这两个方法，就能实现文件更新时触发重新编译了。另外有一点需要注意，<code class="highlighter-rouge">config/icon.js</code> 中的 <code class="highlighter-rouge">icons</code> 数组内容发生变动后，需要删除 require 之前的缓存，否则取到的还是旧数据。</p>
+
+<div>
+  <pre class="line-numbers" data-line=""><code class="language-javascript">const iconConfigPath = require.resolve(&#39;../../config/icon&#39;);
 
 // 删除require缓存
 delete require.cache[iconConfigPath];
@@ -116,32 +310,55 @@ const svgDir = iconConfig.svgDir;
 this.addContextDependency(svgDir);
 
 // 监听`config/icon.js`文件变化
-this.addDependency(iconConfigPath);</code></pre></div></div></article><script>function async(u, c) {
+this.addDependency(iconConfigPath);</code></pre>
+</div>
+
+
+    </div>
+</article>
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
       var d = document, t = 'script',
           o = d.createElement(t),
           s = d.getElementsByTagName(t)[0];
       o.src = u;
       if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
       s.parentNode.insertBefore(o, s);
-    }</script><script>async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
         anchors.options = {
           visible: 'always',
           placement: 'right',
           icon: '#'
         };
         anchors.add().remove('.post-heading h2').remove('.subheading').remove('#logo');
-    })</script><style>/* place left on bigger screen */
+    })
+</script>
+<style>
+    /* place left on bigger screen */
     @media all and (min-width: 800px) {
         .anchorjs-link{
             position: absolute;
             left: -1.25em;
             font-size: 1.1em;
         }
-    }</style></div></div><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    }
+</style>
+
+            </div>
+        </div>
+
+        
+
+
+    </body>
+
+</html>
