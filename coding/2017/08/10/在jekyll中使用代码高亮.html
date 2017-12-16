@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在 Jekyll 中使用代码高亮 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="在 Jekyll 中使用代码高亮">
+    <meta name="keywords"  content="ruby, jekyll">
 
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width initial-scale=1" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="keywords" content="coding编程javascriptxiaoiverxiaop">
-    <meta name="theme-color" content="#eee">
-    <meta name="msapplication-TileColor" content="#eee">
-    <meta name="msapplication-TileImage" content="/img/manifest/ms-icon-144x144.png">
-    <!-- Begin Jekyll SEO tag v2.2.3 -->
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
 <title>在 Jekyll 中使用代码高亮 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
 <meta property="og:title" content="在 Jekyll 中使用代码高亮" />
 <meta name="author" content="xiaOp" />
 <meta property="og:locale" content="en_US" />
@@ -20,160 +20,97 @@
 <meta property="og:url" content="https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html" />
 <meta property="og:site_name" content="xiaOp的博客" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-08-11T03:21:32+08:00" />
+<meta property="article:published_time" content="2017-08-10T00:00:00+08:00" />
 <script type="application/ld+json">
-{"@context":"http://schema.org","@type":"BlogPosting","headline":"在 Jekyll 中使用代码高亮","author":{"@type":"Person","name":"xiaOp"},"datePublished":"2017-08-11T03:21:32+08:00","dateModified":"2017-08-11T03:21:32+08:00","description":"代码高亮是一个技术博客的重要特性，Jekyll 中默认使用Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的Pygments也是一个可选方案。","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html"},"url":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html"}</script>
+{"description":"代码高亮是一个技术博客的重要特性，Jekyll 中默认使用Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的Pygments也是一个可选方案。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html","headline":"在 Jekyll 中使用代码高亮","dateModified":"2017-08-10T00:00:00+08:00","datePublished":"2017-08-10T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <title>在 Jekyll 中使用代码高亮</title>
 
-    <link rel="apple-touch-icon" sizes="57x57" href="/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/img/manifest/favicon-16x16.png">
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
 
-    <link rel="shortcut icon" href="/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html">
     <link rel="manifest" href="/manifest.json">
 
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/style-large.css" />
-    <link rel="stylesheet" href="/css/prism.css" />
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/Imager.min.js"></script>
-    <script src="/js/jquery.scrollzer.min.js"></script>
-    <script src="/js/jquery.scrolly.min.js"></script>
-    <script src="/js/skel.min.js"></script>
-    <script src="/js/skel-layers.min.js"></script>
-    <script src="/js/prism.min.js"></script>
-    <script src="/js/init.min.js"></script>
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
 </head>
 
+<body>
+    <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+<input id="nm-switch" type="hidden" value="true">
 
-    <body>
-
-        <section id="header" class="skel-layers-fixed">
-    <header>
-        <span class="image avatar"><img src="/img/avatar.jpg" alt="" /></span>
-        <h1 id="logo"><a href="/" class="secret">xiaOp's Blog</a></h1>
-        <p>想成为一个有趣的人</p>
-    </header>
-    <nav id="nav">
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
         <ul>
-            <li><a href="#intro">主页</a></li>
-            <li><a href="#blog">文章</a></li>
-            <li><a href="#contact">兴趣</a></li>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
         </ul>
     </nav>
-    <footer>
-        <ul class="icons">
-            <li><a href="https://github.com/xiaoiver" class="icon fa-github"><span class="label">Github</span></a></li>
-            <li><a href="mailto:pyqiverson@gmail.com" class="icon fa-envelope"><span class="label">Email</span></a></li>
-            <li><a href="https://www.douban.com/people/150275082/" class="icon">豆</a></li>
-            <li><a href="https://www.zhihu.com/people/pan-yu-qi-20/activities" class="icon">知</a></li>
-        </ul>
-    </footer>
-</section>
-
-
-        <div id="wrapper">
-            <div id="main">
-                <style type="text/css">
-    header.intro-header {
-        position: relative;
-        background-image: url('/img/post-bg-js-module.jpg');
-        background-size: contain;;
-        background-repeat: no-repeat;
-        background-position: center center;
-    }
-    
-
-    header.intro-header .icon {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        color: white;
-        background: #4acaa8;
-        border-radius: 50%;
-        height: 2.5em;
-        width: 2.5em;
-        line-height: 2.5em;
-        text-align: center;
-    }
-
-    .post-heading {
-        position: relative;
-        padding: 50px 0;
-        color: white;
-    }
-    .post-heading h2,
-    .post-heading h3,
-    .post-heading h4 {
-        color: white;
-    }
-    .post-heading h2 {
-        font-size: 3em;
-    }
-    .post-heading .meta {
-        transform: translate(0.1em, 0.5em);
-    }
-
-    article {
-        padding-top: 20px;
-    }
-
-    .post-container img {
-        display: block;
-        max-width: 100%;
-        height: auto;
-        margin: 1.5em auto 1.6em auto;
-    }
-    .post-container a {
-        color: #4acaa8;
-    }
-</style>
-
-<header class="intro-header" >
-    <div class="header-mask"></div>
-    <span class="icon fa-code"></span>
-    <div class="container">
-        <div class="post-heading">
-            <h2>
-                在 Jekyll 中使用代码高亮
-            </h1>
-            <h3 class="subheading">使用 Prism 配合插件实现</h2>
-            <div class="tags">
-                
-                <a class="tag" href="/tags#ruby" title="ruby">ruby</a>
-                
-                <a class="tag" href="/tags#jekyll" title="jekyll">jekyll</a>
-                
-            </div>
-            <span class="meta secret secret-lg">Posted by xiaOp on August 10, 2017</span>
-        </div>
-    </div>
 </header>
 
-<article class="post-container">
-    <div class="container">
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default post-no-cover" data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#ruby" class="post-tag">ruby</a>
+            
+            <a href="https://xiaoiver.github.io/tags#jekyll" class="post-tag">jekyll</a>
+            
+            
+        </div>
+        <h1>在 Jekyll 中使用代码高亮</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></></span>
+            <time class="post-meta-item" datetime="17-08-10"><i class="iconfont icon-date"></i>10 Aug 2017</time>
+        </div>
+    </div>
+    
+</header>
+
+<div class="post-content">
+    
+    <h2 class="post-subtitle">使用 Prism 配合插件实现</h2>
+    
+    <article class="markdown-body">
         <p>代码高亮是一个技术博客的重要特性，Jekyll 中默认使用<a href="http://jekyllrb.com/docs/templates/#code-snippet-highlighting">Rouge</a>进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的<a href="http://pygments.org/">Pygments</a>也是一个可选方案。</p>
 
 <p>博客作者可以使用如下 markdown 语法插入代码块，其中<code class="highlighter-rouge">linenos</code>表示显示行号：</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-ruby">{% highlight ruby linenos %}
+<pre class="line-numbers" data-line=""><code class="language-ruby">{% highlight ruby linenos %}
     def foo
       puts &#39;foo&#39;
     end
@@ -182,7 +119,7 @@
 
 <p>本来我是采用默认的 Rouge，但是发现样式有点丑，尤其是行号部分。而且有时我需要高亮显示若干行代码，例如这样：</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-ruby">{% highlight ruby linenos=1-2 %}
+<pre class="line-numbers" data-line=""><code class="language-ruby">{% highlight ruby linenos=1-2 %}
     def foo
       puts &#39;foo&#39;
     end
@@ -205,9 +142,9 @@
 
 <p><a href="https://github.com/Shopify/liquid">Liquid</a> 是使用 Ruby 编写的模版引擎。Jekyll 使用它进行 markdown 语法的解析。通过继承 Liquid 内部封装的类，可以自定义我们的语法块。</p>
 
-<p>以下是声明和注册代码，继承<a href="http://www.rubydoc.info/gems/liquid/Liquid/Block"> Block</a>而非 Tag 的原因很简单，我们需要使用闭合标签，类似<code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">endprism</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code>，否则一旦解析到闭合标签就会报错了。</p>
+<p>以下是声明和注册代码，继承<a href="http://www.rubydoc.info/gems/liquid/Liquid/Block"> Block</a>而非 Tag 的原因很简单，我们需要使用闭合标签，类似<code class="highlighter-rouge">{% endprism %}</code>，否则一旦解析到闭合标签就会报错了。</p>
 <div>
-  <pre class="line-numbers" data-line="2,11"><code class="language-ruby">module Jekyll
+<pre class="line-numbers" data-line="2,11"><code class="language-ruby">module Jekyll
   class PrismBlock &lt; Liquid::Block
     include Liquid::StandardFilters
     def initialize(tag_name, markup, tokens)
@@ -222,7 +159,7 @@ Liquid::Template.register_tag(&#39;prism&#39;, Jekyll::PrismBlock)</code></pre>
 
 <p>代码中还引入了<code class="highlighter-rouge">StandardFilters</code>，这个后续在输出 HTML 时会使用。</p>
 <div>
-  <pre class="line-numbers" data-line="3"><code class="language-ruby">module Jekyll
+<pre class="line-numbers" data-line="3"><code class="language-ruby">module Jekyll
   class PrismBlock &lt; Liquid::Block
     include Liquid::StandardFilters
 end
@@ -235,17 +172,17 @@ Liquid::Template.register_tag(&#39;prism&#39;, Jekyll::PrismBlock)</code></pre>
 
 <p>通过方法签名<code class="highlighter-rouge">initialize(tag_name, markup, tokens)</code>可以看出，<code class="highlighter-rouge">markup</code>包含了代码语言和行号的声明。解析工作交给正则完成：</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-ruby">OPTIONS_SYNTAX = %r{^([a-zA-Z0-9.+#-]+)((\s+\w+(=[0-9,-]+)?)*)$}
+<pre class="line-numbers" data-line=""><code class="language-ruby">OPTIONS_SYNTAX = %r{^([a-zA-Z0-9.+#-]+)((\s+\w+(=[0-9,-]+)?)*)$}
 markup.strip =~ OPTIONS_SYNTAX</code></pre>
 </div>
 
-<p>所以对于<code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">prism</span><span class="w"> </span><span class="err">ruby</span><span class="w"> </span><span class="err">linenos=2,11-13</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code>这样的代码块声明，我们能够得到语言<code class="highlighter-rouge">ruby</code>，行号<code class="highlighter-rouge">linenos=2,11-13</code>。这部分基本不需要做修改，相关代码就不贴了。</p>
+<p>所以对于<code class="highlighter-rouge">{% prism ruby linenos=2,11-13 %}</code>这样的代码块声明，我们能够得到语言<code class="highlighter-rouge">ruby</code>，行号<code class="highlighter-rouge">linenos=2,11-13</code>。这部分基本不需要做修改，相关代码就不贴了。</p>
 
 <h3 id="输出-html">输出 HTML</h3>
 
 <p><code class="highlighter-rouge">render()</code>函数十分简单，我们按照 Prism 接受的 HTML 结构输出即可，这里我根据<code class="highlighter-rouge">linenos</code>决定是否展示全部行号，另外通过<code class="highlighter-rouge">data-line</code>配合 Prism 插件实现高亮特定行：</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-ruby"># 转义内容
+<pre class="line-numbers" data-line=""><code class="language-ruby"># 转义内容
 code = h(super).strip
 linenos = &#39;&#39;
 linenos_content = @options[&quot;linenos&quot;]
@@ -270,51 +207,113 @@ HTML</code></pre>
 
 <p>深刻感觉到 Jekyll 用的人真的不多了，很多插件都处于无人维护的状态。</p>
 
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
     </div>
-</article>
+    
+</div>
 
-
-
-
-<!-- async load function -->
-<script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
-    }
-</script>
-<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
-<script>
-    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'always',
-          placement: 'right',
-          icon: '#'
-        };
-        anchors.add().remove('.post-heading h2').remove('.subheading').remove('#logo');
-    })
-</script>
-<style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -1.25em;
-            font-size: 1.1em;
-        }
-    }
-</style>
-
-            </div>
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
         </div>
-
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html" class="read-next-link"></a>
+            <section>
+                <span>判断元素是否在视口内</span>
+                <p>在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下：function ...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/intersection.png" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/movie/2017/08/05/%E5%9E%83%E5%9C%BE%E5%9B%B4%E5%9F%8E.html" class="read-next-link"></a>
+            <section>
+                <span>垃圾围城</span>
+                <p>前两天听《反派影评》，节目里说到西宁 FIRST 电影展播放了纪录片《塑料王国》完整版。很早之前我看过半小时的媒体...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/movie/plastic-china-post.jpg" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
         
 
+    </section>
+</section>
 
-    </body>
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2017</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+            <script>
+                window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };
+            </script>
+            </body>
 
 </html>

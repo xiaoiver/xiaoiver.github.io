@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSR 中的离线可用（一） - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="SSR 中的离线可用（一）">
+    <meta name="keywords"  content="PWA, ServiceWorker">
 
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width initial-scale=1" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="keywords" content="coding编程javascriptxiaoiverxiaop">
-    <meta name="theme-color" content="#eee">
-    <meta name="msapplication-TileColor" content="#eee">
-    <meta name="msapplication-TileImage" content="/img/manifest/ms-icon-144x144.png">
-    <!-- Begin Jekyll SEO tag v2.2.3 -->
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
 <title>SSR 中的离线可用（一） | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
 <meta property="og:title" content="SSR 中的离线可用（一）" />
 <meta name="author" content="xiaOp" />
 <meta property="og:locale" content="en_US" />
@@ -20,162 +20,95 @@
 <meta property="og:url" content="https://xiaoiver.github.io/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html" />
 <meta property="og:site_name" content="xiaOp的博客" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-10-25T03:21:32+08:00" />
+<meta property="article:published_time" content="2017-10-24T00:00:00+08:00" />
 <script type="application/ld+json">
-{"@context":"http://schema.org","@type":"BlogPosting","headline":"SSR 中的离线可用（一）","author":{"@type":"Person","name":"xiaOp"},"datePublished":"2017-10-25T03:21:32+08:00","dateModified":"2017-10-25T03:21:32+08:00","description":"本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html"},"url":"https://xiaoiver.github.io/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html"}</script>
+{"description":"本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html","headline":"SSR 中的离线可用（一）","dateModified":"2017-10-24T00:00:00+08:00","datePublished":"2017-10-24T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <title>SSR 中的离线可用（一）</title>
 
-    <link rel="apple-touch-icon" sizes="57x57" href="/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/img/manifest/favicon-16x16.png">
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
 
-    <link rel="shortcut icon" href="/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html">
     <link rel="manifest" href="/manifest.json">
 
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/style-large.css" />
-    <link rel="stylesheet" href="/css/prism.css" />
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/Imager.min.js"></script>
-    <script src="/js/jquery.scrollzer.min.js"></script>
-    <script src="/js/jquery.scrolly.min.js"></script>
-    <script src="/js/skel.min.js"></script>
-    <script src="/js/skel-layers.min.js"></script>
-    <script src="/js/prism.min.js"></script>
-    <script src="/js/init.min.js"></script>
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
 </head>
 
+<body>
+    <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+<input id="nm-switch" type="hidden" value="true">
 
-    <body>
-
-        <section id="header" class="skel-layers-fixed">
-    <header>
-        <span class="image avatar"><img src="/img/avatar.jpg" alt="" /></span>
-        <h1 id="logo"><a href="/" class="secret">xiaOp's Blog</a></h1>
-        <p>想成为一个有趣的人</p>
-    </header>
-    <nav id="nav">
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
         <ul>
-            <li><a href="#intro">主页</a></li>
-            <li><a href="#blog">文章</a></li>
-            <li><a href="#contact">兴趣</a></li>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
         </ul>
     </nav>
-    <footer>
-        <ul class="icons">
-            <li><a href="https://github.com/xiaoiver" class="icon fa-github"><span class="label">Github</span></a></li>
-            <li><a href="mailto:pyqiverson@gmail.com" class="icon fa-envelope"><span class="label">Email</span></a></li>
-            <li><a href="https://www.douban.com/people/150275082/" class="icon">豆</a></li>
-            <li><a href="https://www.zhihu.com/people/pan-yu-qi-20/activities" class="icon">知</a></li>
-        </ul>
-    </footer>
-</section>
-
-
-        <div id="wrapper">
-            <div id="main">
-                <style type="text/css">
-    header.intro-header {
-        position: relative;
-        background-image: url('/img/PWA-Directory.png');
-        background-size: contain;;
-        background-repeat: no-repeat;
-        background-position: center center;
-    }
-    
-    header.intro-header .header-mask {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        background: rgba(0,0,0, 0.8);
-    }
-    
-
-    header.intro-header .icon {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        color: white;
-        background: #4acaa8;
-        border-radius: 50%;
-        height: 2.5em;
-        width: 2.5em;
-        line-height: 2.5em;
-        text-align: center;
-    }
-
-    .post-heading {
-        position: relative;
-        padding: 50px 0;
-        color: white;
-    }
-    .post-heading h2,
-    .post-heading h3,
-    .post-heading h4 {
-        color: white;
-    }
-    .post-heading h2 {
-        font-size: 3em;
-    }
-    .post-heading .meta {
-        transform: translate(0.1em, 0.5em);
-    }
-
-    article {
-        padding-top: 20px;
-    }
-
-    .post-container img {
-        display: block;
-        max-width: 100%;
-        height: auto;
-        margin: 1.5em auto 1.6em auto;
-    }
-    .post-container a {
-        color: #4acaa8;
-    }
-</style>
-
-<header class="intro-header" >
-    <div class="header-mask"></div>
-    <span class="icon fa-code"></span>
-    <div class="container">
-        <div class="post-heading">
-            <h2>
-                SSR 中的离线可用（一）
-            </h1>
-            <h3 class="subheading">Case Study: PWA-Directory</h2>
-            <div class="tags">
-                
-                <a class="tag" href="/tags#PWA" title="PWA">PWA</a>
-                
-                <a class="tag" href="/tags#ServiceWorker" title="ServiceWorker">ServiceWorker</a>
-                
-            </div>
-            <span class="meta secret secret-lg">Posted by xiaOp on October 24, 2017</span>
-        </div>
-    </div>
 </header>
 
-<article class="post-container">
-    <div class="container">
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#PWA" class="post-tag">PWA</a>
+            
+            <a href="https://xiaoiver.github.io/tags#ServiceWorker" class="post-tag">ServiceWorker</a>
+            
+            
+        </div>
+        <h1>SSR 中的离线可用（一）</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></></span>
+            <time class="post-meta-item" datetime="17-10-24"><i class="iconfont icon-date"></i>24 Oct 2017</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/PWA-Directory.png') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    
+    <h2 class="post-subtitle">Case Study: PWA-Directory</h2>
+    
+    <article class="markdown-body">
         <p>本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。</p>
 
 <ul>
@@ -187,8 +120,8 @@
 <p>PWA-Directory 是一个陈列 PWA 的站点，同时展示项目 Lighthouse 分数及其他页面性能数据。</p>
 
 <p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/img/resized/480/PWA-Directory.png" alt="PWA-Directory" />
-    <div class="responsive-image__delayed" data-src="/img/resized/{width}/PWA-Directory.png" data-alt="PWA-Directory">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/PWA-Directory.png" alt="PWA-Directory" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/PWA-Directory.png" data-alt="PWA-Directory">
     </div>
     <em>PWA-Directory</em>
 </p>
@@ -210,8 +143,8 @@
 <p>App Shell 是支持用户界面所需的最小的 HTML、CSS 和 JavaScript。对其进行离线缓存，可确保在用户重复访问时提供即时、可靠的良好性能。这意味着并不是每次用户访问时都要从网络加载 App Shell。 只需要从网络中加载必要的内容。</p>
 
 <p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/img/resized/480/appshell.png" alt="App Shell 模型" />
-    <div class="responsive-image__delayed" data-src="/img/resized/{width}/appshell.png" data-alt="App Shell 模型">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/appshell.png" alt="App Shell 模型" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/appshell.png" data-alt="App Shell 模型">
     </div>
     <em>App Shell 模型</em>
 </p>
@@ -240,7 +173,7 @@
 
 <p>对于模板的修改并不复杂，例如在 PWA-Directory 中，使用 Handlebars 作为后端模板，通过自定义的 contentOnly 参数就能适应首屏和后续 HTML 片段两种请求。</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-html">// list.hbs
+<pre class="line-numbers" data-line=""><code class="language-html">// list.hbs
 
 {{#unless contentOnly}}
 &lt;!DOCTYPE html&gt;
@@ -267,7 +200,7 @@
 
 <p>然后在 SW 中我们需要对 App Shell 页面和 Offline 页面进行预缓存，这里使用了 sw-toolbox 。同时后端需要增加返回 App Shell 的路由规则，这里是<code class="highlighter-rouge">/.app/shell</code>。</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">// service-worker.js
+<pre class="line-numbers" data-line=""><code class="language-javascript">// service-worker.js
 
 const SHELL_URL = &#39;/.app/shell&#39;;
 const ASSETS = [
@@ -282,7 +215,7 @@ toolbox.precache(ASSETS);</code></pre>
 
 <p>最后我们拦截掉所有 HTML 请求，请求目标页面的内容片段而非完整代码（getContentOnlyUrl 执行了 contentOnly 参数拼接工作），返回之前缓存的 App Shell 页面。</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">// service-worker.js
+<pre class="line-numbers" data-line=""><code class="language-javascript">// service-worker.js
 
 toolbox.router.default = (request, values, options) =&gt; {
     // 拦截 HTML 请求
@@ -301,8 +234,8 @@ toolbox.router.default = (request, values, options) =&gt; {
 先看看之前的做法，也就是在前端路由中：</p>
 
 <p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/img/resized/480/pwa-directory-1.png" alt="前端路由请求代码片段流程图" />
-    <div class="responsive-image__delayed" data-src="/img/resized/{width}/pwa-directory-1.png" data-alt="前端路由请求代码片段流程图">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/pwa-directory-1.png" alt="前端路由请求代码片段流程图" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/pwa-directory-1.png" data-alt="前端路由请求代码片段流程图">
     </div>
     <em>前端路由请求代码片段流程图</em>
 </p>
@@ -320,8 +253,8 @@ toolbox.router.default = (request, values, options) =&gt; {
 <p>可以看出，<code class="highlighter-rouge">app.js</code>加载并执行时才会发出 HTML 代码片段请求，然后等待服务端响应。整个过程中 SW 处于空闲状态，而事实上第一次拦截到 HTML 请求时，SW 就完全可以先请求代码片段了（拼上参数），拿到响应后放入缓存中。这样当<code class="highlighter-rouge">app.js</code>前端路由执行发出请求时，浏览器发现已经在缓存中，就可以直接使用。当然为了实现这一点，需要在服务端通过设置响应头<code class="highlighter-rouge">Cache-Control: max-age</code>保证内容片段的缓存时间。</p>
 
 <p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/img/resized/480/pwa-directory-2.png" alt="SW 请求代码片段流程图" />
-    <div class="responsive-image__delayed" data-src="/img/resized/{width}/pwa-directory-2.png" data-alt="SW 请求代码片段流程图">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/pwa-directory-2.png" alt="SW 请求代码片段流程图" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/pwa-directory-2.png" data-alt="SW 请求代码片段流程图">
     </div>
     <em>SW 请求代码片段流程图</em>
 </p>
@@ -360,7 +293,7 @@ toolbox.router.default = (request, values, options) =&gt; {
 
 <p>通过<code class="highlighter-rouge">beforeinstallprompt</code>事件，可以轻易获取用户对添加到桌面 banner 的反应：</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">window.addEventListener(&#39;beforeinstallprompt&#39;, e =&gt; {
+<pre class="line-numbers" data-line=""><code class="language-javascript">window.addEventListener(&#39;beforeinstallprompt&#39;, e =&gt; {
     console.log(e.platforms); // e.g., [&quot;web&quot;, &quot;android&quot;, &quot;windows&quot;]
     e.userChoice.then(outcome =&gt; {
         console.log(outcome); // either &quot;installed&quot;, &quot;dismissed&quot;, etc.
@@ -370,7 +303,7 @@ toolbox.router.default = (request, values, options) =&gt; {
 
 <p>通过在<code class="highlighter-rouge">manifest.json</code>的<code class="highlighter-rouge">start_url</code>中添加参数，很容易标识出当前的用户访问来自添加后的桌面快捷方式。例如使用<a href="https://support.google.com/analytics/answer/1033863?hl=en">GA Custom campaigns</a>。</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-json">// manifest.json
+<pre class="line-numbers" data-line=""><code class="language-json">// manifest.json
 
 {
     &quot;start_url&quot;: &quot;/?utm_source=homescreen&quot;
@@ -383,7 +316,7 @@ toolbox.router.default = (request, values, options) =&gt; {
 
 <p>Google 之前针对 GA 开发了 sw-offline-google-analytics 类库实现了这一功能，现在已经移到了 Workbox <a href="https://workboxjs.org/reference-docs/latest/module-workbox-google-analytics.html">相关模块</a>中，可以很方便地使用：</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">// service-worker.js
+<pre class="line-numbers" data-line=""><code class="language-javascript">// service-worker.js
 
 importScripts(&#39;path/to/offline-google-analytics-import.js&#39;);
 workbox.googleAnalytics.initialize();</code></pre>
@@ -395,7 +328,7 @@ workbox.googleAnalytics.initialize();</code></pre>
 
 <p>最后说说这个项目在离线用户体验上的亮点。PWA 中的离线用户体验绝不仅仅只是展示离线页面代替浏览器“恐龙”而已。离线时，“我究竟能使用哪些功能？”往往是用户最关心的。让我们来看看 PWA-Directory 在这一点上是怎么做的。</p>
 
-<p><img src="/img/pwa-directory-screenshot.png" alt="离线体验" />
+<p><img src="/assets/img/pwa-directory-screenshot.png" alt="离线体验" />
 <em>离线体验</em></p>
 
 <p>在离线时，可以弹出 Toast（图中下方红色部分）给予用户提示。要实现这一点并不难，通过监听<code class="highlighter-rouge">online/offline</code>事件就能做到，接下来才是亮点。</p>
@@ -404,7 +337,7 @@ workbox.googleAnalytics.initialize();</code></pre>
 
 <p>要实现这一点可以从两方面入手，首先从全局样式上，离线时给<code class="highlighter-rouge">body</code>或者具体页面容器加个自定义属性，关心离线功能的组件在这个规则下定义自己的离线样式就行了。</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">// 监听 offline
+<pre class="line-numbers" data-line=""><code class="language-javascript">// 监听 offline
 window.addEventListener(&#39;offline&#39;, () =&gt; {
     // 给容器加上自定义属性
     document.body.setAttribute(&#39;offline&#39;, &#39;true&#39;);
@@ -413,7 +346,7 @@ window.addEventListener(&#39;offline&#39;, () =&gt; {
 
 <p>另外具体到某些特定组件，例如这个项目中的列表项，点击每个 PWA 项目的链接都将进入对应的详情页，首次访问会被加入 runtimeCache，因此只需要在缓存中按链接地址进行查询，就能知道这个列表项是否应该置灰。</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">// 判断链接是否访问过
+<pre class="line-numbers" data-line=""><code class="language-javascript">// 判断链接是否访问过
 isAvailable(href) {
     if (!href || this.window.navigator.onLine) return Promise.resolve(true);
     return caches.match(href)
@@ -447,10 +380,71 @@ isAvailable(href) {
   <li><a href="https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook">Offline Cookbook</a></li>
 </ul>
 
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
     </div>
-</article>
+    
+</div>
 
-
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/10/28/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%BA%8C.html" class="read-next-link"></a>
+            <section>
+                <span>SSR 中的离线可用（二）</span>
+                <p>本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合...</p>
+            </section>
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/10/15/code+cartoon.html" class="read-next-link"></a>
+            <section>
+                <span>Code + Cartoon</span>
+                <p>说实话，第一次在Hacks上看到包含如下图片的文章是很意外的。看过不少技术文章，穿插卡通画的还是头一遭，而且这诡异...</p>
+            </section>
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
 <hr>
 <!-- 来必力City版安装代码 -->
 <div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
@@ -472,46 +466,41 @@ isAvailable(href) {
 <!-- City版安装代码已完成 -->
 
 
+    </section>
+</section>
 
-<!-- async load function -->
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2017</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src="/assets/js/social-share.min.js"></script>
 <script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
-    }
+    socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
 </script>
-<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
-<script>
-    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'always',
-          placement: 'right',
-          icon: '#'
-        };
-        anchors.add().remove('.post-heading h2').remove('.subheading').remove('#logo');
-    })
-</script>
-<style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -1.25em;
-            font-size: 1.1em;
-        }
-    }
-</style>
-
-            </div>
-        </div>
-
-        
-
-
-    </body>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+            <script>
+                window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };
+            </script>
+            </body>
 
 </html>

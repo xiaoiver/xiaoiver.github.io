@@ -2,19 +2,19 @@
     "name": "xiaOp的博客",
     "short_name": "xiaOp的博客",
     "icons": [{
-        "src": "img/manifest/android-icon-96x96.png",
+        "src": "assets/img/manifest/android-icon-96x96.png",
         "sizes": "96x96",
         "type": "image/png"
     }, {
-        "src": "img/manifest/apple-icon-152x152.png",
+        "src": "assets/img/manifest/apple-icon-152x152.png",
         "sizes": "152x152",
         "type": "image/png"
     }, {
-        "src": "img/manifest/ms-icon-144x144.png",
+        "src": "assets/img/manifest/ms-icon-144x144.png",
         "sizes": "144x144",
         "type": "image/png"
     }, {
-        "src": "img/manifest/android-icon-192x192.png",
+        "src": "assets/img/manifest/android-icon-192x192.png",
         "sizes": "192x192",
         "type": "image/png"
     }],

@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基于vue和webpack的skeleton插件 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="基于vue和webpack的skeleton插件">
+    <meta name="keywords"  content="vue, webpack">
 
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width initial-scale=1" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="keywords" content="coding编程javascriptxiaoiverxiaop">
-    <meta name="theme-color" content="#eee">
-    <meta name="msapplication-TileColor" content="#eee">
-    <meta name="msapplication-TileImage" content="/img/manifest/ms-icon-144x144.png">
-    <!-- Begin Jekyll SEO tag v2.2.3 -->
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
 <title>基于vue和webpack的skeleton插件 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
 <meta property="og:title" content="基于vue和webpack的skeleton插件" />
 <meta name="author" content="xiaOp" />
 <meta property="og:locale" content="en_US" />
@@ -20,162 +20,93 @@
 <meta property="og:url" content="https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html" />
 <meta property="og:site_name" content="xiaOp的博客" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-07-16T03:21:32+08:00" />
+<meta property="article:published_time" content="2017-07-15T00:00:00+08:00" />
 <script type="application/ld+json">
-{"@context":"http://schema.org","@type":"BlogPosting","headline":"基于vue和webpack的skeleton插件","author":{"@type":"Person","name":"xiaOp"},"datePublished":"2017-07-16T03:21:32+08:00","dateModified":"2017-07-16T03:21:32+08:00","description":"这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html"},"url":"https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html"}</script>
+{"description":"这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html","headline":"基于vue和webpack的skeleton插件","dateModified":"2017-07-15T00:00:00+08:00","datePublished":"2017-07-15T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <title>基于vue和webpack的skeleton插件</title>
 
-    <link rel="apple-touch-icon" sizes="57x57" href="/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/img/manifest/favicon-16x16.png">
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
 
-    <link rel="shortcut icon" href="/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html">
     <link rel="manifest" href="/manifest.json">
 
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/style-large.css" />
-    <link rel="stylesheet" href="/css/prism.css" />
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/Imager.min.js"></script>
-    <script src="/js/jquery.scrollzer.min.js"></script>
-    <script src="/js/jquery.scrolly.min.js"></script>
-    <script src="/js/skel.min.js"></script>
-    <script src="/js/skel-layers.min.js"></script>
-    <script src="/js/prism.min.js"></script>
-    <script src="/js/init.min.js"></script>
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
 </head>
 
+<body>
+    <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+<input id="nm-switch" type="hidden" value="true">
 
-    <body>
-
-        <section id="header" class="skel-layers-fixed">
-    <header>
-        <span class="image avatar"><img src="/img/avatar.jpg" alt="" /></span>
-        <h1 id="logo"><a href="/" class="secret">xiaOp's Blog</a></h1>
-        <p>想成为一个有趣的人</p>
-    </header>
-    <nav id="nav">
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
         <ul>
-            <li><a href="#intro">主页</a></li>
-            <li><a href="#blog">文章</a></li>
-            <li><a href="#contact">兴趣</a></li>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
         </ul>
     </nav>
-    <footer>
-        <ul class="icons">
-            <li><a href="https://github.com/xiaoiver" class="icon fa-github"><span class="label">Github</span></a></li>
-            <li><a href="mailto:pyqiverson@gmail.com" class="icon fa-envelope"><span class="label">Email</span></a></li>
-            <li><a href="https://www.douban.com/people/150275082/" class="icon">豆</a></li>
-            <li><a href="https://www.zhihu.com/people/pan-yu-qi-20/activities" class="icon">知</a></li>
-        </ul>
-    </footer>
-</section>
-
-
-        <div id="wrapper">
-            <div id="main">
-                <style type="text/css">
-    header.intro-header {
-        position: relative;
-        background-image: url('/img/vue-webpack.png');
-        background-size: contain;;
-        background-repeat: no-repeat;
-        background-position: center center;
-    }
-    
-    header.intro-header .header-mask {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        background: rgba(0,0,0, 0.6);
-    }
-    
-
-    header.intro-header .icon {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        color: white;
-        background: #4acaa8;
-        border-radius: 50%;
-        height: 2.5em;
-        width: 2.5em;
-        line-height: 2.5em;
-        text-align: center;
-    }
-
-    .post-heading {
-        position: relative;
-        padding: 50px 0;
-        color: white;
-    }
-    .post-heading h2,
-    .post-heading h3,
-    .post-heading h4 {
-        color: white;
-    }
-    .post-heading h2 {
-        font-size: 3em;
-    }
-    .post-heading .meta {
-        transform: translate(0.1em, 0.5em);
-    }
-
-    article {
-        padding-top: 20px;
-    }
-
-    .post-container img {
-        display: block;
-        max-width: 100%;
-        height: auto;
-        margin: 1.5em auto 1.6em auto;
-    }
-    .post-container a {
-        color: #4acaa8;
-    }
-</style>
-
-<header class="intro-header" >
-    <div class="header-mask"></div>
-    <span class="icon fa-code"></span>
-    <div class="container">
-        <div class="post-heading">
-            <h2>
-                基于vue和webpack的skeleton插件
-            </h1>
-            <h3 class="subheading"></h2>
-            <div class="tags">
-                
-                <a class="tag" href="/tags#vue" title="vue">vue</a>
-                
-                <a class="tag" href="/tags#webpack" title="webpack">webpack</a>
-                
-            </div>
-            <span class="meta secret secret-lg">Posted by xiaOp on July 15, 2017</span>
-        </div>
-    </div>
 </header>
 
-<article class="post-container">
-    <div class="container">
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#vue" class="post-tag">vue</a>
+            
+            <a href="https://xiaoiver.github.io/tags#webpack" class="post-tag">webpack</a>
+            
+            
+        </div>
+        <h1>基于vue和webpack的skeleton插件</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></></span>
+            <time class="post-meta-item" datetime="17-07-15"><i class="iconfont icon-date"></i>15 Jul 2017</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/vue-webpack.png') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    
+    <article class="markdown-body">
         <blockquote>
   <p>这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。</p>
 </blockquote>
@@ -207,7 +138,7 @@
 
 <p>一个典型的用于服务端渲染的 webpack 配置对象如下，其中 entry 入口文件中使用了 skeleton 组件：</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">{
+<pre class="line-numbers" data-line=""><code class="language-javascript">{
     target: &#39;node&#39;,
     devtool: false,
     entry: resolve(&#39;./src/entry-skeleton.js&#39;), // 多页应用中传入数组
@@ -228,7 +159,7 @@
 <p>webpack 将使用传入的配置对象进行编译，由于我们不需要将最终产物保存在硬盘中，使用内存文件系统<a href="https://github.com/webpack/memory-fs">memory-fs</a>能够减少不必要的I/O开销。最终会生成一个 bundle 文件，使用<code class="highlighter-rouge">createBundleRenderer</code>创建一个 renderer，就可以在 Node.js 环境得到渲染结果了。</p>
 
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">const createBundleRenderer = require(&#39;vue-server-renderer&#39;).createBundleRenderer;
+<pre class="line-numbers" data-line=""><code class="language-javascript">const createBundleRenderer = require(&#39;vue-server-renderer&#39;).createBundleRenderer;
 let bundle = mfs.readFileSync(outputPath, &#39;utf-8&#39;);
 // 创建 renderer
 let renderer = createBundleRenderer(bundle);
@@ -245,7 +176,7 @@ renderer.renderToString({}, (err, skeletonHtml) =&gt; {
 
 <p>另外，为了将样式从 JS 文件中分离，我们使用了<a href="https://github.com/webpack-contrib/extract-text-webpack-plugin"> ExtractTextPlugin</a>插件，将样式内容输出到单独的文件中。与 bundle 文件一样，输出样式文件也在内存文件系统中。</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">// vue-skeleton-webpack-plugin/src/ssr.js
+<pre class="line-numbers" data-line=""><code class="language-javascript">// vue-skeleton-webpack-plugin/src/ssr.js
 
 // 加入 ExtractTextPlugin 插件到 webpack 配置对象中
 serverWebpackConfig.plugins.push(new ExtractTextPlugin({
@@ -265,7 +196,7 @@ serverWebpackConfig.plugins.push(new ExtractTextPlugin({
 
 <p>查找当前处理的入口文件过程如下：</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">// vue-skeleton-webpack-plugin/src/index.js
+<pre class="line-numbers" data-line=""><code class="language-javascript">// vue-skeleton-webpack-plugin/src/index.js
 
 // 当前页面使用的所有 chunks
 let usedChunks = htmlPluginData.plugin.options.chunks;
@@ -293,7 +224,7 @@ ssr(webpackConfig).then(({skeletonHtml, skeletonCss}) =&gt; {});</code></pre>
 
 <p>首先明确注入内容，我们希望通过路由组件的形式访问 skeleton，那么首先需要引入各个 skeleton 组件，然后增加对应的路由规则。具体到注入的代码，类似这样：</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">// router.js
+<pre class="line-numbers" data-line=""><code class="language-javascript">// router.js
 
 // 引入 skeleton 组件
 import Skeleton from &#39;@/pages/Skeleton.vue&#39;
@@ -350,7 +281,7 @@ routes: [
 <p>例如使用以下配置，将向路由文件<code class="highlighter-rouge">router.js</code>中插入<code class="highlighter-rouge">'import Page1 from \'@/pages/Page1.vue\';'</code>和<code class="highlighter-rouge">'import Page2 from \'@/pages/Page2.vue\';'</code>两条语句。
 同时生成<code class="highlighter-rouge">/skeleton-page1</code>和<code class="highlighter-rouge">/skeleton-page2</code>两条路由规则。</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">{
+<pre class="line-numbers" data-line=""><code class="language-javascript">{
     resource: &#39;router.js&#39;,
     options: {
         entry: [&#39;page1&#39;, &#39;page2&#39;],
@@ -368,51 +299,113 @@ routes: [
 
 <p>您也可以帮助我们完善<a href="https://github.com/lavas-project/vue-skeleton-webpack-plugin/tree/master/examples">测试用例</a>。</p>
 
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
     </div>
-</article>
+    
+</div>
 
-
-
-
-<!-- async load function -->
-<script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
-    }
-</script>
-<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
-<script>
-    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'always',
-          placement: 'right',
-          icon: '#'
-        };
-        anchors.add().remove('.post-heading h2').remove('.subheading').remove('#logo');
-    })
-</script>
-<style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -1.25em;
-            font-size: 1.1em;
-        }
-    }
-</style>
-
-            </div>
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
         </div>
-
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html" class="read-next-link"></a>
+            <section>
+                <span>使用ava和travis-ci</span>
+                <p>最近给 skeleton 插件加上了测试用例，顺便使用了下自动集成工具。</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/travis-ci.jpg" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/07/14/%E5%86%99%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81svg%E7%9A%84loader.html" class="read-next-link"></a>
+            <section>
+                <span>写一个支持svg的loader</span>
+                <p>在 如何在项目中使用图标 一节中，我们介绍了开发时引入自定义 svg 图标的方法，例如：</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/vue-webpack.png" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
         
 
+    </section>
+</section>
 
-    </body>
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2017</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+            <script>
+                window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };
+            </script>
+            </body>
 
 </html>

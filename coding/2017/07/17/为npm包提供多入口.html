@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>为npm包提供多入口 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="为npm包提供多入口">
+    <meta name="keywords"  content="javascript, nodejs, babel, webpack">
 
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width initial-scale=1" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="keywords" content="coding编程javascriptxiaoiverxiaop">
-    <meta name="theme-color" content="#eee">
-    <meta name="msapplication-TileColor" content="#eee">
-    <meta name="msapplication-TileImage" content="/img/manifest/ms-icon-144x144.png">
-    <!-- Begin Jekyll SEO tag v2.2.3 -->
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
 <title>为npm包提供多入口 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
 <meta property="og:title" content="为npm包提供多入口" />
 <meta name="author" content="xiaOp" />
 <meta property="og:locale" content="en_US" />
@@ -20,159 +20,99 @@
 <meta property="og:url" content="https://xiaoiver.github.io/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html" />
 <meta property="og:site_name" content="xiaOp的博客" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-07-18T03:21:32+08:00" />
+<meta property="article:published_time" content="2017-07-17T00:00:00+08:00" />
 <script type="application/ld+json">
-{"@context":"http://schema.org","@type":"BlogPosting","headline":"为npm包提供多入口","author":{"@type":"Person","name":"xiaOp"},"datePublished":"2017-07-18T03:21:32+08:00","dateModified":"2017-07-18T03:21:32+08:00","description":"问题背景","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html"},"url":"https://xiaoiver.github.io/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html"}</script>
+{"description":"问题背景","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html","headline":"为npm包提供多入口","dateModified":"2017-07-17T00:00:00+08:00","datePublished":"2017-07-17T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <title>为npm包提供多入口</title>
 
-    <link rel="apple-touch-icon" sizes="57x57" href="/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/img/manifest/favicon-16x16.png">
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
 
-    <link rel="shortcut icon" href="/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html">
     <link rel="manifest" href="/manifest.json">
 
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/style-large.css" />
-    <link rel="stylesheet" href="/css/prism.css" />
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/Imager.min.js"></script>
-    <script src="/js/jquery.scrollzer.min.js"></script>
-    <script src="/js/jquery.scrolly.min.js"></script>
-    <script src="/js/skel.min.js"></script>
-    <script src="/js/skel-layers.min.js"></script>
-    <script src="/js/prism.min.js"></script>
-    <script src="/js/init.min.js"></script>
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
 </head>
 
+<body>
+    <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+<input id="nm-switch" type="hidden" value="true">
 
-    <body>
-
-        <section id="header" class="skel-layers-fixed">
-    <header>
-        <span class="image avatar"><img src="/img/avatar.jpg" alt="" /></span>
-        <h1 id="logo"><a href="/" class="secret">xiaOp's Blog</a></h1>
-        <p>想成为一个有趣的人</p>
-    </header>
-    <nav id="nav">
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
         <ul>
-            <li><a href="#intro">主页</a></li>
-            <li><a href="#blog">文章</a></li>
-            <li><a href="#contact">兴趣</a></li>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
         </ul>
     </nav>
-    <footer>
-        <ul class="icons">
-            <li><a href="https://github.com/xiaoiver" class="icon fa-github"><span class="label">Github</span></a></li>
-            <li><a href="mailto:pyqiverson@gmail.com" class="icon fa-envelope"><span class="label">Email</span></a></li>
-            <li><a href="https://www.douban.com/people/150275082/" class="icon">豆</a></li>
-            <li><a href="https://www.zhihu.com/people/pan-yu-qi-20/activities" class="icon">知</a></li>
-        </ul>
-    </footer>
-</section>
-
-
-        <div id="wrapper">
-            <div id="main">
-                <style type="text/css">
-    header.intro-header {
-        position: relative;
-        background-image: url('/img/post-bg-js-module.jpg');
-        background-size: contain;;
-        background-repeat: no-repeat;
-        background-position: center center;
-    }
-    
-
-    header.intro-header .icon {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        color: white;
-        background: #4acaa8;
-        border-radius: 50%;
-        height: 2.5em;
-        width: 2.5em;
-        line-height: 2.5em;
-        text-align: center;
-    }
-
-    .post-heading {
-        position: relative;
-        padding: 50px 0;
-        color: white;
-    }
-    .post-heading h2,
-    .post-heading h3,
-    .post-heading h4 {
-        color: white;
-    }
-    .post-heading h2 {
-        font-size: 3em;
-    }
-    .post-heading .meta {
-        transform: translate(0.1em, 0.5em);
-    }
-
-    article {
-        padding-top: 20px;
-    }
-
-    .post-container img {
-        display: block;
-        max-width: 100%;
-        height: auto;
-        margin: 1.5em auto 1.6em auto;
-    }
-    .post-container a {
-        color: #4acaa8;
-    }
-</style>
-
-<header class="intro-header" >
-    <div class="header-mask"></div>
-    <span class="icon fa-code"></span>
-    <div class="container">
-        <div class="post-heading">
-            <h2>
-                为npm包提供多入口
-            </h1>
-            <h3 class="subheading">不同模块机制，不同平台环境以及是否需要转译</h2>
-            <div class="tags">
-                
-                <a class="tag" href="/tags#javascript" title="javascript">javascript</a>
-                
-                <a class="tag" href="/tags#nodejs" title="nodejs">nodejs</a>
-                
-                <a class="tag" href="/tags#babel" title="babel">babel</a>
-                
-                <a class="tag" href="/tags#webpack" title="webpack">webpack</a>
-                
-            </div>
-            <span class="meta secret secret-lg">Posted by xiaOp on July 17, 2017</span>
-        </div>
-    </div>
 </header>
 
-<article class="post-container">
-    <div class="container">
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#javascript" class="post-tag">javascript</a>
+            
+            <a href="https://xiaoiver.github.io/tags#nodejs" class="post-tag">nodejs</a>
+            
+            <a href="https://xiaoiver.github.io/tags#babel" class="post-tag">babel</a>
+            
+            <a href="https://xiaoiver.github.io/tags#webpack" class="post-tag">webpack</a>
+            
+            
+        </div>
+        <h1>为npm包提供多入口</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></></span>
+            <time class="post-meta-item" datetime="17-07-17"><i class="iconfont icon-date"></i>17 Jul 2017</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/post-bg-js-module.jpg') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    
+    <h2 class="post-subtitle">不同模块机制，不同平台环境以及是否需要转译</h2>
+    
+    <article class="markdown-body">
         <h2 id="问题背景">问题背景</h2>
 
 <p>之前给<a href="https://github.com/van-nguyen/webpack-cdn-plugin">webpack-cdn-plugin</a>提PR时，遇到这样一个问题，入口文件使用了部分 ES6 特性，而作者不想直接提供转译版本，这就导致在低版本 Node.js 环境无法直接运行。</p>
@@ -220,7 +160,7 @@
 
 <p>首先看看<code class="highlighter-rouge">babel-preset-env</code>是如何使用的。针对浏览器环境：</p>
 <div>
-  <pre><code class="language-json">&quot;babel&quot;: {
+<pre class="line-numbers" data-line=""><code class="language-json">&quot;babel&quot;: {
     &quot;presets&quot;: [
         [
             &quot;env&quot;,
@@ -236,7 +176,7 @@
 
 <p>针对 Node.js 环境：</p>
 <div>
-  <pre><code class="language-json">&quot;babel&quot;: {
+<pre class="line-numbers" data-line=""><code class="language-json">&quot;babel&quot;: {
     &quot;presets&quot;: [
         [
             &quot;env&quot;,
@@ -260,7 +200,7 @@
 
 <p>增加一个新的入口<code class="highlighter-rouge">esnext</code>。直接提供支持 stage4 以上特性的代码，不使用转译，使用ESM：</p>
 <div>
-  <pre><code class="language-json">{
+<pre class="line-numbers" data-line=""><code class="language-json">{
     ···
     &quot;main&quot;: &quot;main.js&quot;,
     &quot;esnext&quot;: {
@@ -289,51 +229,113 @@
 
 <p>作为模块提供者，我会采用<code class="highlighter-rouge">esnext</code>的方式，即额外提供非转译版本。然后让使用者通过配置，根据自身运行环境选择使用不同的版本。</p>
 
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
     </div>
-</article>
+    
+</div>
 
-
-
-
-<!-- async load function -->
-<script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
-    }
-</script>
-<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
-<script>
-    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'always',
-          placement: 'right',
-          icon: '#'
-        };
-        anchors.add().remove('.post-heading h2').remove('.subheading').remove('#logo');
-    })
-</script>
-<style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -1.25em;
-            font-size: 1.1em;
-        }
-    }
-</style>
-
-            </div>
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
         </div>
-
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html" class="read-next-link"></a>
+            <section>
+                <span>在Github Pages中使用第三方插件</span>
+                <p>Github Pages能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/post-bg-js-module.jpg" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html" class="read-next-link"></a>
+            <section>
+                <span>使用ava和travis-ci</span>
+                <p>最近给 skeleton 插件加上了测试用例，顺便使用了下自动集成工具。</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/travis-ci.jpg" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
         
 
+    </section>
+</section>
 
-    </body>
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2017</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+            <script>
+                window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };
+            </script>
+            </body>
 
 </html>

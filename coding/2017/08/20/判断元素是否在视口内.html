@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>判断元素是否在视口内 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="判断元素是否在视口内">
+    <meta name="keywords"  content="javascript">
 
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width initial-scale=1" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="keywords" content="coding编程javascriptxiaoiverxiaop">
-    <meta name="theme-color" content="#eee">
-    <meta name="msapplication-TileColor" content="#eee">
-    <meta name="msapplication-TileImage" content="/img/manifest/ms-icon-144x144.png">
-    <!-- Begin Jekyll SEO tag v2.2.3 -->
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
 <title>判断元素是否在视口内 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
 <meta property="og:title" content="判断元素是否在视口内" />
 <meta name="author" content="xiaOp" />
 <meta property="og:locale" content="en_US" />
@@ -20,163 +20,96 @@
 <meta property="og:url" content="https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html" />
 <meta property="og:site_name" content="xiaOp的博客" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-08-21T03:21:32+08:00" />
+<meta property="article:published_time" content="2017-08-20T00:00:00+08:00" />
 <script type="application/ld+json">
-{"@context":"http://schema.org","@type":"BlogPosting","headline":"判断元素是否在视口内","author":{"@type":"Person","name":"xiaOp"},"datePublished":"2017-08-21T03:21:32+08:00","dateModified":"2017-08-21T03:21:32+08:00","description":"在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下： function inViewport( el, h ) { var elH = el.offsetHeight, // 元素高度 scrolled = scrollY(), // 视口顶部距离document顶部的距离 viewed = scrolled + getViewportH(), // 视口底部距离document的距离 elTop = el.getBoundingClientRect().top, // 元素顶部距离document顶部的距离 elBottom = elTop + elH, // 元素底部距离document顶部的距离 h = h || 0; // 高度系数 return (elTop + elH * h) &lt;= viewed &amp;&amp; (elBottom) &gt;= scrolled; }","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html"},"url":"https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html"}</script>
+{"description":"在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下： function inViewport( el, h ) { var elH = el.offsetHeight, // 元素高度 scrolled = scrollY(), // 视口顶部距离document顶部的距离 viewed = scrolled + getViewportH(), // 视口底部距离document的距离 elTop = el.getBoundingClientRect().top, // 元素顶部距离document顶部的距离 elBottom = elTop + elH, // 元素底部距离document顶部的距离 h = h || 0; // 高度系数 return (elTop + elH * h) &lt;= viewed &amp;&amp; (elBottom) &gt;= scrolled; }","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html","headline":"判断元素是否在视口内","dateModified":"2017-08-20T00:00:00+08:00","datePublished":"2017-08-20T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <title>判断元素是否在视口内</title>
 
-    <link rel="apple-touch-icon" sizes="57x57" href="/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/img/manifest/favicon-16x16.png">
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
 
-    <link rel="shortcut icon" href="/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html">
     <link rel="manifest" href="/manifest.json">
 
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/style-large.css" />
-    <link rel="stylesheet" href="/css/prism.css" />
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/Imager.min.js"></script>
-    <script src="/js/jquery.scrollzer.min.js"></script>
-    <script src="/js/jquery.scrolly.min.js"></script>
-    <script src="/js/skel.min.js"></script>
-    <script src="/js/skel-layers.min.js"></script>
-    <script src="/js/prism.min.js"></script>
-    <script src="/js/init.min.js"></script>
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
 </head>
 
+<body>
+    <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+<input id="nm-switch" type="hidden" value="true">
 
-    <body>
-
-        <section id="header" class="skel-layers-fixed">
-    <header>
-        <span class="image avatar"><img src="/img/avatar.jpg" alt="" /></span>
-        <h1 id="logo"><a href="/" class="secret">xiaOp's Blog</a></h1>
-        <p>想成为一个有趣的人</p>
-    </header>
-    <nav id="nav">
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
         <ul>
-            <li><a href="#intro">主页</a></li>
-            <li><a href="#blog">文章</a></li>
-            <li><a href="#contact">兴趣</a></li>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
         </ul>
     </nav>
-    <footer>
-        <ul class="icons">
-            <li><a href="https://github.com/xiaoiver" class="icon fa-github"><span class="label">Github</span></a></li>
-            <li><a href="mailto:pyqiverson@gmail.com" class="icon fa-envelope"><span class="label">Email</span></a></li>
-            <li><a href="https://www.douban.com/people/150275082/" class="icon">豆</a></li>
-            <li><a href="https://www.zhihu.com/people/pan-yu-qi-20/activities" class="icon">知</a></li>
-        </ul>
-    </footer>
-</section>
-
-
-        <div id="wrapper">
-            <div id="main">
-                <style type="text/css">
-    header.intro-header {
-        position: relative;
-        background-image: url('/img/intersection.png');
-        background-size: contain;;
-        background-repeat: no-repeat;
-        background-position: center center;
-    }
-    
-    header.intro-header .header-mask {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        background: rgba(0,0,0, 0.6);
-    }
-    
-
-    header.intro-header .icon {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        color: white;
-        background: #4acaa8;
-        border-radius: 50%;
-        height: 2.5em;
-        width: 2.5em;
-        line-height: 2.5em;
-        text-align: center;
-    }
-
-    .post-heading {
-        position: relative;
-        padding: 50px 0;
-        color: white;
-    }
-    .post-heading h2,
-    .post-heading h3,
-    .post-heading h4 {
-        color: white;
-    }
-    .post-heading h2 {
-        font-size: 3em;
-    }
-    .post-heading .meta {
-        transform: translate(0.1em, 0.5em);
-    }
-
-    article {
-        padding-top: 20px;
-    }
-
-    .post-container img {
-        display: block;
-        max-width: 100%;
-        height: auto;
-        margin: 1.5em auto 1.6em auto;
-    }
-    .post-container a {
-        color: #4acaa8;
-    }
-</style>
-
-<header class="intro-header" >
-    <div class="header-mask"></div>
-    <span class="icon fa-code"></span>
-    <div class="container">
-        <div class="post-heading">
-            <h2>
-                判断元素是否在视口内
-            </h1>
-            <h3 class="subheading">新的API: IntersectionObserver</h2>
-            <div class="tags">
-                
-                <a class="tag" href="/tags#javascript" title="javascript">javascript</a>
-                
-            </div>
-            <span class="meta secret secret-lg">Posted by xiaOp on August 20, 2017</span>
-        </div>
-    </div>
 </header>
 
-<article class="post-container">
-    <div class="container">
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#javascript" class="post-tag">javascript</a>
+            
+            
+        </div>
+        <h1>判断元素是否在视口内</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></></span>
+            <time class="post-meta-item" datetime="17-08-20"><i class="iconfont icon-date"></i>20 Aug 2017</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/intersection.png') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    
+    <h2 class="post-subtitle">新的API: IntersectionObserver</h2>
+    
+    <article class="markdown-body">
         <p>在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下：</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">function inViewport( el, h ) {
+<pre class="line-numbers" data-line=""><code class="language-javascript">function inViewport( el, h ) {
     var elH = el.offsetHeight, // 元素高度
         scrolled = scrollY(), // 视口顶部距离document顶部的距离
         viewed = scrolled + getViewportH(), // 视口底部距离document的距离
@@ -195,12 +128,12 @@
 
 <p>首先我们需要创建一个观察对象，构造函数方法签名如下：</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">new IntersectionObserver(entries =&gt; {}, options);</code></pre>
+<pre class="line-numbers" data-line=""><code class="language-javascript">new IntersectionObserver(entries =&gt; {}, options);</code></pre>
 </div>
 
 <p>随后将使用这个观察对象对元素的位置变化进行观测：</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">io.observe(element);</code></pre>
+<pre class="line-numbers" data-line=""><code class="language-javascript">io.observe(element);</code></pre>
 </div>
 
 <p>观察对象构造函数的第一个参数便是回调函数，这能避免旧方法中轮询带来的性能问题。
@@ -213,8 +146,8 @@
 </ul>
 
 <p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/img/resized/480/intersectratio.png" alt="" />
-    <div class="responsive-image__delayed" data-src="/img/resized/{width}/intersectratio.png" data-alt="">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/intersectratio.png" alt="" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/intersectratio.png" data-alt="">
     </div>
     <em></em>
 </p>
@@ -245,7 +178,7 @@
 <p>有了这个新的 API，实现滚动到视口内加载图片就十分简单了，其实就是多了新的判断方法，不再需要在滚动事件中获取了。</p>
 
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">// 创建观测对象
+<pre class="line-numbers" data-line=""><code class="language-javascript">// 创建观测对象
 let observer = new IntersectionObserver(entries =&gt; {
     entries.forEach(entry =&gt; {
         // 图片和视口有交集了
@@ -282,11 +215,11 @@ images.forEach(image =&gt; {
   <li>当涉及到多个独立容器的场景，计算过程将变得十分复杂。</li>
 </ul>
 
-<p><img src="/img/sticky-regions.png" alt="" /></p>
+<p><img src="/assets/img/sticky-regions.png" alt="" /></p>
 
 <p>对于开发者的一种理想状态是，能够监听自定义事件<code class="highlighter-rouge">sticky-change</code>，在元素 sticky 状态发生改变之时进行操作，这样就避免了在滚动事件处理函数中不断轮询。</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">document.addEventListener(&#39;sticky-change&#39;, e =&gt; {
+<pre class="line-numbers" data-line=""><code class="language-javascript">document.addEventListener(&#39;sticky-change&#39;, e =&gt; {
     const header = e.detail.target;  // header became sticky or stopped sticking.
     const sticking = e.detail.stuck; // true when header is sticky.
     header.classList.toggle(&#39;shadow&#39;, sticking); // add drop shadow when sticking.
@@ -295,11 +228,11 @@ images.forEach(image =&gt; {
 
 <p>首先我们需要为每一个容器建立首尾两个“哨兵” DOM。IO 需要关注它们和视口容器的重合度。</p>
 
-<p><img src="/img/sentinelanimation.gif" alt="" /></p>
+<p><img src="/assets/img/sentinelanimation.gif" alt="" /></p>
 
 <p>这里以头部的“哨兵”为例，每次一进入视口容器就需要开始计算位置信息。尾部哨兵略有不同，只有全部在容器中才需要开始计算。</p>
 <div>
-  <pre class="line-numbers" data-line=""><code class="language-javascript">const observer = new IntersectionObserver((records, observer) =&gt; {
+<pre class="line-numbers" data-line=""><code class="language-javascript">const observer = new IntersectionObserver((records, observer) =&gt; {
     for (const record of records) {
         const targetInfo = record.boundingClientRect;
         const stickyTarget = record.target.parentElement.querySelector(&#39;.sticky&#39;);
@@ -342,10 +275,74 @@ sentinels.forEach(el =&gt; observer.observe(el));</code></pre>
   <li><a href="https://github.com/russellgoldenberg/scrollama">scrollama</a></li>
 </ul>
 
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
     </div>
-</article>
+    
+</div>
 
-
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html" class="read-next-link"></a>
+            <section>
+                <span>Node.js 中的消息队列</span>
+                <p>在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。通常处理请求参数，操作...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/work-queue.png" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html" class="read-next-link"></a>
+            <section>
+                <span>在 Jekyll 中使用代码高亮</span>
+                <p>代码高亮是一个技术博客的重要特性，Jekyll 中默认使用Rouge进行词法分析生成 DOM 结构，搭配自定义样式...</p>
+            </section>
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
 <hr>
 <!-- 来必力City版安装代码 -->
 <div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
@@ -367,46 +364,41 @@ sentinels.forEach(el =&gt; observer.observe(el));</code></pre>
 <!-- City版安装代码已完成 -->
 
 
+    </section>
+</section>
 
-<!-- async load function -->
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2017</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src="/assets/js/social-share.min.js"></script>
 <script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
-    }
+    socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
 </script>
-<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
-<script>
-    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'always',
-          placement: 'right',
-          icon: '#'
-        };
-        anchors.add().remove('.post-heading h2').remove('.subheading').remove('#logo');
-    })
-</script>
-<style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -1.25em;
-            font-size: 1.1em;
-        }
-    }
-</style>
-
-            </div>
-        </div>
-
-        
-
-
-    </body>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+            <script>
+                window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };
+            </script>
+            </body>
 
 </html>
