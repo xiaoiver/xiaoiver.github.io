@@ -1,11 +1,394 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="分享写代码，听音乐，看电影的心得
-"><meta name=keywords content=""><title>xiaOp的博客 | 分享写代码，听音乐，看电影的心得</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=xiaOp的博客><meta name=author content=潘宇琪><meta property=og:locale content=en_US><meta name=description content=分享写代码，听音乐，看电影的心得><meta property=og:description content=分享写代码，听音乐，看电影的心得><link rel=canonical href=https://xiaoiver.github.io/ ><meta property=og:url content=https://xiaoiver.github.io/ ><meta property=og:site_name content=xiaOp的博客><link rel=next href=https://xiaoiver.github.io/page2><script type=application/ld+json>{"name":"xiaOp的博客","description":"分享写代码，听音乐，看电影的心得","author":{"@type":"Person","name":"潘宇琪"},"@type":"WebSite","url":"https://xiaoiver.github.io/","headline":"xiaOp的博客","@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/ ><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><body><!--[if lt IE 10]>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="分享写代码，听音乐，看电影的心得
+">
+    <meta name="keywords"  content="">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>xiaOp的博客 | 分享写代码，听音乐，看电影的心得</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="xiaOp的博客" />
+<meta name="author" content="潘宇琪" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="分享写代码，听音乐，看电影的心得" />
+<meta property="og:description" content="分享写代码，听音乐，看电影的心得" />
+<link rel="canonical" href="https://xiaoiver.github.io/" />
+<meta property="og:url" content="https://xiaoiver.github.io/" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<link rel="next" href="https://xiaoiver.github.io/page2" />
+<script type="application/ld+json">
+{"name":"xiaOp的博客","description":"分享写代码，听音乐，看电影的心得","author":{"@type":"Person","name":"潘宇琪"},"@type":"WebSite","url":"https://xiaoiver.github.io/","headline":"xiaOp的博客","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=true><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><div class="g-banner home-banner banner-theme-default" data-theme=default><h2>xiaOp的博客</h2><h3>分享写代码，听音乐，看电影的心得</h3></div><main class="g-container home-content"><div class=article-list><article class=article-item><div class=post-cover><a class=post-link href=/music/2017/12/11/%E6%88%91%E7%9A%84%E6%97%A5%E6%9C%AC%E8%A1%8C.html title=我的日本行></a> <img src=/assets/img/jp/day1-19.jpg alt=""></div><section class=post-preview><a class=post-link href=/music/2017/12/11/%E6%88%91%E7%9A%84%E6%97%A5%E6%9C%AC%E8%A1%8C.html title=我的日本行></a><h2 class=post-title>我的日本行</h2><h3 class=post-subtitle>东京篇</h3></section><footer class=post-meta><div class=post-tags><a href=tags.html#travel-notes class=post-tag>travel-notes</a></div><time class=post-date datetime=17-12-11>11 Dec 2017</time></footer></article><article class=article-item><div class=post-cover><a class=post-link href=/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html title="SSR 中的离线可用（三）"></a> <img src=/assets/img/vue-ssr.png alt=""></div><section class=post-preview><a class=post-link href=/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html title="SSR 中的离线可用（三）"></a><h2 class=post-title>SSR 中的离线可用（三）</h2><h3 class=post-subtitle>实践：Vue + Workbox</h3></section><footer class=post-meta><div class=post-tags><a href=tags.html#PWA class=post-tag>PWA</a> <a href=tags.html#ServiceWorker class=post-tag>ServiceWorker</a> <a href=tags.html#vue class=post-tag>vue</a> <a href=tags.html#workbox class=post-tag>workbox</a></div><time class=post-date datetime=17-11-12>12 Nov 2017</time></footer></article><article class=article-item><div class=post-cover><a class=post-link href=/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html title="在 Jekyll 中使用离线缓存"></a> <img src=/assets/img/jekyll.png alt=""></div><section class=post-preview><a class=post-link href=/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html title="在 Jekyll 中使用离线缓存"></a><h2 class=post-title>在 Jekyll 中使用离线缓存</h2><h3 class=post-subtitle>开发一个基于 Workbox 的插件</h3></section><footer class=post-meta><div class=post-tags><a href=tags.html#jekyll class=post-tag>jekyll</a> <a href=tags.html#ruby class=post-tag>ruby</a> <a href=tags.html#workbox class=post-tag>workbox</a></div><time class=post-date datetime=17-11-09>09 Nov 2017</time></footer></article><article class=article-item><section class=post-preview><a class=post-link href=/coding/2017/10/28/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%BA%8C.html title="SSR 中的离线可用（二）"></a><h2 class=post-title>SSR 中的离线可用（二）</h2><h3 class=post-subtitle>Case Study: PWP</h3></section><footer class=post-meta><div class=post-tags><a href=tags.html#PWA class=post-tag>PWA</a> <a href=tags.html#ServiceWorker class=post-tag>ServiceWorker</a> <a href=tags.html#PHP class=post-tag>PHP</a></div><time class=post-date datetime=17-10-28>28 Oct 2017</time></footer></article><article class=article-item><div class=post-cover><a class=post-link href=/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html title="SSR 中的离线可用（一）"></a> <img src=/assets/img/PWA-Directory.png alt=""></div><section class=post-preview><a class=post-link href=/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html title="SSR 中的离线可用（一）"></a><h2 class=post-title>SSR 中的离线可用（一）</h2><h3 class=post-subtitle>Case Study: PWA-Directory</h3></section><footer class=post-meta><div class=post-tags><a href=tags.html#PWA class=post-tag>PWA</a> <a href=tags.html#ServiceWorker class=post-tag>ServiceWorker</a></div><time class=post-date datetime=17-10-24>24 Oct 2017</time></footer></article><article class=article-item><section class=post-preview><a class=post-link href=/coding/2017/10/15/code+cartoon.html title="Code + Cartoon"></a><h2 class=post-title>Code + Cartoon</h2><h3 class=post-subtitle>推荐一个 Hacks 上的博主 Lin Clark</h3></section><footer class=post-meta><div class=post-tags><a href=tags.html#tech-blog class=post-tag>tech-blog</a></div><time class=post-date datetime=17-10-15>15 Oct 2017</time></footer></article><nav class=pagination><input type=hidden id=total_pages value=5> <input type=hidden id=current_pages value=1> <input type=hidden id=base_url value=/ ><div class=page-links><div id=page-link-container></div><a href=/page2/ class=page-link>&raquo;</a></div></nav></div><aside class=g-sidebar-wrapper><div class=g-sidebar><section class=author-card><div class=avatar><img src=/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul id=sns-links class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class=tags-card><a href=tags.html#hiphop class=tag>hiphop</a> <a href=tags.html#performance class=tag>performance</a> <a href=tags.html#movie class=tag>movie</a> <a href=tags.html#webpack class=tag>webpack</a> <a href=tags.html#vue class=tag>vue</a> <a href=tags.html#ava class=tag>ava</a> <a href=tags.html#travis class=tag>travis</a> <a href=tags.html#javascript class=tag>javascript</a> <a href=tags.html#nodejs class=tag>nodejs</a> <a href=tags.html#babel class=tag>babel</a> <a href=tags.html#ruby class=tag>ruby</a> <a href=tags.html#jekyll class=tag>jekyll</a></section></div><div class=search-card><input id=search_input placeholder=Search...> <i class="iconfont icon-search"></i><div class=search_result></div></div></aside></main><footer class=g-footer><section>xiaOp的博客 © 2017</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script>window.onload = function () {
+<![endif]-->
+    <input id="nm-switch" type="hidden" value="false">
+    <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<div class="g-banner home-banner banner-theme-default" data-theme="default">
+    <h2>xiaOp的博客</h2>
+    <h3>分享写代码，听音乐，看电影的心得</h3>
+    
+</div>
+
+<main class="g-container home-content">
+    <div class="article-list">
+        
+            <article class="article-item">
+                
+                <div class="post-cover">
+                    <a class="post-link" href="/music/2017/12/11/%E6%88%91%E7%9A%84%E6%97%A5%E6%9C%AC%E8%A1%8C.html" title="我的日本行"></a>
+                    <img src="/assets/img/resized/800/day1-19.jpg" alt="">
+                </div>
+                
+                <section class="post-preview">
+                    <a class="post-link" href="/music/2017/12/11/%E6%88%91%E7%9A%84%E6%97%A5%E6%9C%AC%E8%A1%8C.html" title="我的日本行"></a>
+                    <h2 class="post-title">我的日本行</h2>
+                    
+                    <h3 class="post-subtitle">东京篇</h3>
+                    
+                    
+                </section>
+                <footer class="post-meta">
+                    <div class="post-tags">
+                        
+                            
+                            <a href=tags.html#travel-notes class="post-tag">travel-notes</a>
+                            
+                        
+                    </div>
+                    <time class="post-date" datetime="17-12-11">11 Dec 2017</time>
+                </footer>
+            </article>
+        
+            <article class="article-item">
+                
+                <div class="post-cover">
+                    <a class="post-link" href="/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html" title="SSR 中的离线可用（三）"></a>
+                    <img src="/assets/img/vue-ssr.png" alt="">
+                </div>
+                
+                <section class="post-preview">
+                    <a class="post-link" href="/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html" title="SSR 中的离线可用（三）"></a>
+                    <h2 class="post-title">SSR 中的离线可用（三）</h2>
+                    
+                    <h3 class="post-subtitle">实践：Vue + Workbox</h3>
+                    
+                    
+                </section>
+                <footer class="post-meta">
+                    <div class="post-tags">
+                        
+                            
+                            <a href=tags.html#PWA class="post-tag">PWA</a>
+                            
+                            <a href=tags.html#ServiceWorker class="post-tag">ServiceWorker</a>
+                            
+                            <a href=tags.html#vue class="post-tag">vue</a>
+                            
+                            <a href=tags.html#workbox class="post-tag">workbox</a>
+                            
+                        
+                    </div>
+                    <time class="post-date" datetime="17-11-12">12 Nov 2017</time>
+                </footer>
+            </article>
+        
+            <article class="article-item">
+                
+                <div class="post-cover">
+                    <a class="post-link" href="/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html" title="在 Jekyll 中使用离线缓存"></a>
+                    <img src="/assets/img/jekyll.png" alt="">
+                </div>
+                
+                <section class="post-preview">
+                    <a class="post-link" href="/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html" title="在 Jekyll 中使用离线缓存"></a>
+                    <h2 class="post-title">在 Jekyll 中使用离线缓存</h2>
+                    
+                    <h3 class="post-subtitle">开发一个基于 Workbox 的插件</h3>
+                    
+                    
+                </section>
+                <footer class="post-meta">
+                    <div class="post-tags">
+                        
+                            
+                            <a href=tags.html#jekyll class="post-tag">jekyll</a>
+                            
+                            <a href=tags.html#ruby class="post-tag">ruby</a>
+                            
+                            <a href=tags.html#workbox class="post-tag">workbox</a>
+                            
+                        
+                    </div>
+                    <time class="post-date" datetime="17-11-09">09 Nov 2017</time>
+                </footer>
+            </article>
+        
+            <article class="article-item">
+                
+                <section class="post-preview">
+                    <a class="post-link" href="/coding/2017/10/28/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%BA%8C.html" title="SSR 中的离线可用（二）"></a>
+                    <h2 class="post-title">SSR 中的离线可用（二）</h2>
+                    
+                    <h3 class="post-subtitle">Case Study: PWP</h3>
+                    
+                    
+                </section>
+                <footer class="post-meta">
+                    <div class="post-tags">
+                        
+                            
+                            <a href=tags.html#PWA class="post-tag">PWA</a>
+                            
+                            <a href=tags.html#ServiceWorker class="post-tag">ServiceWorker</a>
+                            
+                            <a href=tags.html#PHP class="post-tag">PHP</a>
+                            
+                        
+                    </div>
+                    <time class="post-date" datetime="17-10-28">28 Oct 2017</time>
+                </footer>
+            </article>
+        
+            <article class="article-item">
+                
+                <div class="post-cover">
+                    <a class="post-link" href="/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html" title="SSR 中的离线可用（一）"></a>
+                    <img src="/assets/img/PWA-Directory.png" alt="">
+                </div>
+                
+                <section class="post-preview">
+                    <a class="post-link" href="/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html" title="SSR 中的离线可用（一）"></a>
+                    <h2 class="post-title">SSR 中的离线可用（一）</h2>
+                    
+                    <h3 class="post-subtitle">Case Study: PWA-Directory</h3>
+                    
+                    
+                </section>
+                <footer class="post-meta">
+                    <div class="post-tags">
+                        
+                            
+                            <a href=tags.html#PWA class="post-tag">PWA</a>
+                            
+                            <a href=tags.html#ServiceWorker class="post-tag">ServiceWorker</a>
+                            
+                        
+                    </div>
+                    <time class="post-date" datetime="17-10-24">24 Oct 2017</time>
+                </footer>
+            </article>
+        
+            <article class="article-item">
+                
+                <section class="post-preview">
+                    <a class="post-link" href="/coding/2017/10/15/code+cartoon.html" title="Code + Cartoon"></a>
+                    <h2 class="post-title">Code + Cartoon</h2>
+                    
+                    <h3 class="post-subtitle">推荐一个 Hacks 上的博主 Lin Clark</h3>
+                    
+                    
+                </section>
+                <footer class="post-meta">
+                    <div class="post-tags">
+                        
+                            
+                            <a href=tags.html#tech-blog class="post-tag">tech-blog</a>
+                            
+                        
+                    </div>
+                    <time class="post-date" datetime="17-10-15">15 Oct 2017</time>
+                </footer>
+            </article>
+        
+
+        
+            <nav class="pagination">
+    <input type="hidden" id="total_pages" value="5">
+    <input type="hidden" id="current_pages" value="1">
+    <input type="hidden" id="base_url" value="/">
+    <div class="page-links">
+        
+        <div id="page-link-container"></div>
+        
+        <a href="/page2/" class="page-link">&raquo;</a>
+        
+    </div>
+</nav>
+
+        
+
+    </div>
+
+    <aside class="g-sidebar-wrapper">
+        <div class="g-sidebar">
+            <section class="author-card">
+                <div class="avatar">
+                    <img src="/assets/img/avatar.jpg" alt="">
+                </div>
+                <div class="author-name" rel="author">潘宇琪</div>
+                <div class="bio">
+                    <p>分享写代码，听音乐，看电影的心得</p>
+                </div>
+                
+                <ul id="sns-links" class="sns-links">
+                    
+                    <li>
+                        <a href="//github.com/xiaoiver" target="_blank">
+                            <i class="iconfont icon-github"></i>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="//www.douban.com/people/150275082/" target="_blank">
+                            <i class="iconfont icon-douban"></i>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                            <i class="iconfont icon-zhihu"></i>
+                        </a>
+                    </li>
+                    
+                </ul>
+                
+            </section>
+
+            
+            <section class="tags-card">
+                
+                    
+                    <a href="tags.html#hiphop" class="tag">hiphop</a>
+                
+                    
+                    <a href="tags.html#performance" class="tag">performance</a>
+                
+                    
+                    <a href="tags.html#movie" class="tag">movie</a>
+                
+                    
+                    <a href="tags.html#webpack" class="tag">webpack</a>
+                
+                    
+                    <a href="tags.html#vue" class="tag">vue</a>
+                
+                    
+                    <a href="tags.html#ava" class="tag">ava</a>
+                
+                    
+                    <a href="tags.html#travis" class="tag">travis</a>
+                
+                    
+                    <a href="tags.html#javascript" class="tag">javascript</a>
+                
+                    
+                    <a href="tags.html#nodejs" class="tag">nodejs</a>
+                
+                    
+                    <a href="tags.html#babel" class="tag">babel</a>
+                
+                    
+                    <a href="tags.html#ruby" class="tag">ruby</a>
+                
+                    
+                    <a href="tags.html#jekyll" class="tag">jekyll</a>
+                
+                    
+                        
+            </section>
+            
+        </div>
+
+        
+        <div class="search-card">
+            <input id="search_input" type="text" placeholder="Search...">
+            <i class="iconfont icon-search"></i>
+            <div class="search_result"></div>
+        </div>
+        
+
+    </aside>
+
+</main>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2017</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/prism.min.js"></script>
+    <script src="/assets/js/index.min.js"></script>
+            <script>
+                window.onload = function () {
                     var script = document.createElement('script');
                     var firstScript = document.getElementsByTagName('script')[0];
                     script.type = 'text/javascript';
                     script.async = true;
                     script.src = '/sw-register.js?v=' + Date.now();
                     firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+                };
+            </script>
+            </body>
+
+</html>
