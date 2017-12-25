@@ -1,6 +1,148 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 Jekyll 中使用离线缓存 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="在 Jekyll 中使用离线缓存"><meta name=keywords content="jekyll, ruby, workbox"><title>在 Jekyll 中使用离线缓存 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="在 Jekyll 中使用离线缓存"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="Jekyll 默认生成的站点由多个静态页面组成（虽然可以通过某些插件实现 SPA）。不同于之前介绍的 SSR，对于这类静态站点的缓存思路并不复杂，几乎不需要对已有站点结构进行任何改造： 预缓存静态资源和部分关键页面，例如主页和最新的文章 对于非关键页面，进行访问后的动态缓存"><meta property=og:description content="Jekyll 默认生成的站点由多个静态页面组成（虽然可以通过某些插件实现 SPA）。不同于之前介绍的 SSR，对于这类静态站点的缓存思路并不复杂，几乎不需要对已有站点结构进行任何改造： 预缓存静态资源和部分关键页面，例如主页和最新的文章 对于非关键页面，进行访问后的动态缓存"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-11-09T00:00:00+08:00><script type=application/ld+json>{"description":"Jekyll 默认生成的站点由多个静态页面组成（虽然可以通过某些插件实现 SPA）。不同于之前介绍的 SSR，对于这类静态站点的缓存思路并不复杂，几乎不需要对已有站点结构进行任何改造： 预缓存静态资源和部分关键页面，例如主页和最新的文章 对于非关键页面，进行访问后的动态缓存","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html","headline":"在 Jekyll 中使用离线缓存","dateModified":"2017-11-09T00:00:00+08:00","datePublished":"2017-11-09T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在 Jekyll 中使用离线缓存 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="在 Jekyll 中使用离线缓存">
+    <meta name="keywords"  content="jekyll, ruby, workbox">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>在 Jekyll 中使用离线缓存 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="在 Jekyll 中使用离线缓存" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Jekyll 默认生成的站点由多个静态页面组成（虽然可以通过某些插件实现 SPA）。不同于之前介绍的 SSR，对于这类静态站点的缓存思路并不复杂，几乎不需要对已有站点结构进行任何改造： 预缓存静态资源和部分关键页面，例如主页和最新的文章 对于非关键页面，进行访问后的动态缓存" />
+<meta property="og:description" content="Jekyll 默认生成的站点由多个静态页面组成（虽然可以通过某些插件实现 SPA）。不同于之前介绍的 SSR，对于这类静态站点的缓存思路并不复杂，几乎不需要对已有站点结构进行任何改造： 预缓存静态资源和部分关键页面，例如主页和最新的文章 对于非关键页面，进行访问后的动态缓存" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-11-09T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"Jekyll 默认生成的站点由多个静态页面组成（虽然可以通过某些插件实现 SPA）。不同于之前介绍的 SSR，对于这类静态站点的缓存思路并不复杂，几乎不需要对已有站点结构进行任何改造： 预缓存静态资源和部分关键页面，例如主页和最新的文章 对于非关键页面，进行访问后的动态缓存","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html","headline":"在 Jekyll 中使用离线缓存","dateModified":"2017-11-09T00:00:00+08:00","datePublished":"2017-11-09T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#jekyll class=post-tag>jekyll</a> <a href=https://xiaoiver.github.io/tags#ruby class=post-tag>ruby</a> <a href=https://xiaoiver.github.io/tags#workbox class=post-tag>workbox</a></div><h1>在 Jekyll 中使用离线缓存</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=17-11-09><i class="iconfont icon-date"></i>09 Nov 2017</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/jekyll.png') center no-repeat; background-size: cover"></div></header><div class=post-content><h2 class=post-subtitle>开发一个基于 Workbox 的插件</h2><article class=markdown-body><p>Jekyll 默认生成的站点由多个静态页面组成（虽然可以通过某些插件实现 SPA）。不同于之前介绍的 SSR，对于这类静态站点的缓存思路并不复杂，几乎不需要对已有站点结构进行任何改造：<ol><li>预缓存静态资源和部分关键页面，例如主页和最新的文章<li>对于非关键页面，进行访问后的动态缓存</ol><p>以上思路需要在 Service Worker 中实现预缓存和动态缓存机制，使用 Workbox 将让一切变得简单。<h3 id=workbox-是什么>Workbox 是什么？</h3><p>Workbox 吸收了之前包括 sw-precache 和 sw-toolbox 在内的类库，也就是预缓存和动态缓存的实现。提供了一系列工具帮助开发者快速生成 Service Worker。根据项目的构建流程，可以选择对应的 Webpack 或者 Gulp 插件，如果没有使用这类构建工具，也可以选择使用 Workbox-CLI 命令行工具。对于想自己编写 SW 的开发者，也可以直接调用封装好的 API，包括预缓存的方案细节，根据资源类型选择不同的策略。总之 Workbox 能极大减少开发 SW 的成本。<p>可以观看开发者在<a href="https://www.youtube.com/watch?v=DtuJ55tmjps">Google Dev Summit 上的介绍</a>或者前往官网了解更多技术细节。<p>值得一提的是 Workbox 拆分成了多个功能模块，例如预缓存、动态缓存、策略、缓存更新插件等。由于项目仍处于开发阶段，部分文档还不是很全面，有些配置需要深入代码才能搞懂。我在使用时对其中的更新插件产生了理解上的偏差，通过<a href=https://github.com/GoogleChrome/workbox/issues/1001>ISSUE</a>得到作者的回应才搞清楚。在看代码的过程中，我深刻感受到 Google 开发者对于问题考虑的全面性，就拿跨域资源的动态缓存来说，<h3 id=插件细节>插件细节</h3><p>我的博客使用了 Gulp 作为构建工具，按理说使用 Workbox 提供的插件足矣。但是考虑到不是所有使用者都会使用基于 Node.js 的构建工具，而且类似“缓存最近5篇文章”这样的需求是和 Jekyll 本身构建流程密切相关的，所以集成到默认的构建流程中是很有必要的。<p>之前在<a href=/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html>在 Jekyll 中使用代码高亮</a>一文中，我使用了 Jekyll 插件中的<a href=https://jekyllrb.com/docs/plugins/#tags>Tags</a>类型来处理 Markdown 中的代码块。这次我们将使用<a href=https://jekyllrb.com/docs/plugins/#hooks>Hooks</a>类型插件介入构建流程。<h4 id=jekyll-hooks>Jekyll Hooks</h4><p>Jekyll 暴露了多个构建阶段的钩子，我们要介入的阶段包括：<ul><li>在站点生成阶段，生成 sw-register.js，负责为当前页面注册 Service Worker<li>在站点生成阶段，生成 service-worker.js，根据配置项，调用 Workbox API 注入预缓存和动态缓存代码<li>在每一个页面生成阶段，插入引入 sw-register.js 的代码块</ul><div><pre class=line-numbers data-line=""><code class=language-ruby>module Jekyll
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#jekyll" class="post-tag">jekyll</a>
+            
+            <a href="https://xiaoiver.github.io/tags#ruby" class="post-tag">ruby</a>
+            
+            <a href="https://xiaoiver.github.io/tags#workbox" class="post-tag">workbox</a>
+            
+            
+        </div>
+        <h1>在 Jekyll 中使用离线缓存</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="17-11-09"><i class="iconfont icon-date"></i>09 Nov 2017</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/jekyll.png') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    
+    <h2 class="post-subtitle">开发一个基于 Workbox 的插件</h2>
+    
+    <article class="markdown-body">
+        <p>Jekyll 默认生成的站点由多个静态页面组成（虽然可以通过某些插件实现 SPA）。不同于之前介绍的 SSR，对于这类静态站点的缓存思路并不复杂，几乎不需要对已有站点结构进行任何改造：</p>
+<ol>
+  <li>预缓存静态资源和部分关键页面，例如主页和最新的文章</li>
+  <li>对于非关键页面，进行访问后的动态缓存</li>
+</ol>
+
+<p>以上思路需要在 Service Worker 中实现预缓存和动态缓存机制，使用 Workbox 将让一切变得简单。</p>
+
+<h3 id="workbox-是什么">Workbox 是什么？</h3>
+
+<p>Workbox 吸收了之前包括 sw-precache 和 sw-toolbox 在内的类库，也就是预缓存和动态缓存的实现。提供了一系列工具帮助开发者快速生成 Service Worker。根据项目的构建流程，可以选择对应的 Webpack 或者 Gulp 插件，如果没有使用这类构建工具，也可以选择使用 Workbox-CLI 命令行工具。对于想自己编写 SW 的开发者，也可以直接调用封装好的 API，包括预缓存的方案细节，根据资源类型选择不同的策略。总之 Workbox 能极大减少开发 SW 的成本。</p>
+
+<p>可以观看开发者在<a href="https://www.youtube.com/watch?v=DtuJ55tmjps">Google Dev Summit 上的介绍</a>或者前往官网了解更多技术细节。</p>
+
+<p>值得一提的是 Workbox 拆分成了多个功能模块，例如预缓存、动态缓存、策略、缓存更新插件等。由于项目仍处于开发阶段，部分文档还不是很全面，有些配置需要深入代码才能搞懂。我在使用时对其中的更新插件产生了理解上的偏差，通过<a href="https://github.com/GoogleChrome/workbox/issues/1001">ISSUE</a>得到作者的回应才搞清楚。在看代码的过程中，我深刻感受到 Google 开发者对于问题考虑的全面性，就拿跨域资源的动态缓存来说，</p>
+
+<h3 id="插件细节">插件细节</h3>
+
+<p>我的博客使用了 Gulp 作为构建工具，按理说使用 Workbox 提供的插件足矣。但是考虑到不是所有使用者都会使用基于 Node.js 的构建工具，而且类似“缓存最近5篇文章”这样的需求是和 Jekyll 本身构建流程密切相关的，所以集成到默认的构建流程中是很有必要的。</p>
+
+<p>之前在<a href="/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html">在 Jekyll 中使用代码高亮</a>一文中，我使用了 Jekyll 插件中的<a href="https://jekyllrb.com/docs/plugins/#tags">Tags</a>类型来处理 Markdown 中的代码块。这次我们将使用<a href="https://jekyllrb.com/docs/plugins/#hooks">Hooks</a>类型插件介入构建流程。</p>
+
+<h4 id="jekyll-hooks">Jekyll Hooks</h4>
+
+<p>Jekyll 暴露了多个构建阶段的钩子，我们要介入的阶段包括：</p>
+<ul>
+  <li>在站点生成阶段，生成 sw-register.js，负责为当前页面注册 Service Worker</li>
+  <li>在站点生成阶段，生成 service-worker.js，根据配置项，调用 Workbox API 注入预缓存和动态缓存代码</li>
+  <li>在每一个页面生成阶段，插入引入 sw-register.js 的代码块</li>
+</ul>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-ruby">module Jekyll
 
     Hooks.register :pages, :post_render do |page|
         # append &lt;script&gt; for sw-register.js in &lt;body&gt;
@@ -21,14 +163,30 @@
         sw_helper.write_sw()
     end
 
-end</code></pre></div><p>这里有一个问题，为什么要额外生成一个 sw-register.js 负责注册 Service Worker 呢？ 在页面中，我们会加上时间戳类似<code class=highlighter-rouge>sw-register.js?v= new Date()</code>保证浏览器不会对<code class=highlighter-rouge>sw-register.js</code>进行缓存。而<code class=highlighter-rouge>sw-register.js</code>中注册<code class=highlighter-rouge>service-worker.js</code>时，会加上构建版本号保证<code class=highlighter-rouge>service-worker.js</code>的更新。 更多详细细节可以参考之前同事写的<a href=https://zhuanlan.zhihu.com/p/28161855>如何优雅注册 SW</a>这篇文章。<h4 id=预缓存资源的注入>预缓存资源的注入</h4><p>首先根据配置项中的 glob 过滤出要缓存的资源，这一点通过标准库<code class=highlighter-rouge>Dir.glob</code>就能完成：<div><pre class=line-numbers data-line=""><code class=language-ruby># find precache files with glob
+end</code></pre>
+</div>
+
+<p>这里有一个问题，为什么要额外生成一个 sw-register.js 负责注册 Service Worker 呢？
+在页面中，我们会加上时间戳类似<code class="highlighter-rouge">sw-register.js?v= new Date()</code>保证浏览器不会对<code class="highlighter-rouge">sw-register.js</code>进行缓存。而<code class="highlighter-rouge">sw-register.js</code>中注册<code class="highlighter-rouge">service-worker.js</code>时，会加上构建版本号保证<code class="highlighter-rouge">service-worker.js</code>的更新。
+更多详细细节可以参考之前同事写的<a href="https://zhuanlan.zhihu.com/p/28161855">如何优雅注册 SW</a>这篇文章。</p>
+
+<h4 id="预缓存资源的注入">预缓存资源的注入</h4>
+
+<p>首先根据配置项中的 glob 过滤出要缓存的资源，这一点通过标准库<code class="highlighter-rouge">Dir.glob</code>就能完成：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-ruby"># find precache files with glob
 precache_files = []
 patterns.each do |pattern|
     Dir.glob(File.join(directory, pattern)) do |filepath|
         precache_files.push(filepath)
     end
 end
-precache_files = precache_files.uniq</code></pre></div><p>然后我们可以加上最近 N 篇文章，由于<code class=highlighter-rouge>.md</code>文件最终会生成<code class=highlighter-rouge>.html</code>页面，我们需要同时记录下<code class=highlighter-rouge>url</code>和<code class=highlighter-rouge>path</code>。要注意，最终添加进预缓存列表的是<code class=highlighter-rouge>url</code>，而<code class=highlighter-rouge>path</code>是根据文件内容生成版本号时用到的。<div><pre class=line-numbers data-line=""><code class=language-ruby># precache recent n posts
+precache_files = precache_files.uniq</code></pre>
+</div>
+
+<p>然后我们可以加上最近 N 篇文章，由于<code class="highlighter-rouge">.md</code>文件最终会生成<code class="highlighter-rouge">.html</code>页面，我们需要同时记录下<code class="highlighter-rouge">url</code>和<code class="highlighter-rouge">path</code>。要注意，最终添加进预缓存列表的是<code class="highlighter-rouge">url</code>，而<code class="highlighter-rouge">path</code>是根据文件内容生成版本号时用到的。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-ruby"># precache recent n posts
 posts_path_url_map = {}
 if recent_posts_num
     precache_files.concat(
@@ -39,7 +197,12 @@ if recent_posts_num
                 post.path
             end
     )
-end</code></pre></div><p>最后就是关键的步骤了，我们需要根据静态资源的内容生成 md5 版本号，这样能够保证每次 Service Worker 安装时，只会请求发生变动的新资源并缓存，同时清理掉已经不在列表中的旧资源。<div><pre class=line-numbers data-line=""><code class=language-ruby># generate md5 for each precache file
+end</code></pre>
+</div>
+
+<p>最后就是关键的步骤了，我们需要根据静态资源的内容生成 md5 版本号，这样能够保证每次 Service Worker 安装时，只会请求发生变动的新资源并缓存，同时清理掉已经不在列表中的旧资源。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-ruby"># generate md5 for each precache file
 md5 = Digest::MD5.new
 precache_files.each do |filepath|
     md5.reset
@@ -53,7 +216,12 @@ precache_files.each do |filepath|
         url: @site.baseurl + url,
         revision: md5.hexdigest
     })
-end</code></pre></div><p>这样我们就完成了预缓存列表的创建，由于符合<code class=highlighter-rouge>Workbox.precache</code>的参数要求，我们直接把列表序列化作为参数传入就行了，在运行时 Workbox 会完成请求资源，清理缓存的工作。<div><pre class=line-numbers data-line=""><code class=language-ruby># generate precache list
+end</code></pre>
+</div>
+
+<p>这样我们就完成了预缓存列表的创建，由于符合<code class="highlighter-rouge">Workbox.precache</code>的参数要求，我们直接把列表序列化作为参数传入就行了，在运行时 Workbox 会完成请求资源，清理缓存的工作。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-ruby"># generate precache list
 precache_list_str = @precache_list.map do |precache_item|
     precache_item.to_json
 end
@@ -62,7 +230,16 @@ end
 # insert into precache function
 &lt;&lt;-SCRIPT
     workboxSW.precache([#{precache_list_str}]);
-SCRIPT</code></pre></div><p>动态缓存也是根据配置项，调用<code class=highlighter-rouge>workboxSW.router.registerRoute</code>，这里就不再赘述了。<h4 id=使用-rubygem-发布>使用 RubyGem 发布</h4><p>说起来这是我第一次发布一个 RubyGem，不过按照文档说明就行了。gemspec 类似 npm 中的 package.json，虽然按照出现的时间顺序应该是反过来。Ruby 中有很多东西都被其他语言借鉴，我记得以前类似 Hibernate 这样的 ORM 都是有参考 RoR 中的 ActiveRecord。里面大部分字段都很熟悉，甚至和 package.json 都是一致的，<code class=highlighter-rouge>name</code> <code class=highlighter-rouge>version</code> <code class=highlighter-rouge>files</code>等等。<div><pre class=line-numbers data-line=""><code class=language-ruby># jekyll-pwa-plugin.gemspec
+SCRIPT</code></pre>
+</div>
+
+<p>动态缓存也是根据配置项，调用<code class="highlighter-rouge">workboxSW.router.registerRoute</code>，这里就不再赘述了。</p>
+
+<h4 id="使用-rubygem-发布">使用 RubyGem 发布</h4>
+
+<p>说起来这是我第一次发布一个 RubyGem，不过按照文档说明就行了。gemspec 类似 npm 中的 package.json，虽然按照出现的时间顺序应该是反过来。Ruby 中有很多东西都被其他语言借鉴，我记得以前类似 Hibernate 这样的 ORM 都是有参考 RoR 中的 ActiveRecord。里面大部分字段都很熟悉，甚至和 package.json 都是一致的，<code class="highlighter-rouge">name</code> <code class="highlighter-rouge">version</code> <code class="highlighter-rouge">files</code>等等。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-ruby"># jekyll-pwa-plugin.gemspec
 
 Gem::Specification.new do |s|
   s.name        = &#39;jekyll-pwa-plugin&#39;
@@ -76,7 +253,95 @@ Gem::Specification.new do |s|
   s.homepage    =
     &#39;https://github.com/lavas-project/jekyll-pwa&#39;
   s.license       = &#39;MIT&#39;
-end</code></pre></div><p>在发布之前当然要先做好测试工作，我是直接把写好的插件放在项目<code class=highlighter-rouge>/_plugins</code>下，确认本地可以正常使用。<h3 id=后续优化>后续优化</h3><p>目前至少有三点可以优化：<ol><li>提供一个离线页面，当用户离线访问不在缓存中的页面时展示<li>目前的 Service Worker 根据配置自动生成，可以支持用户传入自定义的模板，使用占位符的方式注入预缓存和动态缓存内容，这样更加灵活<li>开发模式下禁用缓存，不然在写作过程中使用 browser-sync 之类自动刷新的功能就无效了</ol><p><a href=https://github.com/lavas-project/jekyll-pwa>插件项目地址</a></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html class=read-next-link></a><section><span>SSR 中的离线可用（三）</span><p>本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合...</section><div class=filter></div><img src=/assets/img/vue-ssr.png alt=""></div><div class=read-next-item><a href=/coding/2017/10/28/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%BA%8C.html class=read-next-link></a><section><span>SSR 中的离线可用（二）</span><p>本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合...</section></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+end</code></pre>
+</div>
+
+<p>在发布之前当然要先做好测试工作，我是直接把写好的插件放在项目<code class="highlighter-rouge">/_plugins</code>下，确认本地可以正常使用。</p>
+
+<h3 id="后续优化">后续优化</h3>
+
+<p>目前至少有三点可以优化：</p>
+<ol>
+  <li>提供一个离线页面，当用户离线访问不在缓存中的页面时展示</li>
+  <li>目前的 Service Worker 根据配置自动生成，可以支持用户传入自定义的模板，使用占位符的方式注入预缓存和动态缓存内容，这样更加灵活</li>
+  <li>开发模式下禁用缓存，不然在写作过程中使用 browser-sync 之类自动刷新的功能就无效了</li>
+</ol>
+
+<p><a href="https://github.com/lavas-project/jekyll-pwa">插件项目地址</a></p>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html" class="read-next-link"></a>
+            <section>
+                <span>SSR 中的离线可用（三）</span>
+                <p>本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/vue-ssr.png" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/10/28/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%BA%8C.html" class="read-next-link"></a>
+            <section>
+                <span>SSR 中的离线可用（二）</span>
+                <p>本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合...</p>
+            </section>
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -86,8 +351,48 @@ end</code></pre></div><p>在发布之前当然要先做好测试工作，我是�
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2017</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2017</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script>
+    });
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+            <script>
+                window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };
+            </script>
+            </body>
+
+</html>

@@ -1,9 +1,222 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>浏览器的恢复滚动行为 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=浏览器的恢复滚动行为><meta name=keywords content=browser><title>浏览器的恢复滚动行为 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=浏览器的恢复滚动行为><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="平常使用浏览器的后退功能时，常常会发现返回的页面滚动到了之前的位置，而不是简单的回到顶部。这是由于浏览器在导航跳转和通过 History API 创建历史记录时，都会记录当前的垂直滚动距离，在重新访问时恢复这个距离。值得一提的是，在 HTML History Spec中并没有强制要求浏览器记录与恢复滚动距离。在传统的页面中，这一默认行为非常贴心，但是在 SPA 中存在以下问题："><meta property=og:description content="平常使用浏览器的后退功能时，常常会发现返回的页面滚动到了之前的位置，而不是简单的回到顶部。这是由于浏览器在导航跳转和通过 History API 创建历史记录时，都会记录当前的垂直滚动距离，在重新访问时恢复这个距离。值得一提的是，在 HTML History Spec中并没有强制要求浏览器记录与恢复滚动距离。在传统的页面中，这一默认行为非常贴心，但是在 SPA 中存在以下问题："><link rel=canonical href=https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-08-03T00:00:00+08:00><script type=application/ld+json>{"description":"平常使用浏览器的后退功能时，常常会发现返回的页面滚动到了之前的位置，而不是简单的回到顶部。这是由于浏览器在导航跳转和通过 History API 创建历史记录时，都会记录当前的垂直滚动距离，在重新访问时恢复这个距离。值得一提的是，在 HTML History Spec中并没有强制要求浏览器记录与恢复滚动距离。在传统的页面中，这一默认行为非常贴心，但是在 SPA 中存在以下问题：","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html","headline":"浏览器的恢复滚动行为","dateModified":"2017-08-03T00:00:00+08:00","datePublished":"2017-08-03T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浏览器的恢复滚动行为 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="浏览器的恢复滚动行为">
+    <meta name="keywords"  content="browser">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>浏览器的恢复滚动行为 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="浏览器的恢复滚动行为" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="平常使用浏览器的后退功能时，常常会发现返回的页面滚动到了之前的位置，而不是简单的回到顶部。这是由于浏览器在导航跳转和通过 History API 创建历史记录时，都会记录当前的垂直滚动距离，在重新访问时恢复这个距离。值得一提的是，在 HTML History Spec中并没有强制要求浏览器记录与恢复滚动距离。在传统的页面中，这一默认行为非常贴心，但是在 SPA 中存在以下问题：" />
+<meta property="og:description" content="平常使用浏览器的后退功能时，常常会发现返回的页面滚动到了之前的位置，而不是简单的回到顶部。这是由于浏览器在导航跳转和通过 History API 创建历史记录时，都会记录当前的垂直滚动距离，在重新访问时恢复这个距离。值得一提的是，在 HTML History Spec中并没有强制要求浏览器记录与恢复滚动距离。在传统的页面中，这一默认行为非常贴心，但是在 SPA 中存在以下问题：" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-08-03T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"平常使用浏览器的后退功能时，常常会发现返回的页面滚动到了之前的位置，而不是简单的回到顶部。这是由于浏览器在导航跳转和通过 History API 创建历史记录时，都会记录当前的垂直滚动距离，在重新访问时恢复这个距离。值得一提的是，在 HTML History Spec中并没有强制要求浏览器记录与恢复滚动距离。在传统的页面中，这一默认行为非常贴心，但是在 SPA 中存在以下问题：","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html","headline":"浏览器的恢复滚动行为","dateModified":"2017-08-03T00:00:00+08:00","datePublished":"2017-08-03T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/08/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%81%A2%E5%A4%8D%E6%BB%9A%E5%8A%A8%E8%A1%8C%E4%B8%BA.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default post-no-cover" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#browser class=post-tag>browser</a></div><h1>浏览器的恢复滚动行为</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=17-08-03><i class="iconfont icon-date"></i>03 Aug 2017</time></div></div></header><div class=post-content><article class=markdown-body><p>平常使用浏览器的后退功能时，常常会发现返回的页面滚动到了之前的位置，而不是简单的回到顶部。这是由于浏览器在导航跳转和通过 History API 创建历史记录时，都会记录当前的垂直滚动距离，在重新访问时恢复这个距离。值得一提的是，在<a href=http://www.w3.org/TR/html51/browsers.html#history> HTML History Spec</a>中并没有强制要求浏览器记录与恢复滚动距离。在传统的页面中，这一默认行为非常贴心，但是在 SPA 中存在以下问题：<ol><li>浏览器试图恢复滚动距离时，页面可能还没有加载完毕，可能存在异步加载的部分。这样恢复之后，页面会出现跳动。<li>点击链接进入页面就不会应用恢复滚动这一行为。对于开发者而言，希望提供统一的恢复滚动实现，而不是后退等历史记录这部分依赖浏览器。<li>浏览器的滚动行为让开发者无法实现滚动过程的动画。而且对于容器内滚动的设计，浏览器是无法帮助恢复的。</ol><p>按照<a href=https://majido.github.io/scroll-restoration-proposal/ >《浏览器恢复滚动提案》</a>的介绍，针对这一问题，现在常见的解决方案包括：<ol><li>不使用 body 滚动，采用容器内滚动的方式。但显然，这样会丢失一部分浏览器默认行为，例如滑动隐藏顶部地址栏。<li>在浏览器恢复滚动行为之后，进行第二次滚动。缺点是会有明显的用户感知。</ol><h2 id=疑似方案>疑似方案？</h2><p>话说我们能监听到浏览器恢复滚动的行为么？<p>浏览器恢复滚动时会触发 scroll 事件。但这里涉及到 scroll 和 popState 事件的触发顺序。Chrome 在恢复滚动之前会先触发 popState 事件，这就意味着我们可以在此时记录下页面的滚动距离，然后触发 scroll 时我们就能使用类似<code class=highlighter-rouge>window.scrollTo</code>来手动恢复了。但是 Firefox 刚好相反，这样在 popState 中我们已经无法获取旧的滚动距离了，因为浏览器已经自动恢复了。<p>事实上，在前端路由的设计中，通常都包含 hash 和 History 模式。在<a href=https://github.com/ReactTraining/react-router/issues/707> react-router的这个 ISSUE</a>中，列举了 hashchange/popState 与 scroll 事件在 Chrome/Firefox 中的触发顺序，可以看出并不统一。 所以这个方案至少在兼容性上并不可行。<h2 id=引入新的-api>引入新的 API</h2><p>为了让开发者能够通过编程方式关闭这一浏览器行为，<a href=https://majido.github.io/scroll-restoration-proposal/ >《浏览器恢复滚动提案》</a>引入了新的 API：<div><pre class=line-numbers data-line=""><code class=language-js>if (&#39;scrollRestoration&#39; in history) {
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default post-no-cover" data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#browser" class="post-tag">browser</a>
+            
+            
+        </div>
+        <h1>浏览器的恢复滚动行为</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="17-08-03"><i class="iconfont icon-date"></i>03 Aug 2017</time>
+        </div>
+    </div>
+    
+</header>
+
+<div class="post-content">
+    
+    <article class="markdown-body">
+        <p>平常使用浏览器的后退功能时，常常会发现返回的页面滚动到了之前的位置，而不是简单的回到顶部。这是由于浏览器在导航跳转和通过 History API 创建历史记录时，都会记录当前的垂直滚动距离，在重新访问时恢复这个距离。值得一提的是，在<a href="http://www.w3.org/TR/html51/browsers.html#history"> HTML History Spec</a>中并没有强制要求浏览器记录与恢复滚动距离。在传统的页面中，这一默认行为非常贴心，但是在 SPA 中存在以下问题：</p>
+
+<ol>
+  <li>浏览器试图恢复滚动距离时，页面可能还没有加载完毕，可能存在异步加载的部分。这样恢复之后，页面会出现跳动。</li>
+  <li>点击链接进入页面就不会应用恢复滚动这一行为。对于开发者而言，希望提供统一的恢复滚动实现，而不是后退等历史记录这部分依赖浏览器。</li>
+  <li>浏览器的滚动行为让开发者无法实现滚动过程的动画。而且对于容器内滚动的设计，浏览器是无法帮助恢复的。</li>
+</ol>
+
+<p>按照<a href="https://majido.github.io/scroll-restoration-proposal/">《浏览器恢复滚动提案》</a>的介绍，针对这一问题，现在常见的解决方案包括：</p>
+
+<ol>
+  <li>不使用 body 滚动，采用容器内滚动的方式。但显然，这样会丢失一部分浏览器默认行为，例如滑动隐藏顶部地址栏。</li>
+  <li>在浏览器恢复滚动行为之后，进行第二次滚动。缺点是会有明显的用户感知。</li>
+</ol>
+
+<h2 id="疑似方案">疑似方案？</h2>
+
+<p>话说我们能监听到浏览器恢复滚动的行为么？</p>
+
+<p>浏览器恢复滚动时会触发 scroll 事件。但这里涉及到 scroll 和 popState 事件的触发顺序。Chrome 在恢复滚动之前会先触发 popState 事件，这就意味着我们可以在此时记录下页面的滚动距离，然后触发 scroll 时我们就能使用类似<code class="highlighter-rouge">window.scrollTo</code>来手动恢复了。但是 Firefox 刚好相反，这样在 popState 中我们已经无法获取旧的滚动距离了，因为浏览器已经自动恢复了。</p>
+
+<p>事实上，在前端路由的设计中，通常都包含 hash 和 History 模式。在<a href="https://github.com/ReactTraining/react-router/issues/707"> react-router的这个 ISSUE</a>中，列举了 hashchange/popState 与 scroll 事件在 Chrome/Firefox 中的触发顺序，可以看出并不统一。
+所以这个方案至少在兼容性上并不可行。</p>
+
+<h2 id="引入新的-api">引入新的 API</h2>
+
+<p>为了让开发者能够通过编程方式关闭这一浏览器行为，<a href="https://majido.github.io/scroll-restoration-proposal/">《浏览器恢复滚动提案》</a>引入了新的 API：</p>
+
+<div>
+<pre class="line-numbers" data-line=""><code class="language-js">if (&#39;scrollRestoration&#39; in history) {
     // 默认值为&#39;auto&#39;
     history.scrollRestoration = &#39;manual&#39;;
-}</code></pre></div><p>根据<a href=https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration> Google 开发者文档</a>，Chrome 46 以上已经实装。<p>我自己也写了一个 demo 测试了一下确实可行，这或许才是最好的解决方案，等待其他浏览器厂商支持吧。</article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/movie/2017/08/05/%E5%9E%83%E5%9C%BE%E5%9B%B4%E5%9F%8E.html class=read-next-link></a><section><span>垃圾围城</span><p>前两天听《反派影评》，节目里说到西宁 FIRST 电影展播放了纪录片《塑料王国》完整版。很早之前我看过半小时的媒体...</section><div class=filter></div><img src=/assets/img/movie/plastic-china-post.jpg alt=""></div><div class=read-next-item><a href=/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html class=read-next-link></a><section><span>为vue项目添加骨架屏</span><p>前段时间阅读了饿了么的 PWA 升级实践一文，受益匪浅。其中构建时使用 Vue 预渲染骨架屏一节，为开发者提供了减...</section><div class=filter></div><img src=/assets/img/post-bg-js-module.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+}</code></pre>
+</div>
+
+<p>根据<a href="https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration"> Google 开发者文档</a>，Chrome 46 以上已经实装。</p>
+
+<p>我自己也写了一个 demo 测试了一下确实可行，这或许才是最好的解决方案，等待其他浏览器厂商支持吧。</p>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/movie/2017/08/05/%E5%9E%83%E5%9C%BE%E5%9B%B4%E5%9F%8E.html" class="read-next-link"></a>
+            <section>
+                <span>垃圾围城</span>
+                <p>前两天听《反派影评》，节目里说到西宁 FIRST 电影展播放了纪录片《塑料王国》完整版。很早之前我看过半小时的媒体...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/movie/plastic-china-post.jpg" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html" class="read-next-link"></a>
+            <section>
+                <span>为vue项目添加骨架屏</span>
+                <p>前段时间阅读了饿了么的 PWA 升级实践一文，受益匪浅。其中构建时使用 Vue 预渲染骨架屏一节，为开发者提供了减...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/post-bg-js-module.jpg" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -13,8 +226,48 @@
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2017</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2017</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script>
+    });
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+            <script>
+                window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };
+            </script>
+            </body>
+
+</html>
