@@ -10,9 +10,9 @@
                             workboxSW.router.registerRoute(/assets\/(img|icons)/,
                     workboxSW.strategies.cacheFirst());
 
-                workboxSW.router.registerRoute(/cdn\.staticfile\.org/,
+                workboxSW.router.registerRoute(/^https?:\/\/cdn.staticfile.org/,
                     workboxSW.strategies.cacheFirst());
 
-                workboxSW.router.registerRoute(/at\.alicdn\.com/,
+                workboxSW.router.registerRoute(/^https?:\/\/at.alicdn.com/,
                     workboxSW.strategies.cacheFirst());
 
