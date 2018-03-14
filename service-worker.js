@@ -11,8 +11,8 @@
                     workboxSW.strategies.cacheFirst());
 
                 workboxSW.router.registerRoute(/^https?:\/\/cdn.staticfile.org/,
-                    workboxSW.strategies.cacheFirst());
+                    workboxSW.strategies.staleWhileRevalidate());
 
                 workboxSW.router.registerRoute(/^https?:\/\/at.alicdn.com/,
-                    workboxSW.strategies.cacheFirst());
+                    workboxSW.strategies.staleWhileRevalidate());
 
