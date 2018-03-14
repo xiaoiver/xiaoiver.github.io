@@ -1,160 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>让骨架屏更快渲染 - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="让骨架屏更快渲染">
-    <meta name="keywords"  content="vue, webpack">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>让骨架屏更快渲染 | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="让骨架屏更快渲染" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="在之前「为vue项目添加骨架屏」一文中，介绍了骨架屏的概念以及在 Vue 项目中的应用。本文将介绍如何加快浏览器对骨架屏的渲染。" />
-<meta property="og:description" content="在之前「为vue项目添加骨架屏」一文中，介绍了骨架屏的概念以及在 Vue 项目中的应用。本文将介绍如何加快浏览器对骨架屏的渲染。" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2018-03-13T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"在之前「为vue项目添加骨架屏」一文中，介绍了骨架屏的概念以及在 Vue 项目中的应用。本文将介绍如何加快浏览器对骨架屏的渲染。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html","headline":"让骨架屏更快渲染","dateModified":"2018-03-13T00:00:00+08:00","datePublished":"2018-03-13T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>让骨架屏更快渲染 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=让骨架屏更快渲染><meta name=keywords content="vue, webpack"><title>让骨架屏更快渲染 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=让骨架屏更快渲染><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="在之前「为vue项目添加骨架屏」一文中，介绍了骨架屏的概念以及在 Vue 项目中的应用。本文将介绍如何加快浏览器对骨架屏的渲染。"><meta property=og:description content="在之前「为vue项目添加骨架屏」一文中，介绍了骨架屏的概念以及在 Vue 项目中的应用。本文将介绍如何加快浏览器对骨架屏的渲染。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-03-13T00:00:00+08:00><script type=application/ld+json>{"description":"在之前「为vue项目添加骨架屏」一文中，介绍了骨架屏的概念以及在 Vue 项目中的应用。本文将介绍如何加快浏览器对骨架屏的渲染。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html","headline":"让骨架屏更快渲染","dateModified":"2018-03-13T00:00:00+08:00","datePublished":"2018-03-13T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#vue" class="post-tag">vue</a>
-            
-            <a href="https://xiaoiver.github.io/tags#webpack" class="post-tag">webpack</a>
-            
-            
-        </div>
-        <h1>让骨架屏更快渲染</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="18-03-13"><i class="iconfont icon-date"></i>13 Mar 2018</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/post-bg-js-module.jpg') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    
-    <article class="markdown-body">
-        <p>在之前<a href="/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html">「为vue项目添加骨架屏」</a>一文中，介绍了骨架屏的概念以及在 Vue 项目中的应用。本文将介绍如何加快浏览器对骨架屏的渲染。</p>
-
-<h2 id="骨架屏的渲染时机">骨架屏的渲染时机</h2>
-
-<p>让我们先来看一下时间线，打开 Chrome Devtool 中性能面板：
-<img src="https://boscdn.baidu.com/assets/lavas/codelab/skeleton.png" alt="" /></p>
-
-<p>不难发现，在 HTML 下载完毕之后，浏览器仍然需要等待样式（index.css）下载完毕才开始渲染骨架屏。
-这是由于浏览器构建渲染树需要 DOM 和 CSSOM，因此 HTML 和 CSS 都是会阻塞渲染的资源。这在大部分场景下都是合情合理的，毕竟让用户看到内容在样式加载前后闪烁（FOUC）是需要避免的。</p>
-
-<p>但是骨架屏所需的样式已经内联在 HTML 中，供前端渲染内容使用的 CSS 显然不应该阻塞骨架屏的渲染。有没有办法改变这个特性呢？</p>
-
-<h2 id="将-link-挪到-body-中">将 link 挪到 body 中</h2>
-
-<p>首先想到的办法是，将 <code class="highlighter-rouge">&lt;link&gt;</code> 从 <code class="highlighter-rouge">&lt;head&gt;</code> 中挪到 <code class="highlighter-rouge">&lt;body&gt;</code> 中，HTML 规范允许这样做：</p>
-<blockquote>
-  <p>A <code class="highlighter-rouge">&lt;link&gt;</code> tag can occur either in the head element or in the body element (or both), depending on whether it has a link type that is body-ok. For example, the stylesheet link type is body-ok, and therefore a <code class="highlighter-rouge">&lt;link rel="stylesheet"&gt;</code> is permitted in the body.</p>
-</blockquote>
-
-<p>这样 CSS 只会阻塞后续内容，骨架屏可以不受影响地被渲染。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-html">&lt;head&gt;
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#vue class=post-tag>vue</a> <a href=https://xiaoiver.github.io/tags#webpack class=post-tag>webpack</a></div><h1>让骨架屏更快渲染</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-03-13><i class="iconfont icon-date"></i>13 Mar 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/post-bg-js-module.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><article class=markdown-body><p>在之前<a href=/coding/2017/07/30/%E4%B8%BAvue%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%AA%A8%E6%9E%B6%E5%B1%8F.html>「为vue项目添加骨架屏」</a>一文中，介绍了骨架屏的概念以及在 Vue 项目中的应用。本文将介绍如何加快浏览器对骨架屏的渲染。<h2 id=骨架屏的渲染时机>骨架屏的渲染时机</h2><p>让我们先来看一下时间线，打开 Chrome Devtool 中性能面板： <img src=https://boscdn.baidu.com/assets/lavas/codelab/skeleton.png alt=""><p>不难发现，在 HTML 下载完毕之后，浏览器仍然需要等待样式（index.css）下载完毕才开始渲染骨架屏。 这是由于浏览器构建渲染树需要 DOM 和 CSSOM，因此 HTML 和 CSS 都是会阻塞渲染的资源。这在大部分场景下都是合情合理的，毕竟让用户看到内容在样式加载前后闪烁（FOUC）是需要避免的。<p>但是骨架屏所需的样式已经内联在 HTML 中，供前端渲染内容使用的 CSS 显然不应该阻塞骨架屏的渲染。有没有办法改变这个特性呢？<h2 id=将-link-挪到-body-中>将 link 挪到 body 中</h2><p>首先想到的办法是，将 <code class=highlighter-rouge>&lt;link&gt;</code> 从 <code class=highlighter-rouge>&lt;head&gt;</code> 中挪到 <code class=highlighter-rouge>&lt;body&gt;</code> 中，HTML 规范允许这样做：<blockquote><p>A <code class=highlighter-rouge>&lt;link&gt;</code> tag can occur either in the head element or in the body element (or both), depending on whether it has a link type that is body-ok. For example, the stylesheet link type is body-ok, and therefore a <code class=highlighter-rouge>&lt;link rel="stylesheet"&gt;</code> is permitted in the body.</blockquote><p>这样 CSS 只会阻塞后续内容，骨架屏可以不受影响地被渲染。<div><pre class=line-numbers data-line=""><code class=language-html>&lt;head&gt;
     &lt;style&gt;Skeleton CSS&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
     &lt;div&gt;Skeleton DOM&lt;/div&gt;
     &lt;link rel=&#39;stylesheet&#39; href=&#39;index.css&#39;&gt;
     &lt;div id=&#39;app&#39;&gt;...&lt;/div&gt;
-&lt;/body&gt;</code></pre>
-</div>
-
-<p>但是在 Chrome 中测试后会发现 CSS 依然阻塞渲染，在 Chrome 的关于这个问题的一个<a href="https://bugs.chromium.org/p/chromium/issues/detail?id=481122">讨论</a>中，能看到由于针对这种情况的渲染策略并没有严格的规范，不同浏览器下出现了不同的表现：</p>
-<ul>
-  <li>Chrome 依旧阻塞渲染。<a href="http://www.webpagetest.org/video/compare.php?tests=150424_57_12PJ-r:1-c:0">Webpagetest</a></li>
-  <li>IE 符合预期，仅仅阻塞后续内容。<a href="http://www.webpagetest.org/video/compare.php?tests=150424_NH_12XE-r:1-c:0">Webpagetest</a></li>
-  <li>Firefox 完全不阻塞渲染，除非 <code class="highlighter-rouge">&lt;head&gt;</code> 中已经出现了阻塞的 <code class="highlighter-rouge">&lt;link&gt;</code>。这样后续内容就会出现 FOUC。<a href="http://www.webpagetest.org/video/compare.php?tests=150424_MS_1297-r:1-c:0">Webpagetest</a>。需要在 <code class="highlighter-rouge">&lt;link&gt;</code> 之后加上空的 <code class="highlighter-rouge">&lt;script&gt; &lt;/script&gt;</code> 达到阻塞后续内容渲染的效果。</li>
-</ul>
-
-<p>在这个长长的讨论中，开发人员试图达到<a href="https://bugs.chromium.org/p/chromium/issues/detail?id=481122#c45">如下效果</a>：</p>
-<ul>
-  <li>任何出现在 <code class="highlighter-rouge">&lt;link&gt;</code> 之后的 DOM 内容在样式表加载完成之前都不会被添加到渲染树中，也就是阻塞后续渲染。</li>
-  <li>为 <code class="highlighter-rouge">&lt;link&gt;</code> 增加 <code class="highlighter-rouge">async</code> 属性，类似 <code class="highlighter-rouge">&lt;script&gt;</code> 的 <code class="highlighter-rouge">defer/async</code>，不阻塞渲染，加载完毕立即应用。</li>
-  <li>由 JS 插入的 <code class="highlighter-rouge">&lt;link&gt;</code> 将被异步加载。</li>
-</ul>
-
-<p>通过这种方式，开发者就能让浏览器按照声明顺序，尽快渲染页面内容。开发者 Jake 提出了一个配合 HTTP2 使用的<a href="https://jakearchibald.com/2016/link-in-body/">场景</a>：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-html">&lt;body&gt;
+&lt;/body&gt;</code></pre></div><p>但是在 Chrome 中测试后会发现 CSS 依然阻塞渲染，在 Chrome 的关于这个问题的一个<a href="https://bugs.chromium.org/p/chromium/issues/detail?id=481122">讨论</a>中，能看到由于针对这种情况的渲染策略并没有严格的规范，不同浏览器下出现了不同的表现：<ul><li>Chrome 依旧阻塞渲染。<a href="http://www.webpagetest.org/video/compare.php?tests=150424_57_12PJ-r:1-c:0">Webpagetest</a><li>IE 符合预期，仅仅阻塞后续内容。<a href="http://www.webpagetest.org/video/compare.php?tests=150424_NH_12XE-r:1-c:0">Webpagetest</a><li>Firefox 完全不阻塞渲染，除非 <code class=highlighter-rouge>&lt;head&gt;</code> 中已经出现了阻塞的 <code class=highlighter-rouge>&lt;link&gt;</code>。这样后续内容就会出现 FOUC。<a href="http://www.webpagetest.org/video/compare.php?tests=150424_MS_1297-r:1-c:0">Webpagetest</a>。需要在 <code class=highlighter-rouge>&lt;link&gt;</code> 之后加上空的 <code class=highlighter-rouge>&lt;script&gt; &lt;/script&gt;</code> 达到阻塞后续内容渲染的效果。</ul><p>在这个长长的讨论中，开发人员试图达到<a href="https://bugs.chromium.org/p/chromium/issues/detail?id=481122#c45">如下效果</a>：<ul><li>任何出现在 <code class=highlighter-rouge>&lt;link&gt;</code> 之后的 DOM 内容在样式表加载完成之前都不会被添加到渲染树中，也就是阻塞后续渲染。<li>为 <code class=highlighter-rouge>&lt;link&gt;</code> 增加 <code class=highlighter-rouge>async</code> 属性，类似 <code class=highlighter-rouge>&lt;script&gt;</code> 的 <code class=highlighter-rouge>defer/async</code>，不阻塞渲染，加载完毕立即应用。<li>由 JS 插入的 <code class=highlighter-rouge>&lt;link&gt;</code> 将被异步加载。</ul><p>通过这种方式，开发者就能让浏览器按照声明顺序，尽快渲染页面内容。开发者 Jake 提出了一个配合 HTTP2 使用的<a href=https://jakearchibald.com/2016/link-in-body/ >场景</a>：<div><pre class=line-numbers data-line=""><code class=language-html>&lt;body&gt;
   &lt;!-- HTTP/2 push this resource, or inline it, whichever&#39;s faster --&gt;
   &lt;link rel=&quot;stylesheet&quot; href=&quot;/site-header.css&quot;&gt;
   &lt;header&gt;&lt;/header&gt;
@@ -164,64 +17,18 @@
 
   &lt;link rel=&quot;stylesheet&quot; href=&quot;/site-footer.css&quot;&gt;
   &lt;footer&gt;&lt;/footer&gt;
-&lt;/body&gt;</code></pre>
-</div>
-
-<p>但是这个功能目前仍然没有在 Chrome 实装，不得不转向其他方法。</p>
-
-<h2 id="异步加载样式表">异步加载样式表</h2>
-
-<p><a href="https://github.com/filamentgroup/loadCSS">loadCSS</a> 为异步加载样式表提供了两种方式：</p>
-<ol>
-  <li><code class="highlighter-rouge">&lt;link ref='preload'&gt;</code></li>
-  <li>提供全局 <code class="highlighter-rouge">loadCSS</code> 方法，动态加载指定样式表
-我们将使用第一种方法，也是 loadCSS 推荐的方式。</li>
-</ol>
-
-<p><code class="highlighter-rouge">&lt;link ref='preload'&gt;</code> 让浏览器仅仅请求下载样式表，但完成后并不会应用样式，也就不会阻塞浏览器渲染了。如果想在下载完成后应用样式，可以在 <code class="highlighter-rouge">onload</code> 回调函数中修改 <code class="highlighter-rouge">rel</code> 的值为 <code class="highlighter-rouge">stylesheet</code>，像正常阻塞样式表一样应用。
-另外，由于<a href="https://caniuse.com/#feat=link-rel-preload">浏览器支持度</a>问题，loadCSS 提供了 <a href="https://github.com/filamentgroup/loadCSS/blob/master/src/cssrelpreload.js">polyfill</a> （使用 media 属性），以及在不支持 JS 情况下降级。完整例子如下：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-html">&lt;link rel=&quot;preload&quot; href=&quot;path/to/mystylesheet.css&quot; as=&quot;style&quot; onload=&quot;this.onload=null;this.rel=&#39;stylesheet&#39;&quot;&gt;
+&lt;/body&gt;</code></pre></div><p>但是这个功能目前仍然没有在 Chrome 实装，不得不转向其他方法。<h2 id=异步加载样式表>异步加载样式表</h2><p><a href=https://github.com/filamentgroup/loadCSS>loadCSS</a> 为异步加载样式表提供了两种方式：<ol><li><code class=highlighter-rouge>&lt;link ref='preload'&gt;</code><li>提供全局 <code class=highlighter-rouge>loadCSS</code> 方法，动态加载指定样式表 我们将使用第一种方法，也是 loadCSS 推荐的方式。</ol><p><code class=highlighter-rouge>&lt;link ref='preload'&gt;</code> 让浏览器仅仅请求下载样式表，但完成后并不会应用样式，也就不会阻塞浏览器渲染了。如果想在下载完成后应用样式，可以在 <code class=highlighter-rouge>onload</code> 回调函数中修改 <code class=highlighter-rouge>rel</code> 的值为 <code class=highlighter-rouge>stylesheet</code>，像正常阻塞样式表一样应用。 另外，由于<a href="https://caniuse.com/#feat=link-rel-preload">浏览器支持度</a>问题，loadCSS 提供了 <a href=https://github.com/filamentgroup/loadCSS/blob/master/src/cssrelpreload.js>polyfill</a> （使用 media 属性），以及在不支持 JS 情况下降级。完整例子如下：<div><pre class=line-numbers data-line=""><code class=language-html>&lt;link rel=&quot;preload&quot; href=&quot;path/to/mystylesheet.css&quot; as=&quot;style&quot; onload=&quot;this.onload=null;this.rel=&#39;stylesheet&#39;&quot;&gt;
 &lt;noscript&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;path/to/mystylesheet.css&quot;&gt;&lt;/noscript&gt;
 &lt;script&gt;
 /*! loadCSS rel=preload polyfill. [c]2017 Filament Group, Inc. MIT License */
 (function(){ ... }());
-&lt;/script&gt;</code></pre>
-</div>
-
-<p>我们将在使用了骨架屏的 Vue 项目中应用这种方法。</p>
-
-<h2 id="在-vue-项目中应用">在 Vue 项目中应用</h2>
-
-<p>虽然异步加载的样式表不会阻塞骨架屏的渲染，但是当前端渲染内容替换掉骨架屏内容时，必须保证此时样式表已经加载完毕，否则真正有意义的页面内容将出现 FOUC。由于样式表和 JS 加载顺序无法预知，我们必须考虑两者加载先后的情况。</p>
-
-<h3 id="大致思路">大致思路</h3>
-
-<p>首先必须要保证 Vue 实例在异步样式表加载完毕后进行<a href="https://vuejs.org/v2/api/#vm-mount">挂载</a>，如果此时样式还没有完成，我们把挂载方法放到全局，等到样式加载完成后再调用：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">app = new App();
+&lt;/script&gt;</code></pre></div><p>我们将在使用了骨架屏的 Vue 项目中应用这种方法。<h2 id=在-vue-项目中应用>在 Vue 项目中应用</h2><p>虽然异步加载的样式表不会阻塞骨架屏的渲染，但是当前端渲染内容替换掉骨架屏内容时，必须保证此时样式表已经加载完毕，否则真正有意义的页面内容将出现 FOUC。由于样式表和 JS 加载顺序无法预知，我们必须考虑两者加载先后的情况。<h3 id=大致思路>大致思路</h3><p>首先必须要保证 Vue 实例在异步样式表加载完毕后进行<a href=https://vuejs.org/v2/api/#vm-mount>挂载</a>，如果此时样式还没有完成，我们把挂载方法放到全局，等到样式加载完成后再调用：<div><pre class=line-numbers data-line=""><code class=language-javascript>app = new App();
 window.mountApp = () =&gt; {
     app.$mount(&#39;#app&#39;);
 };
 if (window.STYLE_READY) {
     window.mountApp();
-}</code></pre>
-</div>
-
-<p>然后使用 <code class="highlighter-rouge">&lt;link ref='preload'&gt;</code>，当加载完成时，如果发现全局有 <code class="highlighter-rouge">mountApp</code>，就执行挂载：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-html">&lt;link rel=&#39;preload&#39; href=&#39;index.css&#39; as=&#39;style&#39; onload=&#39;this.onload=null;this.rel=&#39;stylesheet&#39;;window.STYLE_READY=1;window.mountApp&amp;&amp;window.mountApp();&#39;&gt;</code></pre>
-</div>
-
-<p>有了具体思路，下面让我们看看在具体项目中应用时可能遇到的问题。如果不关心具体细节，可以调到“最终效果”一节。</p>
-
-<h3 id="配合-htmlwebpackplugin-使用">配合 HTMLWebpackPlugin 使用</h3>
-
-<p>在生成 SPA 时，通常会使用 <a href="">HTMLWebpackPlugin</a>，这个插件根据开发者传入的模板生成最终的 HTML，当我们开启了 <code class="highlighter-rouge">inject</code> 选项时，会自动插入 <code class="highlighter-rouge">&lt;link&gt;</code> 和 <code class="highlighter-rouge">&lt;script&gt;</code>。在实现上述思路时，需要作出一些修改。</p>
-
-<p>首先，在模板中我们需要加入针对 JS 和 CSS 的 <code class="highlighter-rouge">&lt;link ref='preload'&gt;</code>：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-html">&lt;head&gt;
+}</code></pre></div><p>然后使用 <code class=highlighter-rouge>&lt;link ref='preload'&gt;</code>，当加载完成时，如果发现全局有 <code class=highlighter-rouge>mountApp</code>，就执行挂载：<div><pre class=line-numbers data-line=""><code class=language-html>&lt;link rel=&#39;preload&#39; href=&#39;index.css&#39; as=&#39;style&#39; onload=&#39;this.onload=null;this.rel=&#39;stylesheet&#39;;window.STYLE_READY=1;window.mountApp&amp;&amp;window.mountApp();&#39;&gt;</code></pre></div><p>有了具体思路，下面让我们看看在具体项目中应用时可能遇到的问题。如果不关心具体细节，可以调到“最终效果”一节。<h3 id=配合-htmlwebpackplugin-使用>配合 HTMLWebpackPlugin 使用</h3><p>在生成 SPA 时，通常会使用 <a href="">HTMLWebpackPlugin</a>，这个插件根据开发者传入的模板生成最终的 HTML，当我们开启了 <code class=highlighter-rouge>inject</code> 选项时，会自动插入 <code class=highlighter-rouge>&lt;link&gt;</code> 和 <code class=highlighter-rouge>&lt;script&gt;</code>。在实现上述思路时，需要作出一些修改。<p>首先，在模板中我们需要加入针对 JS 和 CSS 的 <code class=highlighter-rouge>&lt;link ref='preload'&gt;</code>：<div><pre class=line-numbers data-line=""><code class=language-html>&lt;head&gt;
     &lt;% for (var jsFilePath of htmlWebpackPlugin.files.js) { %&gt;
         &lt;link rel=&quot;preload&quot; href=&quot;&lt;%= jsFilePath %&gt;&quot; as=&quot;script&quot;&gt;
     &lt;% } %&gt;
@@ -233,12 +40,7 @@ if (window.STYLE_READY) {
     /*! loadCSS rel=preload polyfill. [c]2017 Filament Group, Inc. MIT License */
     (function(){ ... }());
     &lt;/script&gt;
-&lt;/head&gt;</code></pre>
-</div>
-
-<p>然后，由于不需要插件插入 <code class="highlighter-rouge">&lt;link&gt;</code>，我们可以编写一个简单的 Webpack 插件，监听 HTMLWebpackPlugin 的<a href="https://github.com/jantimon/html-webpack-plugin#events">事件</a>，过滤掉 CSS。这样插件就不会自动插入 <code class="highlighter-rouge">&lt;link&gt;</code> 了：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">module.exports = class OmmitCSSPlugin {
+&lt;/head&gt;</code></pre></div><p>然后，由于不需要插件插入 <code class=highlighter-rouge>&lt;link&gt;</code>，我们可以编写一个简单的 Webpack 插件，监听 HTMLWebpackPlugin 的<a href=https://github.com/jantimon/html-webpack-plugin#events>事件</a>，过滤掉 CSS。这样插件就不会自动插入 <code class=highlighter-rouge>&lt;link&gt;</code> 了：<div><pre class=line-numbers data-line=""><code class=language-javascript>module.exports = class OmmitCSSPlugin {
     constructor() {}
     apply(compiler) {
         compiler.plugin(&#39;compilation&#39;, (compilation) =&gt; {
@@ -251,92 +53,7 @@ if (window.STYLE_READY) {
             );
         });
     }
-}</code></pre>
-</div>
-
-<h3 id="最终效果">最终效果</h3>
-
-<p>使用这个方法后，再次观察时间线，发现骨架屏渲染时间被提前了：
-<img src="https://user-images.githubusercontent.com/3608471/36834922-6e99d466-1d6f-11e8-8364-b73bc7a9dbb5.png" alt="image" /></p>
-
-<p>最后，可以参考 <a href="https://xiaoiver.github.io/skeleton-demo">DEMO 地址</a> 和 <a href="https://github.com/xiaoiver/skeleton-demo">Github 地址</a>。</p>
-
-<p>另外，在 <a href="https://lavas.baidu.com/">Lavas</a> 中也内置了<a href="https://lavas.baidu.com/guide/v2/advanced/appshell#%E5%8A%A0%E5%BF%AB-skeleton-%E7%9A%84%E6%B8%B2%E6%9F%93">这个功能</a>，欢迎使用 Lavas 快速搭建 PWA 应用。</p>
-
-<h2 id="参考资料">参考资料</h2>
-
-<ul>
-  <li><a href="https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-blocking-css">render-blocking-css</a></li>
-  <li><a href="https://www.sitepoint.com/critical-rendering-path-css-fast-loading-website/">critical-rendering-path-css-fast-loading-website</a></li>
-  <li><a href="https://bugs.chromium.org/p/chromium/issues/detail?id=481122">Chrome ISSUE</a></li>
-  <li><a href="https://jakearchibald.com/2016/link-in-body/">link-in-body</a></li>
-  <li><a href="https://github.com/lavas-project/lavas/issues/73">Lavas 中的应用</a></li>
-</ul>
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        
-        <div class="read-next-item">
-            <a href="/music/2017/12/20/%E6%88%91%E7%9A%84%E6%97%A5%E6%9C%AC%E8%A1%8C.html" class="read-next-link"></a>
-            <section>
-                <span>我的日本行</span>
-                <p>日本之行结束了，在此记录一下这次难忘的旅程。  之前的东京篇</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/resized/800/day2-15.jpg" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-<hr>
-<!-- 来必力City版安装代码 -->
-<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
-    <script type="text/javascript">
-   (function(d, s) {
+}</code></pre></div><h3 id=最终效果>最终效果</h3><p>使用这个方法后，再次观察时间线，发现骨架屏渲染时间被提前了： <img src=https://user-images.githubusercontent.com/3608471/36834922-6e99d466-1d6f-11e8-8364-b73bc7a9dbb5.png alt=image><p>最后，可以参考 <a href=https://xiaoiver.github.io/skeleton-demo>DEMO 地址</a> 和 <a href=https://github.com/xiaoiver/skeleton-demo>Github 地址</a>。<p>另外，在 <a href=https://lavas.baidu.com/ >Lavas</a> 中也内置了<a href=https://lavas.baidu.com/guide/v2/advanced/appshell#%E5%8A%A0%E5%BF%AB-skeleton-%E7%9A%84%E6%B8%B2%E6%9F%93>这个功能</a>，欢迎使用 Lavas 快速搭建 PWA 应用。<h2 id=参考资料>参考资料</h2><ul><li><a href=https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-blocking-css>render-blocking-css</a><li><a href=https://www.sitepoint.com/critical-rendering-path-css-fast-loading-website/ >critical-rendering-path-css-fast-loading-website</a><li><a href="https://bugs.chromium.org/p/chromium/issues/detail?id=481122">Chrome ISSUE</a><li><a href=https://jakearchibald.com/2016/link-in-body/ >link-in-body</a><li><a href=https://github.com/lavas-project/lavas/issues/73>Lavas 中的应用</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/music/2017/12/20/%E6%88%91%E7%9A%84%E6%97%A5%E6%9C%AC%E8%A1%8C.html class=read-next-link></a><section><span>我的日本行</span><p>日本之行结束了，在此记录一下这次难忘的旅程。 之前的东京篇</section><div class=filter></div><img src=/assets/img/resized/800/day2-15.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -346,48 +63,15 @@ if (window.STYLE_READY) {
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-    </script>
-<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
-</div>
-<!-- City版安装代码已完成 -->
-
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2018</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-            <script>
-                window.onload = function () {
+    });</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script>window.onload = function () {
                     var script = document.createElement('script');
                     var firstScript = document.getElementsByTagName('script')[0];
                     script.type = 'text/javascript';
                     script.async = true;
                     script.src = '/sw-register.js?v=' + Date.now();
                     firstScript.parentNode.insertBefore(script, firstScript);
-                };
-            </script>
-            </body>
-
-</html>
+                };</script>
