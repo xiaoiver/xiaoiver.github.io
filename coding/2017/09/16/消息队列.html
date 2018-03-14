@@ -1,139 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Node.js 中的消息队列 - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="Node.js 中的消息队列">
-    <meta name="keywords"  content="javascript, nodejs, leveldb, redis, rabbitMQ">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>Node.js 中的消息队列 | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="Node.js 中的消息队列" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。 通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。" />
-<meta property="og:description" content="在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。 通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-09-16T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。 通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html","headline":"Node.js 中的消息队列","dateModified":"2017-09-16T00:00:00+08:00","datePublished":"2017-09-16T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Node.js 中的消息队列 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="Node.js 中的消息队列"><meta name=keywords content="javascript, nodejs, leveldb, redis, rabbitMQ"><title>Node.js 中的消息队列 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="Node.js 中的消息队列"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。 通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。"><meta property=og:description content="在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。 通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-09-16T00:00:00+08:00><script type=application/ld+json>{"description":"在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。 通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html","headline":"Node.js 中的消息队列","dateModified":"2017-09-16T00:00:00+08:00","datePublished":"2017-09-16T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#javascript" class="post-tag">javascript</a>
-            
-            <a href="https://xiaoiver.github.io/tags#nodejs" class="post-tag">nodejs</a>
-            
-            <a href="https://xiaoiver.github.io/tags#leveldb" class="post-tag">leveldb</a>
-            
-            <a href="https://xiaoiver.github.io/tags#redis" class="post-tag">redis</a>
-            
-            <a href="https://xiaoiver.github.io/tags#rabbitMQ" class="post-tag">rabbitMQ</a>
-            
-            
-        </div>
-        <h1>Node.js 中的消息队列</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="17-09-16"><i class="iconfont icon-date"></i>16 Sep 2017</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/work-queue.png') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    
-    <h2 class="post-subtitle">基于内存，持久化，Redis 和 RabbitMQ</h2>
-    
-    <article class="markdown-body">
-        <p>在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。
-通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。</p>
-
-<p>我们引入消息队列，producer 负责向队列中推送消息，而 worker 负责消费。
-<img src="/assets/img/work-queue.png" alt="" /></p>
-
-<p>使用消息队列的好处是显而易见的：</p>
-<ol>
-  <li>解耦了 producer 和 worker。尤其是像发送邮件这样对实时性要求不高的步骤，如果这一步操作失败，我们显然不需要回滚之前对数据库的修改，只需要在合适的时间重试就行了。</li>
-  <li>实现重试逻辑变得简单。另外，当进程出现错误，不至于丢失全部状态，甚至可以从错误中恢复。</li>
-  <li>分布式和扩展性。配合 cluster，创建多个 worker 变得简单。</li>
-  <li>让外部系统更容易集成进来，相比在一个请求回调函数中完成所有逻辑处理。</li>
-</ol>
-
-<h2 id="简单的内存队列">简单的内存队列</h2>
-
-<p>首先实现一个内存中的队列管理，使用 async 创建队列。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">// 创建并发度为1的异步队列
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#javascript class=post-tag>javascript</a> <a href=https://xiaoiver.github.io/tags#nodejs class=post-tag>nodejs</a> <a href=https://xiaoiver.github.io/tags#leveldb class=post-tag>leveldb</a> <a href=https://xiaoiver.github.io/tags#redis class=post-tag>redis</a> <a href=https://xiaoiver.github.io/tags#rabbitMQ class=post-tag>rabbitMQ</a></div><h1>Node.js 中的消息队列</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=17-09-16><i class="iconfont icon-date"></i>16 Sep 2017</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/work-queue.png') center no-repeat; background-size: cover"></div></header><div class=post-content><h2 class=post-subtitle>基于内存，持久化，Redis 和 RabbitMQ</h2><article class=markdown-body><p>在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。 通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。<p>我们引入消息队列，producer 负责向队列中推送消息，而 worker 负责消费。 <img src=/assets/img/work-queue.png alt=""><p>使用消息队列的好处是显而易见的：<ol><li>解耦了 producer 和 worker。尤其是像发送邮件这样对实时性要求不高的步骤，如果这一步操作失败，我们显然不需要回滚之前对数据库的修改，只需要在合适的时间重试就行了。<li>实现重试逻辑变得简单。另外，当进程出现错误，不至于丢失全部状态，甚至可以从错误中恢复。<li>分布式和扩展性。配合 cluster，创建多个 worker 变得简单。<li>让外部系统更容易集成进来，相比在一个请求回调函数中完成所有逻辑处理。</ol><h2 id=简单的内存队列>简单的内存队列</h2><p>首先实现一个内存中的队列管理，使用 async 创建队列。<div><pre class=line-numbers data-line=""><code class=language-javascript>// 创建并发度为1的异步队列
 const queue = async.queue(work, 1);
 
 function work(item, cb) {
@@ -150,16 +17,7 @@ function work(item, cb) {
     }
 }
 // 推送消息到队列中
-queue.push(work, cb);</code></pre>
-</div>
-
-<p>这样一个简单的 demo 存在的问题就是所有状态存在于内存中，一旦崩溃就无法恢复了。另外内存毕竟有限，对于一个长时间运行的系统，迟早是会超出内存限制的。</p>
-
-<h2 id="通过-leveldb-持久化">通过 LevelDB 持久化</h2>
-
-<p>持久化队列是个不错的改进方向。LevelDB 是一个键值对数据库，不需要安装，可以在指定目录下创建。另外，使用配套的 <code class="highlighter-rouge">level-jobs</code> 可以快捷的创建队列。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const level = require(&#39;level&#39;);
+queue.push(work, cb);</code></pre></div><p>这样一个简单的 demo 存在的问题就是所有状态存在于内存中，一旦崩溃就无法恢复了。另外内存毕竟有限，对于一个长时间运行的系统，迟早是会超出内存限制的。<h2 id=通过-leveldb-持久化>通过 LevelDB 持久化</h2><p>持久化队列是个不错的改进方向。LevelDB 是一个键值对数据库，不需要安装，可以在指定目录下创建。另外，使用配套的 <code class=highlighter-rouge>level-jobs</code> 可以快捷的创建队列。<div><pre class=line-numbers data-line=""><code class=language-javascript>const level = require(&#39;level&#39;);
 // 创建本地数据库
 const db = level(&#39;./event/db&#39;);
 const Jobs = require(&#39;level-jobs&#39;);
@@ -189,28 +47,13 @@ function sendEventToRemoteService(payload, cb) {
         }
         cb(err);
     }, 100);
-}</code></pre>
-</div>
-
-<p>通过<code class="highlighter-rouge">queue.push(payload)</code>可以向队列中推送消息。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const relay = require(&#39;./event_relay&#39;);
+}</code></pre></div><p>通过<code class=highlighter-rouge>queue.push(payload)</code>可以向队列中推送消息。<div><pre class=line-numbers data-line=""><code class=language-javascript>const relay = require(&#39;./event_relay&#39;);
 for(let i = 0; i &lt; 10; i++) {
     relay.push({
         id: i,
         event: &#39;door opened&#39;
     });
-}</code></pre>
-</div>
-
-<p>现在我们解决了持久化队列的问题，但是我们的 worker 是单线程运行的。如果任务是 CPU 密集型的，还是需要分配负载到多个线程上。</p>
-
-<h2 id="redis-和多线程">Redis 和多线程</h2>
-
-<p><code class="highlighter-rouge">simple-redis-safe-work-queue</code> 是一个基于 Redis 的分布式 worker/producer 的队列解决方案。
-创建 worker，设置重试次数。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const request = require(&#39;request&#39;);
+}</code></pre></div><p>现在我们解决了持久化队列的问题，但是我们的 worker 是单线程运行的。如果任务是 CPU 密集型的，还是需要分配负载到多个线程上。<h2 id=redis-和多线程>Redis 和多线程</h2><p><code class=highlighter-rouge>simple-redis-safe-work-queue</code> 是一个基于 Redis 的分布式 worker/producer 的队列解决方案。 创建 worker，设置重试次数。<div><pre class=line-numbers data-line=""><code class=language-javascript>const request = require(&#39;request&#39;);
 const Queue = require(&#39;simple-redis-safe-work-queue&#39;)
 // 设置重试次数
 const workerOptions = {
@@ -236,12 +79,7 @@ worker.on(&#39;max retries&#39;, function(err, payload) {
     console.error(
         &#39;max retries reached trying to talk to %s.: %s\nrequest params: %j&#39;,
         payload.url, err.stack, payload);
-});</code></pre>
-</div>
-
-<p>而对于 producer，在一个实际的例子中，在数据库操作完成后向队列推送消息，并在 server 停止时关闭队列。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const Queue = require(&#39;simple-redis-safe-work-queue&#39;)
+});</code></pre></div><p>而对于 producer，在一个实际的例子中，在数据库操作完成后向队列推送消息，并在 server 停止时关闭队列。<div><pre class=line-numbers data-line=""><code class=language-javascript>const Queue = require(&#39;simple-redis-safe-work-queue&#39;)
 const webhookQueueClient = Queue.client(&#39;invoke webhook&#39;);
 const server = Server();
 server.listen(8080);
@@ -268,18 +106,7 @@ server.post(&#39;/some/important/action&#39;, (req, res, next) =&gt; {
 // 关闭队列
 server.once(&#39;close&#39;, () =&gt; {
     webhookQueueClient.quit();
-});</code></pre>
-</div>
-
-<p>这样我们可以启动多个 worker 线程消费队列。Redis 在处理简单的场景中足够了，如果对可扩展性和稳定性有更高要求，就需要更为成熟的平台了。</p>
-
-<h2 id="rabbitmq">RabbitMQ</h2>
-
-<p>通过 homebrew 安装后。启动服务器：<code class="highlighter-rouge">/usr/local/sbin/rabbitmq-server</code>。</p>
-
-<p>创建 channel，无论成功与否都会触发回调函数。worker 和 producer 都会通过该方法连接队列。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const amqp = require(&#39;amqplib/callback_api&#39;);
+});</code></pre></div><p>这样我们可以启动多个 worker 线程消费队列。Redis 在处理简单的场景中足够了，如果对可扩展性和稳定性有更高要求，就需要更为成熟的平台了。<h2 id=rabbitmq>RabbitMQ</h2><p>通过 homebrew 安装后。启动服务器：<code class=highlighter-rouge>/usr/local/sbin/rabbitmq-server</code>。<p>创建 channel，无论成功与否都会触发回调函数。worker 和 producer 都会通过该方法连接队列。<div><pre class=line-numbers data-line=""><code class=language-javascript>const amqp = require(&#39;amqplib/callback_api&#39;);
 const url = process.env.AMQP_URL || &#39;amqp://guest:guest@localhost:5672&#39;;
 
 module.exports = createQueueChannel;
@@ -314,12 +141,7 @@ function createQueueChannel(queue, cb) {
             }
         }
     }
-}</code></pre>
-</div>
-
-<p>对于 producer 而言，需要连接 channel，然后向队列发送消息，随后断开连接：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const Channel = require(&#39;./channel&#39;);
+}</code></pre></div><p>对于 producer 而言，需要连接 channel，然后向队列发送消息，随后断开连接：<div><pre class=line-numbers data-line=""><code class=language-javascript>const Channel = require(&#39;./channel&#39;);
 const QUEUE = &#39;queue&#39;;
 
 Channel(QUEUE, (err, channel, conn) =&gt; {
@@ -337,12 +159,7 @@ Channel(QUEUE, (err, channel, conn) =&gt; {
             conn.close();
         });
     }
-});</code></pre>
-</div>
-
-<p>而对于每一个 worker，连接成功后，取出队列中的消息内容载荷进行消费，完成后通过<code class="highlighter-rouge">ack()</code>通知队列，继续消费下一个消息。而如果队列为空，通过定时器在一定延迟后继续消费。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">Channel(QUEUE, (err, channel, conn) =&gt; {
+});</code></pre></div><p>而对于每一个 worker，连接成功后，取出队列中的消息内容载荷进行消费，完成后通过<code class=highlighter-rouge>ack()</code>通知队列，继续消费下一个消息。而如果队列为空，通过定时器在一定延迟后继续消费。<div><pre class=line-numbers data-line=""><code class=language-javascript>Channel(QUEUE, (err, channel, conn) =&gt; {
     if (err) {
         console.error(err.stack);
     }
@@ -371,92 +188,7 @@ Channel(QUEUE, (err, channel, conn) =&gt; {
             }
         }
     }
-});</code></pre>
-</div>
-
-<h2 id="参考资料">参考资料</h2>
-
-<ul>
-  <li><a href="https://blog.yld.io/2016/05/10/introducing-queues/#.Wb4dqHeg_2Q">YLD博客的系列文章</a></li>
-  <li><a href="http://www.rabbitmq.com/documentation.html">RabbitMQ</a></li>
-</ul>
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/coding/2017/09/29/Webpack-%E4%B8%AD%E7%9A%84-HMR.html" class="read-next-link"></a>
-            <section>
-                <span>Webpack 中的 HMR</span>
-                <p>在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/vue-webpack.png" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html" class="read-next-link"></a>
-            <section>
-                <span>判断元素是否在视口内</span>
-                <p>在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下：function ...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/intersection.png" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-<hr>
-<!-- 来必力City版安装代码 -->
-<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
-    <script type="text/javascript">
-   (function(d, s) {
+});</code></pre></div><h2 id=参考资料>参考资料</h2><ul><li><a href=https://blog.yld.io/2016/05/10/introducing-queues/#.Wb4dqHeg_2Q>YLD博客的系列文章</a><li><a href=http://www.rabbitmq.com/documentation.html>RabbitMQ</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2017/09/29/Webpack-%E4%B8%AD%E7%9A%84-HMR.html class=read-next-link></a><section><span>Webpack 中的 HMR</span><p>在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的...</section><div class=filter></div><img src=/assets/img/vue-webpack.png alt=""></div><div class=read-next-item><a href=/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html class=read-next-link></a><section><span>判断元素是否在视口内</span><p>在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下：function ...</section><div class=filter></div><img src=/assets/img/intersection.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -466,48 +198,15 @@ Channel(QUEUE, (err, channel, conn) =&gt; {
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-    </script>
-<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
-</div>
-<!-- City版安装代码已完成 -->
-
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2018</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-            <script>
-                window.onload = function () {
+    });</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script>window.onload = function () {
                     var script = document.createElement('script');
                     var firstScript = document.getElementsByTagName('script')[0];
                     script.type = 'text/javascript';
                     script.async = true;
                     script.src = '/sw-register.js?v=' + Date.now();
                     firstScript.parentNode.insertBefore(script, firstScript);
-                };
-            </script>
-            </body>
-
-</html>
+                };</script>

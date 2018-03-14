@@ -1,141 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>以用户为中心的性能指标 - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="以用户为中心的性能指标">
-    <meta name="keywords"  content="performance">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>以用户为中心的性能指标 | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="以用户为中心的性能指标" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="RAIL性能评估模型从以下四个方面提出了要求：" />
-<meta property="og:description" content="RAIL性能评估模型从以下四个方面提出了要求：" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-06-09T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"RAIL性能评估模型从以下四个方面提出了要求：","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html","headline":"以用户为中心的性能指标","dateModified":"2017-06-09T00:00:00+08:00","datePublished":"2017-06-09T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>以用户为中心的性能指标 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=以用户为中心的性能指标><meta name=keywords content=performance><title>以用户为中心的性能指标 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=以用户为中心的性能指标><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content=RAIL性能评估模型从以下四个方面提出了要求：><meta property=og:description content=RAIL性能评估模型从以下四个方面提出了要求：><link rel=canonical href=https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-06-09T00:00:00+08:00><script type=application/ld+json>{"description":"RAIL性能评估模型从以下四个方面提出了要求：","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html","headline":"以用户为中心的性能指标","dateModified":"2017-06-09T00:00:00+08:00","datePublished":"2017-06-09T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#performance" class="post-tag">performance</a>
-            
-            
-        </div>
-        <h1>以用户为中心的性能指标</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="17-06-09"><i class="iconfont icon-date"></i>09 Jun 2017</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/post-bg-js-module.jpg') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    
-    <article class="markdown-body">
-        <p><a href="https://developers.google.com/web/fundamentals/performance/rail">RAIL</a>性能评估模型从以下四个方面提出了要求：</p>
-
-<ul>
-  <li>立即响应用户；在 100 毫秒以内确认用户输入。</li>
-  <li>设置动画或滚动时，在 10 毫秒以内生成帧。</li>
-  <li>最大程度增加主线程的空闲时间。</li>
-  <li>持续吸引用户；在 1000 毫秒以内呈现交互内容。</li>
-</ul>
-
-<p><img src="/assets/img/rail.png" alt="" /></p>
-
-<p>针对该评估模型，Google 提出了<a href="https://developers.google.com/web/updates/2017/06/user-centric-performance-metrics">以用户为中心</a>的四个衡量指标：</p>
-
-<ul>
-  <li>Is it happening?    First Paint (FP) / First Contentful Paint (FCP)</li>
-  <li>Is it useful?   First Meaningful Paint (FMP) / Hero Element Timing</li>
-  <li>Is it usable?   Time to Interactive (TTI)</li>
-  <li>Is it delightful?   Long Tasks</li>
-</ul>
-
-<p>分别对应渲染过程中的若干阶段，截图如下：
-<img src="/assets/img/perf-metrics-load-timeline.png" alt="" /></p>
-
-<p>那么如何具体统计这些指标呢？</p>
-
-<h2 id="旧方法的问题">旧方法的问题</h2>
-
-<p>过去的某些统计方法是会损耗性能的，例如使用 rAF 检测过长的帧。但是缺点很明显，轮询会影响性能。</p>
-
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">(function detectLongFrame() {
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#performance class=post-tag>performance</a></div><h1>以用户为中心的性能指标</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=17-06-09><i class="iconfont icon-date"></i>09 Jun 2017</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/post-bg-js-module.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><article class=markdown-body><p><a href=https://developers.google.com/web/fundamentals/performance/rail>RAIL</a>性能评估模型从以下四个方面提出了要求：<ul><li>立即响应用户；在 100 毫秒以内确认用户输入。<li>设置动画或滚动时，在 10 毫秒以内生成帧。<li>最大程度增加主线程的空闲时间。<li>持续吸引用户；在 1000 毫秒以内呈现交互内容。</ul><p><img src=/assets/img/rail.png alt=""><p>针对该评估模型，Google 提出了<a href=https://developers.google.com/web/updates/2017/06/user-centric-performance-metrics>以用户为中心</a>的四个衡量指标：<ul><li>Is it happening? First Paint (FP) / First Contentful Paint (FCP)<li>Is it useful? First Meaningful Paint (FMP) / Hero Element Timing<li>Is it usable? Time to Interactive (TTI)<li>Is it delightful? Long Tasks</ul><p>分别对应渲染过程中的若干阶段，截图如下： <img src=/assets/img/perf-metrics-load-timeline.png alt=""><p>那么如何具体统计这些指标呢？<h2 id=旧方法的问题>旧方法的问题</h2><p>过去的某些统计方法是会损耗性能的，例如使用 rAF 检测过长的帧。但是缺点很明显，轮询会影响性能。<div><pre class=line-numbers data-line=""><code class=language-javascript>(function detectLongFrame() {
     var lastFrameTime = Date.now();
     requestAnimationFrame(function() {
         var currentFrameTime = Date.now();
@@ -146,16 +11,7 @@
 
         detectLongFrame(currentFrameTime);
     });
-}());</code></pre>
-</div>
-
-<p>下面来看看具体针对这四个指标的检测方法以及优化方式。</p>
-
-<h2 id="fpfcp">FP/FCP</h2>
-
-<p>跟踪 FP/FCP，监听 paint 事件，不得不说这样的确太方便了。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const observer = new PerformanceObserver((list) =&gt; {
+}());</code></pre></div><p>下面来看看具体针对这四个指标的检测方法以及优化方式。<h2 id=fpfcp>FP/FCP</h2><p>跟踪 FP/FCP，监听 paint 事件，不得不说这样的确太方便了。<div><pre class=line-numbers data-line=""><code class=language-javascript>const observer = new PerformanceObserver((list) =&gt; {
     for (const entry of list.getEntries()) {
         // `name` will be either &#39;first-paint&#39; or &#39;first-contentful-paint&#39;.
         const metricName = entry.name;
@@ -169,30 +25,7 @@
         });
     }
 });
-observer.observe({entryTypes: [&#39;paint&#39;]});</code></pre>
-</div>
-
-<p>针对 FP，也就是优化首屏方案大致包括以下几种，当然实现难度各异：</p>
-
-<ul>
-  <li>减少 head 中阻塞的 JS/CSS，这一点已经普遍应用，包括关键路径资源等</li>
-  <li>HTTP/2 push，这就对服务端提出很高要求了，我发现目前 Ele.me 已经应用</li>
-  <li>app shell，整个应用的壳，抽离出来利于离线缓存，<a href="https://lavas.baidu.com">Lavas</a> 中已经应用</li>
-</ul>
-
-<h2 id="fmp">FMP</h2>
-
-<p>关于页面有效内容，或者“Hero element”，由于依赖具体实现，并没有给出通用方法。
-具体可以<a href="https://speedcurve.com/blog/user-timing-and-custom-metrics/">使用performance api</a>度量指标。</p>
-
-<h2 id="tti">TTI</h2>
-
-<p>这个指标我第一次听说，首次可交互时间。不过其实在前端渲染完成之前，例如展示 skeleton 页面骨架时，对于用户而言就是无法交互的状态，只能看不能点。</p>
-
-<p>文章中指出在添加到 PerformanceObserver 之前，可以使用<a href="https://github.com/GoogleChrome/tti-polyfill">polyfill</a>完成：</p>
-
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">import ttiPolyfill from &#39;./path/to/tti-polyfill.js&#39;;
+observer.observe({entryTypes: [&#39;paint&#39;]});</code></pre></div><p>针对 FP，也就是优化首屏方案大致包括以下几种，当然实现难度各异：<ul><li>减少 head 中阻塞的 JS/CSS，这一点已经普遍应用，包括关键路径资源等<li>HTTP/2 push，这就对服务端提出很高要求了，我发现目前 Ele.me 已经应用<li>app shell，整个应用的壳，抽离出来利于离线缓存，<a href=https://lavas.baidu.com>Lavas</a> 中已经应用</ul><h2 id=fmp>FMP</h2><p>关于页面有效内容，或者“Hero element”，由于依赖具体实现，并没有给出通用方法。 具体可以<a href=https://speedcurve.com/blog/user-timing-and-custom-metrics/ >使用performance api</a>度量指标。<h2 id=tti>TTI</h2><p>这个指标我第一次听说，首次可交互时间。不过其实在前端渲染完成之前，例如展示 skeleton 页面骨架时，对于用户而言就是无法交互的状态，只能看不能点。<p>文章中指出在添加到 PerformanceObserver 之前，可以使用<a href=https://github.com/GoogleChrome/tti-polyfill>polyfill</a>完成：<div><pre class=line-numbers data-line=""><code class=language-javascript>import ttiPolyfill from &#39;./path/to/tti-polyfill.js&#39;;
 
 ttiPolyfill.getFirstConsistentlyInteractive().then((tti) =&gt; {
     ga(&#39;send&#39;, &#39;event&#39;, {
@@ -201,18 +34,7 @@ ttiPolyfill.getFirstConsistentlyInteractive().then((tti) =&gt; {
         eventValue: tti,
         nonInteraction: true,
     });
-});</code></pre>
-</div>
-
-<h2 id="long-task">long task</h2>
-
-<p>浏览器在响应用户交互事件时，向队列中添加任务，等待主线程依次执行。
-由于主线程还要负责执行 JS，当处理时间过长时，就会导致任务无法及时得到执行，给用户的感觉就是未响应。
-通常定义超过 50ms 响应时间的任务就是 long task 了。</p>
-
-<p>和 FP 一样，可以直接使用 PerformanceObserver：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const observer = new PerformanceObserver((list) =&gt; {
+});</code></pre></div><h2 id=long-task>long task</h2><p>浏览器在响应用户交互事件时，向队列中添加任务，等待主线程依次执行。 由于主线程还要负责执行 JS，当处理时间过长时，就会导致任务无法及时得到执行，给用户的感觉就是未响应。 通常定义超过 50ms 响应时间的任务就是 long task 了。<p>和 FP 一样，可以直接使用 PerformanceObserver：<div><pre class=line-numbers data-line=""><code class=language-javascript>const observer = new PerformanceObserver((list) =&gt; {
     for (const entry of list.getEntries()) {
         ga(&#39;send&#39;, &#39;event&#39;, {
             eventCategory: &#39;Performance Metrics&#39;,
@@ -222,17 +44,7 @@ ttiPolyfill.getFirstConsistentlyInteractive().then((tti) =&gt; {
         });
     }
 });
-observer.observe({entryTypes: [&#39;longtask&#39;]});</code></pre>
-</div>
-
-<p>关于优化方式，可以使用<a href="https://developers.google.com/web/updates/2015/08/using-requestidlecallback">requestIdleCallback</a>，不重要的任务例如发送日志等操作可以放在里面执行。但是<a href="https://caniuse.com/#search=requestIdleCallback">支持度不高</a>。</p>
-
-<h2 id="input-latency">input latency</h2>
-
-<p>滚动和动画的延迟是难以统计的，但是针对点击事件的响应延迟，可以采用如下方法统计：事件触发的时间到最终响应时的时间差就是延迟了，当超过 100 毫秒时进行记录：</p>
-
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const subscribeBtn = document.querySelector(&#39;#subscribe&#39;);
+observer.observe({entryTypes: [&#39;longtask&#39;]});</code></pre></div><p>关于优化方式，可以使用<a href=https://developers.google.com/web/updates/2015/08/using-requestidlecallback>requestIdleCallback</a>，不重要的任务例如发送日志等操作可以放在里面执行。但是<a href="https://caniuse.com/#search=requestIdleCallback">支持度不高</a>。<h2 id=input-latency>input latency</h2><p>滚动和动画的延迟是难以统计的，但是针对点击事件的响应延迟，可以采用如下方法统计：事件触发的时间到最终响应时的时间差就是延迟了，当超过 100 毫秒时进行记录：<div><pre class=line-numbers data-line=""><code class=language-javascript>const subscribeBtn = document.querySelector(&#39;#subscribe&#39;);
 subscribeBtn.addEventListener(&#39;click&#39;, (event) =&gt; {
     const lag = performance.now() - event.timeStamp;
     if (lag &gt; 100) {
@@ -244,86 +56,7 @@ subscribeBtn.addEventListener(&#39;click&#39;, (event) =&gt; {
             nonInteraction: true,
         });
     }
-});</code></pre>
-</div>
-
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/movie/2017/07/01/%E8%BF%91%E6%9C%9F%E7%9C%8B%E7%9A%84%E5%89%A7.html" class="read-next-link"></a>
-            <section>
-                <span>近期看的剧</span>
-                <p>大小谎言</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/album.jpg" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/music/2017/06/03/%E6%9C%80%E8%BF%91%E5%90%AC%E7%9A%84%E8%AF%B4%E5%94%B1.html" class="read-next-link"></a>
-            <section>
-                <span>最近听的说唱</span>
-                <p>最近在看《中国有嘻哈》，对吴亦凡的印象大为改观。此人似乎展现出极强的专业性，当然是指音乐上的。但是有人爆出这都是剪...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/album.jpg" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-<hr>
-<!-- 来必力City版安装代码 -->
-<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
-    <script type="text/javascript">
-   (function(d, s) {
+});</code></pre></div></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/movie/2017/07/01/%E8%BF%91%E6%9C%9F%E7%9C%8B%E7%9A%84%E5%89%A7.html class=read-next-link></a><section><span>近期看的剧</span><p>大小谎言</section><div class=filter></div><img src=/assets/img/album.jpg alt=""></div><div class=read-next-item><a href=/music/2017/06/03/%E6%9C%80%E8%BF%91%E5%90%AC%E7%9A%84%E8%AF%B4%E5%94%B1.html class=read-next-link></a><section><span>最近听的说唱</span><p>最近在看《中国有嘻哈》，对吴亦凡的印象大为改观。此人似乎展现出极强的专业性，当然是指音乐上的。但是有人爆出这都是剪...</section><div class=filter></div><img src=/assets/img/album.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -333,48 +66,15 @@ subscribeBtn.addEventListener(&#39;click&#39;, (event) =&gt; {
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-    </script>
-<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
-</div>
-<!-- City版安装代码已完成 -->
-
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2018</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-            <script>
-                window.onload = function () {
+    });</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script>window.onload = function () {
                     var script = document.createElement('script');
                     var firstScript = document.getElementsByTagName('script')[0];
                     script.type = 'text/javascript';
                     script.async = true;
                     script.src = '/sw-register.js?v=' + Date.now();
                     firstScript.parentNode.insertBefore(script, firstScript);
-                };
-            </script>
-            </body>
-
-</html>
+                };</script>
