@@ -1,119 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>使用ava和travis-ci - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="使用ava和travis-ci">
-    <meta name="keywords"  content="ava, travis">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>使用ava和travis-ci | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="使用ava和travis-ci" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="最近给 skeleton 插件加上了测试用例，顺便使用了下自动集成工具。" />
-<meta property="og:description" content="最近给 skeleton 插件加上了测试用例，顺便使用了下自动集成工具。" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-07-16T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"最近给 skeleton 插件加上了测试用例，顺便使用了下自动集成工具。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html","headline":"使用ava和travis-ci","dateModified":"2017-07-16T00:00:00+08:00","datePublished":"2017-07-16T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>使用ava和travis-ci - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=使用ava和travis-ci><meta name=keywords content="ava, travis"><title>使用ava和travis-ci | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=使用ava和travis-ci><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="最近给 skeleton 插件加上了测试用例，顺便使用了下自动集成工具。"><meta property=og:description content="最近给 skeleton 插件加上了测试用例，顺便使用了下自动集成工具。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-07-16T00:00:00+08:00><script type=application/ld+json>{"description":"最近给 skeleton 插件加上了测试用例，顺便使用了下自动集成工具。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html","headline":"使用ava和travis-ci","dateModified":"2017-07-16T00:00:00+08:00","datePublished":"2017-07-16T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2017/07/16/%E4%BD%BF%E7%94%A8ava%E5%92%8Ctravis-ci.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#ava" class="post-tag">ava</a>
-            
-            <a href="https://xiaoiver.github.io/tags#travis" class="post-tag">travis</a>
-            
-            
-        </div>
-        <h1>使用ava和travis-ci</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="17-07-16"><i class="iconfont icon-date"></i>16 Jul 2017</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/travis-ci.jpg') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    
-    <article class="markdown-body">
-        <p>最近给 <a href="https://github.com/lavas-project/vue-skeleton-webpack-plugin">skeleton 插件</a>加上了测试用例，顺便使用了下自动集成工具。</p>
-
-<h2 id="ava"><a href="https://github.com/avajs/ava">ava</a></h2>
-
-<p>首先配置基本参数：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-json">// package.json
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#ava class=post-tag>ava</a> <a href=https://xiaoiver.github.io/tags#travis class=post-tag>travis</a></div><h1>使用ava和travis-ci</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=17-07-16><i class="iconfont icon-date"></i>16 Jul 2017</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/travis-ci.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><article class=markdown-body><p>最近给 <a href=https://github.com/lavas-project/vue-skeleton-webpack-plugin>skeleton 插件</a>加上了测试用例，顺便使用了下自动集成工具。<h2 id=ava><a href=https://github.com/avajs/ava>ava</a></h2><p>首先配置基本参数：<div><pre class=line-numbers data-line=""><code class=language-json>// package.json
 
 &quot;ava&quot;: {
     &quot;concurrency&quot;: 5,
@@ -124,37 +11,11 @@
     &quot;require&quot;: [
       &quot;babel-register&quot;
     ]
-}</code></pre>
-</div>
-
-<p>使用方法也很简单：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">import test from &#39;ava&#39;;
+}</code></pre></div><p>使用方法也很简单：<div><pre class=line-numbers data-line=""><code class=language-javascript>import test from &#39;ava&#39;;
 test(&#39;it should run successfully&#39;, async t =&gt; {
     let {stats, errors} = webpackBuildStats;
     t.falsy(stats.hasWarnings() &amp;&amp; errors.hasWarnings());
-});</code></pre>
-</div>
-
-<p>运行时除了会输出测试用例结果，还会输出一张代码覆盖率表格，并标出未覆盖的代码行号。
-测试代码覆盖率其实很有用，出现很低的覆盖率要么是代码本身问题，要么是测试用例覆盖不全。</p>
-
-<p><img src="/img/ava-log.png" alt="" /></p>
-
-<h2 id="travis-ci">travis ci</h2>
-
-<p>使用持续集成工具，每次提交时自动运行测试脚本。</p>
-
-<p>首先需要有项目的owner权限，授权给travis。</p>
-
-<p>然后在配置文件中我们可以：</p>
-<ul>
-  <li>设置多个 Node.js 版本环境</li>
-  <li>提供安装依赖和脚本，这里就直接运行测试命令了</li>
-</ul>
-
-<div>
-<pre class="line-numbers" data-line=""><code class="language-yml">//.travis.yml
+});</code></pre></div><p>运行时除了会输出测试用例结果，还会输出一张代码覆盖率表格，并标出未覆盖的代码行号。 测试代码覆盖率其实很有用，出现很低的覆盖率要么是代码本身问题，要么是测试用例覆盖不全。<p><img src=/img/ava-log.png alt=""><h2 id=travis-ci>travis ci</h2><p>使用持续集成工具，每次提交时自动运行测试脚本。<p>首先需要有项目的owner权限，授权给travis。<p>然后在配置文件中我们可以：<ul><li>设置多个 Node.js 版本环境<li>提供安装依赖和脚本，这里就直接运行测试命令了</ul><div><pre class=line-numbers data-line=""><code class=language-yml>//.travis.yml
 
 language: node_js
 node_js:
@@ -164,107 +25,15 @@ node_js:
 install:
   - npm install
 script:
-  - npm test</code></pre>
-</div>
-
-<p>完成后就可以在<code class="highlighter-rouge">README.md</code>里加上build图标了。<img src="https://travis-ci.org/lavas-project/vue-skeleton-webpack-plugin.svg?branch=master" alt="" /></p>
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html" class="read-next-link"></a>
-            <section>
-                <span>为npm包提供多入口</span>
-                <p>问题背景</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/post-bg-js-module.jpg" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html" class="read-next-link"></a>
-            <section>
-                <span>基于vue和webpack的skeleton插件</span>
-                <p>  这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/vue-webpack.png" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2018</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+  - npm test</code></pre></div><p>完成后就可以在<code class=highlighter-rouge>README.md</code>里加上build图标了。<img src="https://travis-ci.org/lavas-project/vue-skeleton-webpack-plugin.svg?branch=master" alt=""></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html class=read-next-link></a><section><span>为npm包提供多入口</span><p>问题背景</section><div class=filter></div><img src=/assets/img/post-bg-js-module.jpg alt=""></div><div class=read-next-item><a href=/coding/2017/07/15/%E5%9F%BA%E4%BA%8Evue%E5%92%8Cwebpack%E7%9A%84skeleton%E6%8F%92%E4%BB%B6.html class=read-next-link></a><section><span>基于vue和webpack的skeleton插件</span><p>这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。</section><div class=filter></div><img src=/assets/img/vue-webpack.png alt=""></div></section><section class="post-footer-item comment"></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-</body>
-</html>
+    });</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

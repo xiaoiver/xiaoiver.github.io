@@ -6,5 +6,5 @@ group :jekyll_plugins do
     gem "minima", "~> 2.0"
     gem "jekyll-seo-tag"
     gem "jekyll-responsive-image"
-    # gem "jekyll-pwa-plugin"
+    gem "jekyll-pwa-plugin"
 end
