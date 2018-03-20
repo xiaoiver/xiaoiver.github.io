@@ -1,0 +1,144 @@
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Houdini - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=Houdini><meta name=keywords content="CSS, Houdini"><title>Houdini | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=Houdini><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="最近读了几篇关于 Houdini 的文章，大部分都是 Phil Walton 写的，深感该提案之于 CSS 的重要性： CSS polyfill 的问题 Houdini 介绍 知乎上的翻译 Talk1 Talk2 Paint API"><meta property=og:description content="最近读了几篇关于 Houdini 的文章，大部分都是 Phil Walton 写的，深感该提案之于 CSS 的重要性： CSS polyfill 的问题 Houdini 介绍 知乎上的翻译 Talk1 Talk2 Paint API"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/03/18/Houdini.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/03/18/Houdini.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-03-18T00:00:00+08:00><script type=application/ld+json>{"description":"最近读了几篇关于 Houdini 的文章，大部分都是 Phil Walton 写的，深感该提案之于 CSS 的重要性： CSS polyfill 的问题 Houdini 介绍 知乎上的翻译 Talk1 Talk2 Paint API","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/03/18/Houdini.html","headline":"Houdini","dateModified":"2018-03-18T00:00:00+08:00","datePublished":"2018-03-18T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/03/18/Houdini.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/03/18/Houdini.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#CSS class=post-tag>CSS</a> <a href=https://xiaoiver.github.io/tags#Houdini class=post-tag>Houdini</a></div><h1>Houdini</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-03-18><i class="iconfont icon-date"></i>18 Mar 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/post-bg-js-module.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><h2 class=post-subtitle>CSS 中的 Babel 来了</h2><article class=markdown-body><p>最近读了几篇关于 Houdini 的文章，大部分都是 Phil Walton 写的，深感该提案之于 CSS 的重要性：<ul><li><a href=https://philipwalton.com/articles/the-dark-side-of-polyfilling-css/ >CSS polyfill 的问题</a><li><a href=https://www.smashingmagazine.com/2016/03/houdini-maybe-the-most-exciting-development-in-css-youve-never-heard-of/ >Houdini 介绍</a> <a href=https://zhuanlan.zhihu.com/p/20939640>知乎上的翻译</a><li><a href=https://philipwalton.github.io/talks/2017-06-15/ >Talk1</a> <a href=https://www.xanthir.com/talks/2017-06-16/ >Talk2</a><li><a href=https://codersblock.com/blog/say-hello-to-houdini-and-the-css-paint-api/ >Paint API</a></ul><h2 id=web-中的-polyfill>Web 中的 polyfill</h2><p>每个激动人心的 Web 新特性都需要等待浏览器支持，在全部常见浏览器支持之前，我们需要写 polyfill 保证兼容性。其中针对 JS 的 polyfill 十分常见，例如下面是常见的从提案到 polyfill，再到最终实现的流程： <img src=https://cloud.netlifyusercontent.com/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/ba4e3636-4105-4a71-a155-dbde741392e4/02-polyfill-process-opt.png alt="JS polyfill process"><p>简单的特性例如 ES6 中为 Array 增加的新方法 <code class=highlighter-rouge>includes</code>，我们可以：<div><pre class=line-numbers data-line=""><code class=language-javascript>if (typeof Array.includes != &#39;function&#39;) {
+    Array.includes = function() {
+        // Implement polyfill here...
+    };
+}</code></pre></div><p>而对于 <code class=highlighter-rouge>async/await</code>，可以通过 babel 插件进行转译。<p>相比之下，针对 CSS 的 polyfill 则困难的多，不像 JS 这种动态语言，可以使用 JS 编写 JS polyfill，使用 CSS 本身很难编写 CSS。虽然有 PostCSS 这样的可以在构建时转译一部分 CSS 特性，大部分依赖运行时 DOM 结构的特性仍然得完全依靠浏览器逐步实现。 <img src=https://cloud.netlifyusercontent.com/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/6b65dfd6-9237-4585-afaa-681c69b273e7/01-standards-process-opt.png alt="CSS polyfill process"><p>在浏览器解析渲染 HTML 的流程中，JS 能充分干预的只有 DOM。而对于 CSSOM，缺乏浏览器一致的规范和 API。 <img src=https://philipwalton.com/static/browser-rendering-pipeline-311074542c.svg alt=""><h2 id=css-polyfill-的现状>CSS polyfill 的现状</h2><p>让我们来看一个例子，我们想新增一个关键字 <code class=highlighter-rouge>random</code>，类似 JS 中 <code class=highlighter-rouge>Math.random()</code>，取值范围为 <code class=highlighter-rouge>0 ~ 1</code>：<div><pre class=line-numbers data-line=""><code class=language-css>.foo {
+    color: hsl(calc(random * 360), 50%, 50%);
+    opacity: random;
+    width: calc(random * 100%);
+}</code></pre></div><h3 id=浏览器提供的-cssom-访问方式>浏览器提供的 CSSOM 访问方式</h3><p>我们很自然地想到，可以使用 <code class=highlighter-rouge>document.styleSheets</code> 获取页面上全部 CSS 规则，遍历并替换掉所有 <code class=highlighter-rouge>random</code> 的值：<div><pre class=line-numbers data-line=""><code class=language-javascript>for (const stylesheet of document.styleSheets) {
+    // Flatten nested rules (@media blocks, etc.) into a single array.
+    const rules = [...stylesheet.rules].reduce((prev, next) =&gt; {
+        return prev.concat(next.cssRules ? [...next.cssRules] : [next]);
+    }, []);
+
+    // Loop through each of the flattened rules and replace the
+    // keyword `random` with a random number.
+    for (const rule of rules) {
+        for (const property of Object.keys(rule.style)) {
+            const value = rule.style[property];
+
+            if (value.includes(&#39;random&#39;)) {
+                rule.style[property] = value.replace(&#39;random&#39;, Math.random());
+            }
+        }
+    }
+}</code></pre></div><p>运行后会发现根本就找不到包含 <code class=highlighter-rouge>random</code> 的规则。原因是当浏览器遇到无法解析的 CSS 规则，会直接忽略。 这个特性保证了容错和向后兼容，但同时也意味着我们无法获取原始的 CSS 规则。<h3 id=手动解析样式>手动解析样式</h3><p>既然浏览器提供的访问 CSSOM 的方法不管用，我们只能尝试手动获取原始的样式内容，包括全部 <code class=highlighter-rouge>&lt;style&gt;</code> 和 <code class=highlighter-rouge>&lt;link rel='stylesheet'&gt;</code>，但是外链样式表中引用的就获取不到了：<div><pre class=line-numbers data-line=""><code class=language-javascript>const getPageStyles = () =&gt; {
+    // Query the document for any element that could have styles.
+    var styleElements =
+        [...document.querySelectorAll(&#39;style, link[rel=&quot;stylesheet&quot;]&#39;)];
+
+    // Fetch all styles and ensure the results are in document order.
+    // Resolve with a single string of CSS text.
+    return Promise.all(styleElements.map((el) =&gt; {
+        if (el.href) {
+            return fetch(el.href).then((response) =&gt; response.text());
+        } else {
+            return el.innerHTML;
+        }
+    })).then((stylesArray) =&gt; stylesArray.join(&#39;\n&#39;));
+}</code></pre></div><p>获取了原始内容，下一步就是解析样式了，这一步可以依靠现有的例如 PostCSS：<ol><li>原始内容字符串转换成 AST<li>遍历 AST，替换变量后再生成对应的字符串<li>包含结果字符串的 <code class=highlighter-rouge>&lt;style&gt;</code> 节点插入 DOM 中</ol><div><pre class=line-numbers data-line=""><code class=language-javascript>const randomKeywordPlugin = postcss.plugin(&#39;random-keyword&#39;, () =&gt; {
+    return (css) =&gt; {
+        css.walkRules((rule) =&gt; {
+            rule.walkDecls((decl, i) =&gt; {
+                if (decl.value.includes(&#39;random&#39;)) {
+                    decl.value = decl.value.replace(&#39;random&#39;, Math.random());
+                }
+            });
+        });
+    };
+});</code></pre></div><p>看起来一切正常对吗？<h3 id=等等还有问题>等等，还有问题</h3><p>我们仅仅在预处理阶段完成了针对一条规则的替换，换句话说这条规则的随机值在实际应用前就已经确定了。 例如两个 DOM 节点应用同一条规则，他们的 <code class=highlighter-rouge>random</code> 值就是一样的：<div><pre class=line-numbers data-line=""><code class=language-css>.foo {
+    color: hsl(calc(0.1 * 360), 50%, 50%);
+    opacity: 0.2;
+    width: calc(0.3 * 100%);
+}</code></pre></div><p>所以仅仅修改某一条 CSS 规则是不够的，需要对页面上每一个应用这条规则的元素进行处理。最终可运行的方法在<a href=https://philipwalton.com/articles/the-dark-side-of-polyfilling-css/ >这里</a>，就不展开了。<h3 id=css-polyfill-的弊端>CSS polyfill 的弊端</h3><p>仅仅新增一个看似简单的 <code class=highlighter-rouge>random</code> 关键字就已经困难重重，如果是更复杂的例如 <code class=highlighter-rouge>position: sticky</code> 这样依赖布局，并且随时可能需要重绘（例如 resize 事件）的特性就更加无从下手了。 所以目前只能通过浏览器前缀的方式降级处理。<p>原本获取资源，解析创建 CSSOM，处理层叠规则这些工作都是浏览器做的，由于没有开放给开发者，都需要 polyfill 处理，这意味着开发者必须编写大量复杂代码。 而且由于需要使用 fetch 手动获取，也存在跨域限制。<p>另外，由于 JS 编写的 polyfill 在首次渲染中派不上用场，执行时必须额外执行一遍完整的渲染流程，性能低下： <img src=https://philipwalton.com/static/browser-rendering-pipeline-polyfill-062fb794b9.svg alt=""><h2 id=我们需要-houdini>我们需要 Houdini</h2><p>记得以前看魔术节目，讲到说历史上有一个有名的表演水下逃脱术的大师，叫 Houdini。 而这个叫做 Houdini 的项目，给予开发者一系列访问浏览器 CSS 引擎的能力，可以尽情施展，有无限的想象空间。这里面包括了能够控制元素布局的 Layout API，绘制图案的 Paint API，注册自定义属性的 Properties &amp; Values API 等等。<p>虽然目前这些 API 大多处于开发阶段，但可以想见，一旦这些全部实现之后，上述 CSS polyfill 的问题就能够得到完美解决。 <img src=https://codersblock.com/blog/images/houdini-support-grid.png alt=houdini-support><h3 id=worklet>Worklet</h3><p>之前提到了，CSS 无法对 CSS 进行 polyfill，所以肯定还得依靠 JS。从名字上看类似 Web Worker，两者确实有一定相同之处，比如只能访问某些受限的 API。但是由于 Worklet 需要挂载到 CSS 引擎，介入每一帧的渲染流程，这样的场景下性能开销较大的 Web Worker 就不适合了。<p>Worklet 可以说是 Houdini 一系列 API 实现的基础手段。<p>下面我们来体验一下已经在 Chrome 65 中实装的 Paint API 和 Worklet 的编写。<h3 id=css-paint-api>CSS Paint API</h3><p>通过这个 API，开发者可以绘制图案，应用在例如 <code class=highlighter-rouge>background-image</code> 这样的属性上。<p>例如我们想实现一个 “X” 形占位符效果：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/placeholder.png alt=占位符效果><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/placeholder.png data-alt=占位符效果></div><em>占位符效果</em><p></p><script>new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });</script><p>最终希望通过如下规则使用：<div><pre class=line-numbers data-line=""><code class=language-css>.placeholder {
+    background-image: paint(placeholder-box);
+}</code></pre></div><p>在 Worklet 中，可以使用 ES6 的 class 语法编写，完成后使用 Paint API 提供的 <code class=highlighter-rouge>registerPaint</code> 完成自定义特性的注册。 其中 <code class=highlighter-rouge>paint</code> 方法中，可以使用类似 Canvas API 的方法完成绘制，第二个参数是应用该规则的当前元素的尺寸对象。<div><pre class=line-numbers data-line=""><code class=language-javascript>class PlaceholderBoxPainter {
+    paint(ctx, size) {
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = &#39;#666&#39;;
+
+        // draw line from top left to bottom right
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(size.width, size.height);
+        ctx.stroke();
+
+        // draw line from top right to bottom left
+        ctx.beginPath();
+        ctx.moveTo(size.width, 0);
+        ctx.lineTo(0, size.height);
+        ctx.stroke();
+    }
+}
+
+registerPaint(&#39;placeholder-box&#39;, PlaceholderBoxPainter);</code></pre></div><p>最后在页面中完成 Worklet 的注册：<div><pre class=line-numbers data-line=""><code class=language-javascript>CSS.paintWorklet.addModule(&#39;worklet.js&#39;);</code></pre></div><p>目前我们的 paint 方法使用固定的线宽和线条颜色绘制，能不能根据每一个元素当前的边框颜色和宽度自适应呢？还记得之前仅仅 polyfill 一条样式规则的问题吗？<h3 id=typed-om>Typed OM</h3><p>读取当前 DOM 元素的其他 CSS 属性，需要依靠 Typed OM。 这个 API 是为了解决一个常见的问题：当我们想给一个样式属性设置值时，需要使用字符串拼接数字和单位，在计算时更加麻烦，还需要先去掉单位再进行运算。<div><pre class=line-numbers data-line=""><code class=language-javascript>$(&#39;#someDiv&#39;).style.height = getRandomInt() + &#39;px&#39;;</code></pre></div><p>而有了 Typed OM，获取属性值以及计算都变得规范了：<div><pre class=line-numbers data-line=""><code class=language-javascript>// 获取 width 属性
+var w1 = $(&#39;#div1&#39;).styleMap.get(&#39;width&#39;);
+var w2 = $(&#39;#div2&#39;).styleMap.get(&#39;width&#39;);
+// 设置 background-size 属性
+$(&#39;#div3&#39;).styleMap.set(&#39;background-size&#39;, [new SimpleLength(200, &#39;px&#39;), w1.add(w2)]);</code></pre></div><p>在之前的基础上，通过 <code class=highlighter-rouge>paint</code> 方法的第三个参数 <code class=highlighter-rouge>props</code>，我们就能获取当前元素的样式属性值：<div><pre class=line-numbers data-line=""><code class=language-javascript>class PlaceholderBoxPropsPainter {
+    static get inputProperties() {
+        return [&#39;border-top-width&#39;, &#39;border-top-color&#39;];
+    }
+
+    paint(ctx, size, props) {
+        // default values
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = &#39;#666&#39;;
+
+        // set line width to top border width (if exists)
+        let borderTopWidthProp = props.get(&#39;border-top-width&#39;);
+        if (borderTopWidthProp) {
+            ctx.lineWidth = borderTopWidthProp.value;
+        }
+
+        // set stroke style to top border color (if exists)
+        let borderTopColorProp = props.get(&#39;border-top-color&#39;);
+        if (borderTopColorProp) {
+            ctx.strokeStyle = borderTopColorProp.toString();
+        }
+
+        // same drawing code as before goes here...
+    }
+}</code></pre></div><h3 id=properties--values-api>Properties &amp; Values API</h3><p>除了使用规范中的 CSS 属性值，我们还可以自定义 CSS 变量，在 <code class=highlighter-rouge>paint</code> 方法中使用。<p>自定义 CSS 属性并不陌生：<div><pre class=line-numbers data-line=""><code class=language-css>.placeholder {
+    background-image: paint(placeholder-box);
+    --line-width: 2px;
+    --stroke-style: red;
+}</code></pre></div><p>通过 API 注册自定义属性后，在 <code class=highlighter-rouge>paint</code> 中就可以像其他已支持的 CSS 属性一样引用了：<div><pre class=line-numbers data-line=""><code class=language-javascript>CSS.registerProperty({
+    name: &#39;--line-width&#39;,
+    syntax: &#39;&lt;length&gt;&#39;,
+    initialValue: &#39;2px&#39;
+});</code></pre></div><h3 id=更多应用场景>更多应用场景</h3><p>占位符的例子似乎不具有说服力。Paint API 的应用场景远不止如此。<p>熟悉 Material Design 的开发者都知道常见的水波纹效果，通常实现都是需要额外的 DOM 节点的，例如 Vuetify 中：<div><pre class=line-numbers data-line=""><code class=language-javascript>const container = document.createElement(&#39;span&#39;)
+const animation = document.createElement(&#39;span&#39;)
+
+container.appendChild(animation)
+container.className = &#39;ripple__container&#39;</code></pre></div><p>而如果使用 Paint API，则不需要增加任何额外 DOM 元素。<a href=https://lab.iamvdo.me/houdini/ripple>Ripple Demo</a><p>除此之外，自定义属性结合动画，可以做出很多炫酷的效果：<p data-height=262 data-theme-id=0 data-slug-hash=WzpQbV data-default-tab=js,result data-user=xiaoiver data-embed-version=2 data-pen-title="Hello Houdini: Animated Polka Dot Fade" class=codepen>See the Pen <a href=https://codepen.io/xiaoiver/pen/WzpQbV/ >Hello Houdini: Animated Polka Dot Fade</a> by xiaop (<a href=https://codepen.io/xiaoiver>@xiaoiver</a>) on <a href=https://codepen.io>CodePen</a>.</p><script async src=https://static.codepen.io/assets/embed/ei.js></script><h2 id=总结>总结</h2><p>Houdini 的优势是显而易见的。首先开发者可以在浏览器实现之前自己实现新特性，并保证一致性效果。光是这一点，就足够秒杀现有的各种针对 CSS 的 polyfill 和 hack 了。其次开放出来的介入 CSS 引擎的能力可以创造出很多有趣的效果，例如布局，动画。最后，各个浏览器厂商也都有意支持这个项目。<p>但是另一方面，需要等待各个浏览器对于 Houdini 本身的完成度。而且浏览器加载 Worklet 也需要时间，多少会影响首屏时间。另外， Worklet 的开发体验还有待提升，由于会被浏览器缓存，所以在开发调试时需要禁用缓存查看更新效果，而且目前 Chrome 开发工具中还不支持添加断点。<p>不过它提供的能力已经足够令人期待了，有人类比它是 CSS 中的 Babel。<h2 id=参考资料>参考资料</h2><ul><li><a href=https://ishoudinireadyyet.com/ >浏览器支持度</a><li><a href=https://philipwalton.com/articles/the-dark-side-of-polyfilling-css/ >CSS polyfill 的问题</a><li><a href=https://www.smashingmagazine.com/2016/03/houdini-maybe-the-most-exciting-development-in-css-youve-never-heard-of/ >Houdini 介绍</a><li><a href=https://developers.google.com/web/updates/2016/05/houdini>Chrome</a><li><a href=https://codersblock.com/blog/say-hello-to-houdini-and-the-css-paint-api/ >Paint API</a><li><a href=https://developers.google.com/web/updates/2018/01/paintapi>Chrome 实现了 Paint API</a><li><a href=https://dassur.ma/things/animworklet/ >AnimationWorklet</a><li><a href=https://github.com/GoogleChromeLabs/houdini-samples/tree/master/animation-worklet>AnimationWorklet Demo</a><li><a href=https://lab.iamvdo.me/houdini/ripple>Houdini Gallery</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html class=read-next-link></a><section><span>让骨架屏更快渲染</span><p>在之前「为vue项目添加骨架屏」一文中，介绍了骨架屏的概念以及在 Vue 项目中的应用。本文将介绍如何加快浏览器对...</section><div class=filter></div><img src=/assets/img/post-bg-js-module.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>
