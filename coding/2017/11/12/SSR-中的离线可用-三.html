@@ -1,18 +1,180 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>SSR 中的离线可用（三） - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="SSR 中的离线可用（三）"><meta name=keywords content="PWA, ServiceWorker, vue, workbox"><title>SSR 中的离线可用（三） | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="SSR 中的离线可用（三）"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。"><meta property=og:description content="本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-11-12T00:00:00+08:00><script type=application/ld+json>{"description":"本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html","headline":"SSR 中的离线可用（三）","dateModified":"2017-11-12T00:00:00+08:00","datePublished":"2017-11-12T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSR 中的离线可用（三） - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="SSR 中的离线可用（三）">
+    <meta name="keywords"  content="PWA, ServiceWorker, vue, workbox">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>SSR 中的离线可用（三） | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="SSR 中的离线可用（三）" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。" />
+<meta property="og:description" content="本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-11-12T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html","headline":"SSR 中的离线可用（三）","dateModified":"2017-11-12T00:00:00+08:00","datePublished":"2017-11-12T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/11/12/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%89.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#PWA class=post-tag>PWA</a> <a href=https://xiaoiver.github.io/tags#ServiceWorker class=post-tag>ServiceWorker</a> <a href=https://xiaoiver.github.io/tags#vue class=post-tag>vue</a> <a href=https://xiaoiver.github.io/tags#workbox class=post-tag>workbox</a></div><h1>SSR 中的离线可用（三）</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=17-11-12><i class="iconfont icon-date"></i>12 Nov 2017</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/vue-ssr.png') center no-repeat; background-size: cover"></div></header><div class=post-content><h2 class=post-subtitle>实践：Vue + Workbox</h2><article class=markdown-body><p>本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。<ul><li>本文是第三部分，将使用 Vue SSR 和 Workbox 实践这一思路。<li><a href=/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html>第一部分</a>以 PWA-Directory 为例进行分析。<li><a href=/coding/2017/10/28/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%BA%8C.html>第二部分</a>研究了一个 WordPress 主题项目。</ul><h3 id=思路回顾>思路回顾</h3><p>我们之前参考 PWA-Directory 的实现，提供了一种 SSR 架构下通用的离线缓存思路：<ol><li>改造后端模板以支持返回完整页面和内容片段( contentOnly )<li>服务端增加一条针对 App Shell 的路由规则，返回仅包含 App Shell 的 HTML 页面( shell.html )<li>预缓存 App Shell 页面<li>Service Worker 拦截所有 HTML 请求，统一返回缓存的 App Shell 页面。同时向服务端请求当前页面需要的内容片段并写入缓存<li>前端路由( app.js )向服务端请求内容片段，发现缓存中已存在，将其填充进 App Shell 中，完成前端渲染</ol><p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/pwa-directory-2.png alt="SW 请求代码片段流程图"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/pwa-directory-2.png data-alt="SW 请求代码片段流程图"></div><em>SW 请求代码片段流程图</em><p></p><script>new Imager('.responsive-image__delayed', {
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#PWA" class="post-tag">PWA</a>
+            
+            <a href="https://xiaoiver.github.io/tags#ServiceWorker" class="post-tag">ServiceWorker</a>
+            
+            <a href="https://xiaoiver.github.io/tags#vue" class="post-tag">vue</a>
+            
+            <a href="https://xiaoiver.github.io/tags#workbox" class="post-tag">workbox</a>
+            
+            
+        </div>
+        <h1>SSR 中的离线可用（三）</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="17-11-12"><i class="iconfont icon-date"></i>12 Nov 2017</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/vue-ssr.png') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    
+    <h2 class="post-subtitle">实践：Vue + Workbox</h2>
+    
+    <article class="markdown-body">
+        <p>本系列文章将以两个实际项目作为研究对象，探讨离线可用这个 PWA 的重要特性在 SSR 架构中的应用思路，最后结合 Vue SSR 进行实际应用。</p>
+
+<ul>
+  <li>本文是第三部分，将使用 Vue SSR 和 Workbox 实践这一思路。</li>
+  <li><a href="/coding/2017/10/24/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%B8%80.html">第一部分</a>以 PWA-Directory 为例进行分析。</li>
+  <li><a href="/coding/2017/10/28/SSR-%E4%B8%AD%E7%9A%84%E7%A6%BB%E7%BA%BF%E5%8F%AF%E7%94%A8-%E4%BA%8C.html">第二部分</a>研究了一个 WordPress 主题项目。</li>
+</ul>
+
+<h3 id="思路回顾">思路回顾</h3>
+
+<p>我们之前参考 PWA-Directory 的实现，提供了一种 SSR 架构下通用的离线缓存思路：</p>
+<ol>
+  <li>改造后端模板以支持返回完整页面和内容片段( contentOnly )</li>
+  <li>服务端增加一条针对 App Shell 的路由规则，返回仅包含 App Shell 的 HTML 页面( shell.html )</li>
+  <li>预缓存 App Shell 页面</li>
+  <li>Service Worker 拦截所有 HTML 请求，统一返回缓存的 App Shell 页面。同时向服务端请求当前页面需要的内容片段并写入缓存</li>
+  <li>前端路由( app.js )向服务端请求内容片段，发现缓存中已存在，将其填充进 App Shell 中，完成前端渲染</li>
+</ol>
+
+<p class="responsive-image">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/pwa-directory-2.png" alt="SW 请求代码片段流程图" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/pwa-directory-2.png" data-alt="SW 请求代码片段流程图">
+    </div>
+    <em>SW 请求代码片段流程图</em>
+</p>
+
+<script>
+    new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800, 1400],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });</script><p>将这一思路应用到 Vue SSR 项目中时，需要做一些改变，另外有些步骤框架已经解决，也不需要我们再实现。<h3 id=后端模板和代码片段>后端模板和代码片段</h3><p>首先在 Vue 同构项目中，同一套代码在 Node 端和浏览器端都能运行，是没有“后端模板”的概念的，同样对于“内容片段”也是如此。在首屏使用服务端渲染直出 HTML 后，浏览器端进行 Hydrate(混合)，绑定事件使页面真正可响应，除非刷新页面，否则后续的路由切换都将由前端路由器完成。<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/vue-ssr.png alt="Vue SSR"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/vue-ssr.png data-alt="Vue SSR"></div><em>Vue SSR</em><p></p><script>new Imager('.responsive-image__delayed', {
+    });
+</script>
+
+<p>将这一思路应用到 Vue SSR 项目中时，需要做一些改变，另外有些步骤框架已经解决，也不需要我们再实现。</p>
+
+<h3 id="后端模板和代码片段">后端模板和代码片段</h3>
+
+<p>首先在 Vue 同构项目中，同一套代码在 Node 端和浏览器端都能运行，是没有“后端模板”的概念的，同样对于“内容片段”也是如此。在首屏使用服务端渲染直出 HTML 后，浏览器端进行 Hydrate(混合)，绑定事件使页面真正可响应，除非刷新页面，否则后续的路由切换都将由前端路由器完成。</p>
+
+<p class="responsive-image">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/vue-ssr.png" alt="Vue SSR" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/vue-ssr.png" data-alt="Vue SSR">
+    </div>
+    <em>Vue SSR</em>
+</p>
+
+<script>
+    new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });</script><p>得益于 Webpack 的<a href=https://doc.webpack-china.org/guides/code-splitting/ >Code Splitting</a>和 Vue 的异步组件，我们能够实现路由组件的<a href=https://router.vuejs.org/zh-cn/advanced/lazy-loading.html>按需加载</a>：<div><pre class=line-numbers data-line=""><code class=language-javascript>// router.js
+    });
+</script>
+
+<p>得益于 Webpack 的<a href="https://doc.webpack-china.org/guides/code-splitting/">Code Splitting</a>和 Vue 的异步组件，我们能够实现路由组件的<a href="https://router.vuejs.org/zh-cn/advanced/lazy-loading.html">按需加载</a>：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// router.js
 
 // 定义切割点
 const Home = () =&gt; import(&#39;./Home.vue&#39;);
@@ -23,7 +185,30 @@ const router = new VueRouter({
             component: Home // 使用异步组件
         }
     ]
-});</code></pre></div><p>在 Vue SSR 项目中的实际效果就是首屏由服务端渲染，随后当路由切换时，客户端会请求对应的路由组件代码。所以之前思路中的第5步“前端路由向服务端请求内容片段渲染内容”实际上已经完成了，对于开发者并没有额外的工作要做。<p>当然，在切换路由时才去请求路由组件代码显然并不够好，因为这样需要等待下载并解析完成，路由才能完成切换。常见的做法是将这些 async chunk 放在<code class=highlighter-rouge>&lt;link rel="preload"&gt;</code>中指示浏览器预取。这样当用户切换路由时，对应的组件代码已经在缓存中，不需要再发送请求。实际上 vue-ssr-renderer 在生成最终 HTML 时也是<a href=https://ssr.vuejs.org/zh/build-config.html#manual-asset-injection>这么做的</a>。<p>由于我们使用了 ServiceWorker，在构建时同样会把这些分割后的路由组件代码加入预缓存列表，在安装阶段会请求并缓存。那么问题来了，同时使用<code class=highlighter-rouge>&lt;link rel="preload"&gt;</code>和 ServiceWorker 时，同样的资源会被<strong>请求两次</strong>吗？<p>根据 Google 的<a href=https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf>Preload, Prefetch And Priorities in Chrome</a>这篇文章，在 Chrome 中存在<a href=https://calendar.perfplanet.com/2016/a-tale-of-four-caches/ >四种缓存</a>：HTTP cache、memory cache、Service Worker cache 和 Push cache，而 preload 资源存储在 HTTP cache 中。<blockquote><p>…the resource won’t be refetched from the network unless it has expired from the HTTP cache or the Service Worker intentionally refetches it.</blockquote><p>所以不用担心，另外文章中也列举了一些会造成重复请求问题的场景，感兴趣可以深入阅读一下。<h3 id=缓存-app-shell-页面>缓存 App Shell 页面</h3><p>已经解决了路由和代码片段的问题，也就是思路中的第1、5步。下面我们来看第2、3步， 即如何获得仅包含 App Shell 的 HTML 页面供 ServiceWorker 缓存。<p>在使用 vue-router 时，典型的页面模板结构如下：<div><pre class=line-numbers data-line=""><code class=language-html>// App.vue
+});</code></pre>
+</div>
+
+<p>在 Vue SSR 项目中的实际效果就是首屏由服务端渲染，随后当路由切换时，客户端会请求对应的路由组件代码。所以之前思路中的第5步“前端路由向服务端请求内容片段渲染内容”实际上已经完成了，对于开发者并没有额外的工作要做。</p>
+
+<p>当然，在切换路由时才去请求路由组件代码显然并不够好，因为这样需要等待下载并解析完成，路由才能完成切换。常见的做法是将这些 async chunk 放在<code class="highlighter-rouge">&lt;link rel="preload"&gt;</code>中指示浏览器预取。这样当用户切换路由时，对应的组件代码已经在缓存中，不需要再发送请求。实际上 vue-ssr-renderer 在生成最终 HTML 时也是<a href="https://ssr.vuejs.org/zh/build-config.html#manual-asset-injection">这么做的</a>。</p>
+
+<p>由于我们使用了 ServiceWorker，在构建时同样会把这些分割后的路由组件代码加入预缓存列表，在安装阶段会请求并缓存。那么问题来了，同时使用<code class="highlighter-rouge">&lt;link rel="preload"&gt;</code>和 ServiceWorker 时，同样的资源会被<strong>请求两次</strong>吗？</p>
+
+<p>根据 Google 的<a href="https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf">Preload, Prefetch And Priorities in Chrome</a>这篇文章，在 Chrome 中存在<a href="https://calendar.perfplanet.com/2016/a-tale-of-four-caches/">四种缓存</a>：HTTP cache、memory cache、Service Worker cache 和 Push cache，而 preload 资源存储在 HTTP cache 中。</p>
+<blockquote>
+  <p> …the resource won’t be refetched from the network unless it has expired from the HTTP cache or the Service Worker intentionally refetches it.</p>
+</blockquote>
+
+<p>所以不用担心，另外文章中也列举了一些会造成重复请求问题的场景，感兴趣可以深入阅读一下。</p>
+
+<h3 id="缓存-app-shell-页面">缓存 App Shell 页面</h3>
+
+<p>已经解决了路由和代码片段的问题，也就是思路中的第1、5步。下面我们来看第2、3步，
+即如何获得仅包含 App Shell 的 HTML 页面供 ServiceWorker 缓存。</p>
+
+<p>在使用 vue-router 时，典型的页面模板结构如下：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-html">// App.vue
 
 &lt;template&gt;
     &lt;div id=&quot;app&quot;&gt;
@@ -33,7 +218,12 @@ const router = new VueRouter({
         &lt;sidebar&gt;&lt;/sidebar&gt;
         &lt;loading&gt;&lt;/loading&gt;
     &lt;/div&gt;
-&lt;/template&gt;</code></pre></div><p>这就是一个典型的基于 App Shell 模型的应用，其中<code class=highlighter-rouge>&lt;router-view&gt;</code>作为一个动态组件，会将匹配到的路由组件渲染在这里。很自然的想到，要想获得“仅包含 App Shell 的 HTML 页面”，只要渲染一个模板为空的路由组件就行了：<div><pre class=line-numbers data-line=""><code class=language-html>// AppShell.vue
+&lt;/template&gt;</code></pre>
+</div>
+
+<p>这就是一个典型的基于 App Shell 模型的应用，其中<code class="highlighter-rouge">&lt;router-view&gt;</code>作为一个动态组件，会将匹配到的路由组件渲染在这里。很自然的想到，要想获得“仅包含 App Shell 的 HTML 页面”，只要渲染一个模板为空的路由组件就行了：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-html">// AppShell.vue
 
 &lt;template&gt;
 // 空的模板
@@ -45,12 +235,35 @@ export default {
         meta: []
     }
 };
-&lt;/script&gt;</code></pre></div><p>配置好路由对象，就可通过类似<code class=highlighter-rouge>/appshell</code>这样的路由路径访问了。当然，这个路由用户是不会访问的，随后我们会把<code class=highlighter-rouge>/appshell</code>加入 ServiceWorker 的预缓存列表，让它和其他静态资源一样，在安装阶段被请求并缓存。<h4 id=使用-workbox-管理预缓存>使用 Workbox 管理预缓存</h4><p>这里简单介绍一下 ServiceWorker 的预缓存功能：<ul><li>在项目构建阶段，写入静态资源列表到 ServiceWorker 代码中，通常以列表形式存在，其中包含了每个资源的版本号<li>在 ServiceWorker 安装阶段，通过比较版本号，检查列表中的资源相较缓存中的内容是否发生更新，如果有则重新请求并更新缓存，另外触发自定义的更新事件通知页面，给予用户反馈，引导刷新页面<li>在 ServiceWorker 激活阶段，删除旧缓存内容</ul><p>可见要实现这部分功能，在构建阶段的注入，缓存资源的版本控制都需要编写代码实现。这里必须要介绍一下<a href=https://developers.google.com/web/tools/workbox/ >Workbox</a>，这是 Google 开发的工具集，能够方便地集成到 Webpack、Gulp 等构建流程中，帮助开发者生成或者注入部分 ServiceWorker 相关代码，实现了很多通用功能供开发者使用。管理预缓存正是其中之一。<p>以 Webpack 为例，配合 workbox-webpack-plugin，我们只需要定义一行注入点，剩下的只需要通过配置指示插件注入资源列表就行了：<div><pre class=line-numbers data-line=""><code class=language-javascript>// service-worker.js
+&lt;/script&gt;</code></pre>
+</div>
+
+<p>配置好路由对象，就可通过类似<code class="highlighter-rouge">/appshell</code>这样的路由路径访问了。当然，这个路由用户是不会访问的，随后我们会把<code class="highlighter-rouge">/appshell</code>加入 ServiceWorker 的预缓存列表，让它和其他静态资源一样，在安装阶段被请求并缓存。</p>
+
+<h4 id="使用-workbox-管理预缓存">使用 Workbox 管理预缓存</h4>
+
+<p>这里简单介绍一下 ServiceWorker 的预缓存功能：</p>
+<ul>
+  <li>在项目构建阶段，写入静态资源列表到 ServiceWorker 代码中，通常以列表形式存在，其中包含了每个资源的版本号</li>
+  <li>在 ServiceWorker 安装阶段，通过比较版本号，检查列表中的资源相较缓存中的内容是否发生更新，如果有则重新请求并更新缓存，另外触发自定义的更新事件通知页面，给予用户反馈，引导刷新页面</li>
+  <li>在 ServiceWorker 激活阶段，删除旧缓存内容</li>
+</ul>
+
+<p>可见要实现这部分功能，在构建阶段的注入，缓存资源的版本控制都需要编写代码实现。这里必须要介绍一下<a href="https://developers.google.com/web/tools/workbox/">Workbox</a>，这是 Google 开发的工具集，能够方便地集成到 Webpack、Gulp 等构建流程中，帮助开发者生成或者注入部分 ServiceWorker 相关代码，实现了很多通用功能供开发者使用。管理预缓存正是其中之一。</p>
+
+<p>以 Webpack 为例，配合 workbox-webpack-plugin，我们只需要定义一行注入点，剩下的只需要通过配置指示插件注入资源列表就行了：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// service-worker.js
 importScripts(&#39;/node_modules/workbox-sw/build/workbox-sw.vX.X.X.prod.js&#39;);
 
 const workboxSW = new WorkboxSW();
 // 供 workbox-webpack-plugin 使用的注入点
-workboxSW.precache([]);</code></pre></div><p>让我们来看下关键的配置，我们通过<code class=highlighter-rouge>templatedUrls</code>把<code class=highlighter-rouge>/appshell</code>也加入预缓存列表中：<div><pre class=line-numbers data-line=""><code class=language-json>// 传入 workbox-webpack-plugin 的配置
+workboxSW.precache([]);</code></pre>
+</div>
+
+<p>让我们来看下关键的配置，我们通过<code class="highlighter-rouge">templatedUrls</code>把<code class="highlighter-rouge">/appshell</code>也加入预缓存列表中：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-json">// 传入 workbox-webpack-plugin 的配置
 {
     swSrc: &#39;service-worker.js&#39;, // 包含了注入点的 service-worker.js
     swDest: &#39;service-worker.js&#39;, // 目标路径
@@ -62,7 +275,12 @@ workboxSW.precache([]);</code></pre></div><p>让我们来看下关键的配置�
         &#39;/appshell&#39;: [...] // 依赖的文件列表 or 具体版本字符串
     ],
     dontCacheBustUrlsMatching: /\.\w{8}\./
-}</code></pre></div><p>根据这样的配置，插件会向最终生成的 ServiceWorker 中注入预缓存列表。默认情况下，插件会根据列表中的资源内容生成一个版本号<code class=highlighter-rouge>revision</code>。但是使用 Webpack 构建时，通常都会使用<code class=highlighter-rouge>output.path</code>指定静态资源的文件名格式，例如<code class=highlighter-rouge>[name].[hash:8].js</code>，实际上<code class=highlighter-rouge>[hash]</code>的作用和<code class=highlighter-rouge>revision</code>一样，就没必要让 Workbox 再为这些文件生成版本号了。通过配置中的<code class=highlighter-rouge>dontCacheBustUrlsMatching</code>，我们指示插件把这些文件的文件名作为版本号。至于<code class=highlighter-rouge>/appshell</code>这样的非静态资源的版本号是如何生成的，我们将在最后一节“缓存资源更新问题”中介绍。<div><pre class=line-numbers data-line=""><code class=language-javascript>// service-worker.js
+}</code></pre>
+</div>
+
+<p>根据这样的配置，插件会向最终生成的 ServiceWorker 中注入预缓存列表。默认情况下，插件会根据列表中的资源内容生成一个版本号<code class="highlighter-rouge">revision</code>。但是使用 Webpack 构建时，通常都会使用<code class="highlighter-rouge">output.path</code>指定静态资源的文件名格式，例如<code class="highlighter-rouge">[name].[hash:8].js</code>，实际上<code class="highlighter-rouge">[hash]</code>的作用和<code class="highlighter-rouge">revision</code>一样，就没必要让 Workbox 再为这些文件生成版本号了。通过配置中的<code class="highlighter-rouge">dontCacheBustUrlsMatching</code>，我们指示插件把这些文件的文件名作为版本号。至于<code class="highlighter-rouge">/appshell</code>这样的非静态资源的版本号是如何生成的，我们将在最后一节“缓存资源更新问题”中介绍。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// service-worker.js
 workboxSW.precache([
   {
     &quot;url&quot;: &quot;/static/css/main.bb31e95c.css&quot;
@@ -75,13 +293,42 @@ workboxSW.precache([
     &quot;url&quot;: &quot;/appshell&quot;,
     &quot;revision&quot;: &quot;7a63fa62f1370a8752bd29f4f88b7104&quot;
   }
-]);</code></pre></div><p>在这个预缓存场景中应该能体会到 Workbox 带来的便利，下面我们还会使用到 Workbox 帮助拦截请求。<h3 id=拦截-html-请求>拦截 HTML 请求</h3><p>现在 ServiceWorker 已经能够请求<code class=highlighter-rouge>/appshell</code>并缓存 App Shell 页面了，下面我们需要实现思路中的第4步，即 让 ServiceWorker 拦截 HTML 请求并返回之前已经缓存的 App Shell 页面。<p>拦截请求作为 ServiceWorker 的重要功能，通过在<code class=highlighter-rouge>fetch</code>事件中判断请求类型，如果是 HTML 类型就读取缓存并返回。我们当然可以自己编写这段逻辑，实际上也不麻烦，但是 Workbox 提供了功能更加强大的 API：<div><pre class=line-numbers data-line=""><code class=language-javascript>// service-worker.js
-workboxSW.router.registerNavigationRoute(&#39;/appshell&#39;);</code></pre></div><p>这样当 ServiceWorker 安装完成后，每次用户发起 HTML 请求，例如刷新当前页面，都不会到达服务端，而是由 ServiceWorker 返回缓存的 App Shell 页面，然后交给前端代码渲染具体内容。<h3 id=前端渲染>前端渲染</h3><p>在前端渲染时，有一个问题很重要，那就是获取数据。<p>在通常的 Vue SSR 场景中，由于首屏是服务端渲染的，所需的数据请求自然也是在服务端发送，成功后在渲染时通过向 HTML 模板写入<code class=highlighter-rouge>window.INITIAL_STATE</code>的方式将状态同步给客户端。因此到了客户端进行 Hydrate(客户端混合) 时，不需要重复请求数据，只需要根据当前状态渲染页面组件。要实现这一点，通常在客户端页面入口中，我们会在路由 ready 之后也就是<code class=highlighter-rouge>router.onReady</code>回调中才挂载包含数据请求的钩子，这样只有在后续前端路由切换时才会发送请求。<div><pre class=line-numbers data-line=""><code class=language-javascript>// entry-client.js
+]);</code></pre>
+</div>
+
+<p>在这个预缓存场景中应该能体会到 Workbox 带来的便利，下面我们还会使用到 Workbox 帮助拦截请求。</p>
+
+<h3 id="拦截-html-请求">拦截 HTML 请求</h3>
+
+<p>现在 ServiceWorker 已经能够请求<code class="highlighter-rouge">/appshell</code>并缓存 App Shell 页面了，下面我们需要实现思路中的第4步，即 让 ServiceWorker 拦截 HTML 请求并返回之前已经缓存的 App Shell 页面。</p>
+
+<p>拦截请求作为 ServiceWorker 的重要功能，通过在<code class="highlighter-rouge">fetch</code>事件中判断请求类型，如果是 HTML 类型就读取缓存并返回。我们当然可以自己编写这段逻辑，实际上也不麻烦，但是 Workbox 提供了功能更加强大的 API：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// service-worker.js
+workboxSW.router.registerNavigationRoute(&#39;/appshell&#39;);</code></pre>
+</div>
+
+<p>这样当 ServiceWorker 安装完成后，每次用户发起 HTML 请求，例如刷新当前页面，都不会到达服务端，而是由 ServiceWorker 返回缓存的 App Shell 页面，然后交给前端代码渲染具体内容。</p>
+
+<h3 id="前端渲染">前端渲染</h3>
+
+<p>在前端渲染时，有一个问题很重要，那就是获取数据。</p>
+
+<p>在通常的 Vue SSR 场景中，由于首屏是服务端渲染的，所需的数据请求自然也是在服务端发送，成功后在渲染时通过向 HTML 模板写入<code class="highlighter-rouge">window.INITIAL_STATE</code>的方式将状态同步给客户端。因此到了客户端进行 Hydrate(客户端混合) 时，不需要重复请求数据，只需要根据当前状态渲染页面组件。要实现这一点，通常在客户端页面入口中，我们会在路由 ready 之后也就是<code class="highlighter-rouge">router.onReady</code>回调中才挂载包含数据请求的钩子，这样只有在后续前端路由切换时才会发送请求。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// entry-client.js
 app = new App();
 router.onReady(() =&gt; {
     handleAsyncData();
     app.$mount(&#39;#app&#39;);
-});</code></pre></div><p>在通常的 Vue SSR 项目里这样做是没有问题的，而一旦页面请求被 ServiceWorker 拦截，并返回 App Shell 页面，情况就变得不一样了。由于此时整个应用的状态停留在初始状态，数据请求是需要客户端页面入口来发送的。这就要求客户端页面入口需要在运行时知道当前页面是否是 App Shell。<p>一个很自然的想法是在渲染的 App Shell 页面中加入标记，在 Vue SSR 项目中我们常常使用 Vue-meta 设置页面标题和<code class=highlighter-rouge>meta</code>标签，这里借助它也很容易实现在<code class=highlighter-rouge>body</code>上加上标记属性：<div><pre class=line-numbers data-line=""><code class=language-html>// AppShell.vue
+});</code></pre>
+</div>
+
+<p>在通常的 Vue SSR 项目里这样做是没有问题的，而一旦页面请求被 ServiceWorker 拦截，并返回 App Shell 页面，情况就变得不一样了。由于此时整个应用的状态停留在初始状态，数据请求是需要客户端页面入口来发送的。这就要求客户端页面入口需要在运行时知道当前页面是否是 App Shell。</p>
+
+<p>一个很自然的想法是在渲染的 App Shell 页面中加入标记，在 Vue SSR 项目中我们常常使用 Vue-meta 设置页面标题和<code class="highlighter-rouge">meta</code>标签，这里借助它也很容易实现在<code class="highlighter-rouge">body</code>上加上标记属性：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-html">// AppShell.vue
 
 &lt;template&gt;
 &lt;/template&gt;
@@ -95,7 +342,12 @@ export default {
         }
     }
 };
-&lt;/script&gt;</code></pre></div><p>这样在客户端入口运行时，如果检测到此时页面是服务端直出的（第一次访问站点，此时 ServiceWorker 未安装），就不发送数据请求，而如果发现此时是 ServiceWorker 拦截后返回的，就发送请求。<div><pre class=line-numbers data-line=""><code class=language-javascript>// entry-client.js
+&lt;/script&gt;</code></pre>
+</div>
+
+<p>这样在客户端入口运行时，如果检测到此时页面是服务端直出的（第一次访问站点，此时 ServiceWorker 未安装），就不发送数据请求，而如果发现此时是 ServiceWorker 拦截后返回的，就发送请求。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// entry-client.js
 let usingAppshell = document.body.hasAttribute(&#39;appshell&#39;);
 if (usingAppshell) {
     handleAsyncData();
@@ -107,13 +359,41 @@ else {
         handleAsyncData();
         app.$mount(&#39;#app&#39;);
     });
-}</code></pre></div><p>至此，基于 Vue SSR 和 Workbox，我们已经实现了开始的思路，总结一下当前的效果是：<ul><li>用户首次访问站点，首屏由服务端渲染，后续路由前端跳转。ServiceWorker 开始首次安装。过程中请求预缓存列表中的静态资源和<code class=highlighter-rouge>appshell</code>路由，缓存 App Shell 页面。<li>用户后续访问，刷新页面都不会到达服务端，请求被 ServiceWorker 拦截，统一返回之前缓存的 App Shell 页面，由前端渲染具体内容。</ul><p>最后我们来关注一下缓存的更新问题。<h3 id=缓存资源更新问题>缓存资源更新问题</h3><p>我们的站点不可能一成不变，当 ServiceWorker 检测到代码发生更新时，需要引导用户手动刷新当前页面来使用最新的资源。这里不会介绍如何保证 ServiceWorker 本身是最新的，不被缓存，感兴趣的可以阅读<a href=https://zhuanlan.zhihu.com/p/28161855>这篇文章</a>。下面的讨论将基于 ServiceWorker 不被缓存的前提。<p>由于缓存中的 App Shell 页面包含了对静态资源的引用，这意味着当这些静态资源发生了修改，<code class=highlighter-rouge>/appshell</code>对应的版本号也需要改变，这样 ServiceWorker 才会请求新的 App Shell 并缓存。<p>这里需要一下介绍<code class=highlighter-rouge>/appshell</code>的版本号是如何生成的。Workbox 提供了<code class=highlighter-rouge>templatedUrls</code>配置项为这类非静态资源生成版本号，接受两类值：<ul><li>依赖文件的列表。这些文件的内容将共同决定版本号。比如 App Shell 页面中包含了 JS，CSS，我们就需要把这些资源都加进来。在实际应用中，由于生成的静态资源的文件名中有可能包含了<code class=highlighter-rouge>[hash]</code>，所以文件名并不确定。而且一旦漏掉某个资源，它的改动就不会反映在版本号上了。<li>直接提供一个版本字符串。例如当我们接受每次构建后，都认为代码发生了更新，都需要 ServiceWorker 重新请求新的 App Shell 页面，就可以使用时间戳。当然这样做的缺点就是即使代码没有改动，也会触发更新。</ul><div><pre class=line-numbers data-line=""><code class=language-json>// workbox-webpack-plugin 配置对象
+}</code></pre>
+</div>
+
+<p>至此，基于 Vue SSR 和 Workbox，我们已经实现了开始的思路，总结一下当前的效果是：</p>
+<ul>
+  <li>用户首次访问站点，首屏由服务端渲染，后续路由前端跳转。ServiceWorker 开始首次安装。过程中请求预缓存列表中的静态资源和<code class="highlighter-rouge">appshell</code>路由，缓存 App Shell 页面。</li>
+  <li>用户后续访问，刷新页面都不会到达服务端，请求被 ServiceWorker 拦截，统一返回之前缓存的 App Shell 页面，由前端渲染具体内容。</li>
+</ul>
+
+<p>最后我们来关注一下缓存的更新问题。</p>
+
+<h3 id="缓存资源更新问题">缓存资源更新问题</h3>
+
+<p>我们的站点不可能一成不变，当 ServiceWorker 检测到代码发生更新时，需要引导用户手动刷新当前页面来使用最新的资源。这里不会介绍如何保证 ServiceWorker 本身是最新的，不被缓存，感兴趣的可以阅读<a href="https://zhuanlan.zhihu.com/p/28161855">这篇文章</a>。下面的讨论将基于 ServiceWorker 不被缓存的前提。</p>
+
+<p>由于缓存中的 App Shell 页面包含了对静态资源的引用，这意味着当这些静态资源发生了修改，<code class="highlighter-rouge">/appshell</code>对应的版本号也需要改变，这样 ServiceWorker 才会请求新的 App Shell 并缓存。</p>
+
+<p>这里需要一下介绍<code class="highlighter-rouge">/appshell</code>的版本号是如何生成的。Workbox 提供了<code class="highlighter-rouge">templatedUrls</code>配置项为这类非静态资源生成版本号，接受两类值：</p>
+<ul>
+  <li>依赖文件的列表。这些文件的内容将共同决定版本号。比如 App Shell 页面中包含了 JS，CSS，我们就需要把这些资源都加进来。在实际应用中，由于生成的静态资源的文件名中有可能包含了<code class="highlighter-rouge">[hash]</code>，所以文件名并不确定。而且一旦漏掉某个资源，它的改动就不会反映在版本号上了。</li>
+  <li>直接提供一个版本字符串。例如当我们接受每次构建后，都认为代码发生了更新，都需要 ServiceWorker 重新请求新的 App Shell 页面，就可以使用时间戳。当然这样做的缺点就是即使代码没有改动，也会触发更新。</li>
+</ul>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-json">// workbox-webpack-plugin 配置对象
 {
     // 省略其他配置
     templatedUrls: [
         &#39;/appshell&#39;: [...] // 依赖的文件列表 or 具体版本字符串
     ]
-}</code></pre></div><p>现在我们解决了 App Shell 的更新问题，剩下的就是给予用户视觉反馈，提示手动刷新页面。这里给出一种参考实现，在安装完成，也就是全部资源的预缓存完成之后触发一个自定义事件，在 UI 组件中监听这个事件展现提示信息就行了。<div><pre class=line-numbers data-line=""><code class=language-javascript>navigator.serviceWorker.register(&#39;/service-worker.js&#39;).then(function(reg) {
+}</code></pre>
+</div>
+
+<p>现在我们解决了 App Shell 的更新问题，剩下的就是给予用户视觉反馈，提示手动刷新页面。这里给出一种参考实现，在安装完成，也就是全部资源的预缓存完成之后触发一个自定义事件，在 UI 组件中监听这个事件展现提示信息就行了。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">navigator.serviceWorker.register(&#39;/service-worker.js&#39;).then(function(reg) {
     reg.onupdatefound = function() {
         var installingWorker = reg.installing;
         installingWorker.onstatechange = function() {
@@ -127,7 +407,95 @@ else {
                     break;
             }
         };
-    };</code></pre></div><p>以上就是使用 Vue SSR 和 Workbox 实现离线可用的实践，其他细节可以参考这个简单的<a href=https://github.com/xiaoiver/vue-ssr-pwa-demo>demo</a>。<h3 id=参考资料>参考资料</h3><ul><li><a href=https://calendar.perfplanet.com/2016/a-tale-of-four-caches/ >Chrome 中的缓存介绍</a><li><a href=https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf>Preload, Prefetch And Priorities in Chrome</a><li><a href=https://zhuanlan.zhihu.com/p/28161855>如何优雅的为 PWA 注册 Service Worker</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/music/2017/12/11/%E6%88%91%E7%9A%84%E6%97%A5%E6%9C%AC%E8%A1%8C.html class=read-next-link></a><section><span>我的日本行</span><p>日本之行结束了，在此记录一下这次难忘的旅程。</section><div class=filter></div><img src=/assets/img/resized/800/day1-19.jpg alt=""></div><div class=read-next-item><a href=/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html class=read-next-link></a><section><span>在 Jekyll 中使用离线缓存</span><p>Jekyll 默认生成的站点由多个静态页面组成（虽然可以通过某些插件实现 SPA）。不同于之前介绍的 SSR，对于...</section><div class=filter></div><img src=/assets/img/jekyll.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+    };</code></pre>
+</div>
+
+<p>以上就是使用 Vue SSR 和 Workbox 实现离线可用的实践，其他细节可以参考这个简单的<a href="https://github.com/xiaoiver/vue-ssr-pwa-demo">demo</a>。</p>
+
+<h3 id="参考资料">参考资料</h3>
+
+<ul>
+  <li><a href="https://calendar.perfplanet.com/2016/a-tale-of-four-caches/">Chrome 中的缓存介绍</a></li>
+  <li><a href="https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf">Preload, Prefetch And Priorities in Chrome</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/28161855">如何优雅的为 PWA 注册 Service Worker</a></li>
+</ul>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/music/2017/12/11/%E6%88%91%E7%9A%84%E6%97%A5%E6%9C%AC%E8%A1%8C.html" class="read-next-link"></a>
+            <section>
+                <span>我的日本行</span>
+                <p>日本之行结束了，在此记录一下这次难忘的旅程。</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/resized/800/day1-19.jpg" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2017/11/09/%E5%9C%A8Jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98.html" class="read-next-link"></a>
+            <section>
+                <span>在 Jekyll 中使用离线缓存</span>
+                <p>Jekyll 默认生成的站点由多个静态页面组成（虽然可以通过某些插件实现 SPA）。不同于之前介绍的 SSR，对于...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/jekyll.png" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -137,15 +505,37 @@ else {
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2018</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+</body>
+</html>
