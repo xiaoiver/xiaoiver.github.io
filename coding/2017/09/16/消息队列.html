@@ -1,6 +1,6 @@
 <!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Node.js 中的消息队列 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="Node.js 中的消息队列"><meta name=keywords content="javascript, nodejs, leveldb, redis, rabbitMQ"><title>Node.js 中的消息队列 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="Node.js 中的消息队列"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。 通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。"><meta property=og:description content="在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。 通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-09-16T00:00:00+08:00><script type=application/ld+json>{"description":"在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。 通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html","headline":"Node.js 中的消息队列","dateModified":"2017-09-16T00:00:00+08:00","datePublished":"2017-09-16T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#javascript class=post-tag>javascript</a> <a href=https://xiaoiver.github.io/tags#nodejs class=post-tag>nodejs</a> <a href=https://xiaoiver.github.io/tags#leveldb class=post-tag>leveldb</a> <a href=https://xiaoiver.github.io/tags#redis class=post-tag>redis</a> <a href=https://xiaoiver.github.io/tags#rabbitMQ class=post-tag>rabbitMQ</a></div><h1>Node.js 中的消息队列</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=17-09-16><i class="iconfont icon-date"></i>16 Sep 2017</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/work-queue.png') center no-repeat; background-size: cover"></div></header><div class=post-content><h2 class=post-subtitle>基于内存，持久化，Redis 和 RabbitMQ</h2><article class=markdown-body><p>在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。 通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。<p>我们引入消息队列，producer 负责向队列中推送消息，而 worker 负责消费。 <img src=/assets/img/work-queue.png alt=""><p>使用消息队列的好处是显而易见的：<ol><li>解耦了 producer 和 worker。尤其是像发送邮件这样对实时性要求不高的步骤，如果这一步操作失败，我们显然不需要回滚之前对数据库的修改，只需要在合适的时间重试就行了。<li>实现重试逻辑变得简单。另外，当进程出现错误，不至于丢失全部状态，甚至可以从错误中恢复。<li>分布式和扩展性。配合 cluster，创建多个 worker 变得简单。<li>让外部系统更容易集成进来，相比在一个请求回调函数中完成所有逻辑处理。</ol><h2 id=简单的内存队列>简单的内存队列</h2><p>首先实现一个内存中的队列管理，使用 async 创建队列。<div><pre class=line-numbers data-line=""><code class=language-javascript>// 创建并发度为1的异步队列
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#javascript class=post-tag>javascript</a> <a href=https://xiaoiver.github.io/tags#nodejs class=post-tag>nodejs</a> <a href=https://xiaoiver.github.io/tags#leveldb class=post-tag>leveldb</a> <a href=https://xiaoiver.github.io/tags#redis class=post-tag>redis</a> <a href=https://xiaoiver.github.io/tags#rabbitMQ class=post-tag>rabbitMQ</a></div><h1>Node.js 中的消息队列</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=17-09-16><i class="iconfont icon-date"></i>16 Sep 2017</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/work-queue.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>基于内存，持久化，Redis 和 RabbitMQ</h2><article class=markdown-body><p>在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。 通常处理请求参数，操作数据库，调用 STMP 邮件服务器发送邮件都写在一个请求处理函数中。这样的问题是任何一步发生错误，都需要重试。这还只是一个简单场景，如果流程复杂，依赖外部系统众多，显然问题就不可避免了。<p>我们引入消息队列，producer 负责向队列中推送消息，而 worker 负责消费。 <img src=/assets/img/work-queue.png alt=""><p>使用消息队列的好处是显而易见的：<ol><li>解耦了 producer 和 worker。尤其是像发送邮件这样对实时性要求不高的步骤，如果这一步操作失败，我们显然不需要回滚之前对数据库的修改，只需要在合适的时间重试就行了。<li>实现重试逻辑变得简单。另外，当进程出现错误，不至于丢失全部状态，甚至可以从错误中恢复。<li>分布式和扩展性。配合 cluster，创建多个 worker 变得简单。<li>让外部系统更容易集成进来，相比在一个请求回调函数中完成所有逻辑处理。</ol><h2 id=简单的内存队列>简单的内存队列</h2><p>首先实现一个内存中的队列管理，使用 async 创建队列。<div><pre class=line-numbers data-line=""><code class=language-javascript>// 创建并发度为1的异步队列
 const queue = async.queue(work, 1);
 
 function work(item, cb) {
@@ -202,7 +202,51 @@ Channel(QUEUE, (err, channel, conn) =&gt; {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script>window.onload = function () {
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+        // init
+        var P = $('.markdown-body'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    $('.catalog-body').onePageNav({
+        currentClass: "active",
+        changeHash: !1,
+        easing: "swing",
+        filter: "",
+        scrollSpeed: 700,
+        scrollOffset: 0,
+        scrollThreshold: .2,
+        begin: null,
+        end: null,
+        scrollChange: null,
+        padding: 80
+    });</script><script>window.onload = function () {
                     var script = document.createElement('script');
                     var firstScript = document.getElementsByTagName('script')[0];
                     script.type = 'text/javascript';

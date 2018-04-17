@@ -1,6 +1,10 @@
 <!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Shader 基础知识 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="Shader 基础知识"><meta name=keywords content=WebGL><title>Shader 基础知识 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="Shader 基础知识"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。"><meta property=og:description content="一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-04-05T00:00:00+08:00><script type=application/ld+json>{"description":"一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html","headline":"Shader 基础知识","dateModified":"2018-04-05T00:00:00+08:00","datePublished":"2018-04-05T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>Shader 基础知识</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-04-05><i class="iconfont icon-date"></i>05 Apr 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/logo.png') center no-repeat; background-size: cover"></div></header><div class=post-content><h2 class=post-subtitle>WebGL Programing Guide 学习笔记</h2><article class=markdown-body><p>一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。<h2 id=高效存储-vertex-数据>高效存储 vertex 数据</h2><p>如果想绘制多个点，多次调用 <code class=highlighter-rouge>drawArray()</code> ，每次绘制一个点显然不是一个高效的方法：<div><pre class=line-numbers data-line=""><code class=language-javascript>// g_points = [x1, y1, x2, y2...]
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>Shader 基础知识</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-04-05><i class="iconfont icon-date"></i>05 Apr 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/logo.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>WebGL Programing Guide 学习笔记</h2><article class=markdown-body><p>一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。<h2 id=glsl-es-的一些有趣语法>GLSL ES 的一些有趣语法</h2><h3 id=参数修饰符>参数修饰符</h3><p><code class=highlighter-rouge>out</code> 可以代替 <code class=highlighter-rouge>return</code>，此时返回值类型得改成 <code class=highlighter-rouge>void</code>。而 <code class=highlighter-rouge>in</code> 可以省略，这是参数的默认属性。<div><pre class=line-numbers data-line=""><code class=language-javascript>void luma2 (in vec3 color, out float brightness) {
+    brightness = 0.2126 * color.r + 0.7162 * color.g + 0.0722 * color.b;
+}</code></pre></div><p>想起函数式编程中纯函数的概念，在 JS 中只能依靠约定保证参数在函数执行过程中不被修改。<h3 id=精度修饰符>精度修饰符</h3><p>更高的精度显然需要更大的存储空间。GLSL 给予开发者权衡性能的选择。<div><pre class=line-numbers data-line=""><code class=language-glsl>#ifdef GL_ES
+precision mediump float;
+#endif</code></pre></div><h2 id=高效存储-vertex-数据>高效存储 vertex 数据</h2><p>如果想绘制多个点，多次调用 <code class=highlighter-rouge>drawArray()</code> ，每次绘制一个点显然不是一个高效的方法：<div><pre class=line-numbers data-line=""><code class=language-javascript>// g_points = [x1, y1, x2, y2...]
 for(var i = 0; i &lt; len; i += 2) {
     // a_Position 为 attribute 地址，向地址中写入 xyz
     gl.vertexAttrib3f(a_Position, g_points[i], g_points[i+1], 0.0);
@@ -47,8 +51,7 @@ for(var i = 0; i &lt; len; i += 2) {
             $('.responsive-image__placeholder').hide();
 
         }
-    });</script><p>只需要反转一下 Y 轴即可：<div class="language-javascript highlighter-rouge"><div class=highlight><pre class=highlight><code><span class=nx>gl</span><span class=p>.</span><span class=nx>pixelStorei</span><span class=p>(</span><span class=nx>gl</span><span class=p>.</span><span class=nx>UNPACK_FLIP_Y_WEBGL</span><span class=p>,</span> <span class=mi>1</span><span class=p>);</span>
-</code></pre></div></div><p>然后我们需要将 texture 坐标映射到 vertex shader 坐标系，例如这里只是简单平移一下，并不存在缩放。最终显示在 <code class=highlighter-rouge>-1 ~ 1</code> 的坐标系中：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/texture-cord.png alt=纹理坐标映射><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/texture-cord.png data-alt=纹理坐标映射></div><em>纹理坐标映射</em><p></p><script>new Imager('.responsive-image__delayed', {
+    });</script><p>只需要反转一下 Y 轴即可：<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);</code></pre></div><p>然后我们需要将 texture 坐标映射到 vertex shader 坐标系，例如这里只是简单平移一下，并不存在缩放。最终显示在 <code class=highlighter-rouge>-1 ~ 1</code> 的坐标系中：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/texture-cord.png alt=纹理坐标映射><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/texture-cord.png data-alt=纹理坐标映射></div><em>纹理坐标映射</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
@@ -81,22 +84,17 @@ gl.bindTexture(gl.TEXTURE_2D, texture);</code></pre></div><p class=responsive-im
             $('.responsive-image__placeholder').hide();
 
         }
-    });</script><p>这里不得不吐槽下 WebGL 内置的一些函数命名，虽然有些通过函数名就能判断参数类型和数目，但是像 <code class=highlighter-rouge>texParameteri()</code> 和 <code class=highlighter-rouge>vertexAttribPointer()</code> 这样部分缩写实在很难记忆。<h3 id=上传图片到纹理对象中>上传图片到纹理对象中</h3><p>接下来需要将图片上传到纹理对象中。 在 WebGL 中，使用 <code class=highlighter-rouge>new Image()</code> 异步加载图片十分简单，以下操作都在成功回调函数中完成。 这里需要根据图片格式指定纹理数据格式，例如对于 PNG 格式的图片，纹理数据必须使用 <code class=highlighter-rouge>gl.RGBA</code>，而对于 JPEG 格式，则使用 <code class=highlighter-rouge>gl.RGB</code>。<div class="language-javascript highlighter-rouge"><div class=highlight><pre class=highlight><code><span class=nx>gl</span><span class=p>.</span><span class=nx>texImage2D</span><span class=p>(</span><span class=nx>gl</span><span class=p>.</span><span class=nx>TEXTURE_2D</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=nx>gl</span><span class=p>.</span><span class=nx>RGBA</span><span class=p>,</span> <span class=nx>gl</span><span class=p>.</span><span class=nx>RGBA</span><span class=p>,</span> <span class=nx>gl</span><span class=p>.</span><span class=nx>UNSIGNED_BYTE</span><span class=p>,</span> <span class=nx>image</span><span class=p>);</span>
-</code></pre></div></div><h3 id=fragment-shader-中的操作>fragment shader 中的操作</h3><p>在 fragment shader 中读取纹理对象需要通过 sampler 完成。这是一个常量 <code class=highlighter-rouge>uniform sampler2D u_Sampler;</code>。<p>之前纹理对象存储在 <code class=highlighter-rouge>gl.TEXTURE0</code> 中，这里只需要传一个序号就行了。<div class="language-javascript highlighter-rouge"><div class=highlight><pre class=highlight><code><span class=nx>gl</span><span class=p>.</span><span class=nx>uniform1i</span><span class=p>(</span><span class=nx>u_Sampler</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
-</code></pre></div></div><p>根据从 vertex shader 中传过来的坐标，使用 sampler，fragment shader 就能获取当前纹理中每个 fragment 对应的颜色：<div class="language-javascript highlighter-rouge"><div class=highlight><pre class=highlight><code><span class=nx>gl_FragColor</span> <span class=o>=</span> <span class=nx>texture2D</span><span class=p>(</span><span class=nx>u_Sampler</span><span class=p>,</span> <span class=nx>v_TexCoord</span><span class=p>);</span>
-</code></pre></div></div><p>总结下，完整使用 texture 流程如下：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/texture.png alt=纹理完整流程><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/texture.png data-alt=纹理完整流程></div><em>纹理完整流程</em><p></p><script>new Imager('.responsive-image__delayed', {
+    });</script><p>这里不得不吐槽下 WebGL 内置的一些函数命名，虽然有些通过函数名就能判断参数类型和数目，但是像 <code class=highlighter-rouge>texParameteri()</code> 和 <code class=highlighter-rouge>vertexAttribPointer()</code> 这样部分缩写实在很难记忆。<h3 id=上传图片到纹理对象中>上传图片到纹理对象中</h3><p>接下来需要将图片上传到纹理对象中。 在 WebGL 中，使用 <code class=highlighter-rouge>new Image()</code> 异步加载图片十分简单，以下操作都在成功回调函数中完成。 这里需要根据图片格式指定纹理数据格式，例如对于 PNG 格式的图片，纹理数据必须使用 <code class=highlighter-rouge>gl.RGBA</code>，而对于 JPEG 格式，则使用 <code class=highlighter-rouge>gl.RGB</code>。<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);</code></pre></div><h3 id=fragment-shader-中的操作>fragment shader 中的操作</h3><p>在 fragment shader 中读取纹理对象需要通过 sampler 完成。这是一个常量 <code class=highlighter-rouge>uniform sampler2D u_Sampler;</code>。<p>之前纹理对象存储在 <code class=highlighter-rouge>gl.TEXTURE0</code> 中，这里只需要传一个序号就行了。<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.uniform1i(u_Sampler, 0);</code></pre></div><p>根据从 vertex shader 中传过来的坐标，使用 sampler，fragment shader 就能获取当前纹理中每个 fragment 对应的颜色：<div><pre class=line-numbers data-line=""><code class=language-javascript>gl_FragColor = texture2D(u_Sampler, v_TexCoord);</code></pre></div><p>总结下，完整使用 texture 流程如下：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/texture.png alt=纹理完整流程><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/texture.png data-alt=纹理完整流程></div><em>纹理完整流程</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });</script><h3 id=多个纹理混合>多个纹理混合</h3><p>首先异步加载多张图片，需要保证全部加载完成再进行后续操作。 在 fragment shader 中，由于颜色都是用 vec 向量表示，可以相乘，效果就是 rgba 各个部分相乘：<div class="language-javascript highlighter-rouge"><div class=highlight><pre class=highlight><code><span class=nx>gl_FragColor</span> <span class=o>=</span> <span class=nx>color0</span> <span class=o>*</span> <span class=nx>color1</span><span class=p>;</span>
-</code></pre></div></div><p>这种混合方式和 CSS 中 <code class=highlighter-rouge>background-blend-mode</code> 的<a href=https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-blend-mode>一种混合方式</a>一致。在 PS 中也有类似图层混合方法：<div class="language-css highlighter-rouge"><div class=highlight><pre class=highlight><code><span class=nc>.simple-blended</span> <span class=p>{</span>
-    <span class=nl>background-image</span><span class=p>:</span> <span class=sx>url(image.jpg)</span><span class=p>;</span>
-    <span class=nl>background-color</span><span class=p>:</span> <span class=no>red</span><span class=p>;</span>
-    <span class=py>background-blend-mode</span><span class=p>:</span> <span class=n>multiply</span><span class=p>;</span>
-<span class=p>}</span>
-</code></pre></div></div></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/03/22/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html class=read-next-link></a><section><span>字体加载最佳实践</span><p>字体文件在项目中的应用可以说是非常普遍的。例如使用第三方字体，以 iconfont 形式存在的字体图标等等。但是加...</section><div class=filter></div><img src=/assets/img/font.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+    });</script><h3 id=多个纹理混合>多个纹理混合</h3><p>首先异步加载多张图片，需要保证全部加载完成再进行后续操作。 在 fragment shader 中，由于颜色都是用 vec 向量表示，可以相乘，效果就是 rgba 各个部分相乘：<div><pre class=line-numbers data-line=""><code class=language-javascript>gl_FragColor = color0 * color1;</code></pre></div><p>这种混合方式和 CSS 中 <code class=highlighter-rouge>background-blend-mode</code> 的<a href=https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-blend-mode>一种混合方式</a>一致。在 PS 中也有类似图层混合方法：<div><pre class=line-numbers data-line=""><code class=language-css>.simple-blended {
+    background-image: url(image.jpg);
+    background-color: red;
+    background-blend-mode: multiply;
+}</code></pre></div></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html class=read-next-link></a><section><span>进入3D世界</span><p>之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～</section><div class=filter></div><img src=/assets/img/webgl/logo.png alt=""></div><div class=read-next-item><a href=/coding/2018/03/26/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5-%E4%BA%8C.html class=read-next-link></a><section><span>字体加载最佳实践（二）</span><p>之前我们介绍了当前解决 FOIT 的最佳实践。在本篇中，我们将介绍通用的提升字体加载性能的方法。</section><div class=filter></div><img src=/assets/img/font.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -110,7 +108,51 @@ gl.bindTexture(gl.TEXTURE_2D, texture);</code></pre></div><p class=responsive-im
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script>window.onload = function () {
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+        // init
+        var P = $('.markdown-body'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    $('.catalog-body').onePageNav({
+        currentClass: "active",
+        changeHash: !1,
+        easing: "swing",
+        filter: "",
+        scrollSpeed: 700,
+        scrollOffset: 0,
+        scrollThreshold: .2,
+        begin: null,
+        end: null,
+        scrollChange: null,
+        padding: 80
+    });</script><script>window.onload = function () {
                     var script = document.createElement('script');
                     var firstScript = document.getElementsByTagName('script')[0];
                     script.type = 'text/javascript';
