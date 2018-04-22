@@ -1,0 +1,90 @@
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>减少滚动卡顿 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=减少滚动卡顿><meta name=keywords content=performance><title>减少滚动卡顿 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=减少滚动卡顿><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="在之前 以用户为中心的性能指标 一文中，我们了解到在 RAIL 性能评估模型中，滚动时的卡顿是非常影响用户体验的。 在下面的演示 video中，可以明显地看到滚动是存在 jank 的。"><meta property=og:description content="在之前 以用户为中心的性能指标 一文中，我们了解到在 RAIL 性能评估模型中，滚动时的卡顿是非常影响用户体验的。 在下面的演示 video中，可以明显地看到滚动是存在 jank 的。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/02/11/%E5%87%8F%E5%B0%91%E6%BB%9A%E5%8A%A8%E5%8D%A1%E9%A1%BF.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/02/11/%E5%87%8F%E5%B0%91%E6%BB%9A%E5%8A%A8%E5%8D%A1%E9%A1%BF.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-02-11T00:00:00+08:00><script type=application/ld+json>{"description":"在之前 以用户为中心的性能指标 一文中，我们了解到在 RAIL 性能评估模型中，滚动时的卡顿是非常影响用户体验的。 在下面的演示 video中，可以明显地看到滚动是存在 jank 的。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/02/11/%E5%87%8F%E5%B0%91%E6%BB%9A%E5%8A%A8%E5%8D%A1%E9%A1%BF.html","headline":"减少滚动卡顿","dateModified":"2018-02-11T00:00:00+08:00","datePublished":"2018-02-11T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/02/11/%E5%87%8F%E5%B0%91%E6%BB%9A%E5%8A%A8%E5%8D%A1%E9%A1%BF.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/02/11/%E5%87%8F%E5%B0%91%E6%BB%9A%E5%8A%A8%E5%8D%A1%E9%A1%BF.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#performance class=post-tag>performance</a></div><h1>减少滚动卡顿</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-02-11><i class="iconfont icon-date"></i>11 Feb 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/scroll-cover.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><article class=markdown-body><p>在之前 <a href=/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html>以用户为中心的性能指标</a> 一文中，我们了解到在 RAIL 性能评估模型中，滚动时的卡顿是非常影响用户体验的。 在下面的<a href="https://www.youtube.com/watch?v=6-D_3yx_KVI">演示 video</a>中，可以明显地看到滚动是存在 jank 的。<h2 id=浏览器判定滚动流程>浏览器判定滚动流程</h2><p>究其原因，由于页面注册的事件监听函数，尤其是移动端的 touch 类型事件，是可以通过 <code class=highlighter-rouge>preventDefault()</code> 阻止浏览器的默认行为的，例如滚动，页面缩放等等。所以对于浏览器来说，需要等待 <code class=highlighter-rouge>touchstart</code> <code class=highlighter-rouge>touchmove</code> 事件处理函数的执行结果，才能决定是否要继续滚动。如下图所示：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/scroll-passive.png alt=浏览器滚动判定流程><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/scroll-passive.png data-alt=浏览器滚动判定流程></div><em>浏览器滚动判定流程</em><p></p><script>new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800, 1400],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });</script><p>而在大部分场景下，开发者的注册的事件监听函数是不会调用 <code class=highlighter-rouge>preventDefault()</code> 的，浏览器的等待就显得没有必要了。 或者说，如果开发者能显式的告知浏览器接下来不会取消滚动，浏览器就可以放心的执行滚动，也就不存在延迟了。<h2 id=passive-event-listener>passive event listener</h2><p>在注册事件监听函数时，赋予第三个参数更多功能：<div><pre class=line-numbers data-line=""><code class=language-javascript>target.addEventListener(type, listener[, options]);</code></pre></div><p>可以通过这个参数对象告知浏览器这是一个“被动”的函数，不会主动阻止浏览器默认行为。 所以不仅仅针对滚动场景下，而且这个参数将来也不仅仅只可以传 <code class=highlighter-rouge>{passive: true}</code>。<p>这里有两点需要注意，首先是类型检测。当然也可以借助 Modernizr、DetectIt 等特性检测库。下面是一种简单的检测方法：<div><pre class=line-numbers data-line=""><code class=language-javascript>var supportsPassive = false;
+try {
+    var opts = Object.defineProperty({}, &#39;passive&#39;, {
+        get: function() {
+            supportsPassive = true;
+        }
+    });
+    window.addEventListener(&quot;testPassive&quot;, null, opts);
+    window.removeEventListener(&quot;testPassive&quot;, null, opts);
+} catch (e) {}</code></pre></div><p>其次，如果检测通过，当然可以直接使用，但如果未通过：<blockquote><p>Because older browsers will interpret any object in the 3rd argument as a true value for the capture argument</blockquote><p>所以在这种情况下我们要传一个 <code class=highlighter-rouge>false</code>，完整的兼容方案如下：<div><pre class=line-numbers data-line=""><code class=language-javascript>elem.addEventListener(&#39;touchstart&#39;, fn,
+    detectIt.passiveEvents ? {passive:true} : false);</code></pre></div><h2 id=在现有项目中应用>在现有项目中应用</h2><p>从<a href="https://caniuse.com/#feat=passive-event-listener">浏览器支持度</a>上看，iOS 10.3+ 就已经支持了。 所以很多框架和类库也针对这一特性做了优化。当然你也可以引入 <a href=https://github.com/WICG/EventListenerOptions/blob/gh-pages/EventListenerOptions.polyfill.js>polyfill</a>。<p>在 Polymer 中，在使用内置的手势库时，也有这样的<a href=https://www.polymer-project.org/2.0/docs/devguide/gesture-events#use-passive-gesture-listeners>设置</a>：<div><pre class=line-numbers data-line=""><code class=language-javascript>Polymer.setPassiveTouchGestures(true);</code></pre></div><h3 id=chrome-的激进做法>Chrome 的激进做法</h3><p>Chrome 发现在 <code class=highlighter-rouge>window</code> <code class=highlighter-rouge>document</code> <code class=highlighter-rouge>body</code> 上注册的 touch 事件，80% 的情况都不会阻止滚动，而很多开发者又不会调用 <code class=highlighter-rouge>passive</code>。 因此想到了在这种情况下主动<a href=https://developers.google.com/web/updates/2017/01/scrolling-intervention>介入</a>。<p>因此以下两种写法在 Chrome 56+ 中是等价的：<div><pre class=line-numbers data-line=""><code class=language-javascript>window.addEventListener(&quot;touchstart&quot;, func);
+window.addEventListener(&quot;touchstart&quot;, func, {passive: true});</code></pre></div><p>虽说在这 80% 的情况下确实不需要开发者操心就能提升滚动性能。 但是 Chrome 的这种非向前兼容的介入会给部分已有代码带来问题，因为试图阻止滚动的 <code class=highlighter-rouge>preventDefault()</code> 将不再起作用。 在这种 Chrome 介入的情况下，控制台会给出如下提示：<blockquote><p>Unable to preventDefault inside passive event listener due to target being treated as passive.<p>See https://www.chromestatus.com/features/5093566007214080</blockquote><p>毕竟还有 20% 的场景确实需要阻止浏览器滚动，我们应该怎么做呢？<h2 id=阻止滚动的场景>阻止滚动的场景</h2><p>现在我们了解了优化滚动的方式，那么有没有反倒希望阻止浏览器滚动行为的场景呢？ 或者说在 Chrome 介入的情况下，除了 <code class=highlighter-rouge>preventDefault()</code>，我们还能有什么方法停止滚动呢？<p>比如在开发者更熟悉的 IScroll 中，由于需要自己处理滚动，通常会在 <code class=highlighter-rouge>touchmove</code> 事件处理函数中调用 <code class=highlighter-rouge>preventDefault()</code> 禁止浏览器的滚动。 如果定义在 <code class=highlighter-rouge>document</code> 上，在 Chrome 中运行时就失效了。在 ISSUE 中搜索 passive 关键词，会出来很多<a href="https://github.com/cubiq/iscroll/issues?utf8=%E2%9C%93&amp;q=passive">结果</a><p>首先想到的一种<a href=https://github.com/Mappy/iscroll/commit/8155618b578e87bf2388035eac95e98176256664>改动方法</a>，告知 Chrome 这是一个非 passive 的处理函数：<div><pre class=line-numbers data-line=""><code class=language-javascript>document.addEventListener(&#39;touchmove&#39;, function (e) { e.preventDefault(); }, isPassive() ? {
+	capture: false,
+	passive: false
+} : false);</code></pre></div><p>显然，这种方法又回到了老路上。实际上，我们通过 CSS 属性就能提前告知浏览器禁止滚动，那就是 <code class=highlighter-rouge>touch-action</code>，禁止滚动和缩放：<div><pre class=line-numbers data-line=""><code class=language-css>#wrapper {
+    touch-action: none;
+}</code></pre></div><p>在只需要禁止某个方向上的滚动场景下，<code class=highlighter-rouge>touch-action: pan-y pinch-zoom</code>。但是如果要兼容老的浏览器，<code class=highlighter-rouge>preventDefault()</code> 还是不能删除的，尽管 Chrome 会忽略。<p>针对 IScroll 的情况，开发者还给出了另外<a href=https://github.com/cubiq/iscroll/issues/1130#issuecomment-324517231>一种做法</a>。<h2 id=参考资料>参考资料</h2><ul><li><a href=https://developers.google.com/web/updates/2016/06/passive-event-listeners>Google 介绍文档</a><li><a href=https://blog.chromium.org/2016/05/new-apis-to-help-developers-improve.html>Chrome 支持文档</a><li><a href="https://www.youtube.com/watch?v=6-D_3yx_KVI">演示 video</a><li><a href=https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md>规范 explainer</a><li><a href=https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#Improving_scrolling_performance_with_passive_listeners>MDN 说明</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html class=read-next-link></a><section><span>让骨架屏更快渲染</span><p>在之前「为vue项目添加骨架屏」一文中，介绍了骨架屏的概念以及在 Vue 项目中的应用。本文将介绍如何加快浏览器对...</section><div class=filter></div><img src=/assets/img/post-bg-js-module.jpg alt=""></div><div class=read-next-item><a href=/coding/2018/01/03/%E6%A8%A1%E7%B3%8A%E5%8A%A8%E7%94%BB.html class=read-next-link></a><section><span>模糊动画</span><p>最近看到一篇文章，介绍了一种针对模糊效果的动画。</section><div class=filter></div><img src=/assets/img/slider-css-mask.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+        // init
+        var P = $('.markdown-body'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    $('.catalog-body').onePageNav({
+        currentClass: "active",
+        changeHash: !1,
+        easing: "swing",
+        filter: "",
+        scrollSpeed: 700,
+        scrollOffset: 0,
+        scrollThreshold: .2,
+        begin: null,
+        end: null,
+        scrollChange: null,
+        padding: 80
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>
