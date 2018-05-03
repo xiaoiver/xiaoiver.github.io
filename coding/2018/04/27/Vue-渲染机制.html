@@ -1,0 +1,339 @@
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Vue 渲染机制 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="Vue 渲染机制"><meta name=keywords content=vue><title>Vue 渲染机制 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="Vue 渲染机制"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="最近因为项目需要，仔细阅读了下 Vue 的源码。网上有很多关于 Vue 的响应式设计及细节，我们这次聚焦在 $mount() 方法中。"><meta property=og:description content="最近因为项目需要，仔细阅读了下 Vue 的源码。网上有很多关于 Vue 的响应式设计及细节，我们这次聚焦在 $mount() 方法中。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/27/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/04/27/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-04-27T00:00:00+08:00><script type=application/ld+json>{"description":"最近因为项目需要，仔细阅读了下 Vue 的源码。网上有很多关于 Vue 的响应式设计及细节，我们这次聚焦在 $mount() 方法中。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/04/27/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6.html","headline":"Vue 渲染机制","dateModified":"2018-04-27T00:00:00+08:00","datePublished":"2018-04-27T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/04/27/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/27/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#vue class=post-tag>vue</a></div><h1>Vue 渲染机制</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-04-27><i class="iconfont icon-date"></i>27 Apr 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/vue-render.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>从 HTML 字符串到 `render()` 函数</h2><article class=markdown-body><p>最近因为项目需要，仔细阅读了下 Vue 的源码。网上有很多关于 Vue 的响应式设计及细节，我们这次聚焦在 <code class=highlighter-rouge>$mount()</code> 方法中。<p>从整体上看，整个渲染过程会经历如下步骤：在编译环境中，模版 HTML 字符串被编译成 <code class=highlighter-rouge>render()</code> 函数，然后在运行时环境中，调用 <code class=highlighter-rouge>render()</code> 函数得到 VNode，最后应用到真实 DOM 中。<p>这篇文章将关注第一步：从 HTML 字符串到 <code class=highlighter-rouge>render()</code> 函数。<p>在编译环境中，需要预先将 HTML 字符串编译成 <code class=highlighter-rouge>render()</code> 函数，其中也包含<a href=https://cn.vuejs.org/v2/guide/render-function.html#%E6%A8%A1%E6%9D%BF%E7%BC%96%E8%AF%91>静态渲染函数</a>，随后调用运行时环境中的 <code class=highlighter-rouge>$mount()</code> 方法。这里省略了模版的获取方法，比如 Vue 支持 <code class=highlighter-rouge>template</code> 属性传入字符串或者模版 DOM 节点。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/platforms/web/entry-runtime-with-compiler.js
+
+const mount = Vue.prototype.$mount;
+Vue.prototype.$mount = function (el, hydrating) {
+    if (!options.render) {
+        const {render, staticRenderFns} = compileToFunctions(template, {
+            shouldDecodeNewlines,
+            delimiters: options.delimiters,
+            comments: options.comments
+        }, this);
+        options.render = render;
+        options.staticRenderFns = staticRenderFns;
+    }
+    return mount.call(this, el, hydrating);
+}</code></pre></div><p>下面我们将深入这个 <code class=highlighter-rouge>compileToFunctions</code> 方法，在此之前不妨先看看最终的编译结果，有个直观的认识。<h2 id=最终结果>最终结果</h2><p>由于 Vue 将编译方法暴露在了全局 API 中，我们可以看看下面这段包含了 HTML 文本节点的模版最终编译出来的 render 方法。在 Vue 官方文档中也可以<a href=https://cn.vuejs.org/v2/guide/render-function.html#%E6%A8%A1%E6%9D%BF%E7%BC%96%E8%AF%91>在线修改查看</a>：<div><pre class=line-numbers data-line=""><code class=language-javascript>var res = Vue.compile(&#39;&lt;div&gt;{{ msg }}&lt;/div&gt;&#39;)
+// res.render
+function anonymous() {
+    with(this){return _c(&#39;div&#39;,[_v(_s(msg))])}
+}</code></pre></div><p><code class=highlighter-rouge>with(this)</code> 传入了上下文对象，让我们在运行时能取得变量的值，例如 <code class=highlighter-rouge>msg</code>。但是 <code class=highlighter-rouge>_c</code> <code class=highlighter-rouge>_v</code> <code class=highlighter-rouge>_s</code> 这些我们目前还不了解，只需要知道，执行 render 函数，我们就能得到模版对应的 VNode。<h2 id=编译-render-方法>编译 render 方法</h2><p>之前通过 <a href=https://github.com/jamiebuilds/the-super-tiny-compiler>the-super-tiny-compiler</a> 学习了一下编译器的通用步骤，试着写了一个 <a href=https://github.com/lavas-project/vue-style-variables-loader/ >vue-style-variables-loader</a>：<ol><li>Parse 词法分析得到 Tokens，语法分析生成 AST<li>Transformation 操作 AST，做一些优化工作<li>Code Generation 生成代码</ol><p>从 Vue compiler 代码中也能看出上面通用步骤的应用：<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/compiler/index.js
+
+export const createCompiler = createCompilerCreator(function baseCompile(template, options) {
+    const ast = parse(template.trim(), options);
+    optimize(ast, options);
+    const code = generate(ast, options);
+
+    return {
+        ast,
+        render: code.render,
+        staticRenderFns: code.staticRenderFns
+    };
+});</code></pre></div><p>先来看看 <code class=highlighter-rouge>parse()</code> 方法转换 AST 的实现。<h2 id=生成-ast>生成 AST</h2><p>对于原始的 HTML 字符串，首先需要进行词法分析。<h3 id=词法分析>词法分析</h3><p>通过 <code class=highlighter-rouge>parseHTML()</code> 方法解析 HTML 字符串，在遇到开始标签，结束标签，文本和注释这四种 Token 时，调用相应的处理函数：<code class=highlighter-rouge>start()</code>、<code class=highlighter-rouge>end()</code>、<code class=highlighter-rouge>chars()</code> 和 <code class=highlighter-rouge>comment()</code>。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/compiler/parser/index.js
+
+export function parse(
+    template,
+    options
+) {
+    const stack = [];
+    let root; // AST 根节点
+    let currentParent;
+
+    parseHTML(template, {
+        start(tag, attrs, unary) {},
+        end() {},
+        chars(text) {},
+        comment(text) {}
+    }
+
+    return root;
+}</code></pre></div><p>从源文件的注释来看，这个方法借鉴了 <a href=http://erik.eae.net/simplehtmlparser/simplehtmlparser.js>HTML Parser</a>。 整个解析过程放在 while 循环中，通过检测起始标签 <code class=highlighter-rouge>&lt;</code> 分为标签和文本两种情况，使用 <code class=highlighter-rouge>advance()</code> 移动当前指针不断截取 HTML 子串直至结束：<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/compiler/parser/html-parser.js
+
+export function parseHTML(html, options) {
+    const stack = [];
+    let index = 0;
+    let last;
+    let lastTag;
+    while (html) {
+        let textEnd = html.indexOf(&#39;&lt;&#39;);
+        if (textEnd === 0) {
+            // Comment...
+            // End tag...
+            // Start tag...
+        }
+
+        if (textEnd &gt;= 0) {
+            // Text...
+        }
+    }
+
+    function advance(n) {
+        index += n;
+        html = html.substring(n);
+    }
+}</code></pre></div><p>先来看看对于标签的处理，首先是起始标签，由于涉及了 Vue 的模版语法，例如 <code class=highlighter-rouge>v-for</code> <code class=highlighter-rouge>v-if</code> 等等，整个过程十分复杂。值得一提的是，从代码中我第一次发现 <code class=highlighter-rouge>v-pre</code> 这个内置指令的用法，可以跳过编译直接输出模版语法内容：<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/compiler/parser/index.js
+
+start(tag, attrs, unary) {
+    let element = createASTElement(tag, attrs, currentParent);
+    // structural directives
+    processFor(element);
+    processIf(element);
+    processOnce(element);
+    // element-scope stuff
+    processElement(element, options);
+}</code></pre></div><p>完成了词法分析，下面要进行语法分析了。<h3 id=ast-节点类型>AST 节点类型</h3><p>从 flow 的<a href=https://github.com/vuejs/vue/blob/dev/flow/compiler.js#L75>类型定义</a>可以看出 AST 节点一共有三种：<ul><li>元素。内置指令，例如 <code class=highlighter-rouge>&lt;component name='xxx'&gt;</code><li>表达式。双向绑定，例如 {{text}}`<li>文本。静态内容，包括注释（<code class=highlighter-rouge>isComment</code> 标志），例如 <code class=highlighter-rouge>//plain text...</code></ul><div><pre class=line-numbers data-line=""><code class=language-javascript>// flow/compiler.js
+
+declare type ASTNode = ASTElement | ASTText | ASTExpression;
+declare type ASTElement = {
+    type: 1;
+    tag: string;
+    attrsList: Array&lt;{ name: string; value: any }&gt;;
+    attrsMap: { [key: string]: any };
+    parent: ASTElement | void;
+    children: Array&lt;ASTNode&gt;;
+}
+
+declare type ASTExpression = {
+    type: 2;
+    expression: string;
+    text: string;
+    tokens: Array&lt;string | Object&gt;;
+    static?: boolean;
+    // 2.4 ssr optimization
+    ssrOptimizability?: number;
+};
+
+declare type ASTText = {
+    type: 3;
+    text: string;
+    static?: boolean;
+    isComment?: boolean;
+    // 2.4 ssr optimization
+    ssrOptimizability?: number;
+};</code></pre></div><p>这里我们处理 HTML 中的文本 Token 为例。对于起始标签的处理虽然复杂，但是道理都是一样的。<h3 id=文本-token>文本 Token</h3><p>由于 HTML 文本节点中可能包含 Vue 的模版语法，所以这里会使用 <code class=highlighter-rouge>parseText()</code> 进一步解析内容，最终会生成两种 AST 节点，即 AST 表达式节点和 AST 文本节点。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/compiler/parser/index.js
+
+chars(text) {
+    const children = currentParent.children;
+    let expression;
+    if (!inVPre &amp;&amp; text !== &#39; &#39; &amp;&amp; (expression = parseText(text, delimiters))) {
+        children.push({
+            type: 2,
+            expression,
+            text
+        });
+    }
+    else if (text !== &#39; &#39; || !children.length || children[children.length - 1].text !== &#39; &#39;) {
+        children.push({
+            type: 3,
+            text
+        });
+    }
+}</code></pre></div><p>在 <code class=highlighter-rouge>parseText()</code> 中我们看到了处理模版插值的正则表达式，需要将这些插值包装到内置约定好的函数中，例如 <code class=highlighter-rouge>_s()</code>，这样在运行 render 函数时插值能够被正确传入得到结果。还记得开始最终编译结果中那几个下划线开头的内置函数吗，这里就是其中一个。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/compiler/parser/text-parser.js
+
+const defaultTagRE = /\{\{((?:.|\n)+?)\}\}/g;
+export function parseText(
+    text,
+    delimiters
+) {
+    const tagRE = delimiters ? buildRegex(delimiters) : defaultTagRE;
+    if (!tagRE.test(text)) {
+        return;
+    }
+
+    const tokens = [];
+    let lastIndex = tagRE.lastIndex = 0;
+    let match;
+    let index;
+    // 处理插值语法
+    while ((match = tagRE.exec(text))) {
+        index = match.index;
+        // push text token
+        if (index &gt; lastIndex) {
+            tokens.push(JSON.stringify(text.slice(lastIndex, index)));
+        }
+
+        // tag token
+        const exp = parseFilters(match[1].trim());
+        tokens.push(`_s(${exp})`);
+        lastIndex = index + match[0].length;
+    }
+    // 普通文本
+    if (lastIndex &lt; text.length) {
+        tokens.push(JSON.stringify(text.slice(lastIndex)));
+    }
+    // 拼装成可执行表达式
+    return tokens.join(&#39;+&#39;);
+}</code></pre></div><p>对于 <code class=highlighter-rouge>xxx {{a}} {{b}}</code> 这样的文本 Token，最终会返回 <code class=highlighter-rouge>'xxx'+_s(a)+_s(b)</code> 这样的可执行的表达式。另外，上述代码中还使用了 <code class=highlighter-rouge>parseFilters()</code> 处理插值表达式中可能包含的的过滤器，这里就不展开了。<p>至此，我们终于看完了从 HTML 模版到 AST 的生成过程，在最终生成可执行代码之前，需要做一些优化工作。<h2 id=优化-ast>优化 AST</h2><p>还记得一开始我们提到过，除了最终要生成 <code class=highlighter-rouge>render</code> 方法，还需要 <code class=highlighter-rouge>staticRenderFns</code> 用来渲染那些静态节点。 这里就需要<strong>标记</strong>出 AST 中的静态节点以便后续的代码生成。<p>那么哪些节点被认为是静态的呢？首先纯文本节点肯定是，而表达式节点肯定不是。 对于剩下的元素节点，就需要通过应用在节点上的 Vue 指令、标签名来判断了。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/compiler/optimizer.js
+
+function isStatic(node) {
+    if (node.type === 2) { // expression
+        return false;
+    }
+
+    if (node.type === 3) { // text
+        return true;
+    }
+
+    return !!(node.pre || (
+        !node.hasBindings // no dynamic bindings
+        &amp;&amp; !node.if &amp;&amp; !node.for // not v-if or v-for or v-else
+        &amp;&amp; !isBuiltInTag(node.tag) // not a built-in
+        &amp;&amp; isPlatformReservedTag(node.tag) // not a component
+        &amp;&amp; !isDirectChildOfTemplateFor(node)
+        &amp;&amp; Object.keys(node).every(isStaticKey) // 节点上每一个属性都必须是静态的
+    ));
+}</code></pre></div><p>另外介绍一个工具方法，可以缓存一些开销较大的函数的结果。 例如上面解析 HTML 文本 Token 时生成正则，以及在这里生成判断属性是否是静态的方法。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/shared/util.js
+
+export function cached(fn) {
+    const cache = Object.create(null);
+    return function cachedFn(str) {
+        const hit = cache[str];
+        return hit || (cache[str] = fn(str));
+    };
+}</code></pre></div><p>优化工作也做完了，终于要进入最后一步，也就是代码生成工作了。<h2 id=生成代码>生成代码</h2><p>已经非常接近最开始我们看到的最终效果了。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/compiler/codegen/index.js
+
+export function generate(
+    ast,
+    options
+) {
+    const state = new CodegenState(options);
+    const code = ast ? genElement(ast, state) : &#39;_c(&quot;div&quot;)&#39;;
+    return {
+        render: `with(this){return ${code}}`,
+        staticRenderFns: state.staticRenderFns
+    };
+}</code></pre></div><p>在处理 ASTElement 类型的节点时，最终拼装成<code class=highlighter-rouge>_c('div',${data},${children})</code>。这里的 <code class=highlighter-rouge>_c()</code> 便是 <code class=highlighter-rouge>createElement()</code> 的缩写，负责生成 VNode，其中 VNode 属性 <code class=highlighter-rouge>data</code> 由 <code class=highlighter-rouge>genData()</code> 负责生成，而子节点由 <code class=highlighter-rouge>genChildren()</code> 创建：<div><pre class=line-numbers data-line=""><code class=language-javascript>export function genElement(el, state) {
+    // 省略处理 v-for v-if...
+    let code;
+    // 自定义组件
+    if (el.component) {
+        code = genComponent(el.component, el, state);
+    }
+    // HTML 元素
+    else {
+        const data = el.plain ? undefined : genData(el, state);
+
+        const children = el.inlineTemplate ? null : genChildren(el, state, true);
+        code = `_c(&#39;${el.tag}&#39;${
+        data ? `,${data}` : &#39;&#39; // data
+        }${
+        children ? `,${children}` : &#39;&#39; // children
+        })`;
+    }
+    // module transforms
+    for (let i = 0; i &lt; state.transforms.length; i++) {
+        code = state.transforms[i](el, code);
+    }
+    return code;
+}</code></pre></div><p>还是以 <code class=highlighter-rouge>&lt;div&gt;{{msg}&lt;/div&gt;</code> 这个最简单的模版为例，由于没有节点属性，我们直接来看 <code class=highlighter-rouge>genChildren()</code>。<div><pre class=line-numbers data-line=""><code class=language-javascript>export function genChildren(
+    el,
+    state,
+    checkSkip,
+    altGenElement,
+    altGenNode
+) {
+    const children = el.children;
+    if (children.length) {
+        const el = children[0];
+        // 处理单个 v-for 子元素
+
+        const normalizationType = checkSkip
+            ? getNormalizationType(children, state.maybeComponent)
+            : 0;
+        // 生成节点方法
+        const gen = altGenNode || genNode;
+        return `[${children.map(c =&gt; gen(c, state)).join(&#39;,&#39;)}]${
+            normalizationType ? `,${normalizationType}` : &#39;&#39;
+            }`;
+    }
+}</code></pre></div><p>包装成一个数组返回，其中对每个子节点调用 <code class=highlighter-rouge>genNode()</code>。根据 AST 节点类型又会调用不同的代码生成方法，可见 <code class=highlighter-rouge>genElement()</code> 是一个递归的过程。我们这里的 <code class=highlighter-rouge>{{msg}}</code> 对应的是 ASTExpression 节点。<div><pre class=line-numbers data-line=""><code class=language-javascript>function genNode(node, state) {
+    if (node.type === 1) {
+        return genElement(node, state);
+    }
+
+    if (node.type === 3 &amp;&amp; node.isComment) {
+        return genComment(node);
+    }
+    return genText(node);
+}</code></pre></div><p>这里简单包装了一层 <code class=highlighter-rouge>_v()</code>，由于在生成 ASTExpression 时，已经将包装好的 <code class=highlighter-rouge>_s()</code> 放在了 <code class=highlighter-rouge>expression</code> 属性中，这里不需要额外的处理了。<div><pre class=line-numbers data-line=""><code class=language-javascript>export function genText(text) {
+    return `_v(${text.type === 2
+            ? text.expression // no need for () because already wrapped in _s()
+            : transformSpecialNewlines(JSON.stringify(text.text))
+        })`;
+}</code></pre></div><p>终于我们弄明白了最终结果 <code class=highlighter-rouge>_c('div',[_v(_s(msg))])</code> 是怎么来的了。最后需要生成真正可执行的函数：<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/compiler/to-function.js
+
+function createFunction(code, errors) {
+    try {
+        return new Function(code);
+    }
+    catch (err) {
+        errors.push({err, code});
+        return noop;
+    }
+}</code></pre></div><h2 id=总结>总结</h2><p>这里只选取了最最简单的模版来跟踪源代码的执行，内置指令等其他复杂的模版特性并没有涉及到。不过对于从 HTML 模板到 <code class=highlighter-rouge>render()</code> 函数的整个生成过程我们已经有了大概的了解。<p>那么执行渲染函数的结果是什么，在最终渲染成 DOM 的过程中又会经历哪些呢？让我们留到下一 Part 中再分析吧。<h2 id=参考资料>参考资料</h2><ul><li><a href=https://github.com/monkeyWangs/blogs/blob/master/src/Vue/6.md>Vue 源码分析</a><li><a href=https://cn.vuejs.org/v2/guide/render-function.html>Vue 渲染函数介绍</a><li><a href=https://github.com/whxaxes/blog/issues/6>Vue $mount() 分析</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/04/29/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%BA%8C.html class=read-next-link></a><section><span>Vue 渲染机制（二）</span><p>上文介绍了在编译阶段，从 HTML 字符串到 render() 函数的生成过程。让我们回到运行阶段的 $mount...</section><div class=filter></div><img src=/assets/img/vue-render.png alt=""></div><div class=read-next-item><a href=/coding/2018/04/22/OpenCV-%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB.html class=read-next-link></a><section><span>OpenCV 图像识别</span><p>最近帮同学实现了一个简单的图像识别程序，顺便复习了一下 python 的知识。</section><div class=filter></div><img src=/assets/img/opencv.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+        // init
+        var P = $('.markdown-body'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    $('.catalog-body').onePageNav({
+        currentClass: "active",
+        changeHash: !1,
+        easing: "swing",
+        filter: "",
+        scrollSpeed: 700,
+        scrollOffset: 0,
+        scrollThreshold: .2,
+        begin: null,
+        end: null,
+        scrollChange: null,
+        padding: 80
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>
