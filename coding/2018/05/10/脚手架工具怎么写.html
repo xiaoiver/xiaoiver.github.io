@@ -1,0 +1,199 @@
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>脚手架工具怎么写 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=脚手架工具怎么写><meta name=keywords content="nodejs, webpack"><title>脚手架工具怎么写 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=脚手架工具怎么写><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="最近在知乎上看到一个问题“有哪些优秀的中大型项目代码值得阅读学习”，有提到脚手架工具 create-react-app CRA。之前也写过一些简单的脚手架工具，正好借此机会借鉴学习下 React 官方的这款工具。"><meta property=og:description content="最近在知乎上看到一个问题“有哪些优秀的中大型项目代码值得阅读学习”，有提到脚手架工具 create-react-app CRA。之前也写过一些简单的脚手架工具，正好借此机会借鉴学习下 React 官方的这款工具。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/10/%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7%E6%80%8E%E4%B9%88%E5%86%99.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/05/10/%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7%E6%80%8E%E4%B9%88%E5%86%99.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-05-10T00:00:00+08:00><script type=application/ld+json>{"description":"最近在知乎上看到一个问题“有哪些优秀的中大型项目代码值得阅读学习”，有提到脚手架工具 create-react-app CRA。之前也写过一些简单的脚手架工具，正好借此机会借鉴学习下 React 官方的这款工具。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/05/10/%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7%E6%80%8E%E4%B9%88%E5%86%99.html","headline":"脚手架工具怎么写","dateModified":"2018-05-10T00:00:00+08:00","datePublished":"2018-05-10T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/05/10/%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7%E6%80%8E%E4%B9%88%E5%86%99.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/10/%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7%E6%80%8E%E4%B9%88%E5%86%99.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#nodejs class=post-tag>nodejs</a> <a href=https://xiaoiver.github.io/tags#webpack class=post-tag>webpack</a></div><h1>脚手架工具怎么写</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-05-10><i class="iconfont icon-date"></i>10 May 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/CRA.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>学习 create-react-app</h2><article class=markdown-body><p>最近在知乎上看到一个问题“有哪些优秀的中大型项目代码值得阅读学习”，有提到脚手架工具 <code class=highlighter-rouge>create-react-app</code> CRA。之前也写过一些简单的脚手架工具，正好借此机会借鉴学习下 React 官方的这款工具。<h2 id=设计哲学>设计哲学</h2><p><a href=https://github.com/facebook/create-react-app#philosophy>README 文档</a>中开门见山介绍了该工具的设计哲学：<ul><li><strong>One Dependency</strong>: There is just one build dependency. It uses Webpack, Babel, ESLint, and other amazing projects, but provides a cohesive curated experience on top of them.<li><strong>No Configuration Required</strong>: You don’t need to configure anything. Reasonably good configuration of both development and production builds is handled for you so you can focus on writing code.<li><strong>No Lock-In</strong>: You can “eject” to a custom setup at any time. Run a single command, and all the configuration and build dependencies will be moved directly into your project, so you can pick up right where you left off.</ul><p>对于使用者来说，脚手架工具名字必须好记，易于快速安装，例如 <code class=highlighter-rouge>npm -g create-react-app</code>，除此之外不需要安装其他依赖。 对于初级使用者和大部分场景，令人头疼的配置文件最好也一并舍去，最被诟病的 Webpack@4.x 也效仿 Parcel，启用了默认配置。 另外，对于高级开发者和需要定制化的场景，脚手架工具也要提供可扩展机制。<h2 id=模块拆分>模块拆分</h2><p>中大型项目使用 lerna 管理各个子包是很常见的，这使得开发和维护成本大大降低，代码可阅读性能提高很多。 在 <code class=highlighter-rouge>create-react-app</code> 中，分成了以下子包：<div><pre class=line-numbers data-line=""><code class=language-bash>packages
+├── babel-plugin-named-asset-import
+├── babel-preset-react-app
+├── confusing-browser-globals
+├── create-react-app
+├── eslint-config-react-app
+├── react-dev-utils
+├── react-error-overlay
+└── react-scripts</code></pre></div><p>首先我们看一下其中的开发工具集。<h2 id=开发工具集>开发工具集</h2><p>首先是熟悉的 <code class=highlighter-rouge>babel-preset-react-app</code>，由于会单独发布，在脚手架项目之外也可以安装使用。通过判断环境变量，使用不同的 babel 插件，比如生产环境使用 <code class=highlighter-rouge>babel-plugin-transform-react-remove-prop-types</code> 移除 <code class=highlighter-rouge>PropTypes</code>，类似 Preact 的精简方式之一。<p>再比如 <code class=highlighter-rouge>eslint-config-react-app</code>，默认情况下 ESLint 会认为浏览器环境下的全局变量是合法的。 但是这会造成下面的错误通过检查：<div><pre class=line-numbers data-line=""><code class=language-javascript>handleClick() { // missing `event` argument
+    this.setState({
+        text: event.target.value // uses the `event` global: oops!
+    });
+}</code></pre></div><p>所以脚手架中的 ESLint 配置加上了 <code class=highlighter-rouge>confusing-browser-globals</code>，其中列出了很多容易出错的全局变量，使用时必须加上 <code class=highlighter-rouge>window</code>。<p>下面进入核心的代码分析。<h2 id=唯一的依赖>唯一的依赖</h2><p><code class=highlighter-rouge>create-react-app</code> 这个包十分简单，由于需要用户全局安装，应该尽量避免代码改动造成的升级。在入口文件头部赫然写着 <code class=highlighter-rouge>DO NOT MODIFY THIS FILE</code>，显然是希望代码保持稳定。<p>代码确实也只专注一件事，那就是初始化项目。后续的开发调试，构建，测试等命令都交给另一个包 <code class=highlighter-rouge>react-scripts</code> 完成。<p>首先是读取命令行参数，使用了常见的 <code class=highlighter-rouge>commander</code> 库完成参数解析。<div><pre class=line-numbers data-line=""><code class=language-javascript>const program = new commander.Command(packageJson.name)
+    .version(packageJson.version)
+    .arguments(&#39;&lt;project-directory&gt;&#39;)
+    .usage(`${chalk.green(&#39;&lt;project-directory&gt;&#39;)} [options]`)
+    .action(name =&gt; {
+        projectName = name;
+    })
+    .option(&#39;--verbose&#39;, &#39;print additional logs&#39;)
+    .option(&#39;--info&#39;, &#39;print environment debug info&#39;)
+    .option(
+        &#39;--scripts-version &lt;alternative-package&gt;&#39;,
+        &#39;use a non-standard version of react-scripts&#39;
+    )
+    .option(&#39;--use-npm&#39;)
+    .allowUnknownOption()
+    .on(&#39;--help&#39;, () =&gt; {
+        //...
+    })
+    .parse(process.argv);</code></pre></div><h3 id=自定义模板>自定义模板</h3><p>前面提到可扩展性，脚手架工具一般都会提供自定义模版的功能。比如 vue-cli 支持 <code class=highlighter-rouge>vue-cli init webpack</code> 这样指定按照某个模版创建项目。而 <code class=highlighter-rouge>create-react-app</code> 使用 <code class=highlighter-rouge>--scripts-version</code> 这个参数，可以执行用户自定义的创建脚本。<p>这就要求该参数支持多种场景，例如：<ol><li>默认情况，安装 <code class=highlighter-rouge>react-scripts</code><li>如果符合 semver 标准，安装指定版本的 <code class=highlighter-rouge>react-scripts@1.2.3</code><li>file 协议本地文件，根据当前项目路径解析<li>压缩包路径，本地或者 git 地址</ol><div><pre class=line-numbers data-line=""><code class=language-javascript>function getInstallPackage(version, originalDirectory) {
+  let packageToInstall = &#39;react-scripts&#39;;
+  const validSemver = semver.valid(version);
+  if (validSemver) {
+    packageToInstall += `@${validSemver}`;
+  } else if (version) {
+    if (version[0] === &#39;@&#39;) {
+      packageToInstall += version;
+    } else if (version.match(/^file:/)) {
+      packageToInstall = `file:${path.resolve(
+        originalDirectory,
+        version.match(/^file:(.*)?$/)[1]
+      )}`;
+    } else {
+      // for tar.gz or alternative paths
+      packageToInstall = version;
+    }
+  }
+  return packageToInstall;
+}</code></pre></div><p>然后使用 npm/yarn 安装 <code class=highlighter-rouge>react</code> <code class=highlighter-rouge>react-dom</code> 和 <code class=highlighter-rouge>react-scripts</code> 或者前面用户传入的自定义依赖。 随后执行其中的 <code class=highlighter-rouge>scripts/init.js</code> 脚本，其中执行了创建项目模版的操作：<div><pre class=line-numbers data-line=""><code class=language-javascript>const scriptsPath = path.resolve(
+    process.cwd(),
+    &#39;node_modules&#39;,
+    packageName,
+    &#39;scripts&#39;,
+    &#39;init.js&#39;
+);
+const init = require(scriptsPath);
+init(root, appName, verbose, originalDirectory, template);</code></pre></div><p>对于自定义模版的场景，不妨以 <a href=https://github.com/wmonk/create-react-app-typescript>create-react-app-typescript</a>项目为例，为了添加 TS 特性，fork 了一份代码，只需要修改其中的 <code class=highlighter-rouge>react-scripts</code> 包单独发布即可。<div><pre class=line-numbers data-line=""><code class=language-bash>create-react-app my-app --scripts-version=react-scripts-ts</code></pre></div><h2 id=项目初始化>项目初始化</h2><p>下面我们看一下默认的 <code class=highlighter-rouge>react-scripts</code> 初始化做了哪些事情。<p>首先是写入 <code class=highlighter-rouge>package.json</code>。包括：<ul><li><strong>scripts</strong> 其他几条 npm 命令 <code class=highlighter-rouge>react-scripts start</code><li><strong>browserlist</strong> 希望支持的浏览器列表，很多插件例如 autoprefixer 都会使用到。默认在开发模式下使用最近两个版本，生产环境使用最近4个版本。</ul><div><pre class=line-numbers data-line=""><code class=language-javascript>appPackage.scripts = {
+    start: &#39;react-scripts start&#39;,
+    build: &#39;react-scripts build&#39;,
+    test: &#39;react-scripts test --env=jsdom&#39;,
+    eject: &#39;react-scripts eject&#39;,
+};
+// 
+appPackage.browserslist = defaultBrowsers;
+
+fs.writeFileSync(
+    path.join(appPath, &#39;package.json&#39;),
+    JSON.stringify(appPackage, null, 2) + os.EOL
+);</code></pre></div><p>拷贝 <code class=highlighter-rouge>/template</code> 下的文件也就是模版文件。<div><pre class=line-numbers data-line=""><code class=language-javascript>const templatePath = template
+    ? path.resolve(originalDirectory, template)
+    : path.join(ownPath, &#39;template&#39;);
+if (fs.existsSync(templatePath)) {
+    fs.copySync(templatePath, appPath);
+}</code></pre></div><p>最后初始化 git，展示 cd 信息。<h2 id=启动项目>启动项目</h2><p>之前看到初始化阶段向 <code class=highlighter-rouge>package.json</code> 中写入了几条 <code class=highlighter-rouge>react-scripts</code> 命令。在 <code class=highlighter-rouge>/bin</code> 目录下定义了命令入口：<div><pre class=line-numbers data-line=""><code class=language-javascript>switch (script) {
+    case &#39;build&#39;:
+    case &#39;eject&#39;:
+    case &#39;start&#39;:
+    case &#39;test&#39;: {
+        const result = spawn.sync(
+            &#39;node&#39;,
+            nodeArgs
+                .concat(require.resolve(&#39;../scripts/&#39; + script))
+                .concat(args.slice(scriptIndex + 1)),
+            { stdio: &#39;inherit&#39; }
+        );</code></pre></div><p>先来看下开发模式下也就是 <code class=highlighter-rouge>start</code> 这条命令。<h3 id=定义环境变量>定义环境变量</h3><p>会读取 <code class=highlighter-rouge>.env</code> <code class=highlighter-rouge>.env.development</code> 和 <code class=highlighter-rouge>.env.development.local</code> 三种路径。 dotenv 这里借鉴了 Ruby dotenv 中的<a href=https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use>做法</a>。 另外，使用了 <code class=highlighter-rouge>dotenv-expand</code> 支持变量的扩展。<div><pre class=line-numbers data-line=""><code class=language-env>MONGOLAB_DATABASE=heroku_db
+MONGOLAB_USER=username
+MONGOLAB_PASSWORD=password
+MONGOLAB_DOMAIN=abcd1234.mongolab.com
+MONGOLAB_PORT=12345
+MONGOLAB_URI=mongodb://${MONGOLAB_USER}:${MONGOLAB_PASSWORD}@${MONGOLAB_DOMAIN}:${MONGOLAB_PORT}/${MONGOLAB_DATABASE}</code></pre></div><p>使用 Webpack 的 DefinePlugin 可以在入口文件及其依赖中使用环境变量，由于插件在编译时完成替换，需要将这些变量 stringify 处理。 变量包括 <code class=highlighter-rouge>process.env</code> 上的 <code class=highlighter-rouge>NODE_ENV</code> <code class=highlighter-rouge>PUBLIC_URL</code> 和以 <code class=highlighter-rouge>REACT_APP</code> 开头的变量名。<h3 id=检查易出错的依赖>检查易出错的依赖</h3><p>为了避免被 Webpack Jest ESlint 这些可能全局安装的依赖影响，或者说 <code class=highlighter-rouge>create-react-app</code> 本身就会安装这些依赖。 <a href=https://github.com/facebook/create-react-app/issues/1795>ISSUE</a><h3 id=清空控制台>清空控制台</h3><p>在运行过程中，向控制台输出信息是必不可少的。某些关键信息输出之前最好能清屏，更好地引起用户注意。<div><pre class=line-numbers data-line=""><code class=language-javascript>function clearConsole() {
+    process.stdout.write(process.platform === &#39;win32&#39;
+        ? &#39;\x1B[2J\x1B[0f&#39;
+        : &#39;\x1B[2J\x1B[3J\x1B[H&#39;);
+}</code></pre></div><p>SF 上的<a href=https://segmentfault.com/q/1010000014972811>一个回答</a>解释了这里的神秘代码的含义。 首先 <code class=highlighter-rouge>\x1B</code> 是 ESC 的 16 进制码，而 <code class=highlighter-rouge>ESC [</code> 后面可以跟上 CSI（Control Sequence Introducer）指令，做一些特殊的控制台操作。 这里的 <code class=highlighter-rouge>CSI n J</code> 是清除屏幕的命令，n 从 0 到 3 有不同的含义，这里的 <code class=highlighter-rouge>2J</code> 就是清楚整个屏幕的意思。<p>但是在执行清屏命令之前，需要先判断一下当前的输出是否指向控制台。 如果是输出到文件中，我们不希望保存清屏命令本身的内容。这时候就需要用到 <a href=https://nodejs.org/api/tty.html#tty_tty>TTY</a> 来判断了。<div><pre class=line-numbers data-line=""><code class=language-bash>$ node -p -e &quot;Boolean(process.stdout.isTTY)&quot;
+true
+$ node -p -e &quot;Boolean(process.stdout.isTTY)&quot; | cat
+false</code></pre></div><h3 id=webpack-配置>Webpack 配置</h3><p>人口处没有引用 <code class=highlighter-rouge>babel-polyfill</code>，而是一个精简版的，包含 <code class=highlighter-rouge>Promise</code> <code class=highlighter-rouge>fetch</code> 和 <code class=highlighter-rouge>Object.assign()</code>。 另外没有使用 HMR 中默认提供的 <code class=highlighter-rouge>client.js</code>，而是自定义的客户端脚本，通过 SocketJS 和开发服务器交互。<div><pre class=line-numbers data-line=""><code class=language-javascript>entry: [
+    require.resolve(&#39;./polyfills&#39;),
+    // require.resolve(&#39;webpack-dev-server/client&#39;) + &#39;?/&#39;,
+    // require.resolve(&#39;webpack/hot/dev-server&#39;),
+    require.resolve(&#39;react-dev-utils/webpackHotDevClient&#39;),
+    paths.appIndexJs
+]</code></pre></div><p>其他特别的配置包括：<ul><li>关于 source-map 是否要生成，也有一个 <a href=https://github.com/facebook/create-react-app/issues/343>ISSUE</a>。<li>为了限制用户引用不在 <code class=highlighter-rouge>/src</code> 中的文件（<code class=highlighter-rouge>/node_modules</code> 除外），专门写了一个 plugin 给出提示。<li>禁止 <code class=highlighter-rouge>require.ensure</code> 这种 Webpack 特有的代码分割语法，使用 dynamic-import。<li>使用 <code class=highlighter-rouge>thread-loader</code> 加速 <code class=highlighter-rouge>babel-loader</code> 编译速度，在大型项目中效果明显。<li>引用一个新的依赖时，安装前肯定会报 <code class=highlighter-rouge>Module not found</code>，但是安装完毕后还需要重启开发服务器。CRA 在每次 Webpack 编译完成后，一旦发现有这种缺少依赖的情况，就会监听 <code class=highlighter-rouge>/node_modules</code>，这样一旦安装自动启动重新编译。<a href=https://github.com/facebook/create-react-app/issues/186>ISSUE</a></ul><p>使用以上 Webpack 配置创建一个 Webpack Compiler，在开发模式下，<code class=highlighter-rouge>invalid</code> 事件在 watch 的文件发生变动后会被<a href=https://www.webpackjs.com/api/compiler/#watching>触发</a><div><pre class=line-numbers data-line=""><code class=language-javascript>compiler = webpack(config, handleCompile);
+compiler.plugin(&#39;invalid&#39;, () =&gt; {
+    if (isInteractive) {
+        clearConsole();
+    }
+    console.log(&#39;Compiling...&#39;);
+});</code></pre></div><p>对于 Webpack 的统计信息，尤其是 Error 和 Warning，这里做了优化处理。 比如 Webpack 中附加的的 loader 信息会使资源请求变得很长，在出错时看的很费劲： <code class=highlighter-rouge>./~/css-loader!./~/postcss-loader!./src/App.css</code>。这里做了精简：<div><pre class=line-numbers data-line=""><code class=language-javascript>if (lines[0].lastIndexOf(&#39;!&#39;) !== -1) {
+    lines[0] = lines[0].substr(lines[0].lastIndexOf(&#39;!&#39;) + 1);
+}</code></pre></div><p>以之前创建的 compiler 和配置启动 <a href=https://webpack.js.org/configuration/dev-server/#devserver>webpack-dev-server</a>。 其中重要的配置包括：<ul><li><strong>proxy</strong> 代理请求。可以传入一个简单的字符串而非完整的代理配置，此时 CRA 会作出猜测，代理所有的非 GET 请求，以及针对除 HTML 外静态资源的 GET 请求。这是因为使用了 <code class=highlighter-rouge>historyApiFallback</code>，SPA 中 HTML 请求统统返回唯一的一个 <code class=highlighter-rouge>index.html</code>。<li><strong>public</strong> 开发服务器地址本身可能被代理，客户端需要知道地址，例如 Nginx 后的 <code class=highlighter-rouge>myapp.test:80</code>。<li><strong>publicPath</strong> 这个通常和 Webpack output 路径一致，指定了 bundle 的地址。<li><strong>contentBase</strong> 不同于 bundle 的地址，这是用来指定静态资源地址的，默认情况是 <code class=highlighter-rouge>cwd()</code>。例如 <code class=highlighter-rouge>path.join(__dirname, "public")</code>。<li><strong>compress</strong> 开启 <a href=https://betterexplained.com/articles/how-to-optimize-your-site-with-gzip-compression/ >gzip</a><li><strong>overlay</strong> 出现警告和错误时在页面上加上遮罩层显示。CRA 禁用了 Webpack 提供的，使用了自己的 ErrorOverlay。<li><strong>before/after</strong> 可以加入自定义的中间件。比如：<ul><li>错误遮罩层 <code class=highlighter-rouge>app.use(errorOverlayMiddleware());</code><li>由于构建后会生成 Service Worker，开发时如果使用了和生产环境同样的 host 和 port，已经安装的 SW 会对开发造成困扰。因此需要在开发模式下安装一个 <code class=highlighter-rouge>no-op</code> 什么都不做的 SW。<a href=https://github.com/facebook/create-react-app/issues/2272#issuecomment-302832432>ISSUE</a></ul></ul><h2 id=可扩展性>可扩展性</h2><p>所谓的无配置，其实就是使用了最佳实践中的配置，好处是可以跟随 <code class=highlighter-rouge>react-scripts</code> 更新最新的配置。 而面对需要自定义的场景时，CRA 提供了 <code class=highlighter-rouge>eject</code> 方案，将 <code class=highlighter-rouge>react-scripts</code> 的配置和脚本输出到 <code class=highlighter-rouge>/config</code> 和 <code class=highlighter-rouge>/scripts</code> 下，像通常的一个模版项目一样，给予用户完全的定制功能。<p>首先通过 <code class=highlighter-rouge>git status</code> 检查是否存在未提交的文件。<p>然后在输出配置和脚本前，检查 <code class=highlighter-rouge>/config</code> 和 <code class=highlighter-rouge>/scripts</code> 下是否已经存在文件，防止二次执行 <code class=highlighter-rouge>eject</code> 覆盖已经修改过的文件。<p>然后输出文件时，注意替换掉原始文件中 <code class=highlighter-rouge>@remove-on-eject</code> 标记块中的内容，通常是一些 CRA 的文件信息之类。<p>最后修改 <code class=highlighter-rouge>package.json</code> 中的依赖，npm 命令，不再使用 <code class=highlighter-rouge>react-scripts</code>。<h3 id=无配置的取舍>无配置的取舍</h3><p>CRA 虽然提供了 <code class=highlighter-rouge>eject</code>，但是如果用户只有一丁点自定义配置，难道也需要执行吗？对此 CRA 开发人员是这么说的：<blockquote><p>“We expect that at early stages, many people will “eject” for one reason or another, but as we learn from them, we will make the default setup more and more compelling while still providing no configuration.”</blockquote><p>所以<strong>无配置</strong>是必须要坚持的，<code class=highlighter-rouge>react-scripts</code> 会不断改良内置配置试图提供最佳实践，但<a href=https://github.com/facebook/create-react-app/issues/99#issuecomment-234657710>不会暴露配置</a>。对于仍然需要自定义的场景，需要 fork 一份 <code class=highlighter-rouge>react-scripts</code>。但是有的开发者并不买账，他们认为增加一个 Babel 插件，就需要维护一个 fork 项目是不合理的，<a href=https://medium.com/@timarney/but-i-dont-wanna-eject-3e3da5826e39>并不愿意这么做</a>。<p>因此有了 <a href=https://github.com/timarney/react-app-rewired>react-app-rewired</a>，用于替换 <code class=highlighter-rouge>react-scripts</code>，同时提供对于内置配置的扩展方法：<div><pre class=line-numbers data-line=""><code class=language-javascript>// config-overrides.js
+
+const rewireMobX = require(&#39;react-app-rewire-mobx&#39;);
+const rewirePreact = require(&#39;react-app-rewire-preact&#39;);
+const {injectBabelPlugin} = require(&#39;react-app-rewired&#39;);
+
+module.exports = function override(config, env) {
+    // add a plugin
+    config = injectBabelPlugin(&#39;emotion/babel&#39;,config)
+
+    // use the Preact rewire
+    if (env === &quot;production&quot;) {
+        console.log(&quot;⚡ Production build with Preact&quot;);
+        config = rewirePreact(config, env);
+    }
+
+    // use the MobX rewire
+    config = rewireMobX(config,env);
+
+    return config;
+}</code></pre></div><p>个人觉得这种方式可能更适合复杂的配置需求，而 CRA 适合快速创建简单的 React 项目。</article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html class=read-next-link></a><section><span>Babel 插件开发</span><p>之前通过 the-super-tiny-compiler 学习了一下一个简单编译器的通用执行步骤： Parse ...</section><div class=filter></div><img src=/assets/img/babel.png alt=""></div><div class=read-next-item><a href=/coding/2018/05/04/Vue-Transition-%E5%88%86%E6%9E%90.html class=read-next-link></a><section><span>Vue Transition 分析</span><p>有了之前对于 Vue 整个渲染流程的分析，我们可以深入研究一下 &lt;transition&gt; 的实现原理。</section><div class=filter></div><img src=/assets/img/vue-render.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+        // init
+        var P = $('.markdown-body'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    $('.catalog-body').onePageNav({
+        currentClass: "active",
+        changeHash: !1,
+        easing: "swing",
+        filter: "",
+        scrollSpeed: 700,
+        scrollOffset: 0,
+        scrollThreshold: .2,
+        begin: null,
+        end: null,
+        scrollChange: null,
+        padding: 80
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>
