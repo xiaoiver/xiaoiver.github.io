@@ -1,0 +1,153 @@
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 iOS 下使用 iframe 的种种问题 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="在 iOS 下使用 iframe 的种种问题"><meta name=keywords content="CSS, javascript"><title>在 iOS 下使用 iframe 的种种问题 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="在 iOS 下使用 iframe 的种种问题"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。 查阅资料发现 AMP 提供了很多针对这类问题的 Hack 方法，可能是因为 AMP 需要考虑站长站点嵌入在 iframe 的场景吧。"><meta property=og:description content="最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。 查阅资料发现 AMP 提供了很多针对这类问题的 Hack 方法，可能是因为 AMP 需要考虑站长站点嵌入在 iframe 的场景吧。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-05-20T00:00:00+08:00><script type=application/ld+json>{"description":"最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。 查阅资料发现 AMP 提供了很多针对这类问题的 Hack 方法，可能是因为 AMP 需要考虑站长站点嵌入在 iframe 的场景吧。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html","headline":"在 iOS 下使用 iframe 的种种问题","dateModified":"2018-05-20T00:00:00+08:00","datePublished":"2018-05-20T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#CSS class=post-tag>CSS</a> <a href=https://xiaoiver.github.io/tags#javascript class=post-tag>javascript</a></div><h1>在 iOS 下使用 iframe 的种种问题</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-05-20><i class="iconfont icon-date"></i>20 May 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/iframe.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>fixed 元素，宽度被撑开...</h2><article class=markdown-body><p>最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。 查阅资料发现 AMP 提供了很多针对这类问题的 Hack 方法，可能是因为 AMP 需要考虑站长站点嵌入在 iframe 的场景吧。<h2 id=iframe-内滚动>iframe 内滚动</h2><p>我们都知道在 body 上滚动时会触发一些浏览器的默认特性，比如隐藏顶部地址栏和底部导航栏。 而换成容器内滚动会丢失这部分特性，iframe 也是一种容器，一样面临这样的问题。<p>那么有没有办法在 body 上滚动呢？<p>有一种尝试是在 iframe 内触发 <code class=highlighter-rouge>touch</code> 系列事件时，实时将计算的滑动距离设置到 iframe 高度上，以触发 body 的滚动。 但是实际操作时，会有明显的延迟卡顿。<p>也有开发者提出新增 API <a href=https://github.com/bokand/root-scroller/blob/master/howto.md>root-scroller</a>，让任意滚动容器都可以成为类似 BODY 这样的根容器，以具有浏览器默认行为。<p>所以权衡之下，通常还是会选择 iframe 绝对定位，在容器内滚动：<div><pre class=line-numbers data-line=""><code class=language-html>&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;I’m a Web App and I show AMP documents&lt;/title&gt;
+    &lt;style&gt;
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;iframe width=&quot;100%&quot; height=&quot;100%&quot;
+        scrolling=&quot;yes&quot;
+        src=&quot;https://cdn.ampproject.org/c/pub1.com/doc1&quot;&gt;&lt;/iframe&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div><p>注意我们没有应用 CSS <code class=highlighter-rouge>overflow</code> 属性，而是直接使用 iframe 的 <code class=highlighter-rouge>scrolling</code> 属性。这个属性已经被 HTML5 规范<a href=https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe>废弃</a>，但是由于历史原因，很多浏览器还是支持。<p>但是 iOS 不支持这个属性，详见 <a href="https://bugs.webkit.org/show_bug.cgi?id=149264">Bug Report</a> 以及 <a href=http://output.jsbin.com/dedega>Online Demo</a>。<p>AMP 使用了这么一种解决方法：虽然 iframe 不能滚动，但是可以把 HTML 和 BODY 作为滚动容器，让其中的内容滚动。<a href=http://output.jsbin.com/deyibinehu>Online Demo</a><div><pre class=line-numbers data-line=""><code class=language-html>&lt;html style=&quot;overflow-y: auto; -webkit-overflow-scrolling: touch;&quot;&gt;
+&lt;head&gt;&lt;/head&gt;
+&lt;body
+    style=&quot;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    &quot;&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div><p>这种方法存在以下问题：<ol><li>在 AMP 中，用户定义在 body 上的部分 CSS 规则会失效，例如 <code class=highlighter-rouge>margin</code><li>由于在容器内滚动，<code class=highlighter-rouge>body.scrollTop</code> 会始终为 0</ol><p>于是 AMP 很快提出了一种<strong>改进方案</strong>。<h3 id=改进方案>改进方案</h3><p>既然直接在 body 上滚动会有损失，在 body 外再套一个 wrapper。之所以选择 <code class=highlighter-rouge><span class=nt>&lt;html&gt;</span></code> 是为了保证 <code class=highlighter-rouge>html &gt; body</code> 这样的规则能继续生效。<div><pre class=line-numbers data-line=""><code class=language-html>&lt;html AMP
+    style=&quot;overflow-y: auto; -webkit-overflow-scrolling: touch;&quot;&gt;
+    &lt;head&gt;&lt;/head&gt;
+    &lt;html id=&quot;i-amp-html-wrapper&quot;
+        style=&quot;
+            display: block;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        &quot;&gt;
+        &lt;body style=&quot;position: relative;&quot;&gt;
+        &lt;/body&gt;
+    &lt;/html&gt;
+&lt;/html&gt;</code></pre></div><p>为了生成上述结构，AMP 中使用 JS 对于原站点 HTML 进行改造。 值得注意的是，由于 body 不再是根元素的子节点，需要通过 <code class=highlighter-rouge>defineProperty</code> 保证 <code class=highlighter-rouge>document.body</code> 依然可访问。<div><pre class=line-numbers data-line=""><code class=language-javascript>// Create wrapper.
+const wrapper = document.createElement(&#39;html&#39;);
+wrapper.id = &#39;i-amp-html-wrapper&#39;;
+
+// Setup classes and styles.
+wrapper.className = document.documentElement.className;
+document.documentElement.className = &#39;&#39;;
+document.documentElement.style = &#39;...&#39;;
+wrapper.style = &#39;...&#39;;
+
+// Attach wrapper straight inside the document root.
+document.documentElement.appendChild(wrapper);
+
+// Reparent the body.
+const body = document.body;
+wrapper.appendChild(body);
+
+Object.defineProperty(document, &#39;body&#39;, {
+    get: () =&gt; body,
+});</code></pre></div><p>如果说不支持非标准的 <code class=highlighter-rouge>scrolling</code> 属性还可以理解，下面这个问题就很莫名了。<h2 id=fixed-元素滚动问题>fixed 元素滚动问题</h2><p>iframe 中的 fixed 元素在 iframe 滚动时会上下跳动，似乎一直无法确定自己的位置。<a href=https://drive.google.com/file/d/0B_v8thsbiGyDMXZMZkRFZGFRbjA/view>Video</a> <a href=http://output.jsbin.com/fusijum/quiet>Online Demo</a><p>这也是一个 iOS 的 Bug，可以看到 2016 年就已经存在 <a href="https://bugs.webkit.org/show_bug.cgi?id=154399">Bug Report</a>了。<p>AMP 使用了这样一个 Hack 方法：创建一个 <code class=highlighter-rouge>body</code> 的兄弟节点，将原有页面中所有的 fixed 元素移动到这个节点中，要注意设置正确的 <code class=highlighter-rouge>z-index</code>。<div><pre class=line-numbers data-line=""><code class=language-html>&lt;html&gt;
+&lt;body&gt;...&lt;/body&gt;
+&lt;div id=&quot;fixed-layer&quot;
+    style=&quot;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    &quot;&gt;
+    &lt;div id=&quot;fixed-element&quot;
+        style=&quot;pointer-events: initial; z-index: 11;&quot;&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/html&gt;</code></pre></div><p>这种方法的缺点很明显，改变了原有页面结构，会导致部分 CSS 规则匹配不上。不过对于 AMP 这样可以限制开发者使用组件的场景，倒是可以接受。<h2 id=宽度被撑开>宽度被撑开</h2><p>当我们给 iframe 设置宽度 <code class=highlighter-rouge>100%</code> 时，例如 <code class=highlighter-rouge>&lt;iframe width="100%"&gt;&lt;/iframe&gt;</code> 或者通过 CSS，我们希望其中的内容是响应式的，不应该出现滚动条。<p>但是 iOS 下存在<a href=https://stackoverflow.com/questions/23083462/how-to-get-an-iframe-to-be-responsive-in-ios-safari>问题</a>，<code class=highlighter-rouge>width: 100%</code> 似乎被浏览器的默认设置覆盖了，无法得到应用。<p>有一种 HACK 方式如下，在 <a href=https://github.com/ampproject/amphtml/issues/11133>AMP ISSUE</a> 中也采用了类似思路，使用 <code class=highlighter-rouge>min-width</code> 覆盖掉 iOS Safari 对于 <code class=highlighter-rouge>width</code> 的默认设置：<div><pre class=line-numbers data-line=""><code class=language-css>iframe {
+    width: 1px;
+    min-width: 100%;
+}</code></pre></div><h2 id=参考资料>参考资料</h2><ul><li><a href=https://medium.com/@dvoytenko/amp-ios-scrolling-and-position-fixed-b854a5a0d451>AMP, iOS, Scrolling and Position Fixed</a><li><a href=https://hackernoon.com/amp-ios-scrolling-and-position-fixed-redo-the-wrapper-approach-8874f0ee7876>AMP, iOS, Scrolling and Position Fixed Redo — the wrapper approach</a><li><a href=http://frederic-wang.fr/amp-and-igalia-working-together-to-improve-the-web-platform.html>The AMP Project and Igalia working together to improve WebKit and the Web Platform</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html class=read-next-link></a><section><span>编译 Node.js 可执行文件</span><p>最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，...</section><div class=filter></div><img src=/assets/img/nexe.jpeg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+        // init
+        var P = $('.markdown-body'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    $('.catalog-body').onePageNav({
+        currentClass: "active",
+        changeHash: !1,
+        easing: "swing",
+        filter: "",
+        scrollSpeed: 700,
+        scrollOffset: 0,
+        scrollThreshold: .2,
+        begin: null,
+        end: null,
+        scrollChange: null,
+        padding: 80
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>
