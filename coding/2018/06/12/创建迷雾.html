@@ -1,0 +1,135 @@
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>创建迷雾 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=创建迷雾><meta name=keywords content=WebGL><title>创建迷雾 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=创建迷雾><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="之前我们已经了解了： Shader 基础知识 WebGL 3D 基础知识，包括基本的矩阵变换和观察视角 光照基础，物体表面颜色在光照下的计算方法"><meta property=og:description content="之前我们已经了解了： Shader 基础知识 WebGL 3D 基础知识，包括基本的矩阵变换和观察视角 光照基础，物体表面颜色在光照下的计算方法"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/06/12/%E5%88%9B%E5%BB%BA%E8%BF%B7%E9%9B%BE.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/06/12/%E5%88%9B%E5%BB%BA%E8%BF%B7%E9%9B%BE.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-06-12T00:00:00+08:00><script type=application/ld+json>{"description":"之前我们已经了解了： Shader 基础知识 WebGL 3D 基础知识，包括基本的矩阵变换和观察视角 光照基础，物体表面颜色在光照下的计算方法","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/06/12/%E5%88%9B%E5%BB%BA%E8%BF%B7%E9%9B%BE.html","headline":"创建迷雾","dateModified":"2018-06-12T00:00:00+08:00","datePublished":"2018-06-12T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/06/12/%E5%88%9B%E5%BB%BA%E8%BF%B7%E9%9B%BE.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/06/12/%E5%88%9B%E5%BB%BA%E8%BF%B7%E9%9B%BE.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>创建迷雾</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-06-12><i class="iconfont icon-date"></i>12 Jun 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/logo.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>WebGL Programing Guide 学习笔记</h2><article class=markdown-body><p>之前我们已经了解了：<ul><li><a href=/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html>Shader 基础知识</a><li><a href=/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html>WebGL 3D 基础知识</a>，包括基本的矩阵变换和观察视角<li><a href=/coding/2018/05/25/%E5%85%89%E7%85%A7%E5%9F%BA%E7%A1%80.html>光照基础</a>，物体表面颜色在光照下的计算方法</ul><p>现在可以进行一些更加具体，或者说贴近实际的效果模拟。以下例子来自「WebGL Programing Guide」一书的 Chapter 10 Advanced Techniques 章节。<h2 id=选中物体>选中物体</h2><p>选中物体并不是一件简单的事。在「Interactive.Computer.Graphics.Top.Down.Approach」一书的 3.9 Picking 一节中介绍了一种通用的也很直观的思路：从鼠标点击处沿着投影方向发射一根射线，接触到的第一个对象就是当前被选中的。<p>具体到判定方法，可以使用盒模型判定，也可以使用下面的这种，存储额外标志信息的方式。<p>以一个立方体为例，当鼠标点击到物体区域时，希望找到选中的表面。 第一步就是给每个 vertex 标注上表面序号，例如 1-6，通过 <code class=highlighter-rouge>a_Face</code> 传入 vertex shader 中。<div><pre class=line-numbers data-line=""><code class=language-javascript>// 给每个顶点附上所在面的序号
+var faces = new Uint8Array([
+    1, 1, 1, 1,
+    2, 2, 2, 2,
+    ...
+    6, 6, 6, 6
+]);</code></pre></div><p>这里有一个 GLSL 的限制，<code class=highlighter-rouge>attribute</code> 不能设置 <code class=highlighter-rouge>int</code> 类型，所以需要用内置函数转换：<div><pre class=line-numbers data-line=""><code class=language-glsl>attribute float a_Face;
+int face = int(a_Face);</code></pre></div><p>剩下的问题就是获取当前点击位置的表面编号，跟当前顶点所属的面比较一下，就能交给后续 fragment shader 进行着色了。<div><pre class=line-numbers data-line=""><code class=language-glsl>// 当前点击事件发生的面序号
+uniform int u_PickedFace;
+// 是否发生在当前顶点所在的面上，如果是则着色
+vec3 color = (face == u_PickedFace) ? vec3(1.0) : a_Color.rgb;</code></pre></div><p>那么问题来了，给 vertex 附上所在面的信息很容易，如何通知 fragment 呢？ 毕竟点击是发生在 fragment 像素点，并不是在 vertex 上。<h3 id=利用-a-通道存储信息>利用 A 通道存储信息</h3><p>这里有一个很巧妙的办法，利用 RGBA 的 <strong>A</strong> 存储额外的信息。 反正到了 fragment shader 中，会忽略掉透明度。 这里需要处理两种情况，即初始化信息和之后正常的着色，通过 <code class=highlighter-rouge>u_PickedFace = 0</code> 进行切换。<div><pre class=line-numbers data-line=""><code class=language-glsl>if(u_PickedFace == 0) {
+    v_Color = vec4(color, a_Face/255.0);
+} else {
+    v_Color = vec4(color, a_Color.a);
+}</code></pre></div><p>至于获取鼠标点击位置坐标，就需要使用前端熟悉的 DOM API 了：<div><pre class=line-numbers data-line=""><code class=language-javascript>// 点击事件信息对象
+var x = ev.clientX, y = ev.clientY;
+// canvas 尺寸
+var rect = ev.target.getBoundingClientRect();
+// 点击事件在 canvas 内的坐标
+var x_in_canvas = x - rect.left, y_in_canvas = rect.bottom - y;
+// 获取当前坐标所在的面
+var face = checkFace();
+// 传入 vertex shader
+gl.uniform1i(u_PickedFace, face);</code></pre></div><p>首先下达初始化指令，这时所有像素点都写入了面序号。 利用工具方法读取出所在像素点的 RGBA 值，从 A 通道中取出我们附带的面序号即可。<div><pre class=line-numbers data-line=""><code class=language-javascript>var pixels = new Uint8Array(4);
+// 初始化每个点面信息
+gl.uniform1i(u_PickedFace, 0);
+// 读取当前点击点的 RGBA
+gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+// 从 A 通道中取出面序号
+return pixels[3];</code></pre></div><h2 id=hud-head-up-display>HUD (Head Up Display)</h2><p>很炫酷的缩写，借用“反派影评”的一个词，即所谓“高概念”。 但是实现起来无非增加一个 <code class=highlighter-rouge>&lt;canvas&gt;</code> 盖在上面就行了。<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/hud.png alt=HUD><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/hud.png data-alt=HUD></div><em>HUD</em><p></p><script>new Imager('.responsive-image__delayed', {
+        availableWidths: [480],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });</script><p>如果使用 WebGL API 来绘制文本呢？ 最近看的另一本「Interactive Computer Graphics Top Down Approach」中介绍了图形系统中常见的两种绘制文本的方法。 分别是 Stroke text 和 Raster text。前者需要存储文字的顶点信息，如果是闭合的就可以填充颜色，和其他图形没啥区别，也很容易进行缩放旋转操作。<p>而后者有点像涂色卡，标记文本占据的小方块，优点是只要通过 bit-block-transfer (bitblt)操作就能迅速放入 framebuffer 中。但是存在一个问题，缩放还好，旋转可就不行了。<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/raster-text.png alt="Raster text"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/raster-text.png data-alt="Raster text"></div><em>Raster text</em><p></p><script>new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });</script><h2 id=创建迷雾>创建迷雾</h2><p>这个例子使用了一种较为简单的计算方法：线性迷雾。<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/fog.png alt=迷雾效果><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/fog.png data-alt=迷雾效果></div><em>迷雾效果</em><p></p><script>new Imager('.responsive-image__delayed', {
+        availableWidths: [480],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });</script><p>之所以叫线性，是假设迷雾均匀的分布在一块区域，人眼距离这块区域的距离决定了清晰度。 这个清晰度也叫迷雾因子，介于 0-1 之间。<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/fog-factor.png alt=迷雾因子><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/fog-factor.png data-alt=迷雾因子></div><em>迷雾因子</em><p></p><script>new Imager('.responsive-image__delayed', {
+        availableWidths: [480, 800],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });</script><p>通过这个迷雾因子可以计算出迷雾中物体的表面颜色。<div><pre class=line-numbers data-line=""><code class=language-javascript>fragment color = surface color × fog factor + fog color × (1 − fog factor )</code></pre></div><p>还是那句话，有了公式，用 GLSL 实现就很方便了，可以使用内置函数。 <code class=highlighter-rouge>clamp()</code> 类似 JS 中的 <code class=highlighter-rouge>Math.min(Math.max(MIN, value), MAX)</code>，把输入值框定在一个范围内：<div><pre class=line-numbers data-line=""><code class=language-glsl>float fogFactor = clamp((u_FogDist.y - v_Dist) /
+    (u_FogDist.y - u_FogDist.x), 0.0, 1.0);</code></pre></div><p>而 <code class=highlighter-rouge>mix()</code> 如同字面意思，根据迷雾因子（第三个参数）混合两个颜色。<div><pre class=line-numbers data-line=""><code class=language-glsl>vec3 color = mix(u_FogColor, vec3(v_Color), fogFactor)</code></pre></div><h3 id=优化计算性能>优化计算性能</h3><p>上面的计算方法中，关于人眼到的每个 vertex 距离是在 vertex shader 中计算的：<div><pre class=line-numbers data-line=""><code class=language-glsl>v_Dist = distance(u_ModelMatrix * a_Position, u_Eye);</code></pre></div><p>有一种近似的估算方法，可以代替以提升性能。<div><pre class=line-numbers data-line=""><code class=language-glsl>gl_Position = u_MvpMatrix * a_Position;
+v_Dist = gl_Position.w;</code></pre></div><p>除了 xyz，w 很少被直接使用，所以起初看到这种做法，是会有一些困惑的。<p>这个 w 是以视点为原点的视角坐标系中每个 vertex 在 z 轴的坐标值，再乘以 -1，由于视角的方向刚好是 z 轴的反向，乘以 -1 后就刚好是在 z 轴上的距离了。<h2 id=画一个圆点>画一个圆点</h2><p>之前画的点在 fragment shader 之后，都是由点阵内的 fragments 组成的一个方形。 为了画出近似圆形的点，需要丢弃掉一些 fragment，例如图中黄色的：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/frag-cord.png alt="gl_PointCoord 坐标系"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/frag-cord.png data-alt="gl_PointCoord 坐标系"></div><em>gl_PointCoord 坐标系</em><p></p><script>new Imager('.responsive-image__delayed', {
+        availableWidths: [480],
+        onImagesReplaced: function() {
+            $('.responsive-image__placeholder').hide();
+
+        }
+    });</script><p>因此我们需要在 fragment shader 中获取到每个 fragment 的坐标。 之前使用过 <code class=highlighter-rouge>gl_FragCoord</code>，这是相对于窗口坐标系的。在这种情况下，使用 <code class=highlighter-rouge>gl_PointCoord</code> 在点阵坐标系中计算更加方便。<p>这里使用 <code class=highlighter-rouge>discard</code> 语句丢弃掉圆形区域之外的 fragment：<div><pre class=line-numbers data-line=""><code class=language-glsl>float dist = distance(gl_PointCoord, vec2(0.5, 0.5));
+if(dist &lt; 0.5) {
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+} else { discard; }</code></pre></div></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/06/15/%E5%88%9B%E5%BB%BA%E9%98%B4%E5%BD%B1.html class=read-next-link></a><section><span>创建阴影</span><p>之前我们已经了解了： Shader 基础知识 WebGL 3D 基础知识，包括基本的矩阵变换和观察视角 光照...</section><div class=filter></div><img src=/assets/img/webgl/logo.png alt=""></div><div class=read-next-item><a href=/coding/2018/06/03/%E7%90%86%E6%83%B3%E4%B8%AD%E7%9A%84%E5%9B%BE%E7%89%87%E7%BB%84%E4%BB%B6.html class=read-next-link></a><section><span>理想中的图片组件</span><p>图片组件可以说是任何类型的站点都需要实现的。尤其是对于性能以及用户体验有要求的开发者，这样的被频繁使用的组件是需要...</section><div class=filter></div><img src=/assets/img/post-bg-js-module.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+        // init
+        var P = $('.markdown-body'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    $('.catalog-body').onePageNav({
+        currentClass: "active",
+        changeHash: !1,
+        easing: "swing",
+        filter: "",
+        scrollSpeed: 700,
+        scrollOffset: 0,
+        scrollThreshold: .2,
+        begin: null,
+        end: null,
+        scrollChange: null,
+        padding: 80
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

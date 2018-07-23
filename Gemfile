@@ -7,6 +7,6 @@ group :jekyll_plugins do
     gem "jekyll-seo-tag"
     gem "jekyll-responsive-image"
     if ENV['JEKYLL_ENV'] == "production"
-        gem "jekyll-pwa-plugin"
+        gem "jekyll-pwa-plugin", "~> 2.0"
     end
 end
