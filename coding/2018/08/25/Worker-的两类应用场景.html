@@ -1,0 +1,196 @@
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Worker 的两类应用场景 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="Worker 的两类应用场景"><meta name=keywords content=javascript><title>Worker 的两类应用场景 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="Worker 的两类应用场景"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="浏览器主线程需要响应用户交互，渲染 UI，如果此时进行一些需要大量计算的操作，就会造成无法及时响应的 “Jank” 现象，十分影响用户体验。为此，使用 Worker 可以启动独立于主线程的另一个线程，在其中执行 JS 代码。但是在 Worker 中执行的代码在能力上会有一些限制，比如考虑到线程安全，在 Worker 中不能直接操作 DOM，也使用不了 Canvas API。 PWA 中使用的 Service Worker 也是一种特殊的 Worker。除此之外，还有 Shared Worker 和 Dedicated Worker，本文涉及的是后者。"><meta property=og:description content="浏览器主线程需要响应用户交互，渲染 UI，如果此时进行一些需要大量计算的操作，就会造成无法及时响应的 “Jank” 现象，十分影响用户体验。为此，使用 Worker 可以启动独立于主线程的另一个线程，在其中执行 JS 代码。但是在 Worker 中执行的代码在能力上会有一些限制，比如考虑到线程安全，在 Worker 中不能直接操作 DOM，也使用不了 Canvas API。 PWA 中使用的 Service Worker 也是一种特殊的 Worker。除此之外，还有 Shared Worker 和 Dedicated Worker，本文涉及的是后者。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/08/25/Worker-%E7%9A%84%E4%B8%A4%E7%B1%BB%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/08/25/Worker-%E7%9A%84%E4%B8%A4%E7%B1%BB%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-08-25T00:00:00+08:00><script type=application/ld+json>{"description":"浏览器主线程需要响应用户交互，渲染 UI，如果此时进行一些需要大量计算的操作，就会造成无法及时响应的 “Jank” 现象，十分影响用户体验。为此，使用 Worker 可以启动独立于主线程的另一个线程，在其中执行 JS 代码。但是在 Worker 中执行的代码在能力上会有一些限制，比如考虑到线程安全，在 Worker 中不能直接操作 DOM，也使用不了 Canvas API。 PWA 中使用的 Service Worker 也是一种特殊的 Worker。除此之外，还有 Shared Worker 和 Dedicated Worker，本文涉及的是后者。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/08/25/Worker-%E7%9A%84%E4%B8%A4%E7%B1%BB%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF.html","headline":"Worker 的两类应用场景","dateModified":"2018-08-25T00:00:00+08:00","datePublished":"2018-08-25T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/08/25/Worker-%E7%9A%84%E4%B8%A4%E7%B1%BB%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/08/25/Worker-%E7%9A%84%E4%B8%A4%E7%B1%BB%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#javascript class=post-tag>javascript</a></div><h1>Worker 的两类应用场景</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-08-25><i class="iconfont icon-date"></i>25 Aug 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/post-bg-js-module.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>Offscreen Canvas & DOM API</h2><article class=markdown-body><p>浏览器主线程需要响应用户交互，渲染 UI，如果此时进行一些需要大量计算的操作，就会造成无法及时响应的 “Jank” 现象，十分影响用户体验。为此，使用 Worker 可以启动独立于主线程的另一个线程，在其中执行 JS 代码。但是在 Worker 中执行的代码在能力上会有一些限制，比如考虑到线程安全，在 Worker 中不能直接操作 DOM，也使用不了 Canvas API。 PWA 中使用的 Service Worker 也是一种特殊的 Worker。除此之外，还有 Shared Worker 和 Dedicated Worker，本文涉及的是后者。<p>最近看到 Offscreen Canvas 和 AMP WorkerDOM 这两种 Worker 的实践方案，其实是从两个角度解决问题：<ol><li>Offscreen Canvas：主线程依旧执行复杂操作，但是将动画，Canvas 绘制交给 Worker 执行，然后同步到主线程。<li>AMP WorkerDOM：将复杂的性能开销大的操作（DOM Diff）交给 Worker 执行，解放主线程。</ol><p>下面我们分别简单了解下这两种方案。<h2 id=offscreen-canvas>Offscreen Canvas</h2><p>这里直接引用的 <a href=https://developers.google.com/web/updates/2018/08/offscreen-canvas>Google 介绍 Offscreen Canvas 的最新文章</a> 中的<a href=https://devnook.github.io/OffscreenCanvasDemo/use-with-lib.html>例子</a> 在主线程中使用 Three.js 绘制一个简单的立方体，在 rAF 中更新旋转角度并重绘。如果此时主线程进行复杂操作（点击 Make me busy 按钮），可以看到 Canvas 中帧率下降为 0，甚至整个页面也变成不可滚动状态。</p><iframe src=https://devnook.github.io/OffscreenCanvasDemo/use-with-lib.html width=100% height=440></iframe><p>为了解决卡顿问题，可以在 Worker 中调用 Canvas API 进行绘制，这涉及到 Offscreen Canvas 的概念，更加详细的尤其是涉及到浏览器渲染管线的知识可以阅读<a href=https://zhuanlan.zhihu.com/p/34698375>知乎上 易旭昕老师 的这篇文章</a>，文中介绍了 Offscreen Canvas 的两种使用方式（“Commit” 和 “Transfer”），下面使用的是 “Commit” 方式。<p>主线程中 Canvas 只是一个 placeholder，它的控制权会交给 Worker：<ol><li>通过 <a href=https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/transferControlToOffscreen>transferControlToOffscreen</a> 将主线程中 Canvas 的控制权交给 Offscreen Canvas。<li>将 Offscreen Canvas 传递给 Worker，这里使用了 <code class=highlighter-rouge>postMessage</code>，要注意 Canvas 也是可以被结构化克隆算法序列化的，因此可以直接放入第一个 message 参数对象中。除此之外，我们还传递了一个数组，从 MDN 的介绍看，这是一串和message 同时传递的 Transferable 对象，这些对象的所有权将被转移给消息的接收方也就是 Worker，而发送一方即主线程将不再保有所有权。</ol><div><pre class=line-numbers data-line=""><code class=language-javascript>const canvasOffscreen = $canvas.transferControlToOffscreen();
+worker.postMessage({
+    msg: &#39;start&#39;,
+    origin: urlParts.join(&#39;/&#39;),
+    canvas: canvasOffscreen
+}, [canvasOffscreen]);</code></pre></div><p>在早期的 Offscreen Canvas 实现中，在 Worker 中需要通过 <code class=highlighter-rouge>commit()</code> 将渲染结果发回给主线程进行同步。目前 MDN 的<a href=https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/transferControlToOffscreen>例子</a>也并没有更新：<div><pre class=line-numbers data-line=""><code class=language-javascript>var gl = offscreen.getContext(&#39;webgl&#39;);
+// Push frames back to the original HTMLCanvasElement
+gl.commit();</code></pre></div><p>但是在 Chrome 68 的实现（需要在 chrome://flags 中开启 Experimental Web Platform features）中，Worker 中已经可以使用 rAF 代替上面的 <code class=highlighter-rouge>commit</code> 进行同步了。<p>值得一提的是在这个例子中我们还使用了 <code class=highlighter-rouge>URL.createObjectURL()</code>，由于 Worker 构造函数接收 URL 作为参数，将源代码转成 base64 编码就可以直接创建 Worker，当然最后别忘了销毁掉。在 AMP WorkerDOM 中也使用了这种方案扩展了源码的执行上下文，后面我们会详细介绍。<div><pre class=line-numbers data-line=""><code class=language-javascript>const workerCode = document.querySelector(&#39;#workerCode&#39;).textContent;
+const blob = new Blob([workerCode], { type: &#39;text/javascript&#39; });
+const url = URL.createObjectURL(blob);
+const worker = new Worker(url);
+URL.revokeObjectURL(url); // cleanup</code></pre></div><h2 id=amp-workerdom>AMP WorkerDOM</h2><p>我们知道在 Worker 中执行的代码在能力上会有一些限制，比如考虑到线程安全，在 Worker 中不能直接操作 DOM。 但是 AMP 提出的 <a href=https://amphtml.wordpress.com/2018/08/21/workerdom/ >WorkerDOM</a> 方案拓展了 Worker 的使用场景。以下是来自官网的介绍：<blockquote><p>Move complexity of intermediate work related to DOM mutations to a background thread, sending only the necessary manipulations to a foreground thread.</blockquote><p>主要思路是在 Worker 中进行相对开销较大的 DOM Diff，将 patch 结果发回主线程，由主线程在真实 DOM 上应用修改。因此需要在 Worker 中实现 virtual DOM，相信这也是 WorkerDOM 名称的由来吧。<p>要注意 WorkerDOM 并不能突破在 Worker 中直接执行 DOM API 的限制，只是在 Worker 执行环境中 Mock 了 DOM API，这样用户代码就可以正常执行：<div><pre class=line-numbers data-line=""><code class=language-typescript>// worker.ts
+// 扩展上下文
+const code = `
+    &#39;use strict&#39;;
+    ${workerScript}
+    (function() {
+        var self = this;
+        var window = this;
+        var document = this.document;
+        var localStorage = this.localStorage;
+        var location = this.location;
+        // 用户编写的包含调用 DOM API 的原始代码
+        ${authorScript}
+    }).call(WorkerThread.workerDOM); // WorkerDOM API
+`;
+return new Worker(URL.createObjectURL(new Blob([code])));</code></pre></div><p>那么传入的 <code class=highlighter-rouge>WorkerThread.workerDOM</code> 到底长啥样呢？<h3 id=workerdomglobalscope-接口>WorkerDOMGlobalScope 接口</h3><p>所有 Worker 都会实现 <a href=https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope>WorkerGlobalScope</a> 接口。而 <code class=highlighter-rouge>WorkerThread.workerDOM</code> 实现了自定义的 <code class=highlighter-rouge>WorkerDOMGlobalScope</code> 接口，Mock 了大量 DOM API：<div><pre class=line-numbers data-line=""><code class=language-typescript>export const workerDOM: WorkerDOMGlobalScope = {
+    document: doc,
+    addEventListener: doc.addEventListener.bind(doc),
+    removeEventListener: doc.removeEventListener.bind(doc),
+    localStorage: {},
+    location: {},
+    url: &#39;/&#39;,
+    appendKeys,
+};</code></pre></div><p>下面我们来看看主线程和 Worker 的具体实现。<h3 id=在-worker-中-mock-dom-api>在 Worker 中 Mock DOM API</h3><p>以 <code class=highlighter-rouge>document</code> 为例，我们来看看它的实现。尤其需要注意 <code class=highlighter-rouge>observeMutations</code>：<div><pre class=line-numbers data-line=""><code class=language-typescript>export function createDocument(postMessageMethod?: Function): Document {
+    const doc = new Document();
+    doc.isConnected = true;
+    doc.appendChild((doc.body = doc.createElement(&#39;body&#39;)));
+
+    // 监听变化
+    observeMutations(doc);
+    propagateEvents();
+    propagateSyncValues();
+
+    return doc;
+}</code></pre></div><p>在监听变化方面，Mock 了 <code class=highlighter-rouge>MutationObserver</code>。在标准的 <a href=https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver>MutationObserver</a> 中，DOM 的改变会触发构造函数传入的回调，其中包含了当前 DOM 上的一组变更记录，每一条记录是以 <a href=https://developer.mozilla.org/en-US/docs/Web/API/MutationRecord>MutationRecord</a> 形式存在的。<div><pre class=line-numbers data-line=""><code class=language-typescript>export function observe(doc: Document, postMessage: Function): void {
+    document = doc;
+    new doc.defaultView.MutationObserver(
+        // 一组 MutationRecord
+        mutations =&gt; handleMutations(mutations, postMessage)
+    ).observe(doc.body); // 监听 body 上的改变
+}</code></pre></div><p>而 WorkerDOM 在标准 MutationRecord 的基础上，增加了一些属性：<div><pre class=line-numbers data-line=""><code class=language-typescript>export interface MutationRecord {
+    readonly target: Node;
+    readonly addedNodes?: Array&lt;Node&gt;;
+    // ...省略标准属性
+
+    // MutationRecord Extensions
+    readonly type: MutationRecordType;
+    // Modifications of properties pass the property name modified.
+    readonly propertyName?: string | null;
+    // Mutation of attributes or properties must pass a value representing the new value.
+    readonly value?: string | null;
+    // Event subscription mutations
+    readonly addedEvents?: Array&lt;TransferrableEventSubscriptionChange&gt;;
+    readonly removedEvents?: Array&lt;TransferrableEventSubscriptionChange&gt;;
+}</code></pre></div><p>在发生 DOM 变化时，Worker 会通过 <code class=highlighter-rouge>postMessage</code> 向主线程传递两类消息：<ol><li><code class=highlighter-rouge>HYDRATE</code> 消息 这个消息只有一次<li><code class=highlighter-rouge>MUTATE</code> 消息</ol><p>那么在 WorkerDOM 里 Mock 的 DOM 节点比如 <code class=highlighter-rouge>docuemnt.body</code> 是如何触发 MutationObserver 的监听呢？ 在 WorkerDOM 的实现中，Mock 的 DOM API 操作，以 <code class=highlighter-rouge>appendChild</code> 为例，除了进行节点的移动，最后会调用 <code class=highlighter-rouge>mutate()</code> 通知 <code class=highlighter-rouge>MutationObserver</code> 触发修改：<div><pre class=line-numbers data-line=""><code class=language-typescript>public appendChild(child: Node): void {
+    child.remove();
+    child.parentNode = this;
+    propagate(child, &#39;isConnected&#39;, this.isConnected);
+    this.childNodes.push(child);
+
+    // 通知 MutationObserver 更新
+    mutate({
+        addedNodes: [child],
+        previousSibling: this.childNodes[this.childNodes.length - 2],
+        type: MutationRecordType.CHILD_LIST,
+        target: this,
+    });
+}</code></pre></div><p>接到通知的 <code class=highlighter-rouge>MutationObserver</code>，会通知每个关心该 DOM 节点的观察者，筛选方法也很简单，<code class=highlighter-rouge>match()</code> 实际比较两个节点创建时分配的内置属性 <code class=highlighter-rouge>__index__</code>，相等就认为是相同节点。 另外，由于在之前创建 Document 时监听了 <code class=highlighter-rouge>body</code> 节点，所以所有节点的修改最终都会冒泡上来。<div><pre class=line-numbers data-line=""><code class=language-typescript>export function mutate(record: MutationRecord): void {
+    observers.forEach(observer =&gt; {
+        let target: Node | null = record.target;
+        let matched = match(observer.target, target);
+        if (!matched) {
+            do {
+                if ((matched = match(observer.target, target))) {
+                    pushMutation(observer, record);
+                    break;
+                }
+            } while ((target = target.parentNode));
+        }
+    });
+}</code></pre></div><p>现在 WorkerDOM 的更新信息已经由 Worker 传递给主线程了，接下来需要主线程进行真实的 DOM 操作。<h3 id=主线程更新-dom>主线程更新 DOM</h3><p>主线程会接收来自 Worker 的 DOM 更新细节，执行最终的 DOM 更新操作。 类似 Vue 的 <code class=highlighter-rouge>__patch__</code> 方法，但是 WorkerDOM 进行了功能上的拆分，将更新分成了以下两种情况：<ol><li>hydrate 首次 DOM 结构的创建<li>mutate 后续在原有 DOM 节点上的属性更新</ol><p>与之对应的，主线程会接收来自 Worker 的这两类消息，进行最终的 DOM 更新操作：<div><pre class=line-numbers data-line=""><code class=language-typescript>worker.onmessage = ({ data }: MessageFromWorker) =&gt; {
+    switch (data[TransferrableKeys.type]) {
+    case MessageType.HYDRATE:
+        hydrate(
+            (data as HydrationFromWorker)[TransferrableKeys.nodes],
+            (data as HydrationFromWorker)[TransferrableKeys.strings],
+            (data as HydrationFromWorker)[TransferrableKeys.addedEvents],
+            baseElement,
+            worker,
+        );
+        break;
+    case MessageType.MUTATE:
+        mutate(
+            (data as MutationFromWorker)[TransferrableKeys.nodes],
+            (data as MutationFromWorker)[TransferrableKeys.strings],
+            (data as MutationFromWorker)[TransferrableKeys.mutations],
+            sanitizer,
+        );
+        break;
+    }
+};</code></pre></div><p>Vue 的 <code class=highlighter-rouge>hydrate</code> 在 SSR 场景下在已有 DOM 结构上仅进行事件绑定。 在拿到更新信息后，<code class=highlighter-rouge>hydrate</code> 方法主要做了两件事，通过 <code class=highlighter-rouge>hydrateNode</code> 进行 DOM 添加删除操作，然后添加事件监听。<div><pre class=line-numbers data-line=""><code class=language-typescript>export function hydrate(
+    skeleton: HydrateableNode,
+    stringValues: Array&lt;string&gt;,
+    addEvents: Array&lt;TransferrableEventSubscriptionChange&gt;,
+    baseElement: HTMLElement,
+    worker: Worker,
+) {
+    // Process String Additions
+    stringValues.forEach(value =&gt; storeString(value));
+    // Process Node Addition / Removal
+    hydrateNode(skeleton, baseElement, worker);
+    // Process Event Addition
+    addEvents.forEach(event =&gt; {
+        const node = getNode(event[TransferrableKeys._index_]);
+        node &amp;&amp; processListenerChange(worker, node, true, getString(event[TransferrableKeys.type]), event[TransferrableKeys.index]);
+    });
+}</code></pre></div><h3 id=局限性>局限性</h3><p>由于 Mock 了大部分 DOM API，因此将 React 这样的视图解决方案放在 Worker 中执行是没有问题的，官方 Github 上就有例子。但是某些属性和 API 例如涉及到视口以及滚动的目前还无能为力，比如在源码 <code class=highlighter-rouge>Element.ts</code> 中就清楚的列出了目前还没有实现的属性和方法：<div><pre class=line-numbers data-line=""><code class=language-typescript>// Unimplemented properties
+// Element.clientHeight
+// Element.clientLeft
+// ...
+
+// Unimplemented Methods
+// Element.scrollIntoView()
+// Element.querySelector
+// ...</code></pre></div><h2 id=参考资料>参考资料</h2><ul><li><a href=https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API>MDN Worker API</a><li><a href=https://zhuanlan.zhihu.com/p/34698375>知乎的一篇介绍 Offscreen Canvas 的文章</a><li><a href=https://developers.google.com/web/updates/2018/08/offscreen-canvas>Google 介绍 Offscreen Canvas 的最新文章</a><li><a href=https://zhuanlan.zhihu.com/p/30534023>浏览器渲染流水线解析与网页动画性能优化</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/08/14/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA.html class=read-next-link></a><section><span>光线追踪</span><p>首先我们需要了解人眼看到颜色的原理。想象一束混合了红色绿色蓝色光子（photon）的白光，照射到了红色表面，其中绿...</section><div class=filter></div><img src=/assets/img/webgl/raytracer.png alt=""></div></section><section class="post-footer-item comment"></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+        // init
+        var P = $('.markdown-body'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    $('.catalog-body').onePageNav({
+        currentClass: "active",
+        changeHash: !1,
+        easing: "swing",
+        filter: "",
+        scrollSpeed: 700,
+        scrollOffset: 0,
+        scrollThreshold: .2,
+        begin: null,
+        end: null,
+        scrollChange: null,
+        padding: 80
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

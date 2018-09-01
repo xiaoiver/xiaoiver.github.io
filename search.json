@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Worker 的两类应用场景",
+      "tags"     : "javascript",
+      "url"      : "/coding/2018/08/25/Worker-%E7%9A%84%E4%B8%A4%E7%B1%BB%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF.html"
+    } ,
+  
+    {
       "title"    : "光线追踪",
       "tags"     : "WebGL",
       "url"      : "/coding/2018/08/14/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA.html"
