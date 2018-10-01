@@ -63,13 +63,34 @@ gl.viewport(0, 0, canvas.width, canvas.height);  // Set the size of viewport bac
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // Clear the color buffer
 
-drawTexturedPlane(gl, gl.program, plane, angle, fbo.texture, viewProjMatrix);  // Draw the plane</code></pre></div><h2 id=shadow-mapping>Shadow Mapping</h2><p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/shadowmap.png alt="Shadow Map 概念"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/shadowmap.png data-alt="Shadow Map 概念"></div><em>Shadow Map 概念</em><p></p><script>new Imager('.responsive-image__delayed', {
+drawTexturedPlane(gl, gl.program, plane, angle, fbo.texture, viewProjMatrix);  // Draw the plane</code></pre></div><p>有了预备知识，下面我们来看具体在绘制阴影中的应用。<h2 id=shadow-mapping>Shadow Mapping</h2><p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/shadowmap.png alt="Shadow Map 概念"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/shadowmap.png data-alt="Shadow Map 概念"></div><em>Shadow Map 概念</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });</script><p>我们需要两对 shader。第一对 shader 负责计算光源到物体的距离，第二对 shader 负责真正绘制阴影。 而把第一对 shader 的计算结果传递到第二对中，就需要用到 Framebuffer 存储结果。<p><strong>未完待续。</strong><h2 id=参考资料>参考资料</h2><ul><li><a href=http://codeflow.org/entries/2013/feb/15/soft-shadow-mapping/ >soft-shadow-mapping</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/06/23/GMTC-%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%A4%A7%E4%BC%9A%E8%AE%B0%E5%BD%95.html class=read-next-link></a><section><span>GMTC 前端技术大会记录</span><p>本周参加了为期两天的 GMTC 前端技术大会，在 PWA 专场上做了一个分享，也听了几场其他老师的演讲，在此记录一...</section><div class=filter></div><img src=/assets/img/gmtc/gmtc.jpg alt=""></div><div class=read-next-item><a href=/coding/2018/06/12/%E5%88%9B%E5%BB%BA%E8%BF%B7%E9%9B%BE.html class=read-next-link></a><section><span>创建迷雾</span><p>之前我们已经了解了： Shader 基础知识 WebGL 3D 基础知识，包括基本的矩阵变换和观察视角 光照...</section><div class=filter></div><img src=/assets/img/webgl/logo.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+    });</script><p>由于光栅化的渲染管线相比基于光线追踪的实现方式缺少全局性信息，每个 fragment 并不清楚全局的光照情况，无法直接判断自己是否处于阴影中，因此需要额外预渲染阶段。具体来说我们需要两对 shader。第一对 shader 负责计算光源到物体的距离，而第二对 shader 负责真正绘制阴影，其中把第一对 shader 的计算结果传递到第二对中，就需要用到 Framebuffer 来存储结果。<p>下面我们先来看第一对 shader 的实现。<h3 id=shadow-shader>shadow shader</h3><p>为了取得光源照射下每个 fragment 在 z-buffer 中存储的最近距离，需要将摄像机移动到光源处，此时需要生成一个位于光源处的 View 矩阵：<div><pre class=line-numbers data-line=""><code class=language-javascript>var viewProjMatrixFromLight = new Matrix4();
+viewProjMatrixFromLight.setPerspective(70.0, OFFSCREEN_WIDTH/OFFSCREEN_HEIGHT, 1.0, 100.0);
+viewProjMatrixFromLight.lookAt(LIGHT_X, LIGHT_Y, LIGHT_Z, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);</code></pre></div><p>在 fragment shader 中，将 z-buffer 中存储的最近距离保存到 r 分量中。需要注意的是，保存到 rgb 任何分量甚至三个一起都是可以的，完全取决于后续 display shader 约定的读取规范。另外，rgb 分量的数据精度是有限的，在实际存储 z 距离时会有精度丢失。<div><pre class=line-numbers data-line=""><code class=language-glsl>gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);</code></pre></div><p>渲染结果也就是 shadow map 保存在 framebuffer 中。<h3 id=display-shader>display shader</h3><p>在真正负责渲染的 shader 中，在 shadow shader 中使用过的基于光源的变换矩阵仍然需要传入 vertex shader 中，便于后续插值。<div><pre class=line-numbers data-line=""><code class=language-glsl>attribute vec4 a_Position;
+// 摄像机重新移动回原始视点使用的 MVP 矩阵
+uniform mat4 u_MvpMatrix;
+// shadow shader 中使用过的 MVP 矩阵
+uniform mat4 u_MvpMatrixFromLight;
+varying vec4 v_PositionFromLight;
+void main() {
+    gl_Position = u_MvpMatrix * a_Position;
+    v_PositionFromLight = u_MvpMatrixFromLight * a_Position;
+}</code></pre></div><p>在读取 shadow map 当前位点数据的过程中涉及到两次坐标系的变换，首先需要转换到 NDC（通过除以 w 分量得到）。其次 texture 坐标取值范围是 <code class=highlighter-rouge>[0,1]</code>，从 <code class=highlighter-rouge>[-1,1]</code> 转换而来时需要除以二再加 0.5。判定当前 fragment 是否处于阴影下，只需要用当前距离光源距离和 shadow map 中保存最小 z 距离进行比较，如果大于则说明前方有物体遮挡处于阴影中。另外，之前提到过使用 r 分量存储丢失精度问题，需要加上一个小的偏移量，防止出现 Mach band 现象。<div><pre class=line-numbers data-line=""><code class=language-glsl>uniform sampler2D u_ShadowMap;
+varying vec4 v_PositionFromLight;
+varying vec4 v_Color;
+void main() {
+    // Clipped Coord -&gt; NDC -&gt; texture Coord
+    vec3 shadowCoord = (v_PositionFromLight.xyz / v_PositionFromLight.w) / 2.0 + 0.5;
+    vec4 rgbaDepth = texture2D(u_ShadowMap, shadowCoord.xy);
+    float depth = rgbaDepth.r;
+    float visibility = (shadowCoord.z &gt; depth + 0.005) ? 0.7 : 1.0;
+    gl_FragColor = vec4(v_Color.rgb * visibility, v_Color.a);
+}</code></pre></div><h2 id=参考资料>参考资料</h2><ul><li><a href=http://codeflow.org/entries/2013/feb/15/soft-shadow-mapping/ >soft-shadow-mapping</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/06/23/GMTC-%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%A4%A7%E4%BC%9A%E8%AE%B0%E5%BD%95.html class=read-next-link></a><section><span>GMTC 前端技术大会记录</span><p>本周参加了为期两天的 GMTC 前端技术大会，在 PWA 专场上做了一个分享，也听了几场其他老师的演讲，在此记录一...</section><div class=filter></div><img src=/assets/img/gmtc/gmtc.jpg alt=""></div><div class=read-next-item><a href=/coding/2018/06/12/%E5%88%9B%E5%BB%BA%E8%BF%B7%E9%9B%BE.html class=read-next-link></a><section><span>创建迷雾</span><p>之前我们已经了解了： Shader 基础知识 WebGL 3D 基础知识，包括基本的矩阵变换和观察视角 光照...</section><div class=filter></div><img src=/assets/img/webgl/logo.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
