@@ -1,0 +1,318 @@
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Wireframe 的实现 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="Wireframe 的实现"><meta name=keywords content=WebGL><title>Wireframe 的实现 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="Wireframe 的实现"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="在调试或者展示模型时，有时需要展现 wireframe 网格效果，在 ThreeJS 中经常能看到，之前也没想过这是如何实现的。 最近在阅读 clayGL 的代码时，顺着里面的注释找到了这篇文章：easy-wireframe-display-with-barycentric-coordinates。里面的实现十分巧妙，在此记录一下。"><meta property=og:description content="在调试或者展示模型时，有时需要展现 wireframe 网格效果，在 ThreeJS 中经常能看到，之前也没想过这是如何实现的。 最近在阅读 clayGL 的代码时，顺着里面的注释找到了这篇文章：easy-wireframe-display-with-barycentric-coordinates。里面的实现十分巧妙，在此记录一下。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/10/22/Wireframe-%E7%9A%84%E5%AE%9E%E7%8E%B0.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/10/22/Wireframe-%E7%9A%84%E5%AE%9E%E7%8E%B0.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-10-22T00:00:00+08:00><script type=application/ld+json>{"description":"在调试或者展示模型时，有时需要展现 wireframe 网格效果，在 ThreeJS 中经常能看到，之前也没想过这是如何实现的。 最近在阅读 clayGL 的代码时，顺着里面的注释找到了这篇文章：easy-wireframe-display-with-barycentric-coordinates。里面的实现十分巧妙，在此记录一下。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/10/22/Wireframe-%E7%9A%84%E5%AE%9E%E7%8E%B0.html","headline":"Wireframe 的实现","dateModified":"2018-10-22T00:00:00+08:00","datePublished":"2018-10-22T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/10/22/Wireframe-%E7%9A%84%E5%AE%9E%E7%8E%B0.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/10/22/Wireframe-%E7%9A%84%E5%AE%9E%E7%8E%B0.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
+            // Create a buffer object
+            var buffer = gl.createBuffer();
+            if (!buffer) {
+                console.log('Failed to create the buffer object');
+                return false;
+            }
+            // Write date into the buffer object
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+            // Assign the buffer object to the attribute variable
+            var a_attribute = gl.getAttribLocation(program, attribute);
+            if (a_attribute < 0) {
+                console.log('Failed to get the storage location of ' + attribute);
+                return false;
+            }
+            gl.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
+            // Enable the assignment of the buffer object to the attribute variable
+            gl.enableVertexAttribArray(a_attribute);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            return true;
+        }</script><body><!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>Wireframe 的实现</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-10-22><i class="iconfont icon-date"></i>22 Oct 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/wireframe.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><article class=markdown-body><p>在调试或者展示模型时，有时需要展现 wireframe 网格效果，在 ThreeJS 中经常能看到，之前也没想过这是如何实现的。 最近在阅读 clayGL 的代码时，顺着里面的注释找到了这篇文章：<a href=http://codeflow.org/entries/2012/aug/02/easy-wireframe-display-with-barycentric-coordinates/ >easy-wireframe-display-with-barycentric-coordinates</a>。里面的实现十分巧妙，在此记录一下。<p>首先我们会介绍基本实现思路，然后是改进效果，最后是一些问题以及扩展实现。 另外，文中的效果图都是 GLSLCanvas 实时渲染的，因此打开控制台就能看到异步请求的 shader 源代码。<h2 id=重心坐标>重心坐标</h2><p>思路其实十分简单，我们想在光栅化时给每个三角形描边，那么就需要知道当前 fragment 距离三角形的三边各有多远，一旦小于边框的宽度，我们就给当前 fragment 着上边框的颜色。<p>所以问题的关键就是如何计算距离三角形三边的距离。上面那篇文章中使用了重心坐标，由于我们只关心当前 fragment 所在的三角形，以三个顶点构建重心坐标系，利用 fragment shader 的插值就能得到当前 fragment 对应的重心坐标。其实在光栅化过程中，会利用重心坐标作为权重来决定 fragment 的颜色（例如下图），<script type=math/tex>C_P = \lambda_0 * C_{V0} + \lambda_1 * C_{V1} + \lambda_2 * C_{V2}</script>，感兴趣可以阅读 scratchapixel 上关于光栅化具体实现的<a href=https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage>文章</a>。 <img src=/assets/img/webgl/barycentric2.png alt=""><p>回到我们的问题上来，在实现中，和颜色，纹理坐标，法线等其他 vertex attribute 一样，给每个 vertex 增加一个初始重心坐标就行了：<div><pre class=line-numbers data-line=""><code class=language-glsl>// vertex shader
+
+attribute vec3 a_Barycentric;
+varying vec3 v_Barycentric;
+void main() {
+    v_Barycentric = a_Barycentric;
+}</code></pre></div><p>首先给顶点传入重心坐标，我们需要保证三角形三个顶点坐标值分别是 <code class=highlighter-rouge>(1,0,0)</code> <code class=highlighter-rouge>(0,1,0)</code> 和 <code class=highlighter-rouge>(0,0,1)</code>。如果在绘制时使用的是 <code class=highlighter-rouge>gl.drawArrays()</code>，那只需要简单的按顺序依次传入三个顶点坐标，重复多次（三角形个数）就行了，我们以一个简单平面（两个三角形组成）为例：<div><pre class=line-numbers data-line=""><code class=language-javascript>const vertices = new Float32Array([
+    1.0, 0.0, 1.0,  1.0, 0.0, -1.0,  -1.0, 0, -1.0,
+    1.0, 0.0, 1.0,  -1.0, 0, -1.0,   -1.0, 0, 1.0
+]);
+// [1,0,0, 0,1,0, 0,0,1, 1,0,0...]
+const barycentrics = vertices.map((v, i) =&gt; {
+    if (i % 9 === 0 || i % 9 === 4 || i % 9 === 8) {
+        return 1.0;
+    }
+    return 0.0;
+});
+// 省略传入 vertex attributes 代码
+gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 3);</code></pre></div><p>然后在 fragment shader 中，当重心坐标任意一个分量小于边框宽度阈值，就可以当作边框绘制。这里用到了 glsl 内置函数 <code class=highlighter-rouge>any()</code> 和 <code class=highlighter-rouge>lessThan()</code>：<div><pre class=line-numbers data-line=""><code class=language-glsl>// fragment shader
+
+varying vec3 v_Barycentric;
+void main() {
+    // 小于边框宽度
+    if (any(lessThan(v_Barycentric, vec3(0.1)))) {
+        // 边框颜色
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+    else {
+        // 填充背景颜色
+        gl_FragColor = vec4(0.5, 0.5, 0.5, 1.0);
+    }
+}</code></pre></div><p>我们以最简单的由两个三角形组成的正方形为例，边框宽度为 1/10，效果如下：<div class=glsl-canvas-wrapper><canvas id=wireframe data-vertex-url=/assets/shaders/wireframe/wireframe.vert data-fragment-url=/assets/shaders/wireframe/wireframe.frag width=500 height=500></canvas></div><script>const sandbox = new GlslCanvas(document.querySelector('#wireframe'));
+sandbox.on('load', function () {
+    try {
+        const gl = sandbox.gl;
+        gl.getExtension('OES_standard_derivatives');
+        const program = sandbox.program;
+        const positions = [
+            -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0
+        ];
+        const barycentrics = [
+            1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+            1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0
+        ];
+        if (initArrayBuffer(gl, program, 'a_Position', new Float32Array(positions), gl.FLOAT, 2)
+            && initArrayBuffer(gl, program, 'a_Barycentric', new Float32Array(barycentrics), gl.FLOAT, 3)
+        ) { 
+            sandbox.forceRender = true;
+            sandbox.render();
+        }
+    } catch (e) {}
+});</script><h2 id=改进效果>改进效果</h2><p>上面的实现有一个明显的问题，我们当然可以指定边框宽度为 1/100 甚至更小，但是在某些需要放大查看模型的场景中，边框也随之放大了，这通常不是我们想要的。为了保持宽度不变，我们需要根据当前屏幕空间缩放的比例调整，借助 <a href=https://www.khronos.org/registry/OpenGL/extensions/OES/OES_standard_derivatives.txt>OES_standard_derivatives</a> 扩展提供的三个函数就可以做到：<ul><li><code class=highlighter-rouge>dFdx(p)</code> 就是当屏幕坐标 x 改变1时，当前 <code class=highlighter-rouge>p</code> xyz 分量会变化多少。<code class=highlighter-rouge>dFdy(p)</code> 同理<li><code class=highlighter-rouge>fwidth(p)</code> 其实就是 <code class=highlighter-rouge>abs(dFdx(p)) + abs(dFdy(p))</code>，反映了平均变化</ul><p>这个扩展在 WebGL2 中是默认开启的，而在 WebGL1 中使用需要手动开启：<code class=highlighter-rouge>gl.getExtension('OES_standard_derivatives');</code>，另外在 shader 中也要声明。详见 <a href=https://developer.mozilla.org/en-US/docs/Web/API/OES_standard_derivatives>MDN WebGL API</a>。<div><pre class=line-numbers data-line=""><code class=language-glsl>// fragment shader
+
+#extension GL_OES_standard_derivatives : enable
+float edgeFactor(){
+    vec3 d = fwidth(v_Barycentric);
+    // 边缘平滑效果
+    vec3 a3 = smoothstep(vec3(0.0), d * 1.5, v_Barycentric);
+    return min(min(a3.x, a3.y), a3.z);
+}
+
+void main() {
+    gl_FragColor.rgb = mix(vec3(0.0), vec3(1.0), edgeFactor());
+    gl_FragColor.a = 1.0;
+}</code></pre></div><p>效果如下：<div class=glsl-canvas-wrapper><canvas id=wireframe2 data-vertex-url=/assets/shaders/wireframe/wireframe.vert data-fragment-url=/assets/shaders/wireframe/wireframe-smooth.frag width=500 height=500></canvas></div><script>const sandbox2 = new GlslCanvas(document.querySelector('#wireframe2'));
+sandbox2.on('load', function () {
+try {
+    const gl = sandbox2.gl;
+    gl.getExtension('OES_standard_derivatives');
+    const program = sandbox2.program;
+    const positions = [
+        -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0
+    ];
+    const barycentrics = [
+        1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0
+    ];
+    if (initArrayBuffer(gl, program, 'a_Position', new Float32Array(positions), gl.FLOAT, 2)
+        && initArrayBuffer(gl, program, 'a_Barycentric', new Float32Array(barycentrics), gl.FLOAT, 3)
+    ) { 
+        sandbox2.forceRender = true;
+        sandbox2.render();
+    }
+} catch (e) {}
+});</script><h2 id=后续思考>后续思考</h2><p>基本的实现思路就是这样了，但是在我自己实现和查阅资料的过程中，遇到了一些问题，接下来让我们来看一下。<h3 id=共享顶点>共享顶点</h3><p>之前的例子中我们在绘制时使用了 <code class=highlighter-rouge>gl.drawArrays()</code>，但如果使用的是更节省 Buffer 空间的 <code class=highlighter-rouge>gl.drawElements()</code>，也就是共享部分顶点（例如平面仅使用 4 个而非 6 个顶点），就不能简单根据顶点顺序，得依照顶点索引分配重心坐标了。<div><pre class=line-numbers data-line=""><code class=language-javascript>const vertices = new Float32Array([
+    1.0, 0.0, 1.0,  1.0, 0.0, -1.0,  -1.0, 0, -1.0,   -1.0, 0, 1.0
+]);
+const indices = new Uint8Array([
+    0, 1, 2, 0, 2, 3
+]);
+const barycentrics = [
+    1,0,0, 0,1,0, 0,0,1, 0,1,0
+];
+gl.drawElements(gl.TRIANGLES, indices.length, type, 0);</code></pre></div><p>但不是所有分配方式都这么简单，比如 StackOverflow 上的<a href=https://stackoverflow.com/questions/24839857/wireframe-shader-issue-with-barycentric-coordinates-when-using-shared-vertices>这个问题</a>，会发现问号处无法分配。根本原因其实是在共享顶点的情况下，一旦给一个三角形分配好了重心坐标，与之共享一边的下一个三角形的剩余一个顶点坐标实际也已经确定了： <img src=/assets/img/webgl/wireframe3.png alt=""><p>下面的回答给出了两种解决思路：<ol><li>如果不要求一定要绘制正方形的对角线，只要求 4 边的话，可以放弃重心坐标<li>按一定顺序分配，才能不出现冲突</ol><p>更多细节可以进入这个问答深入了解。<h3 id=虚线效果>虚线效果</h3><p>既然我们能控制线的粗细，那也就有办法实现虚线效果，就是宽度在 0-1 之间进行周期性变换嘛。在这篇 <a href=https://forum.libcinder.org/topic/wireframe-shader-implementation>wireframe-shader-implementation</a> 文章中就使用了 <code class=highlighter-rouge>sin()</code><div><pre class=line-numbers data-line=""><code class=language-glsl>float f = v_Barycentric.x;
+if( v_Barycentric.x &lt; min(v_Barycentric.y, v_Barycentric.z) )
+    f = v_Barycentric.y;
+
+const float PI = 3.14159265;
+float stipple = pow( clamp( 5.0 * sin( f * 21.0 * PI ), 0.0, 1.0 ), 10.0 );
+float thickness = 2.0 * stipple;</code></pre></div><p>效果如下：<div class=glsl-canvas-wrapper><canvas id=wireframe3 data-vertex-url=/assets/shaders/wireframe/wireframe.vert data-fragment-url=/assets/shaders/wireframe/wireframe-dash.frag width=500 height=500></canvas></div><script>const sandbox3 = new GlslCanvas(document.querySelector('#wireframe3'));
+sandbox3.on('load', function () {
+try {
+    const gl = sandbox3.gl;
+    gl.getExtension('OES_standard_derivatives');
+    const program = sandbox3.program;
+    const positions = [
+        -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0
+    ];
+    const barycentrics = [
+        1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0
+    ];
+    if (initArrayBuffer(gl, program, 'a_Position', new Float32Array(positions), gl.FLOAT, 2)
+        && initArrayBuffer(gl, program, 'a_Barycentric', new Float32Array(barycentrics), gl.FLOAT, 3)
+    ) { 
+        sandbox3.forceRender = true;
+        sandbox3.render();
+    }
+} catch (e) {}
+});</script><h3 id=透明背景>透明背景</h3><p>之前我们给网格空隙处填充了一个背景色，更好的效果是做成透明的，这样也能看到背面的网格。 很自然想到使用 alpha 通道，网格处完全不透明：<div><pre class=line-numbers data-line=""><code class=language-javascript>gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0 - edgeFactor());</code></pre></div><p>另外，由于复杂模型顶点众多，为了更好的观察效果，我们希望正面的网格要更清晰一些，相对的背面就可以淡化一点。 利用 fragment shader 中的输入变量 <code class=highlighter-rouge>gl_FrontFacing</code> 简单判断下就可以了：<div><pre class=line-numbers data-line=""><code class=language-javascript>if (gl_FrontFacing) {
+    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0 - edgeFactor());
+}
+else {
+    // 淡化背面
+    gl_FragColor = vec4(0.0, 0.0, 0.0, (1.0 - edgeFactor()) * 0.3);
+}</code></pre></div><p>看似没问题，但是实际运行效果有点奇怪，看起来正面完全没有渲染出来，这里我们使用了一个立方体：<div class=glsl-canvas-wrapper><canvas id=wireframe4 style="background: linear-gradient(#e66465, #9198e5)" data-vertex-url=/assets/shaders/wireframe/wireframe-transparent.vert data-fragment-url=/assets/shaders/wireframe/wireframe-transparent.frag width=500 height=500></canvas></div><script>const sandbox4 = new GlslCanvas(document.querySelector('#wireframe4'));
+function renderPrograms () {
+    const gl = this.gl;
+    const W = gl.canvas.width;
+    const H = gl.canvas.height;
+    this.updateVariables();
+    gl.viewport(0, 0, W, H);
+    for (let key in this.buffers) {
+        const buffer = this.buffers[key];
+        this.updateUniforms(buffer.program, key);
+        buffer.bundle.render(W, H, buffer.program, buffer.name);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    }
+    this.updateUniforms(this.program, 'main');
+    gl.drawArrays(gl.TRIANGLES, 0, 36);
+};
+sandbox4.renderPrograms = renderPrograms.bind(sandbox4);
+sandbox4.on('load', function () {
+try {
+    const gl = sandbox4.gl;
+    gl.enable(gl.BLEND);
+    // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.getExtension('OES_standard_derivatives');
+    const program = sandbox4.program;
+    let positions = [];
+    let barycentrics = [];
+    positions = [
+      1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0, 1.0, 1.0, 1.0, -1.0,-1.0, 1.0, 1.0,-1.0, 1.0, // v0-v1-v2-v3 front
+      1.0, 1.0, 1.0,   1.0,-1.0, 1.0,   1.0,-1.0,-1.0,  1.0, 1.0, 1.0, 1.0,-1.0,-1.0, 1.0, 1.0,-1.0, // v0-v3-v4-v5 right
+      1.0, 1.0, 1.0,   1.0, 1.0,-1.0,  -1.0, 1.0,-1.0, 1.0, 1.0, 1.0, -1.0, 1.0,-1.0,-1.0, 1.0, 1.0, // v0-v5-v6-v1 up
+     -1.0, 1.0, 1.0,  -1.0, 1.0,-1.0,  -1.0,-1.0,-1.0, -1.0, 1.0, 1.0, -1.0,-1.0,-1.0,-1.0,-1.0, 1.0, // v1-v6-v7-v2 left
+     -1.0,-1.0,-1.0,   1.0,-1.0,-1.0,   1.0,-1.0, 1.0, -1.0,-1.0,-1.0, 1.0,-1.0, 1.0,-1.0,-1.0, 1.0, // v7-v4-v3-v2 down
+      1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0, 1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,1.0, 1.0,-1.0,  // v4-v7-v6-v5 back
+    ];
+    positions = positions.map(function(p) {return p/3;});
+    for (let i = 0; i < positions.length / 9; i++) {
+        barycentrics = barycentrics.concat([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]);
+    }
+    if (initArrayBuffer(gl, program, 'a_Position', new Float32Array(positions), gl.FLOAT, 3)
+        && initArrayBuffer(gl, program, 'a_Barycentric', new Float32Array(barycentrics), gl.FLOAT, 3)
+    ) { 
+        const location = gl.getUniformLocation(program, 'u_MvpMatrix');
+        gl.uniformMatrix4fv(location, false, new Float32Array([
+            1.6590037908279933, -0.214974148922413, -0.2596793675696521, -0.25916052767440806, 0, 1.5621454821695344, -0.43279894594942014, -0.43193421279068006, -0.497701137248398, -0.7165804964080433, -0.8655978918988403, -0.8638684255813601, 3.845925372767128e-16, -2.644073693777401e-16, 1.3787915312242403, 1.5758369027902257
+        ]));
+        sandbox4.forceRender = true;
+        sandbox4.render();
+    }
+} catch (e) {}
+});</script><p>原因其实很简单，WebGL 默认没有开启 alpha blending，由于我们指定的 6 个面绘制顺序是前、右、上、左、下、后，因此最后绘制的左、下、后三面完全覆盖了先绘制的三面。 因此我们需要手动开启 alpha blending，并指定混合函数 <a href=https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/blendFunc>blendFunc</a>。 其中两个参数分别为混合因子 <code class=highlighter-rouge>sfactor</code> 和 <code class=highlighter-rouge>dfactor</code>，最终会被应用到混合计算公式中：<code class=highlighter-rouge>color(RGBA) = (sourceColor * sfactor) + (destinationColor * dfactor)</code>：<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.enable(gl.BLEND);
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);</code></pre></div><p>最终效果如下：<div class=glsl-canvas-wrapper><canvas id=wireframe5 style="background: linear-gradient(#e66465, #9198e5)" data-vertex-url=/assets/shaders/wireframe/wireframe-transparent.vert data-fragment-url=/assets/shaders/wireframe/wireframe-transparent.frag width=500 height=500></canvas></div><script>const sandbox5 = new GlslCanvas(document.querySelector('#wireframe5'));
+function renderPrograms () {
+    const gl = this.gl;
+    const W = gl.canvas.width;
+    const H = gl.canvas.height;
+    this.updateVariables();
+    gl.viewport(0, 0, W, H);
+    for (let key in this.buffers) {
+        const buffer = this.buffers[key];
+        this.updateUniforms(buffer.program, key);
+        buffer.bundle.render(W, H, buffer.program, buffer.name);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    }
+    this.updateUniforms(this.program, 'main');
+    gl.drawArrays(gl.TRIANGLES, 0, 36);
+};
+sandbox5.renderPrograms = renderPrograms.bind(sandbox5);
+sandbox5.on('load', function () {
+try {
+    const gl = sandbox5.gl;
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.getExtension('OES_standard_derivatives');
+    const program = sandbox5.program;
+    let positions = [];
+    let barycentrics = [];
+    positions = [
+      1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0, 1.0, 1.0, 1.0, -1.0,-1.0, 1.0, 1.0,-1.0, 1.0, // v0-v1-v2-v3 front
+      1.0, 1.0, 1.0,   1.0,-1.0, 1.0,   1.0,-1.0,-1.0,  1.0, 1.0, 1.0, 1.0,-1.0,-1.0, 1.0, 1.0,-1.0, // v0-v3-v4-v5 right
+      1.0, 1.0, 1.0,   1.0, 1.0,-1.0,  -1.0, 1.0,-1.0, 1.0, 1.0, 1.0, -1.0, 1.0,-1.0,-1.0, 1.0, 1.0, // v0-v5-v6-v1 up
+     -1.0, 1.0, 1.0,  -1.0, 1.0,-1.0,  -1.0,-1.0,-1.0, -1.0, 1.0, 1.0, -1.0,-1.0,-1.0,-1.0,-1.0, 1.0, // v1-v6-v7-v2 left
+     -1.0,-1.0,-1.0,   1.0,-1.0,-1.0,   1.0,-1.0, 1.0, -1.0,-1.0,-1.0, 1.0,-1.0, 1.0,-1.0,-1.0, 1.0, // v7-v4-v3-v2 down
+      1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0, 1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,1.0, 1.0,-1.0  // v4-v7-v6-v5 back
+    ];
+    positions = positions.map(function(p) {return p/3;});
+    for (let i = 0; i < positions.length / 9; i++) {
+        barycentrics = barycentrics.concat([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]);
+    }
+    if (initArrayBuffer(gl, program, 'a_Position', new Float32Array(positions), gl.FLOAT, 3)
+        && initArrayBuffer(gl, program, 'a_Barycentric', new Float32Array(barycentrics), gl.FLOAT, 3)
+    ) { 
+        const location = gl.getUniformLocation(program, 'u_MvpMatrix');
+        gl.uniformMatrix4fv(location, false, new Float32Array([
+            1.6590037908279933, -0.214974148922413, -0.2596793675696521, -0.25916052767440806, 0, 1.5621454821695344, -0.43279894594942014, -0.43193421279068006, -0.497701137248398, -0.7165804964080433, -0.8655978918988403, -0.8638684255813601, 3.845925372767128e-16, -2.644073693777401e-16, 1.3787915312242403, 1.5758369027902257
+        ]));
+        sandbox5.forceRender = true;
+        sandbox5.render();
+    }
+} catch (e) {}
+});</script><h2 id=总结>总结</h2><p>本文介绍了使用重心坐标在 single-pass 中完成 wireframe 的绘制。 另外，在查阅资料的时候我发现一篇 <a href=http://strattonbrazil.blogspot.com/2011/09/single-pass-wireframe-rendering_10.html>single-pass-wireframe-rendering</a> 其中使用到了 Geometry Shader，但是在 WebGL 中<a href="https://news.ycombinator.com/item?id=13893412">并不支持 Geometry shader</a>。<h2 id=参考资料>参考资料</h2><ul><li><a href=http://codeflow.org/entries/2012/aug/02/easy-wireframe-display-with-barycentric-coordinates/ >easy-wireframe-display-with-barycentric-coordinates</a><li><a href=https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage>rasterization-practical-implementation</a><li><a href=https://stackoverflow.com/questions/24839857/wireframe-shader-issue-with-barycentric-coordinates-when-using-shared-vertices>wireframe-shader-issue-with-barycentric-coordinates-when-using-shared-vertices</a><li><a href=https://forum.libcinder.org/topic/wireframe-shader-implementation>wireframe-shader-implementation</a><li><a href=http://strattonbrazil.blogspot.com/2011/09/single-pass-wireframe-rendering_10.html>single-pass-wireframe-rendering</a><li><a href=https://zhuanlan.zhihu.com/p/43139658>WebGL 单通道wireframe渲染</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/09/27/%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93.html class=read-next-link></a><section><span>实时阴影技术总结</span><p>给场景中光照下的物体增加阴影能够显著增强“真实感”，即使阴影并不十分完美。在光线追踪算法中，实现阴影（shadow...</section><div class=filter></div><img src=/assets/img/webgl/logo.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+        // init
+        var P = $('.markdown-body'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    $('.catalog-body').onePageNav({
+        currentClass: "active",
+        changeHash: !1,
+        easing: "swing",
+        filter: "",
+        scrollSpeed: 700,
+        scrollOffset: 0,
+        scrollThreshold: .2,
+        begin: null,
+        end: null,
+        scrollChange: null,
+        padding: 80
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>
