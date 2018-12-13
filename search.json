@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "GLSL 中的工程化实践",
+      "tags"     : "WebGL",
+      "url"      : "/coding/2018/11/30/GLSL-%E4%B8%AD%E7%9A%84%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E8%B7%B5.html"
+    } ,
+  
+    {
       "title"    : "Wireframe 的实现",
       "tags"     : "WebGL",
       "url"      : "/coding/2018/10/22/Wireframe-%E7%9A%84%E5%AE%9E%E7%8E%B0.html"

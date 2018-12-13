@@ -18,7 +18,7 @@ GEM
       rouge (>= 1.7, < 3)
       safe_yaml (~> 1.0)
     jekyll-paginate (1.1.0)
-    jekyll-pwa-plugin (2.0.1)
+    jekyll-pwa-plugin (2.2.1)
     jekyll-responsive-image (1.4.0)
       jekyll (>= 2.0, < 4.0)
       rmagick (>= 2.0, < 3.0)
@@ -65,4 +65,4 @@ DEPENDENCIES
   minima (~> 2.0)
 
 BUNDLED WITH
-   1.16.0
+   1.17.1
