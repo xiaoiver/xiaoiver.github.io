@@ -1,0 +1,226 @@
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>绘制地图 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=绘制地图><meta name=keywords content=WebGL><title>绘制地图 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=绘制地图><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="之前一直很感兴趣在 WebGL 中如何展示地理信息，最近阅读了 deck.gl 的源码，学习到了很多相关知识。 本文将介绍如何根据数据展示一个多边形，后续文章将介绍路径以及选中效果的实现。"><meta property=og:description content="之前一直很感兴趣在 WebGL 中如何展示地理信息，最近阅读了 deck.gl 的源码，学习到了很多相关知识。 本文将介绍如何根据数据展示一个多边形，后续文章将介绍路径以及选中效果的实现。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/12/20/%E7%BB%98%E5%88%B6%E5%9C%B0%E5%9B%BE.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/12/20/%E7%BB%98%E5%88%B6%E5%9C%B0%E5%9B%BE.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-12-20T00:00:00+08:00><script type=application/ld+json>{"description":"之前一直很感兴趣在 WebGL 中如何展示地理信息，最近阅读了 deck.gl 的源码，学习到了很多相关知识。 本文将介绍如何根据数据展示一个多边形，后续文章将介绍路径以及选中效果的实现。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/12/20/%E7%BB%98%E5%88%B6%E5%9C%B0%E5%9B%BE.html","headline":"绘制地图","dateModified":"2018-12-20T00:00:00+08:00","datePublished":"2018-12-20T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/12/20/%E7%BB%98%E5%88%B6%E5%9C%B0%E5%9B%BE.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/12/20/%E7%BB%98%E5%88%B6%E5%9C%B0%E5%9B%BE.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
+            // Create a buffer object
+            var buffer = gl.createBuffer();
+            if (!buffer) {
+                console.log('Failed to create the buffer object');
+                return false;
+            }
+            // Write date into the buffer object
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+            // Assign the buffer object to the attribute variable
+            var a_attribute = gl.getAttribLocation(program, attribute);
+            if (a_attribute < 0) {
+                console.log('Failed to get the storage location of ' + attribute);
+                return false;
+            }
+            gl.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
+            // Enable the assignment of the buffer object to the attribute variable
+            gl.enableVertexAttribArray(a_attribute);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            return true;
+        }</script><body><!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default post-no-cover" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>绘制地图</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-12-20><i class="iconfont icon-date"></i>20 Dec 2018</time></div></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>绘制多边形</h2><article class=markdown-body><p>之前一直很感兴趣在 WebGL 中如何展示地理信息，最近阅读了 deck.gl 的源码，学习到了很多相关知识。 本文将介绍如何根据数据展示一个多边形，后续文章将介绍路径以及选中效果的实现。<p><a href=https://xiaoiver.github.io/ray-tracer/geo.html>Demo 地址</a><h2 id=数据格式>数据格式</h2><p>绘制基础图形不是难事，毕竟几何属性特征相对简单且固定。而对于一个不规则的多边形，我们首先需要描述它的所有顶点坐标。 <a href=https://en.wikipedia.org/wiki/GeoJSON>GeoJSON</a> 以 JSON 格式展现简单的地理信息。比如我们想描述一个多边形，<code class=highlighter-rouge>coordinates</code> 定义了全部顶点坐标（经纬度）：<div><pre class=line-numbers data-line=""><code class=language-json>{
+    type: &quot;FeatureCollection&quot;,
+    features: [
+    {
+        type: &quot;Feature&quot;,
+        geometry: {
+            type: &quot;Polygon&quot;,
+            coordinates: [
+                [102.0, 0.0],
+                [103.0, 1.0],
+                [104.0, 0.0],
+                [105.0, 1.0]
+            ]
+        }
+    }
+    ]
+}</code></pre></div><p>当然，除了多边形，地图中常见的路径，散点，甚至是更灵活的附加信息也都有对应的格式描述，具体可以参考 GeoJSON 的 TypeScript <a href=https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/geojson/index.d.ts>定义文件</a>，例如支持的全部几何类型：<div><pre class=line-numbers data-line=""><code class=language-javascript>// @types/geojson
+
+/**
+ * The valid values for the &quot;type&quot; property of GeoJSON geometry objects.
+ * https://tools.ietf.org/html/rfc7946#section-1.4
+ */
+export type GeoJsonGeometryTypes = &quot;Point&quot; | &quot;LineString&quot; | &quot;MultiPoint&quot; | &quot;Polygon&quot; | &quot;MultiLineString&quot; |
+    &quot;MultiPolygon&quot; | &quot;GeometryCollection&quot;;</code></pre></div><p>接下来我们只关心多边形这一种几何类型，对于原始的顶点数据我们需要做一些处理。<h2 id=tessellation--triangulation>Tessellation &amp; Triangulation</h2><p>「Tessellation」是将一个表面分割成多个多边形的过程，虽然分割方式多种多样，但由于底层 API 以三角形为基础进行绘制，分割成多个基本三角形的过程也叫做「Triangulation」： <img src=/assets/img/webgl/tessellation.png alt=""><h3 id=ear-clipping-算法>ear clipping 算法</h3><p>那么如何分割三角形呢？一种常见的方法叫做「ear clipping」。如果一个顶点相邻的两个顶点连线不与多边形的任何一边相交，那么这个顶点就构成了「ear」。 我们以下图左侧为例，在这个判断标准下，v2 v4 和 v5 就是「ear」。然后移除找到的 ear 如 v4，继续判定其相邻的顶点 v5 和 v3，其中 v5 构成了 ear。以此类推最终所有的 ear 都被移除，多边形也最终被分割成多个三角形。可参考论文 <a href=https://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf>Triangulation By Ear Clipping</a>。 <img src=/assets/img/webgl/triangulation.png alt=""><p>在具体实现方面，Mapbox 开源了 <a href=https://github.com/mapbox/earcut>earcut</a>，其中判定 ear 的代码如下：<div><pre class=line-numbers data-line=""><code class=language-javascript>// check whether a polygon node forms a valid ear with adjacent nodes
+function isEar(ear) {
+    var a = ear.prev,
+        b = ear,
+        c = ear.next;
+
+    if (area(a, b, c) &gt;= 0) return false; // reflex, can&#39;t be an ear
+
+    // now make sure we don&#39;t have other points inside the potential ear
+    var p = ear.next.next;
+
+    while (p !== ear.prev) {
+        if (pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &amp;&amp;
+            area(p.prev, p, p.next) &gt;= 0) return false;
+        p = p.next;
+    }
+
+    return true;
+}</code></pre></div><p>最终我们使用 earcut 得到了分割之后的 indices 数组，供后续 drawElements 使用。 有一点需要注意，如果 indices 使用了 Uint32Array 存储，则需要使用对应的 gl.UNSIGNED_INT 类型，WebGL1 需要开启 <a href=https://developer.mozilla.org/en-US/docs/Web/API/OES_element_index_uint>OES_element_index_uint</a> 扩展：<div><pre class=line-numbers data-line=""><code class=language-javascript>import earcut from &#39;earcut&#39;;
+
+let indices = earcut([10,0, 0,50, 60,60, 70,10]); // returns [1,0,3, 3,2,1]
+indices = new Uint32Array(indices);
+
+const indexBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+// WebGL1 中使用 gl.UNSIGNED_INT 需要额外开启扩展
+gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_INT, 0);</code></pre></div><p>现在我们已经可以将多边形分割成若干三角形了，接下来我们需要关心原始的顶点坐标数据。<h2 id=web-mercator-坐标系转换>Web Mercator 坐标系转换</h2><p>我们的多边形顶点坐标是用 Web Mercator 坐标表示的，我们需要将其投影到最终的裁剪坐标才能使用，当然中途会经过世界坐标系的转换。<p>首先根据 Web Mercator 转换到世界坐标系<a href=https://en.wikipedia.org/wiki/Web_Mercator_projection>公式</a>： <img src=/assets/img/webgl/webmercator.png alt=""><p>参考 deck.gl 的 vertex shader 实现：<div><pre class=line-numbers data-line=""><code class=language-glsl>uniform float u_ProjectScale; // zoom level
+uniform vec3 u_PixelsPerMeter;
+uniform mat4 u_ModelMatrix;
+
+const float TILE_SIZE = 512.0;
+const float PI = 3.1415926536;
+const float WORLD_SCALE = TILE_SIZE / (PI * 2.0);
+
+vec2 project_mercator_(vec2 lnglat) {
+    float x = lnglat.x;
+    return vec2(
+        radians(x) + PI,
+        PI - log(tan(PI * 0.25 + radians(lnglat.y) * 0.5))
+    );
+}
+
+vec4 project_position(vec4 position) {
+    return u_ModelMatrix * vec4(
+        project_mercator_(position.xy) * WORLD_SCALE * u_ProjectScale,
+        project_scale(position.z),
+        position.w
+    );
+}</code></pre></div><p>最后通过 VP 矩阵投影到最终的裁剪坐标系：<div><pre class=line-numbers data-line=""><code class=language-glsl>attribute vec4 a_Position;
+attribute vec4 a_Color;
+uniform mat4 u_ViewProjectionMatrix;
+varying vec4 v_Color;
+
+vec4 project_to_clipspace(vec4 position) { 
+    return u_ViewProjectionMatrix * position;
+}      
+
+void main() {
+    v_Color = a_Color;
+
+    vec4 worldPosition = project_position(a_Position);
+    gl_Position = project_to_clipspace(worldPosition);
+}</code></pre></div><p>现在我们只剩下最后一个问题，那就是 vertex shader 中使用的 u_ViewProjectionMatrix 如何计算得到。<h2 id=view-矩阵>View 矩阵</h2><p>learnwebgl 上的<a href=http://learnwebgl.brown37.net/07_cameras/camera_movement.html>摄像机运动</a> 一节很清晰地介绍了摄像机的移动方式，即绕 u v n 三轴旋转或沿三轴移动： <img src=/assets/img/webgl/camera_motion.png alt=""><p>根据 deck.gl 的<a href=http://deck.gl/#/documentation/deckgl-api-reference/viewports/web-mercator-viewport>定义</a>，使用到以下三个变量，根据这三个变量我们就能计算出所需要的 View 矩阵：<ol><li>pitch 绕 u 轴旋转，比如取 0 就是朝正下方观察，对应 “tilt” 动作<li>bearing：绕 n 轴旋转一定角度，比如取 0 的时候就是上北下南，对应 “cant” 动作<li>altitude：沿 n 轴移动，摄像机拉远拉近，对应 “dolly” 动作</ol><div><pre class=line-numbers data-line=""><code class=language-javascript>export function getViewMatrix({
+  pitch,
+  bearing,
+  altitude,
+}) {
+  const vm = createMat4();
+  // 首先沿 n 轴移动
+  mat4_translate(vm, vm, [0, 0, -altitude]);
+  // 绕 u 轴旋转
+  mat4_rotateX(vm, vm, -pitch * DEGREES_TO_RADIANS);
+  // 绕 n 轴旋转
+  mat4_rotateZ(vm, vm, bearing * DEGREES_TO_RADIANS);
+  return vm;
+}</code></pre></div><p>接下来需要根据起始经纬度设置摄像机位置，转换公式在上面 vertex shader 中其实已经实现过一遍了，这里就不再展示了。 唯一要注意的是 Web Mercator 坐标系和世界坐标系的 Y 轴方向是相反的：<div><pre class=line-numbers data-line=""><code class=language-javascript>// 起点经纬度坐标 -&gt; 世界坐标
+this.center = this._getCenterInWorld({longitude, latitude});
+
+// 翻转 Y 轴方向
+this.viewMatrixUncentered = mat4.scale([], viewMatrix, [1, -1, 1]);
+
+// 摄像机位置移动到起点
+this.viewMatrix = new Matrix4()
+    .multiplyRight(this.viewMatrixUncentered)
+    .translate(new Vector3(this.center || ZERO_VECTOR).negate());</code></pre></div><p>至此我们就得到了完整的 View 矩阵，接下来是 Projection 矩阵的实现。<h2 id=projection-矩阵>Projection 矩阵</h2><p>投影矩阵没啥特别的，例如选择了透视投影：<div><pre class=line-numbers data-line=""><code class=language-javascript>new Matrix4().perspective({fovy, aspect, near, far});</code></pre></div><p>根据 altitude 和 pitch，我们可以计算出以上投影矩阵需要的参数：<div><pre class=line-numbers data-line=""><code class=language-javascript>export function getProjectionParameters({
+  width,
+  height,
+  altitude = DEFAULT_ALTITUDE,
+  pitch = 0,
+  nearZMultiplier = 1,
+  farZMultiplier = 1
+}) {
+  // Find the distance from the center point to the center top
+  // in altitude units using law of sines.
+  const pitchRadians = pitch * DEGREES_TO_RADIANS;
+  const halfFov = Math.atan(0.5 / altitude);
+  const topHalfSurfaceDistance =
+    Math.sin(halfFov) * altitude / Math.sin(Math.PI / 2 - pitchRadians - halfFov);
+
+  // Calculate z value of the farthest fragment that should be rendered.
+  const farZ = Math.cos(Math.PI / 2 - pitchRadians) * topHalfSurfaceDistance + altitude;
+
+  return {
+    fov: 2 * Math.atan((height / 2) / altitude),
+    aspect: width / height,
+    near: nearZMultiplier,
+    far: farZ * farZMultiplier
+  };
+}</code></pre></div><h2 id=展示效果>展示效果</h2><p>现在我们已经能展示多边形，例如下面的美国地图，数据来自 <a href=https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_1_states_provinces_shp.geojson>Natural Earth</a>： <img src=/assets/img/webgl/gis-1.png alt=""><p><a href=https://xiaoiver.github.io/ray-tracer/geo.html>Demo 地址</a><h2 id=总结--后续>总结 &amp; 后续</h2><p>本文大量参考了 deck.gl 中的实现（尤其是 Uber 开源的 <a href=https://github.com/uber-common/viewport-mercator-project#readme>viewport-mercator-project</a> 工具库），感兴趣的同学也可以直接阅读文档和源码。<p>在后续的文章中，我们将绘制地图中其他常见的几何图形，例如路径和散点，以及多边形描边（地理边界）。 在常见的交互方面，摄像机移动以及基于 color-based picking 的多边形的拾取也都会介绍，任何问题都欢迎在评论区交流。<h2 id=参考资料>参考资料</h2><ul><li><a href=http://deck.gl>deck.gl</a><li><a href=https://en.wikipedia.org/wiki/GeoJSON>GeoJSON</a><li><a href=https://wiki.openstreetmap.org/wiki/Zoom_levels>OpenStreetMap Wiki</a><li><a href=https://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf>Triangulation By Ear Clipping</a><li>RTR 3rd - 12.Polygonal Techniques</ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/11/30/GLSL-%E4%B8%AD%E7%9A%84%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E8%B7%B5.html class=read-next-link></a><section><span>GLSL 中的工程化实践</span><p>得益于 Webpack 和 Babel 的工程化思想，使用 JavaScript 开发复杂应用早已不是难事。那 G...</section></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2018</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+        // init
+        var P = $('.markdown-body'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    $('.catalog-body').onePageNav({
+        currentClass: "active",
+        changeHash: !1,
+        easing: "swing",
+        filter: "",
+        scrollSpeed: 700,
+        scrollOffset: 0,
+        scrollThreshold: .2,
+        begin: null,
+        end: null,
+        scrollChange: null,
+        padding: 80
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>
