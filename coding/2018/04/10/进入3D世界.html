@@ -1,7 +1,68 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>进入3D世界 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=进入3D世界><meta name=keywords content=WebGL><title>进入3D世界 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=进入3D世界><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～"><meta property=og:description content="之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-04-10T00:00:00+08:00><script type=application/ld+json>{"description":"之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html","headline":"进入3D世界","dateModified":"2018-04-10T00:00:00+08:00","datePublished":"2018-04-10T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>进入3D世界 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="进入3D世界">
+    <meta name="keywords"  content="WebGL">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>进入3D世界 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="进入3D世界" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～" />
+<meta property="og:description" content="之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-04-10T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html","headline":"进入3D世界","dateModified":"2018-04-10T00:00:00+08:00","datePublished":"2018-04-10T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+    <script src="/assets/js/glsl-canvas.min.js"></script>
+    <script>
+        function initArrayBuffer(gl, program, attribute, data, type, num) {
             // Create a buffer object
             var buffer = gl.createBuffer();
             if (!buffer) {
@@ -24,37 +85,291 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             return true;
-        }</script><body><!--[if lt IE 10]>
+        }
+    </script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>进入3D世界</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-04-10><i class="iconfont icon-date"></i>10 Apr 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/logo.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>WebGL Programing Guide 学习笔记</h2><article class=markdown-body><p>之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～<h2 id=观察角度>观察角度</h2><p>不同于2D平面世界，在3D世界中我们需要一个观察角度。那么一个观察角度需要哪些变量确定呢？<p>显然，我们的眼睛坐标（eyeX eyeY eyeZ）和观察物体上的一个点坐标（atX atY atZ）可以构成一个向量：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/lookat.png alt=观察角度><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/lookat.png data-alt=观察角度></div><em>观察角度</em><p></p><script>new Imager('.responsive-image__delayed', {
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#WebGL" class="post-tag">WebGL</a>
+            
+            
+        </div>
+        <h1>进入3D世界</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="18-04-10"><i class="iconfont icon-date"></i>10 Apr 2018</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/webgl/logo.png') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <h2 class="post-subtitle">WebGL Programing Guide 学习笔记</h2>
+    
+    <article class="markdown-body">
+        <p>之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～</p>
+
+<h2 id="观察角度">观察角度</h2>
+
+<p>不同于2D平面世界，在3D世界中我们需要一个观察角度。那么一个观察角度需要哪些变量确定呢？</p>
+
+<p>显然，我们的眼睛坐标（eyeX eyeY eyeZ）和观察物体上的一个点坐标（atX atY atZ）可以构成一个向量：</p>
+
+<p class="responsive-image">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/lookat.png" alt="观察角度" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/lookat.png" data-alt="观察角度">
+    </div>
+    <em>观察角度</em>
+</p>
+
+<script>
+    new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });</script><p>但这个向量无法确定一个平面，试想我们转一转头，观察结果就发生了改变。因此还需要指定一个向上的向量：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/lookat2.png alt="Up vector"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/lookat2.png data-alt="Up vector"></div><em>Up vector</em><p></p><script>new Imager('.responsive-image__delayed', {
+    });
+</script>
+
+<p>但这个向量无法确定一个平面，试想我们转一转头，观察结果就发生了改变。因此还需要指定一个向上的向量：</p>
+
+<p class="responsive-image">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/lookat2.png" alt="Up vector" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/lookat2.png" data-alt="Up vector">
+    </div>
+    <em>Up vector</em>
+</p>
+
+<script>
+    new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });</script><p>在很多 WebGL 工具库中，都会提供操作矩阵的便捷方法。现在我们就能很好的理解所需的参数含义。 例如使用类似 <code class=highlighter-rouge>setLookAt()</code> 方法得到一个变换矩阵：<div><pre class=line-numbers data-line=""><code class=language-javascript>// cuon-utils.js
+    });
+</script>
 
-Matrix4.setLookAt(eyeX, eyeY, eyeZ, atX, atY, atZ, upX, upY, upZ)</code></pre></div><p>在默认情况下，眼睛坐标是原点（0,0,0），观察向量是 z 轴负向，而向上向量是 y 轴正向。<h3 id=矩阵变换>矩阵变换</h3><p>观察矩阵和模型变换矩阵可以在 vertex shader 中计算：<div><pre class=line-numbers data-line=""><code class=language-glsl>gl_Position = u_ViewMatrix * u_ModelMatrix * a_Position;</code></pre></div><p>也可以在 JS 中将这两个矩阵组合成一个，然后传递给 vertex shader：<div><pre class=line-numbers data-line=""><code class=language-javascript>var modelViewMatrix = viewMatrix.multiply(modelMatrix);</code></pre></div><h2 id=可视范围>可视范围</h2><p>人的视角大约 200 度。在 WebGL 中，不在视角范围内的内容也不会被显示。<p>为了确定可视范围，我们引入了平行投影和透视投影。 在真实世界中透视的存在让我们对景深有直观的认识，所以在 3D 游戏场景中，通常使用透视投影。 而在一些绘图软件场景中，通常使用平行投影。<p>〈projection matrix〉 × 〈view matrix〉 × 〈model matrix〉 × 〈vertex coordinates〉<h3 id=平行投影>平行投影</h3><div><pre class=line-numbers data-line=""><code class=language-javascript>Matrix4.setOrtho(left, right, bottom, top, near, far)</code></pre></div><p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/box-proj.png alt=平行投影><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/box-proj.png data-alt=平行投影></div><em>平行投影</em><p></p><script>new Imager('.responsive-image__delayed', {
+<p>在很多 WebGL 工具库中，都会提供操作矩阵的便捷方法。现在我们就能很好的理解所需的参数含义。
+例如使用类似 <code class="highlighter-rouge">setLookAt()</code> 方法得到一个变换矩阵：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// cuon-utils.js
+
+Matrix4.setLookAt(eyeX, eyeY, eyeZ, atX, atY, atZ, upX, upY, upZ)</code></pre>
+</div>
+
+<p>在默认情况下，眼睛坐标是原点（0,0,0），观察向量是 z 轴负向，而向上向量是 y 轴正向。</p>
+
+<h3 id="矩阵变换">矩阵变换</h3>
+
+<p>观察矩阵和模型变换矩阵可以在 vertex shader 中计算：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">gl_Position = u_ViewMatrix * u_ModelMatrix * a_Position;</code></pre>
+</div>
+
+<p>也可以在 JS 中将这两个矩阵组合成一个，然后传递给 vertex shader：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">var modelViewMatrix = viewMatrix.multiply(modelMatrix);</code></pre>
+</div>
+
+<h2 id="可视范围">可视范围</h2>
+
+<p>人的视角大约 200 度。在 WebGL 中，不在视角范围内的内容也不会被显示。</p>
+
+<p>为了确定可视范围，我们引入了平行投影和透视投影。
+在真实世界中透视的存在让我们对景深有直观的认识，所以在 3D 游戏场景中，通常使用透视投影。
+而在一些绘图软件场景中，通常使用平行投影。</p>
+
+<p>〈projection matrix〉 × 〈view matrix〉 × 〈model matrix〉 × 〈vertex coordinates〉</p>
+
+<h3 id="平行投影">平行投影</h3>
+
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">Matrix4.setOrtho(left, right, bottom, top, near, far)</code></pre>
+</div>
+
+<p class="responsive-image">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/box-proj.png" alt="平行投影" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/box-proj.png" data-alt="平行投影">
+    </div>
+    <em>平行投影</em>
+</p>
+
+<script>
+    new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800, 1400],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });</script><p>有一点需要注意，如果这个视角矩形的宽高比与 <code class=highlighter-rouge>&lt;canvas&gt;</code> 设定的不一致，会造成形状的拉伸。比如显示在 1:1 宽高比的 canvas 上会造成宽度的拉伸：<div><pre class=line-numbers data-line=""><code class=language-javascript>projMatrix.setOrtho(-0.3, 0.3, -1.0, 1.0, 0.0, 0.5);</code></pre></div><h3 id=透视投影>透视投影</h3><div><pre class=line-numbers data-line=""><code class=language-javascript>Matrix4.setPerspective(fov, aspect, near, far)</code></pre></div><p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/pyramid-proj.png alt=透视投影><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/pyramid-proj.png data-alt=透视投影></div><em>透视投影</em><p></p><script>new Imager('.responsive-image__delayed', {
+    });
+</script>
+
+<p>有一点需要注意，如果这个视角矩形的宽高比与 <code class="highlighter-rouge">&lt;canvas&gt;</code> 设定的不一致，会造成形状的拉伸。比如显示在 1:1 宽高比的 canvas 上会造成宽度的拉伸：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">projMatrix.setOrtho(-0.3, 0.3, -1.0, 1.0, 0.0, 0.5);</code></pre>
+</div>
+
+<h3 id="透视投影">透视投影</h3>
+
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">Matrix4.setPerspective(fov, aspect, near, far)</code></pre>
+</div>
+
+<p class="responsive-image">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/pyramid-proj.png" alt="透视投影" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/pyramid-proj.png" data-alt="透视投影">
+    </div>
+    <em>透视投影</em>
+</p>
+
+<script>
+    new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800, 1400],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });</script><h2 id=深度检测>深度检测</h2><p>由于 WebGL 按 Buffer 中 vertex 顺序绘制，因此可能出现远处的形状绘制在了近处形状之上。 WebGL 为了处理这种情况，增加了 Hidden Surface Removal 功能，使用一个 depth buffer 存储物体深度信息。判断标准显然是根据在 z 轴上的位置，因此也叫做 z-buffer。<p>开启深度检测，并且在每一次绘制开始前清空 Buffer。之前会清除 color buffer，使用位运算执行两者：<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.enable(gl.DEPTH_TEST);
-gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);</code></pre></div><p>那么我们很自然想到，如果两个形状 z 坐标一样呢？在 WebGL 中这种情况叫做 Z Fighting。我们需要给每个 vertex 在 z 轴上增加一点点偏移，这样就能完全避免这种情况：<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.enable(gl.POLYGON_OFFSET_FILL);
-gl.polygonOffset(1.0, 1.0);</code></pre></div></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/04/17/%E5%88%87%E6%8D%A2%E5%9B%BE%E7%89%87.html class=read-next-link></a><section><span>图片切换效果</span><p>在实现图片幻灯片切换效果时，常用的效果包括左右滑动，渐隐渐显。对于熟悉 CSS Transition 的开发者，实...</section><div class=filter></div><img src=/assets/img/slider-css-mask.jpg alt=""></div><div class=read-next-item><a href=/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html class=read-next-link></a><section><span>Shader 基础知识</span><p>一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。</section><div class=filter></div><img src=/assets/img/webgl/logo.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+    });
+</script>
+
+<h2 id="深度检测">深度检测</h2>
+
+<p>由于 WebGL 按 Buffer 中 vertex 顺序绘制，因此可能出现远处的形状绘制在了近处形状之上。
+WebGL 为了处理这种情况，增加了 Hidden Surface Removal 功能，使用一个 depth buffer 存储物体深度信息。判断标准显然是根据在 z 轴上的位置，因此也叫做 z-buffer。</p>
+
+<p>开启深度检测，并且在每一次绘制开始前清空 Buffer。之前会清除 color buffer，使用位运算执行两者：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">gl.enable(gl.DEPTH_TEST);
+gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);</code></pre>
+</div>
+
+<p>那么我们很自然想到，如果两个形状 z 坐标一样呢？在 WebGL 中这种情况叫做 Z Fighting。我们需要给每个 vertex 在 z 轴上增加一点点偏移，这样就能完全避免这种情况：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">gl.enable(gl.POLYGON_OFFSET_FILL);
+gl.polygonOffset(1.0, 1.0);</code></pre>
+</div>
+
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/04/17/%E5%88%87%E6%8D%A2%E5%9B%BE%E7%89%87.html" class="read-next-link"></a>
+            <section>
+                <span>图片切换效果</span>
+                <p>在实现图片幻灯片切换效果时，常用的效果包括左右滑动，渐隐渐显。对于熟悉 CSS Transition 的开发者，实...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/slider-css-mask.jpg" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html" class="read-next-link"></a>
+            <section>
+                <span>Shader 基础知识</span>
+                <p>一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/logo.png" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -64,11 +379,41 @@ gl.polygonOffset(1.0, 1.0);</code></pre></div></article><div class=social-share-
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2019</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -112,11 +457,7 @@ gl.polygonOffset(1.0, 1.0);</code></pre></div></article><div class=social-share-
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>

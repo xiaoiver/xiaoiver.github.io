@@ -1,7 +1,68 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>光线追踪 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=光线追踪><meta name=keywords content=WebGL><title>光线追踪 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=光线追踪><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content=首先我们需要了解人眼看到颜色的原理。想象一束混合了红色绿色蓝色光子（photon）的白光，照射到了红色表面，其中绿色蓝色光子都被吸收了，只有红色光子被反射了，在众多反射方向中，有那么一束进入到了我们的眼睛，这就是我们看到物体表面是红色的原因。根据物体表面材质的不同，光子被吸收反射的比例也不同。><meta property=og:description content=首先我们需要了解人眼看到颜色的原理。想象一束混合了红色绿色蓝色光子（photon）的白光，照射到了红色表面，其中绿色蓝色光子都被吸收了，只有红色光子被反射了，在众多反射方向中，有那么一束进入到了我们的眼睛，这就是我们看到物体表面是红色的原因。根据物体表面材质的不同，光子被吸收反射的比例也不同。><link rel=canonical href=https://xiaoiver.github.io/coding/2018/08/14/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/08/14/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-08-14T00:00:00+08:00><script type=application/ld+json>{"description":"首先我们需要了解人眼看到颜色的原理。想象一束混合了红色绿色蓝色光子（photon）的白光，照射到了红色表面，其中绿色蓝色光子都被吸收了，只有红色光子被反射了，在众多反射方向中，有那么一束进入到了我们的眼睛，这就是我们看到物体表面是红色的原因。根据物体表面材质的不同，光子被吸收反射的比例也不同。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/08/14/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA.html","headline":"光线追踪","dateModified":"2018-08-14T00:00:00+08:00","datePublished":"2018-08-14T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/08/14/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/08/14/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光线追踪 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="光线追踪">
+    <meta name="keywords"  content="WebGL">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>光线追踪 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="光线追踪" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="首先我们需要了解人眼看到颜色的原理。想象一束混合了红色绿色蓝色光子（photon）的白光，照射到了红色表面，其中绿色蓝色光子都被吸收了，只有红色光子被反射了，在众多反射方向中，有那么一束进入到了我们的眼睛，这就是我们看到物体表面是红色的原因。根据物体表面材质的不同，光子被吸收反射的比例也不同。" />
+<meta property="og:description" content="首先我们需要了解人眼看到颜色的原理。想象一束混合了红色绿色蓝色光子（photon）的白光，照射到了红色表面，其中绿色蓝色光子都被吸收了，只有红色光子被反射了，在众多反射方向中，有那么一束进入到了我们的眼睛，这就是我们看到物体表面是红色的原因。根据物体表面材质的不同，光子被吸收反射的比例也不同。" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/08/14/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/08/14/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-08-14T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"首先我们需要了解人眼看到颜色的原理。想象一束混合了红色绿色蓝色光子（photon）的白光，照射到了红色表面，其中绿色蓝色光子都被吸收了，只有红色光子被反射了，在众多反射方向中，有那么一束进入到了我们的眼睛，这就是我们看到物体表面是红色的原因。根据物体表面材质的不同，光子被吸收反射的比例也不同。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/08/14/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA.html","headline":"光线追踪","dateModified":"2018-08-14T00:00:00+08:00","datePublished":"2018-08-14T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/08/14/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/08/14/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+    <script src="/assets/js/glsl-canvas.min.js"></script>
+    <script>
+        function initArrayBuffer(gl, program, attribute, data, type, num) {
             // Create a buffer object
             var buffer = gl.createBuffer();
             if (!buffer) {
@@ -24,9 +85,115 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             return true;
-        }</script><body><!--[if lt IE 10]>
+        }
+    </script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>光线追踪</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-08-14><i class="iconfont icon-date"></i>14 Aug 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/raytracer.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>写一个简单的 Ray Tracer</h2><article class=markdown-body><p>首先我们需要了解人眼看到颜色的原理。想象一束混合了红色绿色蓝色光子（photon）的白光，照射到了红色表面，其中绿色蓝色光子都被吸收了，只有红色光子被反射了，在众多反射方向中，有那么一束进入到了我们的眼睛，这就是我们看到物体表面是红色的原因。根据物体表面材质的不同，光子被吸收反射的比例也不同。<p>基于这一点，光线追踪这种绘制图像的算法出现了。按照上述的思路从光源到物体表面再到人眼叫做 <strong>forward ray-tracing</strong>。这种思路的缺陷是很明显的，光子在物体表面向很多方向反射，只有极小一部分进入人眼，大部分计算都被浪费了。因此，与之相对的另一种思路成为了更好的选择。<h2 id=backward-ray-tracing>Backward Ray-tracing</h2><p>让我们将整条路径反转，现在我们的视线，称作 <strong>primary-ray</strong> 到达了物体表面（如果没有被其他物体遮挡），在交点处向着光源发射另一条 <strong>shadow-ray</strong>，如果没有被其他物体遮挡，交点处的颜色就是物体表面颜色，反之则是阴影。<h2 id=ray-tracer-10>Ray Tracer 1.0</h2><p>在我们的基础版本中唯一比较困难的就是视线和物体表面交点的计算。 我们在场景中选用球体（大多数 DEMO 也是这么做的），计算交点和法线相对方便。让我们来复习一下几何和线性代数的知识。<h3 id=sphere-intersection>Sphere intersection</h3><p>关于射线和球面计算焦点的问题，IQ 大神在博客上<a href="http://www.iquilezles.org/blog/?p=2411">吐槽</a>过很多开发者只会复制粘贴，并不了解其中原理，导致复制的代码中包含 2 4 这样的 Magic Number，也不知道精简一下。<p>下面来自 scratch a pixel 的图能很清晰的说明： <img src=/assets/img/webgl/raysphereisect1.png alt=""><p>我们的视点在<script type=math/tex>O</script>，视线方向单位向量是<script type=math/tex>D</script>，视线这条射线可以表示为<script type=math/tex>O+tD</script>，而射线和圆的两个交点<script type=math/tex>P</script>和<script type=math/tex>P'</script>可以表示为： \begin{array}{l} P = {O+t_{0}D}\\P’ = {O+t_{1}D} \end{array}<p>因此，只要得到<script type=math/tex>t_{0}</script>和<script type=math/tex>t_{1}</script>： \begin{array}{l} t_{0}=t_{ca}-t_{hc}\\t_{1}=t_{ca}+t_{hc} \end{array}<p>其中<script type=math/tex>t_{ca}</script>是很容易获得的。还记得向量点乘的含义吗，<script type=math/tex>t_{ca}</script>就是<script type=math/tex>L</script>在<script type=math/tex>D</script>上的投影： \begin{array}{l} L=C-O\\t_{ca}=L \bullet D \end{array}<p>有了<script type=math/tex>t_{ca}</script>和<script type=math/tex>L</script>利用勾股定理，很容易得到<script type=math/tex>d</script>\begin{array}{l} d^2+t_{ca}^2=L^2\\d=\sqrt{L^2-t_{ca}^2}=\sqrt{L \bullet L - t_{ca} \bullet t_{ca} }\\t_{hc}=\sqrt{radius^2-d^2} \end{array}<p>除了使用几何知识，使用<a href=https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection>线性代数</a>同样可以得到，IQ 大神吐槽的被广泛复制粘贴的方法实际上使用的是这种分析方式。<p>了解了算法思想，用 glsl 实现就很容易了。注意 <code class=highlighter-rouge>out</code> 修饰符的用法，类似传入引用的地址将方法的多个返回值传递出来：<div><pre class=line-numbers data-line=""><code class=language-glsl>bool intersect(in vec3 rayorig, in vec3 raydir,
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#WebGL" class="post-tag">WebGL</a>
+            
+            
+        </div>
+        <h1>光线追踪</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="18-08-14"><i class="iconfont icon-date"></i>14 Aug 2018</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/webgl/raytracer.png') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <h2 class="post-subtitle">写一个简单的 Ray Tracer</h2>
+    
+    <article class="markdown-body">
+        <p>首先我们需要了解人眼看到颜色的原理。想象一束混合了红色绿色蓝色光子（photon）的白光，照射到了红色表面，其中绿色蓝色光子都被吸收了，只有红色光子被反射了，在众多反射方向中，有那么一束进入到了我们的眼睛，这就是我们看到物体表面是红色的原因。根据物体表面材质的不同，光子被吸收反射的比例也不同。</p>
+
+<p>基于这一点，光线追踪这种绘制图像的算法出现了。按照上述的思路从光源到物体表面再到人眼叫做 <strong>forward ray-tracing</strong>。这种思路的缺陷是很明显的，光子在物体表面向很多方向反射，只有极小一部分进入人眼，大部分计算都被浪费了。因此，与之相对的另一种思路成为了更好的选择。</p>
+
+<h2 id="backward-ray-tracing">Backward Ray-tracing</h2>
+
+<p>让我们将整条路径反转，现在我们的视线，称作 <strong>primary-ray</strong> 到达了物体表面（如果没有被其他物体遮挡），在交点处向着光源发射另一条 <strong>shadow-ray</strong>，如果没有被其他物体遮挡，交点处的颜色就是物体表面颜色，反之则是阴影。</p>
+
+<h2 id="ray-tracer-10">Ray Tracer 1.0</h2>
+
+<p>在我们的基础版本中唯一比较困难的就是视线和物体表面交点的计算。
+我们在场景中选用球体（大多数 DEMO 也是这么做的），计算交点和法线相对方便。让我们来复习一下几何和线性代数的知识。</p>
+
+<h3 id="sphere-intersection">Sphere intersection</h3>
+
+<p>关于射线和球面计算焦点的问题，IQ 大神在博客上<a href="http://www.iquilezles.org/blog/?p=2411">吐槽</a>过很多开发者只会复制粘贴，并不了解其中原理，导致复制的代码中包含 2 4 这样的 Magic Number，也不知道精简一下。</p>
+
+<p>下面来自 scratch a pixel 的图能很清晰的说明：
+<img src="/assets/img/webgl/raysphereisect1.png" alt="" /></p>
+
+<p>我们的视点在 <script type="math/tex">O</script>，视线方向单位向量是 <script type="math/tex">D</script>，视线这条射线可以表示为 <script type="math/tex">O+tD</script>，而射线和圆的两个交点 <script type="math/tex">P</script> 和 <script type="math/tex">P'</script> 可以表示为：
+\begin{array}{l}
+P = {O+t_{0}D}\\P’ = {O+t_{1}D}
+\end{array}</p>
+
+<p>因此，只要得到 <script type="math/tex">t_{0}</script> 和 <script type="math/tex">t_{1}</script>：
+\begin{array}{l}
+t_{0}=t_{ca}-t_{hc}\\t_{1}=t_{ca}+t_{hc}
+\end{array}</p>
+
+<p>其中 <script type="math/tex">t_{ca}</script> 是很容易获得的。还记得向量点乘的含义吗，<script type="math/tex">t_{ca}</script> 就是 <script type="math/tex">L</script> 在 <script type="math/tex">D</script> 上的投影：
+\begin{array}{l}
+L=C-O\\t_{ca}=L \bullet D
+\end{array}</p>
+
+<p>有了 <script type="math/tex">t_{ca}</script> 和 <script type="math/tex">L</script> 利用勾股定理，很容易得到 <script type="math/tex">d</script>
+\begin{array}{l}
+d^2+t_{ca}^2=L^2\\d=\sqrt{L^2-t_{ca}^2}=\sqrt{L \bullet L - t_{ca} \bullet t_{ca} }\\t_{hc}=\sqrt{radius^2-d^2}
+\end{array}</p>
+
+<p>除了使用几何知识，使用<a href="https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection">线性代数</a>同样可以得到，IQ 大神吐槽的被广泛复制粘贴的方法实际上使用的是这种分析方式。</p>
+
+<p>了解了算法思想，用 glsl 实现就很容易了。注意 <code class="highlighter-rouge">out</code> 修饰符的用法，类似传入引用的地址将方法的多个返回值传递出来：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">bool intersect(in vec3 rayorig, in vec3 raydir,
                 in vec3 center, in float radius,
                 out float t0, out float t1) {
     vec3 l = center - rayorig;
@@ -39,7 +206,16 @@
     t1 = tca + thc;
 
     return true;
-}</code></pre></div><h3 id=构建场景>构建场景</h3><p>我们的场景中包含若干球体和光源。 在 fragment shader 中定义如下 uniform，包括球体的结构体。 在 JS 中向结构体数组传值还是比较麻烦的，并没有便捷的方式，需要依次获取数组中每个结构体的每个属性地址，然后传值：<div><pre class=line-numbers data-line=""><code class=language-glsl>#define SPHERE_NUM 2
+}</code></pre>
+</div>
+
+<h3 id="构建场景">构建场景</h3>
+
+<p>我们的场景中包含若干球体和光源。
+在 fragment shader 中定义如下 uniform，包括球体的结构体。
+在 JS 中向结构体数组传值还是比较麻烦的，并没有便捷的方式，需要依次获取数组中每个结构体的每个属性地址，然后传值：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">#define SPHERE_NUM 2
 uniform vec3 u_EyePosition;
 uniform vec3 u_LightPosition;
 uniform vec3 u_LightColor;
@@ -48,7 +224,13 @@ struct Sphere {
     float radius;
     vec3 surfaceColor;
 };
-uniform Sphere u_Spheres[SPHERE_NUM];</code></pre></div><p>我们的第一版光线追踪实现如下。根据传入的 primary ray 的位置和方向，与场景中所有的球体进行交点检测。 如果没有和任何球体相交，就返回背景颜色。这里有一点需要注意，在依次检测和各个球体的交点时，我们需要知道最近的一个。<div><pre class=line-numbers data-line=""><code class=language-glsl>void main() {
+uniform Sphere u_Spheres[SPHERE_NUM];</code></pre>
+</div>
+
+<p>我们的第一版光线追踪实现如下。根据传入的 primary ray 的位置和方向，与场景中所有的球体进行交点检测。
+如果没有和任何球体相交，就返回背景颜色。这里有一点需要注意，在依次检测和各个球体的交点时，我们需要知道最近的一个。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">void main() {
     // 视点到当前 fragment 的方向
     vec3 eyeDirection = normalize(v_Position - u_EyePosition);
     // 追踪 primary ray
@@ -74,7 +256,13 @@ vec3 trace(in vec3 rayorig, in vec3 raydir) {
     }
     // 没有看到任何球体，返回背景颜色
     if (!intersected) return color;
-    // shadow ray 部分</code></pre></div><p>接下来进行 shadow ray 的部分，此时射线起点变成了 primary ray 和球体的交点，射线方向朝向光源。 继续进行场景中的球体交点检测，如果碰到了球体，说明阻挡了光源，返回背景颜色即可。如果没有被阻挡，返回球体表面颜色。<div><pre class=line-numbers data-line=""><code class=language-glsl>// shadow-ray
+    // shadow ray 部分</code></pre>
+</div>
+
+<p>接下来进行 shadow ray 的部分，此时射线起点变成了 primary ray 和球体的交点，射线方向朝向光源。
+继续进行场景中的球体交点检测，如果碰到了球体，说明阻挡了光源，返回背景颜色即可。如果没有被阻挡，返回球体表面颜色。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">// shadow-ray
     vec3 hitPoint = rayorig + raydir * tnear;
     vec3 lightDirection = normalize(u_LightPosition - hitPoint);
     for (int j = 0; j &lt; SPHERE_NUM; j++) {
@@ -85,7 +273,15 @@ vec3 trace(in vec3 rayorig, in vec3 raydir) {
     }
     color += intersectedSphere.surfaceColor;
     return color;
-}</code></pre></div><p>第一版效果如下，有点奇怪是吧，不用担心我们会利用之前学到的「光照基础」继续改善效果：<div class=glsl-canvas-wrapper><canvas id=ray-tracer1 data-vertex-url=/assets/shaders/ray-tracing/ray-tracer1.vert data-fragment-url=/assets/shaders/ray-tracing/ray-tracer1.frag width=500 height=500></canvas></div><script>const sandbox1 = new GlslCanvas(document.querySelector('#ray-tracer1'));
+}</code></pre>
+</div>
+
+<p>第一版效果如下，有点奇怪是吧，不用担心我们会利用之前学到的「光照基础」继续改善效果：</p>
+<div class="glsl-canvas-wrapper">
+    <canvas id="ray-tracer1" data-vertex-url="/assets/shaders/ray-tracing/ray-tracer1.vert" data-fragment-url="/assets/shaders/ray-tracing/ray-tracer1.frag" width="500" height="500"></canvas>
+</div>
+<script>
+const sandbox1 = new GlslCanvas(document.querySelector('#ray-tracer1'));
 sandbox1.on('load', function () {
     const gl = sandbox1.gl;
     const program = sandbox1.program;
@@ -113,16 +309,43 @@ sandbox1.on('load', function () {
     if (initArrayBuffer(gl, program, 'a_Position', new Float32Array(positions), gl.FLOAT, 2)) {
         sandbox1.render();
     }
-});</script><h3 id=漫反射--环境反射>漫反射 &amp; 环境反射</h3><p>在之前我们通过<a href=/coding/2018/05/25/%E5%85%89%E7%85%A7%E5%9F%BA%E7%A1%80.html>「光照基础」</a>学习了物体表面漫反射和环境反射的计算方法，正好在此应用一下。<p>首先是最简单的环境反射：<div><pre class=line-numbers data-line=""><code class=language-glsl>float ambient = 0.1;
-color += ambient * intersectedSphere.surfaceColor;</code></pre></div><p>然后是稍微复杂一点的漫反射，这里需要使用 primary ray 和球面交点处的法线向量（知道为啥使用球面了吧）：<div><pre class=line-numbers data-line=""><code class=language-glsl>vec3 hitNormal = normalize(hitPoint - intersectedSphere.center);
+});
+</script>
+
+<h3 id="漫反射--环境反射">漫反射 &amp; 环境反射</h3>
+
+<p>在之前我们通过<a href="/coding/2018/05/25/%E5%85%89%E7%85%A7%E5%9F%BA%E7%A1%80.html">「光照基础」</a>学习了物体表面漫反射和环境反射的计算方法，正好在此应用一下。</p>
+
+<p>首先是最简单的环境反射：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">float ambient = 0.1;
+color += ambient * intersectedSphere.surfaceColor;</code></pre>
+</div>
+
+<p>然后是稍微复杂一点的漫反射，这里需要使用 primary ray 和球面交点处的法线向量（知道为啥使用球面了吧）：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">vec3 hitNormal = normalize(hitPoint - intersectedSphere.center);
 float diffuse = clamp(dot(hitNormal, lightDirection), 0.0, 1.0);
-color += (diffuse + ambient) * intersectedSphere.surfaceColor;</code></pre></div><p>这里有一点需要注意，在第一版中 shadow ray 求交失败后，我们直接返回了背景颜色也就是黑色，这里可以稍稍改进一下：<div><pre class=line-numbers data-line=""><code class=language-glsl>for (int j = 0; j &lt; SPHERE_NUM; j++) {
+color += (diffuse + ambient) * intersectedSphere.surfaceColor;</code></pre>
+</div>
+
+<p>这里有一点需要注意，在第一版中 shadow ray 求交失败后，我们直接返回了背景颜色也就是黑色，这里可以稍稍改进一下：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">for (int j = 0; j &lt; SPHERE_NUM; j++) {
     float t0, t1;
     if (intersect(hitPoint, lightDirection, u_Spheres[j].center, u_Spheres[j].radius, t0, t1)) {
         diffuse *= 0.2;
         break;
     }
-}</code></pre></div><p>改进后的效果如下：<div class=glsl-canvas-wrapper><canvas id=ray-tracer2 data-vertex-url=/assets/shaders/ray-tracing/ray-tracer1.vert data-fragment-url=/assets/shaders/ray-tracing/ray-tracer2.frag width=500 height=500></canvas></div><script>const sandbox2 = new GlslCanvas(document.querySelector('#ray-tracer2'));
+}</code></pre>
+</div>
+
+<p>改进后的效果如下：</p>
+<div class="glsl-canvas-wrapper">
+    <canvas id="ray-tracer2" data-vertex-url="/assets/shaders/ray-tracing/ray-tracer1.vert" data-fragment-url="/assets/shaders/ray-tracing/ray-tracer2.frag" width="500" height="500"></canvas>
+</div>
+<script>
+const sandbox2 = new GlslCanvas(document.querySelector('#ray-tracer2'));
 sandbox2.on('load', function () {
     const gl = sandbox2.gl;
     const program = sandbox2.program;
@@ -150,11 +373,123 @@ sandbox2.on('load', function () {
     if (initArrayBuffer(gl, program, 'a_Position', new Float32Array(positions), gl.FLOAT, 2)) {
         sandbox2.render();
     }
-});</script><h2 id=后续改进>后续改进</h2><p>我们在<a href=/coding/2018/05/25/%E5%85%89%E7%85%A7%E5%9F%BA%E7%A1%80.html>「光照基础」</a>中还学到了镜面反射，不禁让我们继续思考 shadow ray 的旅程其实还没有结束。当遇到镜面材质时会发生反射，当进入半透明物体时会发生折射，通过对这些情况的模拟，我们能实现更加逼真的渲染效果。这些就留到下一 Part 介绍吧。<h2 id=参考资料>参考资料</h2><p>文中的数学公式使用 <a href=https://docs.mathjax.org/en/latest/tex.html>Mathjax</a> 编辑。<ul><li><a href=https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-ray-tracing/how-does-it-work>introduction-to-ray-tracing</a><li><a href=https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection>射线球面交点计算</a><li><a href="http://www.iquilezles.org/blog/?p=2411">IQ 的吐槽</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/08/25/Worker-%E7%9A%84%E4%B8%A4%E7%B1%BB%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF.html class=read-next-link></a><section><span>Worker 的两类应用场景</span><p>浏览器主线程需要响应用户交互，渲染 UI，如果此时进行一些需要大量计算的操作，就会造成无法及时响应的 “Jank”...</section><div class=filter></div><img src=/assets/img/post-bg-js-module.jpg alt=""></div><div class=read-next-item><a href=/coding/2018/08/10/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%B8%89.html class=read-next-link></a><section><span>噪声的艺术（三）</span><p>在「噪声的艺术（一）」中我们学习了 Value Noise, Gradient Noise 以及 Simplex ...</section><div class=filter></div><img src=/assets/img/webgl/quiles.jpg alt=""></div></section><section class="post-footer-item comment"></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+});
+</script>
+
+<h2 id="后续改进">后续改进</h2>
+
+<p>我们在<a href="/coding/2018/05/25/%E5%85%89%E7%85%A7%E5%9F%BA%E7%A1%80.html">「光照基础」</a>中还学到了镜面反射，不禁让我们继续思考 shadow ray 的旅程其实还没有结束。当遇到镜面材质时会发生反射，当进入半透明物体时会发生折射，通过对这些情况的模拟，我们能实现更加逼真的渲染效果。这些就留到下一 Part 介绍吧。</p>
+
+<h2 id="参考资料">参考资料</h2>
+
+<p>文中的数学公式使用 <a href="https://docs.mathjax.org/en/latest/tex.html">Mathjax</a> 编辑。</p>
+
+<ul>
+  <li><a href="https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-ray-tracing/how-does-it-work">introduction-to-ray-tracing</a></li>
+  <li><a href="https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection">射线球面交点计算</a></li>
+  <li><a href="http://www.iquilezles.org/blog/?p=2411">IQ 的吐槽</a></li>
+</ul>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/08/25/Worker-%E7%9A%84%E4%B8%A4%E7%B1%BB%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF.html" class="read-next-link"></a>
+            <section>
+                <span>Worker 的两类应用场景</span>
+                <p>浏览器主线程需要响应用户交互，渲染 UI，如果此时进行一些需要大量计算的操作，就会造成无法及时响应的 “Jank”...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/post-bg-js-module.jpg" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/08/10/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%B8%89.html" class="read-next-link"></a>
+            <section>
+                <span>噪声的艺术（三）</span>
+                <p>在「噪声的艺术（一）」中我们学习了 Value Noise, Gradient Noise 以及 Simplex ...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/quiles.jpg" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2019</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -198,11 +533,7 @@ sandbox2.on('load', function () {
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>

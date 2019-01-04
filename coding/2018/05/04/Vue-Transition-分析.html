@@ -1,46 +1,237 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Vue Transition 分析 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="Vue Transition 分析"><meta name=keywords content=vue><title>Vue Transition 分析 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="Vue Transition 分析"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="有了之前对于 Vue 整个渲染流程的分析，我们可以深入研究一下 &lt;transition&gt; 的实现原理。"><meta property=og:description content="有了之前对于 Vue 整个渲染流程的分析，我们可以深入研究一下 &lt;transition&gt; 的实现原理。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/04/Vue-Transition-%E5%88%86%E6%9E%90.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/05/04/Vue-Transition-%E5%88%86%E6%9E%90.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-05-04T00:00:00+08:00><script type=application/ld+json>{"description":"有了之前对于 Vue 整个渲染流程的分析，我们可以深入研究一下 &lt;transition&gt; 的实现原理。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/05/04/Vue-Transition-%E5%88%86%E6%9E%90.html","headline":"Vue Transition 分析","dateModified":"2018-05-04T00:00:00+08:00","datePublished":"2018-05-04T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/05/04/Vue-Transition-%E5%88%86%E6%9E%90.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/04/Vue-Transition-%E5%88%86%E6%9E%90.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Transition 分析 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="Vue Transition 分析">
+    <meta name="keywords"  content="vue">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>Vue Transition 分析 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="Vue Transition 分析" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="有了之前对于 Vue 整个渲染流程的分析，我们可以深入研究一下 &lt;transition&gt; 的实现原理。" />
+<meta property="og:description" content="有了之前对于 Vue 整个渲染流程的分析，我们可以深入研究一下 &lt;transition&gt; 的实现原理。" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/05/04/Vue-Transition-%E5%88%86%E6%9E%90.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/05/04/Vue-Transition-%E5%88%86%E6%9E%90.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-05-04T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"有了之前对于 Vue 整个渲染流程的分析，我们可以深入研究一下 &lt;transition&gt; 的实现原理。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/05/04/Vue-Transition-%E5%88%86%E6%9E%90.html","headline":"Vue Transition 分析","dateModified":"2018-05-04T00:00:00+08:00","datePublished":"2018-05-04T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/05/04/Vue-Transition-%E5%88%86%E6%9E%90.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/05/04/Vue-Transition-%E5%88%86%E6%9E%90.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#vue class=post-tag>vue</a></div><h1>Vue Transition 分析</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-05-04><i class="iconfont icon-date"></i>04 May 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/vue-render.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><article class=markdown-body><p>有了之前对于 Vue 整个渲染流程的分析，我们可以深入研究一下 <code class=highlighter-rouge>&lt;transition&gt;</code> 的实现原理。<p>Vue 渲染机制分析：<ul><li><a href=/coding/2018/04/27/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6.html>从 HTML 字符串到 render 函数</a><li><a href=/coding/2018/04/29/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%BA%8C.html>从 render 函数到 VNode</a><li><a href=/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html>从 VNode 到 DOM</a></ul><h2 id=使用方法>使用方法</h2><p>先来简单看下使用方法。按照 <a href=https://vuejs.org/v2/guide/transitions.html>Vue Transition 文档</a>的介绍，<code class=highlighter-rouge>&lt;transition&gt;</code> 可以应用在下列元素或者组件中：<ul><li>条件渲染 (使用 v-if)<li>条件展示 (使用 v-show)<li>动态组件<li>组件根节点</ul><p>在进入具体分析之前，先来看下 Vue 中强制触发渲染流程的方法：<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/core/instance/lifecycle.js
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#vue" class="post-tag">vue</a>
+            
+            
+        </div>
+        <h1>Vue Transition 分析</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="18-05-04"><i class="iconfont icon-date"></i>04 May 2018</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/vue-render.png') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <article class="markdown-body">
+        <p>有了之前对于 Vue 整个渲染流程的分析，我们可以深入研究一下 <code class="highlighter-rouge">&lt;transition&gt;</code> 的实现原理。</p>
+
+<p>Vue 渲染机制分析：</p>
+<ul>
+  <li><a href="/coding/2018/04/27/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6.html">从 HTML 字符串到 render 函数</a></li>
+  <li><a href="/coding/2018/04/29/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%BA%8C.html">从 render 函数到 VNode</a></li>
+  <li><a href="/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html">从 VNode 到 DOM</a></li>
+</ul>
+
+<h2 id="使用方法">使用方法</h2>
+
+<p>先来简单看下使用方法。按照 <a href="https://vuejs.org/v2/guide/transitions.html">Vue Transition 文档</a>的介绍，<code class="highlighter-rouge">&lt;transition&gt;</code> 可以应用在下列元素或者组件中：</p>
+<ul>
+  <li>条件渲染 (使用 v-if)</li>
+  <li>条件展示 (使用 v-show)</li>
+  <li>动态组件</li>
+  <li>组件根节点</li>
+</ul>
+
+<p>在进入具体分析之前，先来看下 Vue 中强制触发渲染流程的方法：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/core/instance/lifecycle.js
 
 Vue.prototype.$forceUpdate = function () {
     const vm = this;
     if (vm._watcher) {
         vm._watcher.update();
     }
-};</code></pre></div><p>之前介绍过的 Watcher，创建时我们传入了回调函数（第二个参数），调用实例上的 <code class=highlighter-rouge>update()</code> 时就会触发这个回调函数，完成从 render 函数到 VNode 再到 DOM 的渲染流程。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/platforms/web/runtime/index.js
+};</code></pre>
+</div>
+
+<p>之前介绍过的 Watcher，创建时我们传入了回调函数（第二个参数），调用实例上的 <code class="highlighter-rouge">update()</code> 时就会触发这个回调函数，完成从 render 函数到 VNode 再到 DOM 的渲染流程。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/platforms/web/runtime/index.js
 
 export function mountComponent(vm, el, hydrating) {
     let updateComponent = () =&gt; {
         vm._update(vm._render(), hydrating);
     };
     vm._watcher = new Watcher(vm, updateComponent, noop);
-}</code></pre></div><h2 id=生成-vnode-阶段>生成 VNode 阶段</h2><p>在这一阶段中，会执行 render 函数得到 VNode。<p>内置的 <code class=highlighter-rouge>&lt;transition&gt;</code> 是一个抽象组件（abstract）。<a href=https://github.com/vuejs/vuejs.org/issues/720>Vue 文档中是没有抽象组件的</a>，应该是 Vue 的内置组件才会用到，比如还有 <code class=highlighter-rouge>&lt;keep-alive&gt;</code>。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/platforms/web/runtime/components/transition.js
+}</code></pre>
+</div>
+
+<h2 id="生成-vnode-阶段">生成 VNode 阶段</h2>
+
+<p>在这一阶段中，会执行 render 函数得到 VNode。</p>
+
+<p>内置的 <code class="highlighter-rouge">&lt;transition&gt;</code> 是一个抽象组件（abstract）。<a href="https://github.com/vuejs/vuejs.org/issues/720">Vue 文档中是没有抽象组件的</a>，应该是 Vue 的内置组件才会用到，比如还有 <code class="highlighter-rouge">&lt;keep-alive&gt;</code>。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/platforms/web/runtime/components/transition.js
 
 export default {
     name: &#39;transition&#39;,
     props: transitionProps,
     abstract: true,
     render(h) {...}
-}</code></pre></div><h3 id=获取子-vnode-节点>获取子 VNode 节点</h3><p>进入 render 函数，结合前面的渲染分析，我们知道 VNode 的生成顺序，先子节点再父节点。 所以这里 <code class=highlighter-rouge>_renderChildren</code> 一定就是子节点数组了。 另外，transition 只支持单子节点，否则会报警告，后续的处理也仅针对第一个子节点进行。<div><pre class=line-numbers data-line=""><code class=language-javascript>let children = this.$options._renderChildren;
+}</code></pre>
+</div>
+
+<h3 id="获取子-vnode-节点">获取子 VNode 节点</h3>
+
+<p>进入 render 函数，结合前面的渲染分析，我们知道 VNode 的生成顺序，先子节点再父节点。
+所以这里 <code class="highlighter-rouge">_renderChildren</code> 一定就是子节点数组了。
+另外，transition 只支持单子节点，否则会报警告，后续的处理也仅针对第一个子节点进行。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">let children = this.$options._renderChildren;
 if (!children) {
     return;
 }
 // 只处理第一个子节点
-const rawChild = children[0];</code></pre></div><h3 id=生成-id>生成 ID</h3><div><pre class=line-numbers data-line=""><code class=language-javascript>const id = `__transition-${this._uid}-`;
+const rawChild = children[0];</code></pre>
+</div>
+
+<h3 id="生成-id">生成 ID</h3>
+
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">const id = `__transition-${this._uid}-`;
     child.key = child.key == null
         ? child.isComment
             ? id + &#39;comment&#39;
             : id + child.tag
         : isPrimitive(child.key)
             ? (String(child.key).indexOf(id) === 0 ? child.key : id + child.key)
-            : child.key;</code></pre></div><h3 id=解析属性--标记>解析属性 &amp; 标记</h3><p>在 transition 切换过程中，前后两个节点都需要渲染，旧节点在 <code class=highlighter-rouge>_vnode</code> 上。 之所以还要调用 <code class=highlighter-rouge>getRealChild()</code>，是因为子元素有可能还是一个抽象节点，例如 <code class=highlighter-rouge>&lt;keep-alive&gt;</code>，还需要进一步获取真实元素。 属性保存在 <code class=highlighter-rouge>data.transition</code> 对象中。<div><pre class=line-numbers data-line=""><code class=language-javascript>const data = (child.data || (child.data = {})).transition = extractTransitionData(this);
+            : child.key;</code></pre>
+</div>
+
+<h3 id="解析属性--标记">解析属性 &amp; 标记</h3>
+
+<p>在 transition 切换过程中，前后两个节点都需要渲染，旧节点在 <code class="highlighter-rouge">_vnode</code> 上。
+之所以还要调用 <code class="highlighter-rouge">getRealChild()</code>，是因为子元素有可能还是一个抽象节点，例如 <code class="highlighter-rouge">&lt;keep-alive&gt;</code>，还需要进一步获取真实元素。
+属性保存在 <code class="highlighter-rouge">data.transition</code> 对象中。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">const data = (child.data || (child.data = {})).transition = extractTransitionData(this);
 const oldRawChild = this._vnode;
-const oldChild = getRealChild(oldRawChild);</code></pre></div><p>出现 <code class=highlighter-rouge>v-show</code> 指令，标记在 data 上：<div><pre class=line-numbers data-line=""><code class=language-javascript>if (child.data.directives &amp;&amp; child.data.directives.some(d =&gt; d.name === &#39;show&#39;)) {
+const oldChild = getRealChild(oldRawChild);</code></pre>
+</div>
+
+<p>出现 <code class="highlighter-rouge">v-show</code> 指令，标记在 data 上：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">if (child.data.directives &amp;&amp; child.data.directives.some(d =&gt; d.name === &#39;show&#39;)) {
     child.data.show = true;
-}</code></pre></div><h3 id=过渡模式>过渡模式</h3><p>默认情况下，前后两个元素的 transition 过渡效果是同时发生的。 对于需要设置先后顺序的场景，提供了<a href=https://cn.vuejs.org/v2/guide/transitions.html#%E8%BF%87%E6%B8%A1%E6%A8%A1%E5%BC%8F>过渡模式</a>。<p>对于 <code class=highlighter-rouge>out-in</code> 也就是当前元素先进行过渡，完成之后新元素过渡进入的情况。 在 VNode 的 <code class=highlighter-rouge>afterLeave</code> 钩子中触发强制更新。<div><pre class=line-numbers data-line=""><code class=language-javascript>if (this._leaving) {
+}</code></pre>
+</div>
+
+<h3 id="过渡模式">过渡模式</h3>
+
+<p>默认情况下，前后两个元素的 transition 过渡效果是同时发生的。
+对于需要设置先后顺序的场景，提供了<a href="https://cn.vuejs.org/v2/guide/transitions.html#%E8%BF%87%E6%B8%A1%E6%A8%A1%E5%BC%8F">过渡模式</a>。</p>
+
+<p>对于 <code class="highlighter-rouge">out-in</code> 也就是当前元素先进行过渡，完成之后新元素过渡进入的情况。
+在 VNode 的 <code class="highlighter-rouge">afterLeave</code> 钩子中触发强制更新。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">if (this._leaving) {
     // 处理 keep-alive，其他元素直接 return
     return placeholder(h, rawChild);
 }
@@ -52,9 +243,25 @@ if (mode === &#39;out-in&#39;) {
         this.$forceUpdate();
     });
     return placeholder(h, rawChild);
-}</code></pre></div><p>真实的 DOM 操作都定义在 VNode 上的钩子中，在下一个 patch 阶段执行。<h2 id=patch-阶段>patch 阶段</h2><p>在这个阶段中，会调用 VNode 上的一些钩子，主要涉及具体的 DOM 操作。<p>在前面的文章中介绍过，patch 阶段支持如下钩子，在创建/ Diff 更新/删除 VNode 的各个阶段会调用相应的钩子：<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/core/vdom/patch.js
+}</code></pre>
+</div>
 
-const hooks = [&#39;create&#39;, &#39;activate&#39;, &#39;update&#39;, &#39;remove&#39;, &#39;destroy&#39;];</code></pre></div><p>其中 transition 在 VNode 的创建和删除阶段定义了如下钩子：<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/platforms/web/runtime/modules/transition.js
+<p>真实的 DOM 操作都定义在 VNode 上的钩子中，在下一个 patch 阶段执行。</p>
+
+<h2 id="patch-阶段">patch 阶段</h2>
+
+<p>在这个阶段中，会调用 VNode 上的一些钩子，主要涉及具体的 DOM 操作。</p>
+
+<p>在前面的文章中介绍过，patch 阶段支持如下钩子，在创建/ Diff 更新/删除 VNode 的各个阶段会调用相应的钩子：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/core/vdom/patch.js
+
+const hooks = [&#39;create&#39;, &#39;activate&#39;, &#39;update&#39;, &#39;remove&#39;, &#39;destroy&#39;];</code></pre>
+</div>
+
+<p>其中 transition 在 VNode 的创建和删除阶段定义了如下钩子：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/platforms/web/runtime/modules/transition.js
 
 export default inBrowser ? {
     create: _enter,
@@ -67,11 +274,24 @@ export default inBrowser ? {
             rm();
         }
     }
-} : {};</code></pre></div><h3 id=进入阶段>进入阶段</h3><p>前面介绍过，处理条件展示，使用 <code class=highlighter-rouge>v-show</code>：<div><pre class=line-numbers data-line=""><code class=language-javascript>function _enter(_, vnode) {
+} : {};</code></pre>
+</div>
+
+<h3 id="进入阶段">进入阶段</h3>
+
+<p>前面介绍过，处理条件展示，使用 <code class="highlighter-rouge">v-show</code>：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">function _enter(_, vnode) {
     if (vnode.data.show !== true) {
         enter(vnode);
     }
-}</code></pre></div><p>Vue 支持 CSS 动画和 JS 动画两种。先来看看 Vue 最常用的 CSS 动画。 默认情况下 Vue 会监听 CSS Transition 结束事件，动画效果完成后自动调用结束钩子。同时也支持用户显式传入 <a href=https://cn.vuejs.org/v2/guide/transitions.html#%E6%98%BE%E6%80%A7%E7%9A%84%E8%BF%87%E6%B8%A1%E6%8C%81%E7%BB%AD%E6%97%B6%E9%97%B4>duration</a>，这时会使用 <code class=highlighter-rouge>setTimeout</code> 按照用户的意愿结束动画。<div><pre class=line-numbers data-line=""><code class=language-javascript>if (expectsCSS) {
+}</code></pre>
+</div>
+
+<p>Vue 支持 CSS 动画和 JS 动画两种。先来看看 Vue 最常用的 CSS 动画。
+默认情况下 Vue 会监听 CSS Transition 结束事件，动画效果完成后自动调用结束钩子。同时也支持用户显式传入 <a href="https://cn.vuejs.org/v2/guide/transitions.html#%E6%98%BE%E6%80%A7%E7%9A%84%E8%BF%87%E6%B8%A1%E6%8C%81%E7%BB%AD%E6%97%B6%E9%97%B4">duration</a>，这时会使用 <code class="highlighter-rouge">setTimeout</code> 按照用户的意愿结束动画。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">if (expectsCSS) {
     addTransitionClass(el, startClass);
     addTransitionClass(el, activeClass);
     nextFrame(() =&gt; {
@@ -88,7 +308,26 @@ export default inBrowser ? {
             }
         }
     });
-}</code></pre></div><h3 id=监听过渡效果结束>监听过渡效果结束</h3><p>这段代码可谓非常巧妙。考虑到了下面的情况：<ol><li>transitionEnd 的事件的浏览器兼容性。这个比较简单，检测后加上 Webkit 前缀就行<li>可能定义了<strong>多个</strong>动画属性，持续时间各异。<li>规定时间未执行完，需要强制结束。</ol><p>实际做法如下：<ul><li>首先通过 <code class=highlighter-rouge>getTransitionInfo()</code> 解析 DOM 元素上的样式对象，拿到定义在上面的类型（transition/animation），持续时间（各个属性持续时间的最大值）和属性数目。<li>监听 <code class=highlighter-rouge>transitionEnd</code> 和 <code class=highlighter-rouge>animationEnd</code> 事件，触发一次动画属性计数加一，全部动画属性都完成才调用 <code class=highlighter-rouge>end()</code>。<li>根据上面拿到的持续时间，设定一个定时器，如果到期时还有动画没执行完，强制 <code class=highlighter-rouge>end()</code>。</ul><div><pre class=line-numbers data-line=""><code class=language-javascript>export function whenTransitionEnds(
+}</code></pre>
+</div>
+
+<h3 id="监听过渡效果结束">监听过渡效果结束</h3>
+
+<p>这段代码可谓非常巧妙。考虑到了下面的情况：</p>
+<ol>
+  <li>transitionEnd 的事件的浏览器兼容性。这个比较简单，检测后加上 Webkit 前缀就行</li>
+  <li>可能定义了<strong>多个</strong>动画属性，持续时间各异。</li>
+  <li>规定时间未执行完，需要强制结束。</li>
+</ol>
+
+<p>实际做法如下：</p>
+<ul>
+  <li>首先通过 <code class="highlighter-rouge">getTransitionInfo()</code> 解析 DOM 元素上的样式对象，拿到定义在上面的类型（transition/animation），持续时间（各个属性持续时间的最大值）和属性数目。</li>
+  <li>监听 <code class="highlighter-rouge">transitionEnd</code> 和 <code class="highlighter-rouge">animationEnd</code> 事件，触发一次动画属性计数加一，全部动画属性都完成才调用 <code class="highlighter-rouge">end()</code>。</li>
+  <li>根据上面拿到的持续时间，设定一个定时器，如果到期时还有动画没执行完，强制 <code class="highlighter-rouge">end()</code>。</li>
+</ul>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">export function whenTransitionEnds(
     el,
     expectedType,
     cb
@@ -123,7 +362,93 @@ export default inBrowser ? {
         }
     }, timeout + 1);
     el.addEventListener(event, onEnd);
-}</code></pre></div><h3 id=js-钩子>JS 钩子</h3><p>前面介绍了 transition 支持的 CSS 动画。对于需要精确化控制的复杂场景，需要使用<a href=https://cn.vuejs.org/v2/guide/transitions.html#JavaScript-%E9%92%A9%E5%AD%90> JS 钩子</a>。<p>值得一提的是在 CSS 动画中也可以使用这些钩子。在这种情况下 <code class=highlighter-rouge>enter</code> 和 <code class=highlighter-rouge>leave</code> 这两个钩子都是可选的，因为进入离开过程中的操作已经由 CSS transition 完成。<p>如果希望<a href=https://cn.vuejs.org/v2/guide/transitions.html#JavaScript-%E9%92%A9%E5%AD%90>完全控制</a>，需要显式传入 <code class=highlighter-rouge>v-bind:css="false"</code>。这时候使用 <code class=highlighter-rouge>enter</code> 和 <code class=highlighter-rouge>leave</code> 这两个钩子就能进行复杂的操作了。</article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/05/10/%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7%E6%80%8E%E4%B9%88%E5%86%99.html class=read-next-link></a><section><span>脚手架工具怎么写</span><p>最近在知乎上看到一个问题“有哪些优秀的中大型项目代码值得阅读学习”，有提到脚手架工具 create-react-a...</section><div class=filter></div><img src=/assets/img/CRA.png alt=""></div><div class=read-next-item><a href=/coding/2018/05/03/%E5%9C%A8-PWA-%E4%B8%AD%E4%BD%BF%E7%94%A8-App-Shell-%E6%A8%A1%E5%9E%8B.html class=read-next-link></a><section><span>在 PWA 中使用 App Shell 模型</span><p>在构建 PWA 应用时，使用 App Shell 模型能够在视觉和首屏加载速度方面带来用户体验的提升。另外，在配合...</section><div class=filter></div><img src=/assets/img/pwa-appshell.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+}</code></pre>
+</div>
+
+<h3 id="js-钩子">JS 钩子</h3>
+
+<p>前面介绍了 transition 支持的 CSS 动画。对于需要精确化控制的复杂场景，需要使用<a href="https://cn.vuejs.org/v2/guide/transitions.html#JavaScript-%E9%92%A9%E5%AD%90"> JS 钩子</a>。</p>
+
+<p>值得一提的是在 CSS 动画中也可以使用这些钩子。在这种情况下 <code class="highlighter-rouge">enter</code> 和 <code class="highlighter-rouge">leave</code> 这两个钩子都是可选的，因为进入离开过程中的操作已经由 CSS transition 完成。</p>
+
+<p>如果希望<a href="https://cn.vuejs.org/v2/guide/transitions.html#JavaScript-%E9%92%A9%E5%AD%90">完全控制</a>，需要显式传入 <code class="highlighter-rouge">v-bind:css="false"</code>。这时候使用 <code class="highlighter-rouge">enter</code> 和 <code class="highlighter-rouge">leave</code> 这两个钩子就能进行复杂的操作了。</p>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/05/10/%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7%E6%80%8E%E4%B9%88%E5%86%99.html" class="read-next-link"></a>
+            <section>
+                <span>脚手架工具怎么写</span>
+                <p>最近在知乎上看到一个问题“有哪些优秀的中大型项目代码值得阅读学习”，有提到脚手架工具 create-react-a...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/CRA.png" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/05/03/%E5%9C%A8-PWA-%E4%B8%AD%E4%BD%BF%E7%94%A8-App-Shell-%E6%A8%A1%E5%9E%8B.html" class="read-next-link"></a>
+            <section>
+                <span>在 PWA 中使用 App Shell 模型</span>
+                <p>在构建 PWA 应用时，使用 App Shell 模型能够在视觉和首屏加载速度方面带来用户体验的提升。另外，在配合...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/pwa-appshell.png" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -133,11 +458,41 @@ export default inBrowser ? {
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2019</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -181,11 +536,7 @@ export default inBrowser ? {
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>

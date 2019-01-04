@@ -1,7 +1,68 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>GLSL 中的工程化实践 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="GLSL 中的工程化实践"><meta name=keywords content=WebGL><title>GLSL 中的工程化实践 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="GLSL 中的工程化实践"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="得益于 Webpack 和 Babel 的工程化思想，使用 JavaScript 开发复杂应用早已不是难事。 那 GLSL 代码一旦复杂起来，也会面临模块化和兼容性的难题。本文将介绍一些现有方案的思路。"><meta property=og:description content="得益于 Webpack 和 Babel 的工程化思想，使用 JavaScript 开发复杂应用早已不是难事。 那 GLSL 代码一旦复杂起来，也会面临模块化和兼容性的难题。本文将介绍一些现有方案的思路。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/11/30/GLSL-%E4%B8%AD%E7%9A%84%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E8%B7%B5.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/11/30/GLSL-%E4%B8%AD%E7%9A%84%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E8%B7%B5.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-11-30T00:00:00+08:00><script type=application/ld+json>{"description":"得益于 Webpack 和 Babel 的工程化思想，使用 JavaScript 开发复杂应用早已不是难事。 那 GLSL 代码一旦复杂起来，也会面临模块化和兼容性的难题。本文将介绍一些现有方案的思路。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/11/30/GLSL-%E4%B8%AD%E7%9A%84%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E8%B7%B5.html","headline":"GLSL 中的工程化实践","dateModified":"2018-11-30T00:00:00+08:00","datePublished":"2018-11-30T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/11/30/GLSL-%E4%B8%AD%E7%9A%84%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E8%B7%B5.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/11/30/GLSL-%E4%B8%AD%E7%9A%84%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E8%B7%B5.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLSL 中的工程化实践 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="GLSL 中的工程化实践">
+    <meta name="keywords"  content="WebGL">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>GLSL 中的工程化实践 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="GLSL 中的工程化实践" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="得益于 Webpack 和 Babel 的工程化思想，使用 JavaScript 开发复杂应用早已不是难事。 那 GLSL 代码一旦复杂起来，也会面临模块化和兼容性的难题。本文将介绍一些现有方案的思路。" />
+<meta property="og:description" content="得益于 Webpack 和 Babel 的工程化思想，使用 JavaScript 开发复杂应用早已不是难事。 那 GLSL 代码一旦复杂起来，也会面临模块化和兼容性的难题。本文将介绍一些现有方案的思路。" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/11/30/GLSL-%E4%B8%AD%E7%9A%84%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E8%B7%B5.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/11/30/GLSL-%E4%B8%AD%E7%9A%84%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E8%B7%B5.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-11-30T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"得益于 Webpack 和 Babel 的工程化思想，使用 JavaScript 开发复杂应用早已不是难事。 那 GLSL 代码一旦复杂起来，也会面临模块化和兼容性的难题。本文将介绍一些现有方案的思路。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/11/30/GLSL-%E4%B8%AD%E7%9A%84%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E8%B7%B5.html","headline":"GLSL 中的工程化实践","dateModified":"2018-11-30T00:00:00+08:00","datePublished":"2018-11-30T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/11/30/GLSL-%E4%B8%AD%E7%9A%84%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E8%B7%B5.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/11/30/GLSL-%E4%B8%AD%E7%9A%84%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E8%B7%B5.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+    <script src="/assets/js/glsl-canvas.min.js"></script>
+    <script>
+        function initArrayBuffer(gl, program, attribute, data, type, num) {
             // Create a buffer object
             var buffer = gl.createBuffer();
             if (!buffer) {
@@ -24,31 +85,173 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             return true;
-        }</script><body><!--[if lt IE 10]>
+        }
+    </script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default post-no-cover" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>GLSL 中的工程化实践</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-11-30><i class="iconfont icon-date"></i>30 Nov 2018</time></div></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><article class=markdown-body><p>得益于 Webpack 和 Babel 的工程化思想，使用 JavaScript 开发复杂应用早已不是难事。 那 GLSL 代码一旦复杂起来，也会面临模块化和兼容性的难题。本文将介绍一些现有方案的思路。<h2 id=glsl-模块化>GLSL 模块化</h2><p>利用模块化方案组织功能代码，在一个复杂系统中可以实现代码的复用，也能够提升后续可维护性和扩展性。 JavaScript 模块加载方案在 ES6 之前主要有 CommonJS 和 AMD 两种。 ES Module 作为服务端和浏览器端统一的模块化方案，在编译时就能确定模块间的依赖关系。更多用法可以参考<a href=http://es6.ruanyifeng.com/#docs/module>Module 的语法</a>。<p>在 GLSL 中是没有模块化系统的，但是参考或者直接利用 Node.js 的现有生态，<a href=https://github.com/glslify/glslify>glslify</a> 以及一些 WebGL 引擎都实现了自己的模块化方案，下面就让我们来看一下。<h3 id=glslify>glslify</h3><p>在「WebGL Insights」一书中第 13 章「glslify：A Module System for GLSL」就介绍了这样一种类 Node.js 风格的模块打包工具。 大致实现了递归依赖解析，对源码进行语法解析，重命名变量和函数名，注入依赖，打包生成 Bundle 这几步。<p><img src=/assets/img/webgl/glslify.png alt=""><p>其中依赖解析规则和 Node.js 保持一致，因此同样可以用 npm 管理和发布依赖包。 从模块化语法上看类似 Node.js 中使用的 CommonJS：<div><pre class=line-numbers data-line=""><code class=language-glsl>#pragma glslify: noise = require(glsl-noise/simplex/2d)
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default post-no-cover" data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#WebGL" class="post-tag">WebGL</a>
+            
+            
+        </div>
+        <h1>GLSL 中的工程化实践</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="18-11-30"><i class="iconfont icon-date"></i>30 Nov 2018</time>
+        </div>
+    </div>
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <article class="markdown-body">
+        <p>得益于 Webpack 和 Babel 的工程化思想，使用 JavaScript 开发复杂应用早已不是难事。
+那 GLSL 代码一旦复杂起来，也会面临模块化和兼容性的难题。本文将介绍一些现有方案的思路。</p>
+
+<h2 id="glsl-模块化">GLSL 模块化</h2>
+
+<p>利用模块化方案组织功能代码，在一个复杂系统中可以实现代码的复用，也能够提升后续可维护性和扩展性。
+JavaScript 模块加载方案在 ES6 之前主要有 CommonJS 和 AMD 两种。
+ES Module 作为服务端和浏览器端统一的模块化方案，在编译时就能确定模块间的依赖关系。更多用法可以参考<a href="http://es6.ruanyifeng.com/#docs/module">Module 的语法</a>。</p>
+
+<p>在 GLSL 中是没有模块化系统的，但是参考或者直接利用 Node.js 的现有生态，<a href="https://github.com/glslify/glslify">glslify</a> 以及一些 WebGL 引擎都实现了自己的模块化方案，下面就让我们来看一下。</p>
+
+<h3 id="glslify">glslify</h3>
+
+<p>在「WebGL Insights」一书中第 13 章「glslify：A Module System for GLSL」就介绍了这样一种类 Node.js 风格的模块打包工具。
+大致实现了递归依赖解析，对源码进行语法解析，重命名变量和函数名，注入依赖，打包生成 Bundle 这几步。</p>
+
+<p><img src="/assets/img/webgl/glslify.png" alt="" /></p>
+
+<p>其中依赖解析规则和 Node.js 保持一致，因此同样可以用 npm 管理和发布依赖包。
+从模块化语法上看类似 Node.js 中使用的 CommonJS：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">#pragma glslify: noise = require(glsl-noise/simplex/2d)
 
 void main() {
   float brightness = noise(gl_FragCoord.xy);
   gl_FragColor = vec4(vec3(brightness), 1.);
-}</code></pre></div><p>在导入依赖时使用了预处理指令（preprocesser），借用了其中 <code class=highlighter-rouge>pragma</code> 的语义，帮助 glslify 编译器在语法分析时定位：<blockquote><p>#pragma allows implementation dependent compiler control. Tokens following #pragma are not subject to preprocessor macro expansion. If an implementation does not recognize the tokens following #pragma, then it will ignore that pragma.</blockquote><p>导出依赖只支持匿名导出，例如：<div><pre class=line-numbers data-line=""><code class=language-glsl>float myFunction(vec3 normal) {
+}</code></pre>
+</div>
+
+<p>在导入依赖时使用了预处理指令（preprocesser），借用了其中 <code class="highlighter-rouge">pragma</code> 的语义，帮助 glslify 编译器在语法分析时定位：</p>
+<blockquote>
+  <p>#pragma allows implementation dependent compiler control. Tokens following #pragma are not subject
+to preprocessor macro expansion. If an implementation does not recognize the tokens following
+#pragma, then it will ignore that pragma.</p>
+</blockquote>
+
+<p>导出依赖只支持匿名导出，例如：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">float myFunction(vec3 normal) {
   return dot(vec3(0, 1, 0), normal);
 }
 
-#pragma glslify: export(myFunction)</code></pre></div><p>GLSL 可没有 JavaScript 中的闭包，在将依赖内联进代码之前，为了避免多个依赖间变量名和方法名发生冲突，重命名是必不可少的。 例如上述代码最终可能会被转译成这样：<div><pre class=line-numbers data-line=""><code class=language-glsl>// 内联的 glsl-noise/simplex/2d
+#pragma glslify: export(myFunction)</code></pre>
+</div>
+
+<p>GLSL 可没有 JavaScript 中的闭包，在将依赖内联进代码之前，为了避免多个依赖间变量名和方法名发生冲突，重命名是必不可少的。
+例如上述代码最终可能会被转译成这样：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">// 内联的 glsl-noise/simplex/2d
 float snoise_1_2(vec2 v) {...}
 
 void main() {
   float brightness = snoise_1_2(gl_FragCoord.xy);
   gl_FragColor = vec4(vec3(brightness), 1.);
-}</code></pre></div><p>重命名虽然能解决冲突问题，但在某些场景下，我们就是希望在多个模块间共享变量，这时候就需要在导入一个模块时，将共享变量作为参数传入：<div><pre class=line-numbers data-line=""><code class=language-glsl>int bar; // 需要在模块间共享的变量
-#pragma glslify: require(&#39;some-module&#39;,foo=bar,...)</code></pre></div><p>最后，类似 Webpack 在构建时可以通过 DefinePlugin 完成某些变量的替换，glslify 也实现了简单的插件机制， 例如 <a href=https://github.com/glslify/glslify-hex>glslify-hex</a> 可以在构建时将 16 进制颜色转换成 <code class=highlighter-rouge>vec3</code>：<div><pre class=line-numbers data-line=""><code class=language-glsl>gl_FragColor = vec4(#ff0000, 1.0);
+}</code></pre>
+</div>
+
+<p>重命名虽然能解决冲突问题，但在某些场景下，我们就是希望在多个模块间共享变量，这时候就需要在导入一个模块时，将共享变量作为参数传入：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">int bar; // 需要在模块间共享的变量
+#pragma glslify: require(&#39;some-module&#39;,foo=bar,...)</code></pre>
+</div>
+
+<p>最后，类似 Webpack 在构建时可以通过 DefinePlugin 完成某些变量的替换，glslify 也实现了简单的插件机制，
+例如 <a href="https://github.com/glslify/glslify-hex">glslify-hex</a> 可以在构建时将 16 进制颜色转换成 <code class="highlighter-rouge">vec3</code>：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">gl_FragColor = vec4(#ff0000, 1.0);
 // 转译后
-gl_FragColor = vec4(vec3(1.0, 0.0, 0.0), 1.0);</code></pre></div><p>此外，针对已有的构建工具和 WebGL 框架，glslify 也有对应的工具链方便接入。 例如志在打包一切静态资源的 Webpack，有了 <a href=https://github.com/stackgl/glslify-loader>glslify-loader</a>，也可以直接 import 解析 GLSL 了。 再比如和 <a href=https://github.com/mattdesl/three-glslify-example/ >Three.js</a> 结合使用，在运行时而非构建阶段生成 shader 代码：<div><pre class=line-numbers data-line=""><code class=language-javascript>const mat = new THREE.ShaderMaterial({
+gl_FragColor = vec4(vec3(1.0, 0.0, 0.0), 1.0);</code></pre>
+</div>
+
+<p>此外，针对已有的构建工具和 WebGL 框架，glslify 也有对应的工具链方便接入。
+例如志在打包一切静态资源的 Webpack，有了 <a href="https://github.com/stackgl/glslify-loader">glslify-loader</a>，也可以直接 import 解析 GLSL 了。
+再比如和 <a href="https://github.com/mattdesl/three-glslify-example/">Three.js</a> 结合使用，在运行时而非构建阶段生成 shader 代码：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">const mat = new THREE.ShaderMaterial({
     vertexShader: glslify(&#39;./vert.glsl&#39;),
     fragmentShader: glslify(&#39;./frag.glsl&#39;),
     uniforms: {},
-})</code></pre></div><p>glslify 为 GLSL 带来了完整的模块化方案，但是否就适合一切应用场景呢？<h3 id=webgl-引擎>WebGL 引擎</h3><p>其实从上面的介绍可以看出 glslify 为了实现一个通用的模块化方案，是需要对 GLSL 及其依赖代码进行完整语法分析的。这样做开销虽然大，但在构建时进行也是没有任何问题的。<p>但是对于一个 WebGL 引擎，存在以下几点特殊情况：<ol><li>依赖模块大多数为内置模块，不存在命名冲突问题，组装 Shader 代码时不需要进行变量名和方法名的替换<li><strong>运行时</strong> Shader 代码发生变动，需要重新构建，此时再进行完整语法分析成本很高<li><strong>运行时</strong> 开发者需要注入代码到引擎默认生成的 Shader 代码中</ol><p>基于以上几点，通常一个 WebGL 引擎都会实现自己的模块化方案。<h3 id=lumagl>luma.gl</h3><p>我们以 luma.gl 为例，来看看其中的 <a href=https://luma.gl/#/documentation/developer-guide/shadertools/shadertools>ShaderTools</a> 模块是如何解决这几个问题的。<p>假如如果我们想使用 color-coding-based 拾取模块，需要提供：<ol><li>使用基于注释的占位符<li>使用该模块方法的调用语句，用于替换占位符</ol><div><pre class=line-numbers data-line=""><code class=language-javascript>new Model(gl, {
+})</code></pre>
+</div>
+
+<p>glslify 为 GLSL 带来了完整的模块化方案，但是否就适合一切应用场景呢？</p>
+
+<h3 id="webgl-引擎">WebGL 引擎</h3>
+
+<p>其实从上面的介绍可以看出 glslify 为了实现一个通用的模块化方案，是需要对 GLSL 及其依赖代码进行完整语法分析的。这样做开销虽然大，但在构建时进行也是没有任何问题的。</p>
+
+<p>但是对于一个 WebGL 引擎，存在以下几点特殊情况：</p>
+<ol>
+  <li>依赖模块大多数为内置模块，不存在命名冲突问题，组装 Shader 代码时不需要进行变量名和方法名的替换</li>
+  <li><strong>运行时</strong> Shader 代码发生变动，需要重新构建，此时再进行完整语法分析成本很高</li>
+  <li><strong>运行时</strong> 开发者需要注入代码到引擎默认生成的 Shader 代码中</li>
+</ol>
+
+<p>基于以上几点，通常一个 WebGL 引擎都会实现自己的模块化方案。</p>
+
+<h3 id="lumagl">luma.gl</h3>
+
+<p>我们以 luma.gl 为例，来看看其中的 <a href="https://luma.gl/#/documentation/developer-guide/shadertools/shadertools">ShaderTools</a> 模块是如何解决这几个问题的。</p>
+
+<p>假如如果我们想使用 color-coding-based 拾取模块，需要提供：</p>
+<ol>
+  <li>使用基于注释的占位符</li>
+  <li>使用该模块方法的调用语句，用于替换占位符</li>
+</ol>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">new Model(gl, {
     vs,
     fs: `void main() {
         gl_FragColor = vec4(1., 0., 0., 1.);
@@ -58,7 +261,24 @@ gl_FragColor = vec4(vec3(1.0, 0.0, 0.0), 1.0);</code></pre></div><p>此外，针
     inject: {
         &#39;COLOR_FILTERS_HINT&#39;: &#39;  gl_FragColor = picking_filterColor(gl_FragColor)&#39;
     }
-});</code></pre></div><p>这种采用占位符的方式实现起来十分简单，相比写一个编译器进行语法分析成本小的多。<h2 id=转译>转译</h2><p>Babel 让我们能够使用最新甚至是实验性的特性，而不用考虑浏览器兼容性。而在发展相对较慢的 CSS 中，Houdini 也正扮演这样的角色。 同样的，GLSL 也面临着兼容性问题，如何能让使用 GLSL 3.00 ES 编写的 Shader 代码兼容 WebGL 1.00 ES 呢？<p>luma.gl 给出的<a href=https://github.com/uber/luma.gl/blob/master/dev-docs/RFCs/v6.0/portable-glsl-300-rfc.md>方案</a>大致从两个方面入手：开启扩展和语法替换。<h3 id=开启扩展>开启扩展</h3><p>WebGL2 的很多新特性在 WebGL1 中需要手动开启扩展。除了在 JS 中使用 <code class=highlighter-rouge>gl.getExtension()</code>，在 GLSL 中也需要开启。 因此在特性检测之后需要在 WebGL1 环境下使用 <code class=highlighter-rouge>#extension</code>，例如针对 DERIVATIVES 特性：<div><pre class=line-numbers data-line=""><code class=language-glsl>let versionDefines = `\
+});</code></pre>
+</div>
+
+<p>这种采用占位符的方式实现起来十分简单，相比写一个编译器进行语法分析成本小的多。</p>
+
+<h2 id="转译">转译</h2>
+
+<p>Babel 让我们能够使用最新甚至是实验性的特性，而不用考虑浏览器兼容性。而在发展相对较慢的 CSS 中，Houdini 也正扮演这样的角色。
+同样的，GLSL 也面临着兼容性问题，如何能让使用 GLSL 3.00 ES 编写的 Shader 代码兼容 WebGL 1.00 ES 呢？</p>
+
+<p>luma.gl 给出的<a href="https://github.com/uber/luma.gl/blob/master/dev-docs/RFCs/v6.0/portable-glsl-300-rfc.md">方案</a>大致从两个方面入手：开启扩展和语法替换。</p>
+
+<h3 id="开启扩展">开启扩展</h3>
+
+<p>WebGL2 的很多新特性在 WebGL1 中需要手动开启扩展。除了在 JS 中使用 <code class="highlighter-rouge">gl.getExtension()</code>，在 GLSL 中也需要开启。
+因此在特性检测之后需要在 WebGL1 环境下使用 <code class="highlighter-rouge">#extension</code>，例如针对 DERIVATIVES 特性：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">let versionDefines = `\
 #if (__VERSION__ &gt; 120)
     # define DERIVATIVES
 #endif // __VERSION
@@ -70,12 +290,124 @@ if (hasFeatures(gl, FEATURES.GLSL_DERIVATIVES)) {
     # define DERIVATIVES
     #endif
     `;
-  }</code></pre></div><p>这样在后续引入的代码中只需要通过类似 <code class=highlighter-rouge>ifdef DERIVATIVES</code> 这样条件预处理指令，就能判断当前环境是否已经可以使用某个特性了。 其实，能使用 polyfill 解决的问题都是相对简单的，真正的难点在于转译 GLSL 3.00 ES 中的高级语法特性。<h3 id=语法替换>语法替换</h3><p>luma.gl 给出了部分 GLSL 3.00 ES<a href=https://luma.gl/#/documentation/developer-guide/shadertools/writing-code>语法转换对照表</a>。 在具体实现中，通过字符串替换就能完成一些简单的语法替换。例如针对 Vertex shader 中：<div><pre class=line-numbers data-line=""><code class=language-javascript>function convertVertexShaderTo100(source) {
+  }</code></pre>
+</div>
+
+<p>这样在后续引入的代码中只需要通过类似 <code class="highlighter-rouge">ifdef DERIVATIVES</code> 这样条件预处理指令，就能判断当前环境是否已经可以使用某个特性了。
+其实，能使用 polyfill 解决的问题都是相对简单的，真正的难点在于转译 GLSL 3.00 ES 中的高级语法特性。</p>
+
+<h3 id="语法替换">语法替换</h3>
+
+<p>luma.gl 给出了部分 GLSL 3.00 ES<a href="https://luma.gl/#/documentation/developer-guide/shadertools/writing-code">语法转换对照表</a>。
+在具体实现中，通过字符串替换就能完成一些简单的语法替换。例如针对 Vertex shader 中：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">function convertVertexShaderTo100(source) {
     return source
         .replace(/^in\s+/gm, &#39;attribute &#39;)
         .replace(/^out\s+/gm, &#39;varying &#39;)
         .replace(/texture\(/g, &#39;texture2D(&#39;);
-}</code></pre></div><p>仔细观察正则可以发现只针对每行开头的 <code class=highlighter-rouge>in/out</code> 进行替换。 luma.gl 的解释是为了避免 <code class=highlighter-rouge>vec2 func(vec2 a, out float result)</code> 这样的情况被错误替换。 但问题是 WebGL2 还并不支持这种函数参数修饰符的写法吧。<p>其实这种字符串替换的方案总是存在局限性的，不是所有新特性都能简单替换的。 例如一些无法用 polyfill 解决的新增内置方法：<code class=highlighter-rouge>texelFetch()</code>，<code class=highlighter-rouge>transpose()</code> 等等。 因此一旦决定需要兼容 WebGL1，就注定要有所取舍，毕竟 GLSL 在语言特性上不可能像 JavaScript 这么灵活可扩展。<h2 id=总结>总结</h2><p>对于 glslify，我的理解是适合在构建阶段就能生成最终 GLSL 的场景下使用，一些用于纯展示的 DEMO 页面完全没问题。 而对于一个 WebGL 引擎来说，则需要根据自身定位制定合适的模块化和兼容方案。<h2 id=参考资料>参考资料</h2><ul><li><a href=https://github.com/glslify/glslify>glslify</a><li><a href=https://github.com/mattdesl/three-glslify-example>three-glslify-example</a><li><a href=https://luma.gl/#/documentation/developer-guide/shadertools/writing-code>luma.gl 中的转译</a><li><a href=https://github.com/uber/luma.gl/blob/master/dev-docs/RFCs/v6.0/portable-glsl-300-rfc.md>portable-glsl-300-rfc</a><li><a href=https://github.com/WebGLSamples/WebGL2Samples>WebGL2Samples</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/12/20/%E7%BB%98%E5%88%B6%E5%9C%B0%E5%9B%BE.html class=read-next-link></a><section><span>绘制地图</span><p>之前一直很感兴趣在 WebGL 中如何展示地理信息，最近阅读了 deck.gl 的源码，学习到了很多相关知识。本文...</section><div class=filter></div><img src=/assets/img/webgl/gis-1.png alt=""></div><div class=read-next-item><a href=/coding/2018/10/22/Wireframe-%E7%9A%84%E5%AE%9E%E7%8E%B0.html class=read-next-link></a><section><span>Wireframe 的实现</span><p>在调试或者展示模型时，有时需要展现 wireframe 网格效果，在 ThreeJS 中经常能看到，之前也没想过这...</section><div class=filter></div><img src=/assets/img/webgl/wireframe.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+}</code></pre>
+</div>
+
+<p>仔细观察正则可以发现只针对每行开头的 <code class="highlighter-rouge">in/out</code> 进行替换。
+luma.gl 的解释是为了避免 <code class="highlighter-rouge">vec2 func(vec2 a, out float result)</code> 这样的情况被错误替换。
+但问题是 WebGL2 还并不支持这种函数参数修饰符的写法吧。</p>
+
+<p>其实这种字符串替换的方案总是存在局限性的，不是所有新特性都能简单替换的。
+例如一些无法用 polyfill 解决的新增内置方法：<code class="highlighter-rouge">texelFetch()</code>，<code class="highlighter-rouge">transpose()</code> 等等。
+因此一旦决定需要兼容 WebGL1，就注定要有所取舍，毕竟 GLSL 在语言特性上不可能像 JavaScript 这么灵活可扩展。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>对于 glslify，我的理解是适合在构建阶段就能生成最终 GLSL 的场景下使用，一些用于纯展示的 DEMO 页面完全没问题。
+而对于一个 WebGL 引擎来说，则需要根据自身定位制定合适的模块化和兼容方案。</p>
+
+<h2 id="参考资料">参考资料</h2>
+
+<ul>
+  <li><a href="https://github.com/glslify/glslify">glslify</a></li>
+  <li><a href="https://github.com/mattdesl/three-glslify-example">three-glslify-example</a></li>
+  <li><a href="https://luma.gl/#/documentation/developer-guide/shadertools/writing-code">luma.gl 中的转译</a></li>
+  <li><a href="https://github.com/uber/luma.gl/blob/master/dev-docs/RFCs/v6.0/portable-glsl-300-rfc.md">portable-glsl-300-rfc</a></li>
+  <li><a href="https://github.com/WebGLSamples/WebGL2Samples">WebGL2Samples</a></li>
+</ul>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/12/20/%E7%BB%98%E5%88%B6%E5%9C%B0%E5%9B%BE.html" class="read-next-link"></a>
+            <section>
+                <span>绘制地图</span>
+                <p>之前一直很感兴趣在 WebGL 中如何展示地理信息，最近阅读了 deck.gl 的源码，学习到了很多相关知识。本文...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/gis-1.png" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/10/22/Wireframe-%E7%9A%84%E5%AE%9E%E7%8E%B0.html" class="read-next-link"></a>
+            <section>
+                <span>Wireframe 的实现</span>
+                <p>在调试或者展示模型时，有时需要展现 wireframe 网格效果，在 ThreeJS 中经常能看到，之前也没想过这...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/wireframe.png" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -85,11 +417,41 @@ if (hasFeatures(gl, FEATURES.GLSL_DERIVATIVES)) {
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2019</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -133,11 +495,7 @@ if (hasFeatures(gl, FEATURES.GLSL_DERIVATIVES)) {
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>
