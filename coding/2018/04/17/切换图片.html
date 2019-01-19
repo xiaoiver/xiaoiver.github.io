@@ -1,68 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片切换效果 - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="图片切换效果">
-    <meta name="keywords"  content="CSS, WebGL, Three.js">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>图片切换效果 | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="图片切换效果" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="在实现图片幻灯片切换效果时，常用的效果包括左右滑动，渐隐渐显。对于熟悉 CSS Transition 的开发者，实现这些切换效果并不难。 最近阅读了 Codrop 上的两篇文章，提供了切换效果的新思路：CSS Mask 和 WebGL。" />
-<meta property="og:description" content="在实现图片幻灯片切换效果时，常用的效果包括左右滑动，渐隐渐显。对于熟悉 CSS Transition 的开发者，实现这些切换效果并不难。 最近阅读了 Codrop 上的两篇文章，提供了切换效果的新思路：CSS Mask 和 WebGL。" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/04/17/%E5%88%87%E6%8D%A2%E5%9B%BE%E7%89%87.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/04/17/%E5%88%87%E6%8D%A2%E5%9B%BE%E7%89%87.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2018-04-17T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"在实现图片幻灯片切换效果时，常用的效果包括左右滑动，渐隐渐显。对于熟悉 CSS Transition 的开发者，实现这些切换效果并不难。 最近阅读了 Codrop 上的两篇文章，提供了切换效果的新思路：CSS Mask 和 WebGL。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/04/17/%E5%88%87%E6%8D%A2%E5%9B%BE%E7%89%87.html","headline":"图片切换效果","dateModified":"2018-04-17T00:00:00+08:00","datePublished":"2018-04-17T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/04/17/%E5%88%87%E6%8D%A2%E5%9B%BE%E7%89%87.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/04/17/%E5%88%87%E6%8D%A2%E5%9B%BE%E7%89%87.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-
-    
-
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-    
-    <script src="/assets/js/glsl-canvas.min.js"></script>
-    <script>
-        function initArrayBuffer(gl, program, attribute, data, type, num) {
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>图片切换效果 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=图片切换效果><meta name=keywords content="CSS, WebGL, Three.js"><title>图片切换效果 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=图片切换效果><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="在实现图片幻灯片切换效果时，常用的效果包括左右滑动，渐隐渐显。对于熟悉 CSS Transition 的开发者，实现这些切换效果并不难。 最近阅读了 Codrop 上的两篇文章，提供了切换效果的新思路：CSS Mask 和 WebGL。"><meta property=og:description content="在实现图片幻灯片切换效果时，常用的效果包括左右滑动，渐隐渐显。对于熟悉 CSS Transition 的开发者，实现这些切换效果并不难。 最近阅读了 Codrop 上的两篇文章，提供了切换效果的新思路：CSS Mask 和 WebGL。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/17/%E5%88%87%E6%8D%A2%E5%9B%BE%E7%89%87.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/04/17/%E5%88%87%E6%8D%A2%E5%9B%BE%E7%89%87.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-04-17T00:00:00+08:00><script type=application/ld+json>{"description":"在实现图片幻灯片切换效果时，常用的效果包括左右滑动，渐隐渐显。对于熟悉 CSS Transition 的开发者，实现这些切换效果并不难。 最近阅读了 Codrop 上的两篇文章，提供了切换效果的新思路：CSS Mask 和 WebGL。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/04/17/%E5%88%87%E6%8D%A2%E5%9B%BE%E7%89%87.html","headline":"图片切换效果","dateModified":"2018-04-17T00:00:00+08:00","datePublished":"2018-04-17T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/04/17/%E5%88%87%E6%8D%A2%E5%9B%BE%E7%89%87.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/17/%E5%88%87%E6%8D%A2%E5%9B%BE%E7%89%87.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
             // Create a buffer object
             var buffer = gl.createBuffer();
             if (!buffer) {
@@ -85,90 +24,9 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             return true;
-        }
-    </script>
-    
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+        }</script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-            <li><a href="/collectives.html">collectives</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#CSS" class="post-tag">CSS</a>
-            
-            <a href="https://xiaoiver.github.io/tags#WebGL" class="post-tag">WebGL</a>
-            
-            <a href="https://xiaoiver.github.io/tags#Three.js" class="post-tag">Three.js</a>
-            
-            
-        </div>
-        <h1>图片切换效果</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="18-04-17"><i class="iconfont icon-date"></i>17 Apr 2018</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/slider-css-mask.jpg') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    <div class="catalog-container">
-        <div class="side-catalog">
-            <h3 class="catalog-title">
-                <a class="catalog-toggle" href="#">CATALOG</a>
-            </h3>
-            <ul class="catalog-body"></ul>
-        </div>
-    </div>
-    
-    <article class="markdown-body">
-        <p>在实现图片幻灯片切换效果时，常用的效果包括左右滑动，渐隐渐显。对于熟悉 CSS Transition 的开发者，实现这些切换效果并不难。
-最近阅读了 Codrop 上的两篇文章，提供了切换效果的新思路：CSS Mask 和 WebGL。</p>
-
-<h2 id="css-mask">CSS Mask</h2>
-
-<p>CSS Mask 支持使用位图或者 SVG 来裁切背景图片。
-值得注意的是<a href="https://caniuse.com/#feat=css-masks">浏览器支持度</a>，实际使用时需要添加 <code class="highlighter-rouge">-webkit-</code> 前缀，下面的例子图方便就省略了。</p>
-
-<p>很自然的想到，如果能让这个 mask 动起来，随着前一张图片显示区域的变化，后一张图片渐渐显露，效果拔群。</p>
-
-<p>让背景图片动起来不是难事，常逛 B 站的同学一定见过，视频播放器下方的“收藏”等图标就使用了 <code class="highlighter-rouge">background-image</code> 动画。
-<code class="highlighter-rouge">mask</code> 和 <code class="highlighter-rouge">background-image</code> 其实是一个道理，我们同样需要准备一张 Sprite 图：
-<img src="/assets/img/slider-mask.png" alt="" /></p>
-
-<p>然后需要定义一个针对 <code class="highlighter-rouge">mask-position</code> 的动画，使用 <code class="highlighter-rouge">steps(n)</code> 将总长度分成 n 格（也就是 Sprite 图的数目）。
-这样 <code class="highlighter-rouge">mask-position</code> 每次移动一格，mask 图片也就切换到 Sprite 中的下一部分。是不是和 <code class="highlighter-rouge">background-position</code> 一模一样呢？</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-css">mask: url(../img/mask-sprite.png);
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#CSS class=post-tag>CSS</a> <a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a> <a href=https://xiaoiver.github.io/tags#Three.js class=post-tag>Three.js</a></div><h1>图片切换效果</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-04-17><i class="iconfont icon-date"></i>17 Apr 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/slider-css-mask.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><article class=markdown-body><p>在实现图片幻灯片切换效果时，常用的效果包括左右滑动，渐隐渐显。对于熟悉 CSS Transition 的开发者，实现这些切换效果并不难。 最近阅读了 Codrop 上的两篇文章，提供了切换效果的新思路：CSS Mask 和 WebGL。<h2 id=css-mask>CSS Mask</h2><p>CSS Mask 支持使用位图或者 SVG 来裁切背景图片。 值得注意的是<a href="https://caniuse.com/#feat=css-masks">浏览器支持度</a>，实际使用时需要添加 <code class=highlighter-rouge>-webkit-</code> 前缀，下面的例子图方便就省略了。<p>很自然的想到，如果能让这个 mask 动起来，随着前一张图片显示区域的变化，后一张图片渐渐显露，效果拔群。<p>让背景图片动起来不是难事，常逛 B 站的同学一定见过，视频播放器下方的“收藏”等图标就使用了 <code class=highlighter-rouge>background-image</code> 动画。 <code class=highlighter-rouge>mask</code> 和 <code class=highlighter-rouge>background-image</code> 其实是一个道理，我们同样需要准备一张 Sprite 图： <img src=/assets/img/slider-mask.png alt=""><p>然后需要定义一个针对 <code class=highlighter-rouge>mask-position</code> 的动画，使用 <code class=highlighter-rouge>steps(n)</code> 将总长度分成 n 格（也就是 Sprite 图的数目）。 这样 <code class=highlighter-rouge>mask-position</code> 每次移动一格，mask 图片也就切换到 Sprite 中的下一部分。是不是和 <code class=highlighter-rouge>background-position</code> 一模一样呢？<div><pre class=line-numbers data-line=""><code class=language-css>mask: url(../img/mask-sprite.png);
 mask-size: 7100% 100%;
 animation: mask-play 1.4s steps(70) forwards;
 
@@ -179,20 +37,7 @@ animation: mask-play 1.4s steps(70) forwards;
   to {
 	mask-position: 100% 0;
   }
-}</code></pre>
-</div>
-
-<p>切换时效果如下：
-<img src="/assets/img/slider-css-mask.jpg" alt="" /></p>
-
-<p>当然为了避免浏览器在切换时才下载 mask 图片，我们可以提前给元素应用上，让浏览器尽早发现并下载。</p>
-
-<h2 id="webgl">WebGL</h2>
-
-<p>在之前学习了一些<a href="/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html">「Shader 基础知识」</a>后，
-我们了解了给纹理对象设置参数能够指导 WebGL 在贴图时使用指定的像素计算策略。使用 Three.js 能方便的创建纹理对象。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">var loader = new THREE.TextureLoader();
+}</code></pre></div><p>切换时效果如下： <img src=/assets/img/slider-css-mask.jpg alt=""><p>当然为了避免浏览器在切换时才下载 mask 图片，我们可以提前给元素应用上，让浏览器尽早发现并下载。<h2 id=webgl>WebGL</h2><p>在之前学习了一些<a href=/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html>「Shader 基础知识」</a>后， 我们了解了给纹理对象设置参数能够指导 WebGL 在贴图时使用指定的像素计算策略。使用 Three.js 能方便的创建纹理对象。<div><pre class=line-numbers data-line=""><code class=language-javascript>var loader = new THREE.TextureLoader();
 loader.crossOrigin = &quot;&quot;;
 // 创建两张图片对应的 texture
 var texture1 = loader.load(image1);
@@ -203,24 +48,13 @@ var disp = loader.load(dispImage);
 disp.wrapS = disp.wrapT = THREE.RepeatWrapping;
 // 设置出现缩小放大时像素的计算策略
 texture1.magFilter = texture2.magFilter = THREE.LinearFilter;
-texture1.minFilter = texture2.minFilter = THREE.LinearFilter;</code></pre>
-</div>
-
-<p>进入 vertex shader 会有一个疑问，<code class="highlighter-rouge">uv</code> <code class="highlighter-rouge">position</code> 这些变量是哪里传进来的？</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">var vertex = `
+texture1.minFilter = texture2.minFilter = THREE.LinearFilter;</code></pre></div><p>进入 vertex shader 会有一个疑问，<code class=highlighter-rouge>uv</code> <code class=highlighter-rouge>position</code> 这些变量是哪里传进来的？<div><pre class=line-numbers data-line=""><code class=language-javascript>var vertex = `
     varying vec2 vUv;
     void main() {
         vUv = uv;
         gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
     }
-`;</code></pre>
-</div>
-
-<p>原来 Three.js 提供了很多<a href="https://threejs.org/docs/index.html#api/renderers/webgl/WebGLProgram">内置的变量</a>。
-由于在更高层次上做了抽象，开发者不必手动向 shader 传递变量，可以使用 Camera Geometry Model 所决定的变换矩阵和变量：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">// = object.matrixWorld
+`;</code></pre></div><p>原来 Three.js 提供了很多<a href=https://threejs.org/docs/index.html#api/renderers/webgl/WebGLProgram>内置的变量</a>。 由于在更高层次上做了抽象，开发者不必手动向 shader 传递变量，可以使用 Camera Geometry Model 所决定的变换矩阵和变量：<div><pre class=line-numbers data-line=""><code class=language-javascript>// = object.matrixWorld
 uniform mat4 modelMatrix;
 
 // = camera.matrixWorldInverse * object.matrixWorld
@@ -241,14 +75,7 @@ uniform vec3 cameraPosition;
 // = geometry
 attribute vec3 position;
 attribute vec3 normal;
-attribute vec2 uv;</code></pre>
-</div>
-
-<p>除了使用内置变量，我们还可以向 shader 中传递自定义变量。
-值得注意的是 varying 不需要在 ShaderMaterial 中<a href="https://threejs.org/docs/index.html#api/materials/ShaderMaterial">声明</a>。
-所以两个 shader 中传递的 <code class="highlighter-rouge">vUv</code> 不会出现在这里：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">var mat = new THREE.ShaderMaterial({
+attribute vec2 uv;</code></pre></div><p>除了使用内置变量，我们还可以向 shader 中传递自定义变量。 值得注意的是 varying 不需要在 ShaderMaterial 中<a href=https://threejs.org/docs/index.html#api/materials/ShaderMaterial>声明</a>。 所以两个 shader 中传递的 <code class=highlighter-rouge>vUv</code> 不会出现在这里：<div><pre class=line-numbers data-line=""><code class=language-javascript>var mat = new THREE.ShaderMaterial({
     uniforms: {
         effectFactor: { type: &quot;f&quot;, value: intensity },
         dispFactor: { type: &quot;f&quot;, value: 0.0 },
@@ -260,12 +87,7 @@ attribute vec2 uv;</code></pre>
     fragmentShader: fragment,
     transparent: true,
     opacity: 1.0
-});</code></pre>
-</div>
-
-<p>剩下的秘密就在 fragment shader 中了。<code class="highlighter-rouge">dispFactor</code> 是一个取值范围 0-1 的变量</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">void main() {
+});</code></pre></div><p>剩下的秘密就在 fragment shader 中了。<code class=highlighter-rouge>dispFactor</code> 是一个取值范围 0-1 的变量<div><pre class=line-numbers data-line=""><code class=language-javascript>void main() {
     vec2 uv = vUv;
     vec4 disp = texture2D(disp, uv);
 
@@ -278,12 +100,7 @@ attribute vec2 uv;</code></pre>
     vec4 finalTexture = mix(_texture, _texture2, dispFactor);
 
     gl_FragColor = finalTexture;
-}</code></pre>
-</div>
-
-<p>最后，我们只要对 <code class="highlighter-rouge">dispFactor</code> 进行实时修改，在 rAF 中绘制当前帧就能实现动画效果。这里使用了 TweenMax：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">TweenMax.to(mat.uniforms.dispFactor, speedIn, {
+}</code></pre></div><p>最后，我们只要对 <code class=highlighter-rouge>dispFactor</code> 进行实时修改，在 rAF 中绘制当前帧就能实现动画效果。这里使用了 TweenMax：<div><pre class=line-numbers data-line=""><code class=language-javascript>TweenMax.to(mat.uniforms.dispFactor, speedIn, {
     value: 1,
     ease: easing
 });
@@ -292,100 +109,7 @@ var animate = function() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 };
-animate();</code></pre>
-</div>
-
-<p>最终效果如下
-<img src="/assets/img/slider-webgl.jpg" alt="" /></p>
-
-<h2 id="总结">总结</h2>
-
-<p>体验了一下 Three.js，确实简化了 WebGL 中许多命令式编程的繁琐过程，也更加便于记忆。
-但是效果炫酷的同时也带来了性能问题，在低性能设备甚至手持设备上会出现明显卡顿。</p>
-
-<h2 id="参考资料">参考资料</h2>
-
-<ul>
-  <li><a href="https://tympanus.net/codrops/2016/09/29/transition-effect-with-css-masks/">CSS Mask Effect</a></li>
-  <li><a href="https://tympanus.net/codrops/2018/04/10/webgl-distortion-hover-effects/">WebGL Effect</a></li>
-</ul>
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/04/21/Polymer-%E4%B8%AD%E7%9A%84-PRPL-%E6%A8%A1%E5%BC%8F.html" class="read-next-link"></a>
-            <section>
-                <span>Polymer 中的 PRPL 模式</span>
-                <p>Chrome 提出 PRPL 的模式在自家 Polymer 中的应用状况是什么样的呢？与其他流行框架相比有哪些区别呢？</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/polymer.png" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html" class="read-next-link"></a>
-            <section>
-                <span>进入3D世界</span>
-                <p>之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/webgl/logo.png" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-<hr>
-<!-- 来必力City版安装代码 -->
-<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
-    <script type="text/javascript">
-   (function(d, s) {
+animate();</code></pre></div><p>最终效果如下 <img src=/assets/img/slider-webgl.jpg alt=""><h2 id=总结>总结</h2><p>体验了一下 Three.js，确实简化了 WebGL 中许多命令式编程的繁琐过程，也更加便于记忆。 但是效果炫酷的同时也带来了性能问题，在低性能设备甚至手持设备上会出现明显卡顿。<h2 id=参考资料>参考资料</h2><ul><li><a href=https://tympanus.net/codrops/2016/09/29/transition-effect-with-css-masks/ >CSS Mask Effect</a><li><a href=https://tympanus.net/codrops/2018/04/10/webgl-distortion-hover-effects/ >WebGL Effect</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/04/21/Polymer-%E4%B8%AD%E7%9A%84-PRPL-%E6%A8%A1%E5%BC%8F.html class=read-next-link></a><section><span>Polymer 中的 PRPL 模式</span><p>Chrome 提出 PRPL 的模式在自家 Polymer 中的应用状况是什么样的呢？与其他流行框架相比有哪些区别呢？</section><div class=filter></div><img src=/assets/img/polymer.png alt=""></div><div class=read-next-item><a href=/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html class=read-next-link></a><section><span>进入3D世界</span><p>之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～</section><div class=filter></div><img src=/assets/img/webgl/logo.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -395,41 +119,11 @@ animate();</code></pre>
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-    </script>
-<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
-</div>
-<!-- City版安装代码已完成 -->
-
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2019</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-<script src="/assets/js/jquery.nav.js"></script>
-<script>
-    function generateCatalog (selector) {
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -473,7 +167,11 @@ animate();</code></pre>
         end: null,
         scrollChange: null,
         padding: 80
-    });
-</script>
-</body>
-</html>
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

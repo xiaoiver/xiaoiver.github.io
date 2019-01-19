@@ -1,275 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在Github Pages中使用第三方插件 - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="在Github Pages中使用第三方插件">
-    <meta name="keywords"  content="ruby, jekyll, github-pages">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>在Github Pages中使用第三方插件 | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="在Github Pages中使用第三方插件" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="Github Pages能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。" />
-<meta property="og:description" content="Github Pages能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-07-22T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"Github Pages能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html","headline":"在Github Pages中使用第三方插件","dateModified":"2017-07-22T00:00:00+08:00","datePublished":"2017-07-22T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-
-    
-
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-    
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在Github Pages中使用第三方插件 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="在Github Pages中使用第三方插件"><meta name=keywords content="ruby, jekyll, github-pages"><title>在Github Pages中使用第三方插件 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="在Github Pages中使用第三方插件"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="Github Pages能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。"><meta property=og:description content="Github Pages能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-07-22T00:00:00+08:00><script type=application/ld+json>{"description":"Github Pages能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html","headline":"在Github Pages中使用第三方插件","dateModified":"2017-07-22T00:00:00+08:00","datePublished":"2017-07-22T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-            <li><a href="/collectives.html">collectives</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#ruby" class="post-tag">ruby</a>
-            
-            <a href="https://xiaoiver.github.io/tags#jekyll" class="post-tag">jekyll</a>
-            
-            <a href="https://xiaoiver.github.io/tags#github-pages" class="post-tag">github-pages</a>
-            
-            
-        </div>
-        <h1>在Github Pages中使用第三方插件</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="17-07-22"><i class="iconfont icon-date"></i>22 Jul 2017</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/post-bg-js-module.jpg') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    <div class="catalog-container">
-        <div class="side-catalog">
-            <h3 class="catalog-title">
-                <a class="catalog-toggle" href="#">CATALOG</a>
-            </h3>
-            <ul class="catalog-body"></ul>
-        </div>
-    </div>
-    
-    <h2 class="post-subtitle">仅对本地构建结果进行版本控制</h2>
-    
-    <article class="markdown-body">
-        <p><a href="https://pages.github.com/">Github Pages</a>能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。</p>
-
-<p>jekyll 项目不可避免的会使用各种各样的插件，而 Github Pages 目前仅支持到 jekyll 3.4.5 版本，新版本在<code class="highlighter-rouge">_config.yml</code>中对插件的使用方法发生了变更，使用<code class="highlighter-rouge">plugins</code>代替旧版本的属性<code class="highlighter-rouge">gems</code>。所以为了兼容 Github Pages，本地新版本的警告提示信息只能选择忽略了。</p>
-
-<p>和在本地构建不同的一点是，github 构建时会加上<code class="highlighter-rouge">--save</code>参数，只运行<a href="https://pages.github.com/versions/">信任的插件</a>。这就导致如果我们的博客使用了不在白名单中的插件，github 构建时就会提示警告（在项目标签页 Setting -&gt; GitHub Pages 中），构建失败也就看不到最新的博客内容了。</p>
-
-<p>Github Pages 给出一种建议是，让用户在本地构建站点，然后仅将构建结果纳入版本控制，提交到指定分支。避免 github 构建，只需要在根目录下放一个空文件<code class="highlighter-rouge">.nojekyll</code>。</p>
-
-<p>至于本地构建，熟悉 Node.js 的开发者完全可以采用 gulp/grunt 工作流，调用<code class="highlighter-rouge">jekyll build</code>构建站点，顺便还能做一些静态资源压缩的工作。我在网上找到一种使用 rakefile 的<a href="https://www.sitepoint.com/jekyll-plugins-github/">简单方法</a>，决定一试。</p>
-
-<h2 id="使用-rakefile-构建">使用 Rakefile 构建</h2>
-
-<p>首先我们需要拷贝原有 repo 内容到一个新文件夹中，以后这个新文件夹将成为我们的工作文件夹。由于以后我们不会再在原有 repo 中进行写作，所以此时可以在 repo 中执行<code class="highlighter-rouge">git rm -r ./</code>清空所有版本控制。</p>
-
-<p>在新文件夹中增加 Rakefile，进行如下操作：</p>
-<ol>
-  <li>使用<code class="highlighter-rouge">jekyll build</code>构建站点</li>
-  <li>清空真正的 repo 内容，拷贝<code class="highlighter-rouge">_site</code>文件夹内容到里面。</li>
-</ol>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-ruby">GH_PAGES_DIR = &quot;xiaoiver.github.io&quot;
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#ruby class=post-tag>ruby</a> <a href=https://xiaoiver.github.io/tags#jekyll class=post-tag>jekyll</a> <a href=https://xiaoiver.github.io/tags#github-pages class=post-tag>github-pages</a></div><h1>在Github Pages中使用第三方插件</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=17-07-22><i class="iconfont icon-date"></i>22 Jul 2017</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/post-bg-js-module.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>仅对本地构建结果进行版本控制</h2><article class=markdown-body><p><a href=https://pages.github.com/ >Github Pages</a>能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。<p>jekyll 项目不可避免的会使用各种各样的插件，而 Github Pages 目前仅支持到 jekyll 3.4.5 版本，新版本在<code class=highlighter-rouge>_config.yml</code>中对插件的使用方法发生了变更，使用<code class=highlighter-rouge>plugins</code>代替旧版本的属性<code class=highlighter-rouge>gems</code>。所以为了兼容 Github Pages，本地新版本的警告提示信息只能选择忽略了。<p>和在本地构建不同的一点是，github 构建时会加上<code class=highlighter-rouge>--save</code>参数，只运行<a href=https://pages.github.com/versions/ >信任的插件</a>。这就导致如果我们的博客使用了不在白名单中的插件，github 构建时就会提示警告（在项目标签页 Setting -&gt; GitHub Pages 中），构建失败也就看不到最新的博客内容了。<p>Github Pages 给出一种建议是，让用户在本地构建站点，然后仅将构建结果纳入版本控制，提交到指定分支。避免 github 构建，只需要在根目录下放一个空文件<code class=highlighter-rouge>.nojekyll</code>。<p>至于本地构建，熟悉 Node.js 的开发者完全可以采用 gulp/grunt 工作流，调用<code class=highlighter-rouge>jekyll build</code>构建站点，顺便还能做一些静态资源压缩的工作。我在网上找到一种使用 rakefile 的<a href=https://www.sitepoint.com/jekyll-plugins-github/ >简单方法</a>，决定一试。<h2 id=使用-rakefile-构建>使用 Rakefile 构建</h2><p>首先我们需要拷贝原有 repo 内容到一个新文件夹中，以后这个新文件夹将成为我们的工作文件夹。由于以后我们不会再在原有 repo 中进行写作，所以此时可以在 repo 中执行<code class=highlighter-rouge>git rm -r ./</code>清空所有版本控制。<p>在新文件夹中增加 Rakefile，进行如下操作：<ol><li>使用<code class=highlighter-rouge>jekyll build</code>构建站点<li>清空真正的 repo 内容，拷贝<code class=highlighter-rouge>_site</code>文件夹内容到里面。</ol><div><pre class=line-numbers data-line=""><code class=language-ruby>GH_PAGES_DIR = &quot;xiaoiver.github.io&quot;
 
 desc &quot;Build Jekyll site and copy files&quot;
 task :build do
   system &quot;jekyll build&quot;
   system &quot;rm -r ../#{GH_PAGES_DIR}/*&quot; unless Dir[&#39;../#{GH_PAGES_DIR}/*&#39;].empty?
   system &quot;cp -r _site/* ../#{GH_PAGES_DIR}/&quot;
-end</code></pre>
-</div>
-
-<p>Rakefile 只在构建时使用，所以需要在<code class="highlighter-rouge">_config.yml</code>中过滤掉，避免拷贝到结果文件夹中：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-yml">exclude: [Rakefile]</code></pre>
-</div>
-
-<p>然后回到 repo 中，提交修改即可。</p>
-
-<h2 id="使用-gulp-工作流构建">使用 gulp 工作流构建</h2>
-
-<p>例如这个基于 yeoman 的<a href="https://github.com/nirgn975/generator-jekyll-starter-kit">模版项目</a>，包含了对 PWA 的支持。</p>
-
-<p>这个模版在构建时使用 gulp 通过 sw-precache 生成<code class="highlighter-rouge">service-worker.js</code>，缓存<code class="highlighter-rouge">_site</code>文件夹内全部静态资源。同时也定义了其他 task 用于压缩静态文件。</p>
-
-<p>我在博客中也使用了这种方式。</p>
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/coding/2017/07/23/%E6%97%A0%E7%94%A8%E7%9A%84keywords.html" class="read-next-link"></a>
-            <section>
-                <span>无用的keywords</span>
-                <p>我在博客中试用了一下 jekyll-seo-tag 插件。它会从 jekyll _config.yml配置文件中提...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/post-bg-js-module.jpg" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html" class="read-next-link"></a>
-            <section>
-                <span>为npm包提供多入口</span>
-                <p>问题背景</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/post-bg-js-module.jpg" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2019</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+end</code></pre></div><p>Rakefile 只在构建时使用，所以需要在<code class=highlighter-rouge>_config.yml</code>中过滤掉，避免拷贝到结果文件夹中：<div><pre class=line-numbers data-line=""><code class=language-yml>exclude: [Rakefile]</code></pre></div><p>然后回到 repo 中，提交修改即可。<h2 id=使用-gulp-工作流构建>使用 gulp 工作流构建</h2><p>例如这个基于 yeoman 的<a href=https://github.com/nirgn975/generator-jekyll-starter-kit>模版项目</a>，包含了对 PWA 的支持。<p>这个模版在构建时使用 gulp 通过 sw-precache 生成<code class=highlighter-rouge>service-worker.js</code>，缓存<code class=highlighter-rouge>_site</code>文件夹内全部静态资源。同时也定义了其他 task 用于压缩静态文件。<p>我在博客中也使用了这种方式。</article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2017/07/23/%E6%97%A0%E7%94%A8%E7%9A%84keywords.html class=read-next-link></a><section><span>无用的keywords</span><p>我在博客中试用了一下 jekyll-seo-tag 插件。它会从 jekyll _config.yml配置文件中提...</section><div class=filter></div><img src=/assets/img/post-bg-js-module.jpg alt=""></div><div class=read-next-item><a href=/coding/2017/07/17/%E4%B8%BAnpm%E5%8C%85%E6%8F%90%E4%BE%9B%E5%A4%9A%E5%85%A5%E5%8F%A3.html class=read-next-link></a><section><span>为npm包提供多入口</span><p>问题背景</section><div class=filter></div><img src=/assets/img/post-bg-js-module.jpg alt=""></div></section><section class="post-footer-item comment"></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-<script src="/assets/js/jquery.nav.js"></script>
-<script>
-    function generateCatalog (selector) {
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -313,7 +58,11 @@ end</code></pre>
         end: null,
         scrollChange: null,
         padding: 80
-    });
-</script>
-</body>
-</html>
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

@@ -1,328 +1,24 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenCV 图像识别 - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="OpenCV 图像识别">
-    <meta name="keywords"  content="OpenCV, python">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>OpenCV 图像识别 | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="OpenCV 图像识别" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="最近帮同学实现了一个简单的图像识别程序，顺便复习了一下 python 的知识。" />
-<meta property="og:description" content="最近帮同学实现了一个简单的图像识别程序，顺便复习了一下 python 的知识。" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/04/22/OpenCV-%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/04/22/OpenCV-%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2018-04-22T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"最近帮同学实现了一个简单的图像识别程序，顺便复习了一下 python 的知识。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/04/22/OpenCV-%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB.html","headline":"OpenCV 图像识别","dateModified":"2018-04-22T00:00:00+08:00","datePublished":"2018-04-22T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/04/22/OpenCV-%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/04/22/OpenCV-%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-
-    
-
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-    
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>OpenCV 图像识别 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="OpenCV 图像识别"><meta name=keywords content="OpenCV, python"><title>OpenCV 图像识别 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="OpenCV 图像识别"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="最近帮同学实现了一个简单的图像识别程序，顺便复习了一下 python 的知识。"><meta property=og:description content="最近帮同学实现了一个简单的图像识别程序，顺便复习了一下 python 的知识。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/22/OpenCV-%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/04/22/OpenCV-%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-04-22T00:00:00+08:00><script type=application/ld+json>{"description":"最近帮同学实现了一个简单的图像识别程序，顺便复习了一下 python 的知识。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/04/22/OpenCV-%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB.html","headline":"OpenCV 图像识别","dateModified":"2018-04-22T00:00:00+08:00","datePublished":"2018-04-22T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/04/22/OpenCV-%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/22/OpenCV-%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-            <li><a href="/collectives.html">collectives</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#OpenCV" class="post-tag">OpenCV</a>
-            
-            <a href="https://xiaoiver.github.io/tags#python" class="post-tag">python</a>
-            
-            
-        </div>
-        <h1>OpenCV 图像识别</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="18-04-22"><i class="iconfont icon-date"></i>22 Apr 2018</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/opencv.png') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    <div class="catalog-container">
-        <div class="side-catalog">
-            <h3 class="catalog-title">
-                <a class="catalog-toggle" href="#">CATALOG</a>
-            </h3>
-            <ul class="catalog-body"></ul>
-        </div>
-    </div>
-    
-    <article class="markdown-body">
-        <p>最近帮同学实现了一个简单的图像识别程序，顺便复习了一下 python 的知识。</p>
-
-<p>问题背景大致如下，需要从图片中按照指定尺寸识别并裁剪出包含目标对象的矩形区域。</p>
-
-<p><img src="/assets/img/sample.jpeg" alt="" /></p>
-
-<h2 id="准备工作">准备工作</h2>
-
-<p>在 python 中也有依赖包管理工具，类似 Node.js 中的 npm，这就是 pip：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-bash">sudo easy_install pip</code></pre>
-</div>
-
-<p>既然涉及到图像识别，使用 OpenCV 无疑是最佳选择，而且针对不同语言都有官方或者非官方的实现版本。
-我这里使用了一个非官方的库 <code class="highlighter-rouge">opencv-python</code>：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-bash">pip install opencv-python</code></pre>
-</div>
-
-<p>另外，由于涉及到科学计算，<code class="highlighter-rouge">numpy</code> 也是需要安装的：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-bash">python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose</code></pre>
-</div>
-
-<p>到这里准备工作就算完成了，可以仔细思考下这个问题的解决思路。</p>
-
-<h2 id="大致思路">大致思路</h2>
-
-<p>首先从原始输入图片中不难看出，其中包含了很多噪音，去除他们会给后续处理带来便利。
-其次，我们需要将灰度图转换成黑白双色图，便于后续的轮廓识别。
-然后，通过轮廓识别找出矩形边框，根据需要的裁剪尺寸作出调整。
-最后，根据调整后的区域在原图中进行裁剪。</p>
-
-<p>下面让我们依次根据这个思路实现。</p>
-
-<h2 id="具体实现">具体实现</h2>
-
-<p>先学习一波 python 的语法知识。</p>
-
-<h3 id="python-语法">python 语法</h3>
-
-<p>类似 ES6 中的模块语法，通过 <code class="highlighter-rouge">import</code> 我们可以引入指定模块或者其中的方法：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-python">import cv2
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#OpenCV class=post-tag>OpenCV</a> <a href=https://xiaoiver.github.io/tags#python class=post-tag>python</a></div><h1>OpenCV 图像识别</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-04-22><i class="iconfont icon-date"></i>22 Apr 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/opencv.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><article class=markdown-body><p>最近帮同学实现了一个简单的图像识别程序，顺便复习了一下 python 的知识。<p>问题背景大致如下，需要从图片中按照指定尺寸识别并裁剪出包含目标对象的矩形区域。<p><img src=/assets/img/sample.jpeg alt=""><h2 id=准备工作>准备工作</h2><p>在 python 中也有依赖包管理工具，类似 Node.js 中的 npm，这就是 pip：<div><pre class=line-numbers data-line=""><code class=language-bash>sudo easy_install pip</code></pre></div><p>既然涉及到图像识别，使用 OpenCV 无疑是最佳选择，而且针对不同语言都有官方或者非官方的实现版本。 我这里使用了一个非官方的库 <code class=highlighter-rouge>opencv-python</code>：<div><pre class=line-numbers data-line=""><code class=language-bash>pip install opencv-python</code></pre></div><p>另外，由于涉及到科学计算，<code class=highlighter-rouge>numpy</code> 也是需要安装的：<div><pre class=line-numbers data-line=""><code class=language-bash>python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose</code></pre></div><p>到这里准备工作就算完成了，可以仔细思考下这个问题的解决思路。<h2 id=大致思路>大致思路</h2><p>首先从原始输入图片中不难看出，其中包含了很多噪音，去除他们会给后续处理带来便利。 其次，我们需要将灰度图转换成黑白双色图，便于后续的轮廓识别。 然后，通过轮廓识别找出矩形边框，根据需要的裁剪尺寸作出调整。 最后，根据调整后的区域在原图中进行裁剪。<p>下面让我们依次根据这个思路实现。<h2 id=具体实现>具体实现</h2><p>先学习一波 python 的语法知识。<h3 id=python-语法>python 语法</h3><p>类似 ES6 中的模块语法，通过 <code class=highlighter-rouge>import</code> 我们可以引入指定模块或者其中的方法：<div><pre class=line-numbers data-line=""><code class=language-python>import cv2
 from math import floor
-from os import makedirs,listdir</code></pre>
-</div>
-
-<p>另外，由于使用了中文注释，需要在源码顶部第一行声明编码类型：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-python">#coding:utf-8</code></pre>
-</div>
-
-<p>作为一个 python 初学者，看到很多 python 代码中包含下面一段类似程序入口的判断。原来一个 python 文件既可以独立运行，也可以被其他文件引用，通过 <code class="highlighter-rouge">__name__</code> 能判断运行环境：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-python">if __name__ == &quot;__main__&quot;:
-    main()</code></pre>
-</div>
-
-<h3 id="读取图片">读取图片</h3>
-
-<p>OpenCV 提供了图片的读写方法，比如 <code class="highlighter-rouge">imread()</code> 将图片读入数组中：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-python">original_img = cv2.imread(join(input_dir,src_img))</code></pre>
-</div>
-
-<h3 id="去噪">去噪</h3>
-
-<p>OpenCV 提供了<a href="http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_photo/py_non_local_means/py_non_local_means.html">去噪方法</a>，这里我们使用针对灰度图的：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-python">denoised_img = cv2.fastNlMeansDenoising(original_img,None,10,7,21)</code></pre>
-</div>
-
-<p><img src="/assets/img/denoised.jpg" alt="" /></p>
-
-<h2 id="轮廓检测">轮廓检测</h2>
-
-<p>把 8 位的灰度图转换成黑白图，设置阈值 127。另外这里出现了 python 中方法多个返回值，不需要的可以命名为 <code class="highlighter-rouge">_</code>，比如这里第一个返回值是原始数组，我们并不需要：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-python">_, binary_img = cv2.threshold(gray_img,127,255,cv2.THRESH_BINARY)</code></pre>
-</div>
-
-<p><img src="/assets/img/binary.jpg" alt="" /></p>
-
-<p>关于轮廓检测 OpenCV 有专门的<a href="http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_contours/py_contours_begin/py_contours_begin.html#contours-getting-started">章节</a>介绍。值得注意的是，由于对象内部也会存在“黑点”，构成很小的区域，我们需要通过计算轮廓面积，筛选掉这些小小的区域：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-python">_, contours, hierarchy = cv2.findContours(binary_img,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+from os import makedirs,listdir</code></pre></div><p>另外，由于使用了中文注释，需要在源码顶部第一行声明编码类型：<div><pre class=line-numbers data-line=""><code class=language-python>#coding:utf-8</code></pre></div><p>作为一个 python 初学者，看到很多 python 代码中包含下面一段类似程序入口的判断。原来一个 python 文件既可以独立运行，也可以被其他文件引用，通过 <code class=highlighter-rouge>__name__</code> 能判断运行环境：<div><pre class=line-numbers data-line=""><code class=language-python>if __name__ == &quot;__main__&quot;:
+    main()</code></pre></div><h3 id=读取图片>读取图片</h3><p>OpenCV 提供了图片的读写方法，比如 <code class=highlighter-rouge>imread()</code> 将图片读入数组中：<div><pre class=line-numbers data-line=""><code class=language-python>original_img = cv2.imread(join(input_dir,src_img))</code></pre></div><h3 id=去噪>去噪</h3><p>OpenCV 提供了<a href=http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_photo/py_non_local_means/py_non_local_means.html>去噪方法</a>，这里我们使用针对灰度图的：<div><pre class=line-numbers data-line=""><code class=language-python>denoised_img = cv2.fastNlMeansDenoising(original_img,None,10,7,21)</code></pre></div><p><img src=/assets/img/denoised.jpg alt=""><h2 id=轮廓检测>轮廓检测</h2><p>把 8 位的灰度图转换成黑白图，设置阈值 127。另外这里出现了 python 中方法多个返回值，不需要的可以命名为 <code class=highlighter-rouge>_</code>，比如这里第一个返回值是原始数组，我们并不需要：<div><pre class=line-numbers data-line=""><code class=language-python>_, binary_img = cv2.threshold(gray_img,127,255,cv2.THRESH_BINARY)</code></pre></div><p><img src=/assets/img/binary.jpg alt=""><p>关于轮廓检测 OpenCV 有专门的<a href=http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_contours/py_contours_begin/py_contours_begin.html#contours-getting-started>章节</a>介绍。值得注意的是，由于对象内部也会存在“黑点”，构成很小的区域，我们需要通过计算轮廓面积，筛选掉这些小小的区域：<div><pre class=line-numbers data-line=""><code class=language-python>_, contours, hierarchy = cv2.findContours(binary_img,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
 for cnt in contours:
     if cv2.contourArea(cnt)&gt;1000:
-        # 后续处理轮廓</code></pre>
-</div>
-
-<p><img src="/assets/img/final.jpg" alt="" /></p>
-
-<p>现在我们得到了轮廓区域的包围矩形，需要根据裁剪矩形做出调整。
-首先我们对齐两个矩形的中心，然后检测是否触碰到了整个图片的边缘：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-python"># 轮廓区域
+        # 后续处理轮廓</code></pre></div><p><img src=/assets/img/final.jpg alt=""><p>现在我们得到了轮廓区域的包围矩形，需要根据裁剪矩形做出调整。 首先我们对齐两个矩形的中心，然后检测是否触碰到了整个图片的边缘：<div><pre class=line-numbers data-line=""><code class=language-python># 轮廓区域
 x,y,w,h = cv2.boundingRect(cnt)
 # 对齐中心
 crop_y = y+floor((h-crop_h)/2)
 crop_x = x+floor((w-crop_w)/2)
 # 边缘检测
 crop_x = min(max(0, crop_x),original_img_w-crop_w)
-crop_y = min(max(0, crop_y),original_img_h-crop_h)</code></pre>
-</div>
-
-<p>最后在原图中裁剪，python 操作矩阵数组真是方便：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-python">crop_img = original_img[crop_y:crop_y+crop_h,crop_x:crop_x+crop_w]
+crop_y = min(max(0, crop_y),original_img_h-crop_h)</code></pre></div><p>最后在原图中裁剪，python 操作矩阵数组真是方便：<div><pre class=line-numbers data-line=""><code class=language-python>crop_img = original_img[crop_y:crop_y+crop_h,crop_x:crop_x+crop_w]
 output_path = &#39;...&#39;
-cv2.imwrite(output_path, crop_img)</code></pre>
-</div>
-
-<h2 id="总结">总结</h2>
-
-<p>经常看到使用 python 编写机器学习，网络爬虫的文章。个人感觉语法类似 Ruby 和 JS 的混合体，非常值得学习。
-尤其是这次结合 OpenCV 的尝试，让我觉得可以用他们继续实现更加有趣的功能，例如 OCR 和人脸识别等等，即使完全不了解其中的算法细节。</p>
-
-<h2 id="参考资料">参考资料</h2>
-
-<ul>
-  <li><a href="http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_tutorials.html">OpenCV 教程</a></li>
-  <li><a href="http://blog.konghy.cn/2017/04/24/python-entry-program/">Python 中的 if <strong>name</strong> == ‘<strong>main</strong>’ 该如何理解</a></li>
-</ul>
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/04/27/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6.html" class="read-next-link"></a>
-            <section>
-                <span>Vue 渲染机制</span>
-                <p>最近因为项目需要，仔细阅读了下 Vue 的源码。网上有很多关于 Vue 的响应式设计及细节，我们这次聚焦在 $mo...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/vue-render.png" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/04/21/Polymer-%E4%B8%AD%E7%9A%84%E8%B7%AF%E7%94%B1%E8%AE%BE%E8%AE%A1.html" class="read-next-link"></a>
-            <section>
-                <span>Polymer 中的路由设计</span>
-                <p>最近接触 Polymer 项目，其中的路由使用方式和之前的一些框架很不一样。阅读了官方关于路由的设计文档之后，发现...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/polymer.png" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-<hr>
-<!-- 来必力City版安装代码 -->
-<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
-    <script type="text/javascript">
-   (function(d, s) {
+cv2.imwrite(output_path, crop_img)</code></pre></div><h2 id=总结>总结</h2><p>经常看到使用 python 编写机器学习，网络爬虫的文章。个人感觉语法类似 Ruby 和 JS 的混合体，非常值得学习。 尤其是这次结合 OpenCV 的尝试，让我觉得可以用他们继续实现更加有趣的功能，例如 OCR 和人脸识别等等，即使完全不了解其中的算法细节。<h2 id=参考资料>参考资料</h2><ul><li><a href=http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_tutorials.html>OpenCV 教程</a><li><a href=http://blog.konghy.cn/2017/04/24/python-entry-program/ >Python 中的 if <strong>name</strong> == ‘<strong>main</strong>’ 该如何理解</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/04/27/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6.html class=read-next-link></a><section><span>Vue 渲染机制</span><p>最近因为项目需要，仔细阅读了下 Vue 的源码。网上有很多关于 Vue 的响应式设计及细节，我们这次聚焦在 $mo...</section><div class=filter></div><img src=/assets/img/vue-render.png alt=""></div><div class=read-next-item><a href=/coding/2018/04/21/Polymer-%E4%B8%AD%E7%9A%84%E8%B7%AF%E7%94%B1%E8%AE%BE%E8%AE%A1.html class=read-next-link></a><section><span>Polymer 中的路由设计</span><p>最近接触 Polymer 项目，其中的路由使用方式和之前的一些框架很不一样。阅读了官方关于路由的设计文档之后，发现...</section><div class=filter></div><img src=/assets/img/polymer.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -332,41 +28,11 @@ cv2.imwrite(output_path, crop_img)</code></pre>
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-    </script>
-<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
-</div>
-<!-- City版安装代码已完成 -->
-
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2019</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-<script src="/assets/js/jquery.nav.js"></script>
-<script>
-    function generateCatalog (selector) {
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -410,7 +76,11 @@ cv2.imwrite(output_path, crop_img)</code></pre>
         end: null,
         scrollChange: null,
         padding: 80
-    });
-</script>
-</body>
-</html>
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

@@ -1,68 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>噪声的艺术 - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="噪声的艺术">
-    <meta name="keywords"  content="WebGL">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>噪声的艺术 | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="噪声的艺术" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="最近学习「the book of shaders」，了解到这种完全依靠 fragment shader 绘制，而不需要 vertex shader 过多参与的技术被称作“Pixel-Shader”。" />
-<meta property="og:description" content="最近学习「the book of shaders」，了解到这种完全依靠 fragment shader 绘制，而不需要 vertex shader 过多参与的技术被称作“Pixel-Shader”。" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2018-08-01T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"最近学习「the book of shaders」，了解到这种完全依靠 fragment shader 绘制，而不需要 vertex shader 过多参与的技术被称作“Pixel-Shader”。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html","headline":"噪声的艺术","dateModified":"2018-08-01T00:00:00+08:00","datePublished":"2018-08-01T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-
-    
-
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-    
-    <script src="/assets/js/glsl-canvas.min.js"></script>
-    <script>
-        function initArrayBuffer(gl, program, attribute, data, type, num) {
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>噪声的艺术 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=噪声的艺术><meta name=keywords content=WebGL><title>噪声的艺术 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=噪声的艺术><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="最近学习「the book of shaders」，了解到这种完全依靠 fragment shader 绘制，而不需要 vertex shader 过多参与的技术被称作“Pixel-Shader”。"><meta property=og:description content="最近学习「the book of shaders」，了解到这种完全依靠 fragment shader 绘制，而不需要 vertex shader 过多参与的技术被称作“Pixel-Shader”。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-08-01T00:00:00+08:00><script type=application/ld+json>{"description":"最近学习「the book of shaders」，了解到这种完全依靠 fragment shader 绘制，而不需要 vertex shader 过多参与的技术被称作“Pixel-Shader”。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html","headline":"噪声的艺术","dateModified":"2018-08-01T00:00:00+08:00","datePublished":"2018-08-01T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
             // Create a buffer object
             var buffer = gl.createBuffer();
             if (!buffer) {
@@ -85,174 +24,33 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             return true;
-        }
-    </script>
-    
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+        }</script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-            <li><a href="/collectives.html">collectives</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#WebGL" class="post-tag">WebGL</a>
-            
-            
-        </div>
-        <h1>噪声的艺术</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="18-08-01"><i class="iconfont icon-date"></i>01 Aug 2018</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/webgl/tbs-cover.jpg') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    <div class="catalog-container">
-        <div class="side-catalog">
-            <h3 class="catalog-title">
-                <a class="catalog-toggle" href="#">CATALOG</a>
-            </h3>
-            <ul class="catalog-body"></ul>
-        </div>
-    </div>
-    
-    <h2 class="post-subtitle">噪声函数的基本生成方式</h2>
-    
-    <article class="markdown-body">
-        <p>最近学习「the book of shaders」，了解到这种完全依靠 fragment shader 绘制，而不需要 vertex shader 过多参与的技术被称作“Pixel-Shader”。</p>
-
-<p>在上一篇<a href="/coding/2018/07/20/%E7%BB%98%E5%88%B6-Pattern.html">「绘制 Pattern」</a>中学习了 Pattern 的绘制思路以及一些基本形状的绘制方法。而很多艺术效果中，完全规则的图形反而会很生硬，噪声的应用使得图案变得更加“自然”，因此应用是十分广泛的。</p>
-
-<h2 id="模拟随机">模拟随机</h2>
-
-<p>为了实现噪声效果，肯定需要用随机函数。而 GLSL 中并没有类似 <code class="highlighter-rouge">random()</code> 这样的内置函数，这就需要我们模拟这种随机的行为。
-由于是模拟的，对于同一个<code class="highlighter-rouge">random(x)</code>总是得到同样的返回值，因此这是一种伪随机。</p>
-
-<p>如果我们想得到一个取值范围在 0-1 之间的 <code class="highlighter-rouge">random</code> 函数，可以使用 <code class="highlighter-rouge">y = fract(sin(x)*1.0);</code>，只保留小数部分。</p>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/tbs-rand1.png" alt="系数 1.0" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/tbs-rand1.png" data-alt="系数 1.0">
-    </div>
-    <em>系数 1.0</em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>噪声的艺术</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-08-01><i class="iconfont icon-date"></i>01 Aug 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/tbs-cover.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>噪声函数的基本生成方式</h2><article class=markdown-body><p>最近学习「the book of shaders」，了解到这种完全依靠 fragment shader 绘制，而不需要 vertex shader 过多参与的技术被称作“Pixel-Shader”。<p>在上一篇<a href=/coding/2018/07/20/%E7%BB%98%E5%88%B6-Pattern.html>「绘制 Pattern」</a>中学习了 Pattern 的绘制思路以及一些基本形状的绘制方法。而很多艺术效果中，完全规则的图形反而会很生硬，噪声的应用使得图案变得更加“自然”，因此应用是十分广泛的。<h2 id=模拟随机>模拟随机</h2><p>为了实现噪声效果，肯定需要用随机函数。而 GLSL 中并没有类似 <code class=highlighter-rouge>random()</code> 这样的内置函数，这就需要我们模拟这种随机的行为。 由于是模拟的，对于同一个<code class=highlighter-rouge>random(x)</code>总是得到同样的返回值，因此这是一种伪随机。<p>如果我们想得到一个取值范围在 0-1 之间的 <code class=highlighter-rouge>random</code> 函数，可以使用 <code class=highlighter-rouge>y = fract(sin(x)*1.0);</code>，只保留小数部分。<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/tbs-rand1.png alt="系数 1.0"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/tbs-rand1.png data-alt="系数 1.0"></div><em>系数 1.0</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<p>观察这个函数可以发现，如果我们能将周期缩小到极短，对于同一个 x 对应的取值就可以认为是近似随机（伪随机）的。
-具体方式就是增大系数，例如 <code class="highlighter-rouge">y = fract(sin(x)*10.0);</code></p>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/tbs-rand2.png" alt="系数 10.0" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/tbs-rand2.png" data-alt="系数 10.0">
-    </div>
-    <em>系数 10.0</em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+    });</script><p>观察这个函数可以发现，如果我们能将周期缩小到极短，对于同一个 x 对应的取值就可以认为是近似随机（伪随机）的。 具体方式就是增大系数，例如 <code class=highlighter-rouge>y = fract(sin(x)*10.0);</code><p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/tbs-rand2.png alt="系数 10.0"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/tbs-rand2.png data-alt="系数 10.0"></div><em>系数 10.0</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<p>进一步增加到 100000，我们已经无法分辨出 <code class="highlighter-rouge">sin()</code> 的波形了。
-再次需要明确一点，不同于 JS 中的 <code class="highlighter-rouge">Math.random()</code>，这种方式只是确定性随机，本质其实是一个 Hash 函数。</p>
-
-<h3 id="2维随机">2维随机</h3>
-
-<p>我们需要将 <code class="highlighter-rouge">random</code> 应用到 2D 场景中，输入从单一的 x 变成了 xy 坐标，需要将二维向量映射成一个单一值。
-「the book of shaders」使用了 <code class="highlighter-rouge">dot()</code> 内置函数点乘了一个特定的向量，但是并没有解释原因。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">float random (vec2 st) {
+    });</script><p>进一步增加到 100000，我们已经无法分辨出 <code class=highlighter-rouge>sin()</code> 的波形了。 再次需要明确一点，不同于 JS 中的 <code class=highlighter-rouge>Math.random()</code>，这种方式只是确定性随机，本质其实是一个 Hash 函数。<h3 id=2维随机>2维随机</h3><p>我们需要将 <code class=highlighter-rouge>random</code> 应用到 2D 场景中，输入从单一的 x 变成了 xy 坐标，需要将二维向量映射成一个单一值。 「the book of shaders」使用了 <code class=highlighter-rouge>dot()</code> 内置函数点乘了一个特定的向量，但是并没有解释原因。<div><pre class=line-numbers data-line=""><code class=language-glsl>float random (vec2 st) {
     return fract(sin(
         dot(st.xy,vec2(12.9898,78.233)))*
         43758.5453123);
-}</code></pre>
-</div>
-
-<p>在网上搜索一番后，找到了<a href="https://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner">这个回答</a>，大概是说最早来自一篇论文，也没有解释选择这三个 Magic Number 的理由。总之生成的效果是很好的，类似黑白电视机的“雪花屏”：</p>
-
-<p><img src="/assets/img/webgl/tbs-rand3.png" alt="" /></p>
-
-<p>结合之前学到的 Pattern 绘制方法，可以得到更加可控的效果：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">vec2 st = gl_FragCoord.xy/u_resolution.xy;
+}</code></pre></div><p>在网上搜索一番后，找到了<a href=https://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner>这个回答</a>，大概是说最早来自一篇论文，也没有解释选择这三个 Magic Number 的理由。总之生成的效果是很好的，类似黑白电视机的“雪花屏”：<p><img src=/assets/img/webgl/tbs-rand3.png alt=""><p>结合之前学到的 Pattern 绘制方法，可以得到更加可控的效果：<div><pre class=line-numbers data-line=""><code class=language-glsl>vec2 st = gl_FragCoord.xy/u_resolution.xy;
 st *= 10.0;
 vec2 ipos = floor(st);
 vec3 color = vec3(random(ipos));
-gl_FragColor = vec4(color,1.0);</code></pre>
-</div>
-
-<p><img src="/assets/img/webgl/tbs-rand4.png" alt="" /></p>
-
-<h2 id="一维噪声">一维噪声</h2>
-
-<p>使用我们定义的 <code class="highlighter-rouge">random</code> 函数，结合 <code class="highlighter-rouge">floor</code> 可以得到阶梯状的函数。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">float i = floor(x);
-y = random(i);</code></pre>
-</div>
-
-<p><img src="/assets/img/webgl/tbs-noise1.png" alt="" /></p>
-
-<p>如果我们想对相邻“阶梯”间进行插值，可以使用线性函数或者平滑的插值函数（smoothstep）：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">float i = floor(x);
+gl_FragColor = vec4(color,1.0);</code></pre></div><p><img src=/assets/img/webgl/tbs-rand4.png alt=""><h2 id=一维噪声>一维噪声</h2><p>使用我们定义的 <code class=highlighter-rouge>random</code> 函数，结合 <code class=highlighter-rouge>floor</code> 可以得到阶梯状的函数。<div><pre class=line-numbers data-line=""><code class=language-glsl>float i = floor(x);
+y = random(i);</code></pre></div><p><img src=/assets/img/webgl/tbs-noise1.png alt=""><p>如果我们想对相邻“阶梯”间进行插值，可以使用线性函数或者平滑的插值函数（smoothstep）：<div><pre class=line-numbers data-line=""><code class=language-glsl>float i = floor(x);
 float f = fract(x);
 y = mix(rand(i), rand(i + 1.0), f);
-// y = mix(rand(i), rand(i + 1.0), smoothstep(0.,1.,f));</code></pre>
-</div>
-
-<p><img src="/assets/img/webgl/tbs-noise2.png" alt="" /></p>
-
-<h2 id="二维噪声">二维噪声</h2>
-
-<p>在一维中插值我们选取了 i+1，在二维中进行插值，可以选取相邻的 4 个点。相应的混合函数也需要进行修改。
-原文中混合函数是展开后的形式，有点难看懂，但是好处是少调用了两次 <code class="highlighter-rouge">mix()</code>。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">float noise (in vec2 st) {
+// y = mix(rand(i), rand(i + 1.0), smoothstep(0.,1.,f));</code></pre></div><p><img src=/assets/img/webgl/tbs-noise2.png alt=""><h2 id=二维噪声>二维噪声</h2><p>在一维中插值我们选取了 i+1，在二维中进行插值，可以选取相邻的 4 个点。相应的混合函数也需要进行修改。 原文中混合函数是展开后的形式，有点难看懂，但是好处是少调用了两次 <code class=highlighter-rouge>mix()</code>。<div><pre class=line-numbers data-line=""><code class=language-glsl>float noise (in vec2 st) {
     vec2 i = floor(st);
     vec2 f = fract(st);
 
@@ -272,33 +70,7 @@ y = mix(rand(i), rand(i + 1.0), f);
     // 其实是下面的展开形式
     return mix( mix( a, b , u.x),
                 mix( c, d, u.x), u.y);
-}</code></pre>
-</div>
-
-<p><img src="/assets/img/webgl/tbs-noise3.png" alt="" /></p>
-
-<p>作者在注释中也提到了以上算法来自 shader toy 上，甚至包括了三维中的示例：</p>
-<iframe width="640" height="360" frameborder="0" src="https://www.shadertoy.com/embed/4dS3Wd?gui=true&amp;t=10&amp;paused=true&amp;muted=false" allowfullscreen=""></iframe>
-
-<h2 id="其他噪声生成方式">其他噪声生成方式</h2>
-
-<p>以上生成噪声的方法，都是在随机值之间进行插值，因此被称为 value noise。仔细观察可以发现这种方式生成的结果有明显的块状痕迹，例如下面例子中左侧部分。</p>
-
-<iframe width="640" height="360" frameborder="0" src="https://www.shadertoy.com/embed/lsf3WH?gui=true&amp;t=10&amp;paused=true&amp;muted=false" allowfullscreen=""></iframe>
-
-<p>当然这种方式的优点就是计算量小，而且在某些场景下已经足够。例如上面例子中的右侧部分，运用了<a href="https://thebookofshaders.com/13/?lan=ch">分形布朗运动（Fractal Brownian Motion）</a></p>
-
-<h3 id="gradient-noise">Gradient Noise</h3>
-
-<blockquote>
-  <p>在 1985 年 Ken Perlin 开发了另一种 noise 算法 Gradient Noise。Ken 解决了如何插入随机的 gradients（梯度、渐变）而不是一个固定值。这些梯度值来自于一个二维的随机函数，返回一个方向（vec2 格式的向量），而不仅是一个值（float格式）。</p>
-</blockquote>
-
-<iframe width="640" height="360" frameborder="0" src="https://www.shadertoy.com/embed/XdXGW8?gui=true&amp;t=10&amp;paused=true&amp;muted=false" allowfullscreen=""></iframe>
-
-<p>具体算法如下，可以看出和 value noise 最大的区别就是使用了 <code class="highlighter-rouge">dot()</code> 对四个方向的向量进行插值：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">// gradient noise
+}</code></pre></div><p><img src=/assets/img/webgl/tbs-noise3.png alt=""><p>作者在注释中也提到了以上算法来自 shader toy 上，甚至包括了三维中的示例：</p><iframe width=640 height=360 frameborder=0 src="https://www.shadertoy.com/embed/4dS3Wd?gui=true&amp;t=10&amp;paused=true&amp;muted=false" allowfullscreen></iframe><h2 id=其他噪声生成方式>其他噪声生成方式</h2><p>以上生成噪声的方法，都是在随机值之间进行插值，因此被称为 value noise。仔细观察可以发现这种方式生成的结果有明显的块状痕迹，例如下面例子中左侧部分。</p><iframe width=640 height=360 frameborder=0 src="https://www.shadertoy.com/embed/lsf3WH?gui=true&amp;t=10&amp;paused=true&amp;muted=false" allowfullscreen></iframe><p>当然这种方式的优点就是计算量小，而且在某些场景下已经足够。例如上面例子中的右侧部分，运用了<a href="https://thebookofshaders.com/13/?lan=ch">分形布朗运动（Fractal Brownian Motion）</a><h3 id=gradient-noise>Gradient Noise</h3><blockquote><p>在 1985 年 Ken Perlin 开发了另一种 noise 算法 Gradient Noise。Ken 解决了如何插入随机的 gradients（梯度、渐变）而不是一个固定值。这些梯度值来自于一个二维的随机函数，返回一个方向（vec2 格式的向量），而不仅是一个值（float格式）。</blockquote><iframe width=640 height=360 frameborder=0 src="https://www.shadertoy.com/embed/XdXGW8?gui=true&amp;t=10&amp;paused=true&amp;muted=false" allowfullscreen></iframe><p>具体算法如下，可以看出和 value noise 最大的区别就是使用了 <code class=highlighter-rouge>dot()</code> 对四个方向的向量进行插值：<div><pre class=line-numbers data-line=""><code class=language-glsl>// gradient noise
 float noise( in vec2 st ) {
     vec2 i = floor(st);
     vec2 f = fract(st);
@@ -309,156 +81,15 @@ float noise( in vec2 st ) {
                      dot( random( i + vec2(1.0,0.0) ), f - vec2(1.0,0.0) ), u.x),
                 mix( dot( random( i + vec2(0.0,1.0) ), f - vec2(0.0,1.0) ), 
                      dot( random( i + vec2(1.0,1.0) ), f - vec2(1.0,1.0) ), u.x), u.y);
-}</code></pre>
-</div>
-
-<h3 id="simplex-noise">Simplex Noise</h3>
-
-<blockquote>
-  <p>对于 Ken Perlin 来说他的算法所取得的成功是远远不够的。他觉得可以更好。在 2001 年的 Siggraph 上，他展示了 “simplex noise”</p>
-</blockquote>
-
-<p><img src="/assets/img/webgl/tbs-noise6.png" alt="" /></p>
-
-<p>这个算法的改进就十分复杂了，详见<a href="https://thebookofshaders.com/edit.php#11/2d-snoise-clear.frag">2d-snoise-clear</a></p>
-
-<h2 id="更多艺术效果">更多艺术效果</h2>
-
-<p>结合之前学到的基本图形画法，可以创造出许多有意思的效果。</p>
-
-<h3 id="旋转直线">旋转直线</h3>
-
-<p><img src="/assets/img/webgl/tbs-noise5.png" alt="" /></p>
-
-<p>2D 旋转矩阵应该很熟悉了：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">mat2 rotate2d(float angle){
+}</code></pre></div><h3 id=simplex-noise>Simplex Noise</h3><blockquote><p>对于 Ken Perlin 来说他的算法所取得的成功是远远不够的。他觉得可以更好。在 2001 年的 Siggraph 上，他展示了 “simplex noise”</blockquote><p><img src=/assets/img/webgl/tbs-noise6.png alt=""><p>这个算法的改进就十分复杂了，详见<a href=https://thebookofshaders.com/edit.php#11/2d-snoise-clear.frag>2d-snoise-clear</a><h2 id=更多艺术效果>更多艺术效果</h2><p>结合之前学到的基本图形画法，可以创造出许多有意思的效果。<h3 id=旋转直线>旋转直线</h3><p><img src=/assets/img/webgl/tbs-noise5.png alt=""><p>2D 旋转矩阵应该很熟悉了：<div><pre class=line-numbers data-line=""><code class=language-glsl>mat2 rotate2d(float angle){
     return mat2(cos(angle),-sin(angle),
                 sin(angle),cos(angle));
-}</code></pre>
-</div>
-
-<p>使用噪声函数得到随机的旋转角度：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">pos = rotate2d( noise(pos) ) * pos;
-pattern = lines(pos,.5);</code></pre>
-</div>
-
-<h2 id="总结">总结</h2>
-
-<p>现在我们了解了随机和噪声的基本生成方法，接下来我们需要模拟更多现实中的纹理。</p>
-
-<h2 id="参考资料">参考资料</h2>
-
-<ul>
-  <li><a href="https://thebookofshaders.com/10/?lan=ch">随机</a></li>
-  <li><a href="https://thebookofshaders.com/11/?lan=ch">噪声</a></li>
-  <li><a href="https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl/4275343#4275343">GLSL 中的随机函数</a></li>
-  <li><a href="https://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner">rand 函数的由来</a></li>
-  <li><a href="https://pixelero.wordpress.com/2008/04/24/various-functions-and-various-distributions-with-mathrandom/">various-functions-and-various-distributions-with-mathrandom</a></li>
-  <li><a href="http://www.iquilezles.org/www/articles/morenoise/morenoise.htm">more noise</a></li>
-</ul>
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/08/03/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%BA%8C.html" class="read-next-link"></a>
-            <section>
-                <span>噪声的艺术（二）</span>
-                <p>在上一篇「噪声的艺术」中我们学习了 Value Noise, Gradient Noise 以及 Simplex ...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/webgl/solas.png" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/07/20/%E7%BB%98%E5%88%B6-Pattern.html" class="read-next-link"></a>
-            <section>
-                <span>绘制 Pattern</span>
-                <p>在设置页面背景时，使用 Pattern 这种平铺的效果是很常见的做法，其中使用 CSS 属性是最常规的了：body...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/webgl/pattern.jpg" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2019</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+}</code></pre></div><p>使用噪声函数得到随机的旋转角度：<div><pre class=line-numbers data-line=""><code class=language-glsl>pos = rotate2d( noise(pos) ) * pos;
+pattern = lines(pos,.5);</code></pre></div><h2 id=总结>总结</h2><p>现在我们了解了随机和噪声的基本生成方法，接下来我们需要模拟更多现实中的纹理。<h2 id=参考资料>参考资料</h2><ul><li><a href="https://thebookofshaders.com/10/?lan=ch">随机</a><li><a href="https://thebookofshaders.com/11/?lan=ch">噪声</a><li><a href=https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl/4275343#4275343>GLSL 中的随机函数</a><li><a href=https://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner>rand 函数的由来</a><li><a href=https://pixelero.wordpress.com/2008/04/24/various-functions-and-various-distributions-with-mathrandom/ >various-functions-and-various-distributions-with-mathrandom</a><li><a href=http://www.iquilezles.org/www/articles/morenoise/morenoise.htm>more noise</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/08/03/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%BA%8C.html class=read-next-link></a><section><span>噪声的艺术（二）</span><p>在上一篇「噪声的艺术」中我们学习了 Value Noise, Gradient Noise 以及 Simplex ...</section><div class=filter></div><img src=/assets/img/webgl/solas.png alt=""></div><div class=read-next-item><a href=/coding/2018/07/20/%E7%BB%98%E5%88%B6-Pattern.html class=read-next-link></a><section><span>绘制 Pattern</span><p>在设置页面背景时，使用 Pattern 这种平铺的效果是很常见的做法，其中使用 CSS 属性是最常规的了：body...</section><div class=filter></div><img src=/assets/img/webgl/pattern.jpg alt=""></div></section><section class="post-footer-item comment"></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-<script src="/assets/js/jquery.nav.js"></script>
-<script>
-    function generateCatalog (selector) {
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -502,7 +133,11 @@ pattern = lines(pos,.5);</code></pre>
         end: null,
         scrollChange: null,
         padding: 80
-    });
-</script>
-</body>
-</html>
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

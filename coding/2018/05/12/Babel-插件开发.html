@@ -1,151 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Babel 插件开发 - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="Babel 插件开发">
-    <meta name="keywords"  content="babel">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>Babel 插件开发 | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="Babel 插件开发" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="之前通过 the-super-tiny-compiler 学习了一下一个简单编译器的通用执行步骤： Parse 词法分析得到 Tokens，语法分析生成 AST Transformation 操作 AST，做一些优化工作 Code Generation 生成代码" />
-<meta property="og:description" content="之前通过 the-super-tiny-compiler 学习了一下一个简单编译器的通用执行步骤： Parse 词法分析得到 Tokens，语法分析生成 AST Transformation 操作 AST，做一些优化工作 Code Generation 生成代码" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2018-05-12T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"之前通过 the-super-tiny-compiler 学习了一下一个简单编译器的通用执行步骤： Parse 词法分析得到 Tokens，语法分析生成 AST Transformation 操作 AST，做一些优化工作 Code Generation 生成代码","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html","headline":"Babel 插件开发","dateModified":"2018-05-12T00:00:00+08:00","datePublished":"2018-05-12T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-
-    
-
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-    
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Babel 插件开发 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="Babel 插件开发"><meta name=keywords content=babel><title>Babel 插件开发 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="Babel 插件开发"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="之前通过 the-super-tiny-compiler 学习了一下一个简单编译器的通用执行步骤： Parse 词法分析得到 Tokens，语法分析生成 AST Transformation 操作 AST，做一些优化工作 Code Generation 生成代码"><meta property=og:description content="之前通过 the-super-tiny-compiler 学习了一下一个简单编译器的通用执行步骤： Parse 词法分析得到 Tokens，语法分析生成 AST Transformation 操作 AST，做一些优化工作 Code Generation 生成代码"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-05-12T00:00:00+08:00><script type=application/ld+json>{"description":"之前通过 the-super-tiny-compiler 学习了一下一个简单编译器的通用执行步骤： Parse 词法分析得到 Tokens，语法分析生成 AST Transformation 操作 AST，做一些优化工作 Code Generation 生成代码","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html","headline":"Babel 插件开发","dateModified":"2018-05-12T00:00:00+08:00","datePublished":"2018-05-12T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-            <li><a href="/collectives.html">collectives</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#babel" class="post-tag">babel</a>
-            
-            
-        </div>
-        <h1>Babel 插件开发</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="18-05-12"><i class="iconfont icon-date"></i>12 May 2018</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/babel.png') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    <div class="catalog-container">
-        <div class="side-catalog">
-            <h3 class="catalog-title">
-                <a class="catalog-toggle" href="#">CATALOG</a>
-            </h3>
-            <ul class="catalog-body"></ul>
-        </div>
-    </div>
-    
-    <h2 class="post-subtitle">前端需要的一些编译知识</h2>
-    
-    <article class="markdown-body">
-        <p>之前通过 <a href="https://github.com/jamiebuilds/the-super-tiny-compiler">the-super-tiny-compiler</a> 学习了一下一个简单编译器的通用执行步骤：</p>
-<ol>
-  <li>Parse 词法分析得到 Tokens，语法分析生成 AST</li>
-  <li>Transformation 操作 AST，做一些优化工作</li>
-  <li>Code Generation 生成代码</li>
-</ol>
-
-<p>在<a href="/coding/2018/04/27/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6.html">前文</a>中研究了下 Vue 对于 template 编译到 render 函数的代码。自己也试着写了一个 <a href="https://github.com/lavas-project/vue-style-variables-loader/">vue-style-variables-loader</a>，用来转换 Less Sass 和 Stylus 中各自定义变量的语法。</p>
-
-<p>不过说起实际项目中接触最多的还是 Babel 以及各种插件。这里必须要推荐 <a href="https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/plugin-handbook.md">Babel 插件手册</a>，上面提到的 <code class="highlighter-rouge">the-super-tiny-compiler</code> 也出自他手。</p>
-
-<p>除了基础的知识，我们需要引入一些新知识。</p>
-
-<h2 id="visitor-访问者">Visitor 访问者</h2>
-
-<p>来看一个简单的例子：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">function square(n) {
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#babel class=post-tag>babel</a></div><h1>Babel 插件开发</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-05-12><i class="iconfont icon-date"></i>12 May 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/babel.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>前端需要的一些编译知识</h2><article class=markdown-body><p>之前通过 <a href=https://github.com/jamiebuilds/the-super-tiny-compiler>the-super-tiny-compiler</a> 学习了一下一个简单编译器的通用执行步骤：<ol><li>Parse 词法分析得到 Tokens，语法分析生成 AST<li>Transformation 操作 AST，做一些优化工作<li>Code Generation 生成代码</ol><p>在<a href=/coding/2018/04/27/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6.html>前文</a>中研究了下 Vue 对于 template 编译到 render 函数的代码。自己也试着写了一个 <a href=https://github.com/lavas-project/vue-style-variables-loader/ >vue-style-variables-loader</a>，用来转换 Less Sass 和 Stylus 中各自定义变量的语法。<p>不过说起实际项目中接触最多的还是 Babel 以及各种插件。这里必须要推荐 <a href=https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/plugin-handbook.md>Babel 插件手册</a>，上面提到的 <code class=highlighter-rouge>the-super-tiny-compiler</code> 也出自他手。<p>除了基础的知识，我们需要引入一些新知识。<h2 id=visitor-访问者>Visitor 访问者</h2><p>来看一个简单的例子：<div><pre class=line-numbers data-line=""><code class=language-javascript>function square(n) {
     return n * n;
-}</code></pre>
-</div>
-
-<p>上述代码在 Parse 阶段后生成 AST：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">{
+}</code></pre></div><p>上述代码在 Parse 阶段后生成 AST：<div><pre class=line-numbers data-line=""><code class=language-javascript>{
     type: &quot;FunctionDeclaration&quot;,
     id: {
         type: &quot;Identifier&quot;,
@@ -173,48 +33,19 @@
             }
         }]
     }
-}</code></pre>
-</div>
-
-<p>为了遍历 AST，我们定义了访问者 Visitor，针对每一个 Identifier 类型的节点，设置了进入和退出时执行的操作。
-对于上面的例子，总共有 <strong>4</strong> 个 <code class="highlighter-rouge">n</code>，也就会各执行 4 次 <code class="highlighter-rouge">enter/exit</code>：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const MyVisitor = {
+}</code></pre></div><p>为了遍历 AST，我们定义了访问者 Visitor，针对每一个 Identifier 类型的节点，设置了进入和退出时执行的操作。 对于上面的例子，总共有 <strong>4</strong> 个 <code class=highlighter-rouge>n</code>，也就会各执行 4 次 <code class=highlighter-rouge>enter/exit</code>：<div><pre class=line-numbers data-line=""><code class=language-javascript>const MyVisitor = {
     Identifier: {
         enter() {},
         exit() {}
     }
 };
-path.traverse(MyVisitor);</code></pre>
-</div>
-
-<p>值得一提的是，Visitor 中的<strong>键</strong>可以使用 <code class="highlighter-rouge">|</code> 以表示定义多种节点：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const MyVisitor = {
+path.traverse(MyVisitor);</code></pre></div><p>值得一提的是，Visitor 中的<strong>键</strong>可以使用 <code class=highlighter-rouge>|</code> 以表示定义多种节点：<div><pre class=line-numbers data-line=""><code class=language-javascript>const MyVisitor = {
     &quot;ExportNamedDeclaration|Flow&quot;(path) {}
-};</code></pre>
-</div>
-
-<h3 id="被访问的路径">被访问的路径</h3>
-
-<p>AST 中节点的父子关系可以通过路径 Path 来表示，当节点发生更新时，路径信息自动更新，开发者无需关心。</p>
-
-<p>之前 Visitor 定义的方法，实际上访问的是路径，而通过路径能够取得当前节点 <code class="highlighter-rouge">node</code> 的信息。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const MyVisitor = {
+};</code></pre></div><h3 id=被访问的路径>被访问的路径</h3><p>AST 中节点的父子关系可以通过路径 Path 来表示，当节点发生更新时，路径信息自动更新，开发者无需关心。<p>之前 Visitor 定义的方法，实际上访问的是路径，而通过路径能够取得当前节点 <code class=highlighter-rouge>node</code> 的信息。<div><pre class=line-numbers data-line=""><code class=language-javascript>const MyVisitor = {
     Identifier(path) {
         console.log(&quot;Visiting: &quot; + path.node.name);
     }
-};</code></pre>
-</div>
-
-<p>除了表示当前节点的 <code class="highlighter-rouge">node</code>，路径上还有很多属性和方法，比如父节点 <code class="highlighter-rouge">parent</code>，以及操作这些节点的方法。</p>
-
-<h3 id="递归访问">递归访问</h3>
-
-<p>在上述的例子中，如果我们想把参数以及 <code class="highlighter-rouge">square</code> 函数体中的 <code class="highlighter-rouge">n</code> 替换成 <code class="highlighter-rouge">x</code>，乍一看似乎很容易实现：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">let paramName;
+};</code></pre></div><p>除了表示当前节点的 <code class=highlighter-rouge>node</code>，路径上还有很多属性和方法，比如父节点 <code class=highlighter-rouge>parent</code>，以及操作这些节点的方法。<h3 id=递归访问>递归访问</h3><p>在上述的例子中，如果我们想把参数以及 <code class=highlighter-rouge>square</code> 函数体中的 <code class=highlighter-rouge>n</code> 替换成 <code class=highlighter-rouge>x</code>，乍一看似乎很容易实现：<div><pre class=line-numbers data-line=""><code class=language-javascript>let paramName;
 const MyVisitor = {
     FunctionDeclaration(path) {
         const param = path.node.params[0];
@@ -227,21 +58,10 @@ const MyVisitor = {
             path.node.name = &quot;x&quot;;
         }
     }
-};</code></pre>
-</div>
-
-<p>唯一的问题是需要在 Visitor 各个方法中共享变量 <code class="highlighter-rouge">x</code>，这里我们通过作用域中的 <code class="highlighter-rouge">paramName</code> 似乎能解决这个问题。
-但是要注意，这种共享方式存在一个致命的问题，那就是不在 <code class="highlighter-rouge">square</code> 方法中的 <code class="highlighter-rouge">n</code> 也会被替换掉：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">function square(n) {
+};</code></pre></div><p>唯一的问题是需要在 Visitor 各个方法中共享变量 <code class=highlighter-rouge>x</code>，这里我们通过作用域中的 <code class=highlighter-rouge>paramName</code> 似乎能解决这个问题。 但是要注意，这种共享方式存在一个致命的问题，那就是不在 <code class=highlighter-rouge>square</code> 方法中的 <code class=highlighter-rouge>n</code> 也会被替换掉：<div><pre class=line-numbers data-line=""><code class=language-javascript>function square(n) {
     return n * n;
 }
-n;</code></pre>
-</div>
-
-<p>所以我们必须要限制只有在方法中的 Identifier 才进行替换，因此需要在 Visitor 中使用另一个 Visitor：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const updateParamNameVisitor = {
+n;</code></pre></div><p>所以我们必须要限制只有在方法中的 Identifier 才进行替换，因此需要在 Visitor 中使用另一个 Visitor：<div><pre class=line-numbers data-line=""><code class=language-javascript>const updateParamNameVisitor = {
     Identifier(path) {
         if (path.node.name === this.paramName) {
          path.node.name = &quot;x&quot;;
@@ -259,100 +79,38 @@ const MyVisitor = {
     }
 };
 
-path.traverse(MyVisitor);</code></pre>
-</div>
-
-<h3 id="作用域">作用域</h3>
-
-<p>路径上还包括作用域信息 <code class="highlighter-rouge">scope</code>，而作用域对象又保存了当前路径节点以及父节点的引用。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">{
+path.traverse(MyVisitor);</code></pre></div><h3 id=作用域>作用域</h3><p>路径上还包括作用域信息 <code class=highlighter-rouge>scope</code>，而作用域对象又保存了当前路径节点以及父节点的引用。<div><pre class=line-numbers data-line=""><code class=language-javascript>{
     path: path,
     block: path.node,
     parentBlock: path.parent,
     parent: parentScope,
     bindings: [...]
-}</code></pre>
-</div>
-
-<h2 id="插件-api">插件 API</h2>
-
-<p><a href="https://github.com/babel/babel/tree/master/packages/babel-types">babel-types</a> 提供了很多操作 AST 的工具方法。
-在编写 babel 插件时十分有用，例如创建一个 <code class="highlighter-rouge">a * b</code> 对应的 AST 表达式节点：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">t.binaryExpression(&quot;*&quot;, t.identifier(&quot;a&quot;), t.identifier(&quot;b&quot;));</code></pre>
-</div>
-
-<p>在下面实际项目的例子中会看到对于工具方法的大量使用。</p>
-
-<h2 id="cra-中的-named-asset-import">CRA 中的 named-asset-import</h2>
-
-<p>在上一篇分析 CRA 的文章中，我们知道 CRA 是<strong>无配置</strong>的，而使用 Webpack 时经常使用到的处理各类资源的 loader 如何配置呢？
-CRA 的开发人员显然也意识到了<a href="https://github.com/facebook/create-react-app/issues/3722">这个问题</a>，他们给出的方案是使用 babel-plugin 转译如下 import 语句，相关 <a href="https://github.com/facebook/create-react-app/issues/3856#issuecomment-358762155">ISSUE</a> &amp; <a href="https://github.com/facebook/create-react-app/pull/3907">PR</a>：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">import { url as logoUrl } from &#39;./logo.png&#39;;
+}</code></pre></div><h2 id=插件-api>插件 API</h2><p><a href=https://github.com/babel/babel/tree/master/packages/babel-types>babel-types</a> 提供了很多操作 AST 的工具方法。 在编写 babel 插件时十分有用，例如创建一个 <code class=highlighter-rouge>a * b</code> 对应的 AST 表达式节点：<div><pre class=line-numbers data-line=""><code class=language-javascript>t.binaryExpression(&quot;*&quot;, t.identifier(&quot;a&quot;), t.identifier(&quot;b&quot;));</code></pre></div><p>在下面实际项目的例子中会看到对于工具方法的大量使用。<h2 id=cra-中的-named-asset-import>CRA 中的 named-asset-import</h2><p>在上一篇分析 CRA 的文章中，我们知道 CRA 是<strong>无配置</strong>的，而使用 Webpack 时经常使用到的处理各类资源的 loader 如何配置呢？ CRA 的开发人员显然也意识到了<a href=https://github.com/facebook/create-react-app/issues/3722>这个问题</a>，他们给出的方案是使用 babel-plugin 转译如下 import 语句，相关 <a href=https://github.com/facebook/create-react-app/issues/3856#issuecomment-358762155>ISSUE</a> &amp; <a href=https://github.com/facebook/create-react-app/pull/3907>PR</a>：<div><pre class=line-numbers data-line=""><code class=language-javascript>import { url as logoUrl } from &#39;./logo.png&#39;;
 import { html as docHtml } from &#39;./doc.md&#39;;
-import { ReactComponent as Icon } from &#39;./icon.svg&#39;;</code></pre>
-</div>
-
-<p>转译之后使用 Webpack inlined loader 得到不同类型的资源：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">import logoUrl from &#39;url-loader!./logo.png&#39;;
+import { ReactComponent as Icon } from &#39;./icon.svg&#39;;</code></pre></div><p>转译之后使用 Webpack inlined loader 得到不同类型的资源：<div><pre class=line-numbers data-line=""><code class=language-javascript>import logoUrl from &#39;url-loader!./logo.png&#39;;
 import docHtml from &#39;html-loader!markdown-loader!./doc.md&#39;;
-import Icon from &#39;svg-react-loader!./icon.svg&#39;;&quot;</code></pre>
-</div>
-
-<p>具体转译规则，即资源使用的 loader 由插件参数决定：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">loaderMap: {
+import Icon from &#39;svg-react-loader!./icon.svg&#39;;&quot;</code></pre></div><p>具体转译规则，即资源使用的 loader 由插件参数决定：<div><pre class=line-numbers data-line=""><code class=language-javascript>loaderMap: {
     svg: {
         ReactComponent: &#39;svgr/webpack![path]&#39;,
     },
-}</code></pre>
-</div>
-
-<p>在插件方法中，可以得到传进来的 <code class="highlighter-rouge">babel-types</code> 参数，返回值则是包含了 Visitor 的对象：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">export function namedAssetImportPlugin({ types: t }) {
+}</code></pre></div><p>在插件方法中，可以得到传进来的 <code class=highlighter-rouge>babel-types</code> 参数，返回值则是包含了 Visitor 的对象：<div><pre class=line-numbers data-line=""><code class=language-javascript>export function namedAssetImportPlugin({ types: t }) {
     // 缓存解析过的资源路径
     const visited = new WeakSet();
 
     return {
         visitor: {...}
     };
-}</code></pre>
-</div>
-
-<p>由于我们的目标是 import 语句，Visitor 中只需要包含 <code class="highlighter-rouge">ImportDeclaration</code> 即可。其中第一个参数是 Path 路径，第二个则是 State 状态，这里就可以取得传入插件的参数 <code class="highlighter-rouge">loaderMap</code>：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">ImportDeclaration(path, { opts: { loaderMap } }) {
+}</code></pre></div><p>由于我们的目标是 import 语句，Visitor 中只需要包含 <code class=highlighter-rouge>ImportDeclaration</code> 即可。其中第一个参数是 Path 路径，第二个则是 State 状态，这里就可以取得传入插件的参数 <code class=highlighter-rouge>loaderMap</code>：<div><pre class=line-numbers data-line=""><code class=language-javascript>ImportDeclaration(path, { opts: { loaderMap } }) {
     // &#39;./icon.svg&#39;
     const sourcePath = path.node.source.value;
     // &#39;svg&#39;
     const ext = extname(sourcePath).substr(1);
-}</code></pre>
-</div>
-
-<p>替换路径是通过 <code class="highlighter-rouge">replaceWithMultiple</code> 实现的，我们需要替换成多条语句，<a href="https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/plugin-handbook.md#%E7%94%A8%E5%A4%9A%E8%8A%82%E7%82%B9%E6%9B%BF%E6%8D%A2%E5%8D%95%E8%8A%82%E7%82%B9">相关 API</a>：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">path.replaceWithMultiple(...);</code></pre>
-</div>
-
-<p>我们生成的新的 import 语句数目是由紧跟着 <code class="highlighter-rouge">import</code> 的对象决定的，
-例如 <code class="highlighter-rouge">import url, { ReactComponent as Icon } from './icon.svg';</code> 应该生成两条。
-这里又需要分成默认 import 和重命名两种情况分析：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">path.replaceWithMultiple(
+}</code></pre></div><p>替换路径是通过 <code class=highlighter-rouge>replaceWithMultiple</code> 实现的，我们需要替换成多条语句，<a href=https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/plugin-handbook.md#%E7%94%A8%E5%A4%9A%E8%8A%82%E7%82%B9%E6%9B%BF%E6%8D%A2%E5%8D%95%E8%8A%82%E7%82%B9>相关 API</a>：<div><pre class=line-numbers data-line=""><code class=language-javascript>path.replaceWithMultiple(...);</code></pre></div><p>我们生成的新的 import 语句数目是由紧跟着 <code class=highlighter-rouge>import</code> 的对象决定的， 例如 <code class=highlighter-rouge>import url, { ReactComponent as Icon } from './icon.svg';</code> 应该生成两条。 这里又需要分成默认 import 和重命名两种情况分析：<div><pre class=line-numbers data-line=""><code class=language-javascript>path.replaceWithMultiple(
     path.node.specifiers.map(specifier =&gt; {
         // 1. 处理 import default
         // 2. 处理 重命名 import
     })
-);</code></pre>
-</div>
-
-<p>对于第一种默认 import，我们不需要做特别的处理，对于上面 SVG 的例子，会生成 <code class="highlighter-rouge">import url from './icon.svg';</code> 语句：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">if (t.isImportDefaultSpecifier(specifier)) {
+);</code></pre></div><p>对于第一种默认 import，我们不需要做特别的处理，对于上面 SVG 的例子，会生成 <code class=highlighter-rouge>import url from './icon.svg';</code> 语句：<div><pre class=line-numbers data-line=""><code class=language-javascript>if (t.isImportDefaultSpecifier(specifier)) {
     const newDefaultImport = t.importDeclaration(
         [
             t.importDefaultSpecifier( // &#39;import&#39;
@@ -364,12 +122,7 @@ import Icon from &#39;svg-react-loader!./icon.svg&#39;;&quot;</code></pre>
 
     visited.add(newDefaultImport);
     return newDefaultImport;
-}</code></pre>
-</div>
-
-<p>而对于第二种，会生成 <code class="highlighter-rouge">import Icon from 'svgr/webpack!./icon.svg';</code> 语句。其中替换掉了 <code class="highlighter-rouge">[path]</code> 占位符：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const newImport = t.importDeclaration(
+}</code></pre></div><p>而对于第二种，会生成 <code class=highlighter-rouge>import Icon from 'svgr/webpack!./icon.svg';</code> 语句。其中替换掉了 <code class=highlighter-rouge>[path]</code> 占位符：<div><pre class=line-numbers data-line=""><code class=language-javascript>const newImport = t.importDeclaration(
     [
         t.importSpecifier(
             t.identifier(specifier.local.name),
@@ -384,41 +137,14 @@ import Icon from &#39;svg-react-loader!./icon.svg&#39;;&quot;</code></pre>
             )
         : sourcePath
     )
-);</code></pre>
-</div>
-
-<p>值得一提的是 yyx 也就是 Vue 的作者在 ISSUE 中也提到在 vue-cli 中也会考虑借鉴这种思路。</p>
-
-<h2 id="另一种思路">另一种思路</h2>
-
-<p>Babel 插件在提升开发者体验的同时，也带来了一些问题，例如：</p>
-<ul>
-  <li>需要使用 <code class="highlighter-rouge">.babelrc</code> 或者 Webpack 全局配置</li>
-  <li>所有的插件在同一次对于 AST 遍历的过程中进行，可能存在互相影响</li>
-  <li>由于代码会经过插件转译，阅读原始代码时反而会被某些特殊语法困扰</li>
-  <li>除开语法层面的插件，有些很简单的可定制的转译需求也需要发布插件才能使用，无法使用本地插件</li>
-</ul>
-
-<p><a href="https://github.com/kentcdodds/babel-plugin-macros">babel-plugin-macros</a> 提出了解决以上问题的一种新思路，在 CRA 这种需要保证无配置的场景下十分适用。</p>
-
-<p>值得一提的是它本身是一个 babel 插件，因此也需要通过 <code class="highlighter-rouge">.babelrc</code> 配置，但是只需要一次，其他 macro 均不需要。
-来看看它和其他 babel 插件有啥不同吧。</p>
-
-<p>当我们使用 <code class="highlighter-rouge">babel-plugin-console</code> 这个插件时，需要使用特殊的语法 <code class="highlighter-rouge">console.scope()</code>，本身并不是标准 API：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">function add100(a) {
+);</code></pre></div><p>值得一提的是 yyx 也就是 Vue 的作者在 ISSUE 中也提到在 vue-cli 中也会考虑借鉴这种思路。<h2 id=另一种思路>另一种思路</h2><p>Babel 插件在提升开发者体验的同时，也带来了一些问题，例如：<ul><li>需要使用 <code class=highlighter-rouge>.babelrc</code> 或者 Webpack 全局配置<li>所有的插件在同一次对于 AST 遍历的过程中进行，可能存在互相影响<li>由于代码会经过插件转译，阅读原始代码时反而会被某些特殊语法困扰<li>除开语法层面的插件，有些很简单的可定制的转译需求也需要发布插件才能使用，无法使用本地插件</ul><p><a href=https://github.com/kentcdodds/babel-plugin-macros>babel-plugin-macros</a> 提出了解决以上问题的一种新思路，在 CRA 这种需要保证无配置的场景下十分适用。<p>值得一提的是它本身是一个 babel 插件，因此也需要通过 <code class=highlighter-rouge>.babelrc</code> 配置，但是只需要一次，其他 macro 均不需要。 来看看它和其他 babel 插件有啥不同吧。<p>当我们使用 <code class=highlighter-rouge>babel-plugin-console</code> 这个插件时，需要使用特殊的语法 <code class=highlighter-rouge>console.scope()</code>，本身并不是标准 API：<div><pre class=line-numbers data-line=""><code class=language-javascript>function add100(a) {
     const oneHundred = 100
     console.scope(&#39;Add 100 to another number&#39;)
     return add(a, oneHundred)
 }
 function add(a, b) {
     return a + b
-}</code></pre>
-</div>
-
-<p>而使用 macro 时，我们在代码中显式地进行引用，增加了可读性。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">import scope from &#39;babel-plugin-console/scope.macro&#39;
+}</code></pre></div><p>而使用 macro 时，我们在代码中显式地进行引用，增加了可读性。<div><pre class=line-numbers data-line=""><code class=language-javascript>import scope from &#39;babel-plugin-console/scope.macro&#39;
 function add100(a) {
     const oneHundred = 100
     scope(&#39;Add 100 to another number&#39;)
@@ -426,126 +152,22 @@ function add100(a) {
 }
 function add(a, b) {
     return a + b
-}</code></pre>
-</div>
-
-<p>另一个优势是可以指定多个 macro 的执行顺序，这在 babel 插件中是很难控制的。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">import preval from &#39;preval.macro&#39;
-import idx from &#39;idx.macro&#39;</code></pre>
-</div>
-
-<p>还是在 CRA 中，除了现有的 <code class="highlighter-rouge">named-asset-import</code> 插件，开发者还提供了使用 macro 的<a href="https://github.com/facebook/create-react-app/issues/3856#issuecomment-359687999">思路</a>。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">import toReactComponent from &#39;svgr.macro&#39;;
+}</code></pre></div><p>另一个优势是可以指定多个 macro 的执行顺序，这在 babel 插件中是很难控制的。<div><pre class=line-numbers data-line=""><code class=language-javascript>import preval from &#39;preval.macro&#39;
+import idx from &#39;idx.macro&#39;</code></pre></div><p>还是在 CRA 中，除了现有的 <code class=highlighter-rouge>named-asset-import</code> 插件，开发者还提供了使用 macro 的<a href=https://github.com/facebook/create-react-app/issues/3856#issuecomment-359687999>思路</a>。<div><pre class=line-numbers data-line=""><code class=language-javascript>import toReactComponent from &#39;svgr.macro&#39;;
 const Logo = toReactComponent(&#39;./logo.svg&#39;);
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
 const Logo = props =&gt; &lt;svg width={116} height={28} viewBox=&quot;0 0 116 28&quot; {...props}&gt;
     &lt;g fill=&quot;none&quot; fillRule=&quot;evenodd&quot;&gt;
-      ...</code></pre>
-</div>
-
-<h3 id="编写-macro">编写 macro</h3>
-
-<p>我们以 <code class="highlighter-rouge">babel-plugin-console</code> 为例，可见改造成本并不高，已有的 babel 插件完全可以提供额外的 macro 版本。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">import { createMacro } from &#39;babel-plugin-macros&#39;;
+      ...</code></pre></div><h3 id=编写-macro>编写 macro</h3><p>我们以 <code class=highlighter-rouge>babel-plugin-console</code> 为例，可见改造成本并不高，已有的 babel 插件完全可以提供额外的 macro 版本。<div><pre class=line-numbers data-line=""><code class=language-javascript>import { createMacro } from &#39;babel-plugin-macros&#39;;
 import generateScopeLog from &#39;../scope&#39;;
 
 module.exports = createMacro(({ babel: { template, types }, references }) =&gt;
     references.default.forEach(({ parentPath }) =&gt;
         parentPath.replaceWithMultiple(generateScopeLog(parentPath, template, types))
     )
-);</code></pre>
-</div>
-
-<h2 id="参考资料">参考资料</h2>
-
-<ul>
-  <li><a href="https://blog.kentcdodds.com/how-writing-custom-babel-and-eslint-plugins-can-increase-your-productivity-and-improve-user-fd6dd8076e26">How writing custom Babel &amp; ESLint plugins can increase productivity &amp; improve user experience</a></li>
-  <li><a href="https://babeljs.io/blog/2017/09/11/zero-config-with-babel-macros">Zero-config code transformation with babel-plugin-macros</a></li>
-  <li><a href="https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/plugin-handbook.md">Babel plugin handbook</a></li>
-  <li><a href="https://github.com/facebook/create-react-app/issues/2730">CRA ISSUE</a></li>
-</ul>
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html" class="read-next-link"></a>
-            <section>
-                <span>编译 Node.js 可执行文件</span>
-                <p>最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/nexe.jpeg" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/05/10/%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7%E6%80%8E%E4%B9%88%E5%86%99.html" class="read-next-link"></a>
-            <section>
-                <span>脚手架工具怎么写</span>
-                <p>最近在知乎上看到一个问题“有哪些优秀的中大型项目代码值得阅读学习”，有提到脚手架工具 create-react-a...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/CRA.png" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-<hr>
-<!-- 来必力City版安装代码 -->
-<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
-    <script type="text/javascript">
-   (function(d, s) {
+);</code></pre></div><h2 id=参考资料>参考资料</h2><ul><li><a href=https://blog.kentcdodds.com/how-writing-custom-babel-and-eslint-plugins-can-increase-your-productivity-and-improve-user-fd6dd8076e26>How writing custom Babel &amp; ESLint plugins can increase productivity &amp; improve user experience</a><li><a href=https://babeljs.io/blog/2017/09/11/zero-config-with-babel-macros>Zero-config code transformation with babel-plugin-macros</a><li><a href=https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/plugin-handbook.md>Babel plugin handbook</a><li><a href=https://github.com/facebook/create-react-app/issues/2730>CRA ISSUE</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html class=read-next-link></a><section><span>编译 Node.js 可执行文件</span><p>最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，...</section><div class=filter></div><img src=/assets/img/nexe.jpeg alt=""></div><div class=read-next-item><a href=/coding/2018/05/10/%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7%E6%80%8E%E4%B9%88%E5%86%99.html class=read-next-link></a><section><span>脚手架工具怎么写</span><p>最近在知乎上看到一个问题“有哪些优秀的中大型项目代码值得阅读学习”，有提到脚手架工具 create-react-a...</section><div class=filter></div><img src=/assets/img/CRA.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -555,41 +177,11 @@ module.exports = createMacro(({ babel: { template, types }, references }) =&gt;
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-    </script>
-<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
-</div>
-<!-- City版安装代码已完成 -->
-
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2019</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-<script src="/assets/js/jquery.nav.js"></script>
-<script>
-    function generateCatalog (selector) {
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -633,7 +225,11 @@ module.exports = createMacro(({ babel: { template, types }, references }) =&gt;
         end: null,
         scrollChange: null,
         padding: 80
-    });
-</script>
-</body>
-</html>
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

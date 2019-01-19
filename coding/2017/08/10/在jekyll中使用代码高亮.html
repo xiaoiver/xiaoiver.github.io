@@ -1,164 +1,17 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在 Jekyll 中使用代码高亮 - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="在 Jekyll 中使用代码高亮">
-    <meta name="keywords"  content="ruby, jekyll">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>在 Jekyll 中使用代码高亮 | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="在 Jekyll 中使用代码高亮" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="代码高亮是一个技术博客的重要特性，Jekyll 中默认使用Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的Pygments也是一个可选方案。" />
-<meta property="og:description" content="代码高亮是一个技术博客的重要特性，Jekyll 中默认使用Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的Pygments也是一个可选方案。" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-08-10T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"代码高亮是一个技术博客的重要特性，Jekyll 中默认使用Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的Pygments也是一个可选方案。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html","headline":"在 Jekyll 中使用代码高亮","dateModified":"2017-08-10T00:00:00+08:00","datePublished":"2017-08-10T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-
-    
-
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-    
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 Jekyll 中使用代码高亮 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="在 Jekyll 中使用代码高亮"><meta name=keywords content="ruby, jekyll"><title>在 Jekyll 中使用代码高亮 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="在 Jekyll 中使用代码高亮"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="代码高亮是一个技术博客的重要特性，Jekyll 中默认使用Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的Pygments也是一个可选方案。"><meta property=og:description content="代码高亮是一个技术博客的重要特性，Jekyll 中默认使用Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的Pygments也是一个可选方案。"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-08-10T00:00:00+08:00><script type=application/ld+json>{"description":"代码高亮是一个技术博客的重要特性，Jekyll 中默认使用Rouge进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的Pygments也是一个可选方案。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html","headline":"在 Jekyll 中使用代码高亮","dateModified":"2017-08-10T00:00:00+08:00","datePublished":"2017-08-10T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-            <li><a href="/collectives.html">collectives</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default post-no-cover" data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#ruby" class="post-tag">ruby</a>
-            
-            <a href="https://xiaoiver.github.io/tags#jekyll" class="post-tag">jekyll</a>
-            
-            
-        </div>
-        <h1>在 Jekyll 中使用代码高亮</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="17-08-10"><i class="iconfont icon-date"></i>10 Aug 2017</time>
-        </div>
-    </div>
-    
-</header>
-
-<div class="post-content">
-    <div class="catalog-container">
-        <div class="side-catalog">
-            <h3 class="catalog-title">
-                <a class="catalog-toggle" href="#">CATALOG</a>
-            </h3>
-            <ul class="catalog-body"></ul>
-        </div>
-    </div>
-    
-    <h2 class="post-subtitle">使用 Prism 配合插件实现</h2>
-    
-    <article class="markdown-body">
-        <p>代码高亮是一个技术博客的重要特性，Jekyll 中默认使用<a href="http://jekyllrb.com/docs/templates/#code-snippet-highlighting">Rouge</a>进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的<a href="http://pygments.org/">Pygments</a>也是一个可选方案。</p>
-
-<p>博客作者可以使用如下 markdown 语法插入代码块，其中<code class="highlighter-rouge">linenos</code>表示显示行号：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-ruby">{% highlight ruby linenos %}
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default post-no-cover" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#ruby class=post-tag>ruby</a> <a href=https://xiaoiver.github.io/tags#jekyll class=post-tag>jekyll</a></div><h1>在 Jekyll 中使用代码高亮</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=17-08-10><i class="iconfont icon-date"></i>10 Aug 2017</time></div></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>使用 Prism 配合插件实现</h2><article class=markdown-body><p>代码高亮是一个技术博客的重要特性，Jekyll 中默认使用<a href=http://jekyllrb.com/docs/templates/#code-snippet-highlighting>Rouge</a>进行词法分析生成 DOM 结构，搭配自定义样式。使用 Python 编写的<a href=http://pygments.org/ >Pygments</a>也是一个可选方案。<p>博客作者可以使用如下 markdown 语法插入代码块，其中<code class=highlighter-rouge>linenos</code>表示显示行号：<div><pre class=line-numbers data-line=""><code class=language-ruby>{% highlight ruby linenos %}
     def foo
       puts &#39;foo&#39;
     end
-{% endhighlight %}</code></pre>
-</div>
-
-<p>本来我是采用默认的 Rouge，但是发现样式有点丑，尤其是行号部分。而且有时我需要高亮显示若干行代码，例如这样：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-ruby">{% highlight ruby linenos=1-2 %}
+{% endhighlight %}</code></pre></div><p>本来我是采用默认的 Rouge，但是发现样式有点丑，尤其是行号部分。而且有时我需要高亮显示若干行代码，例如这样：<div><pre class=line-numbers data-line=""><code class=language-ruby>{% highlight ruby linenos=1-2 %}
     def foo
       puts &#39;foo&#39;
     end
-{% endhighlight %}</code></pre>
-</div>
-
-<p>此时 Rouge 就做不到了，而且 Rouge 和 Pygments 似乎很久没有更新了，想找一个漂亮的样式也不容易。</p>
-
-<p>我在网上搜了一下，发现了<a href="http://prismjs.com/">Prism</a>这样一个库。MDN，Smashing magazine 很多技术网站都在使用，难怪样式看着有点眼熟。那么如何在 jekyll 中使用呢？</p>
-
-<h2 id="编写-jekyll-插件">编写 jekyll 插件</h2>
-
-<p>参考 Prism 文档，在项目中引入定制后的 JS 和 CSS 文件都很简单。值得一提的是之前提过的高亮特定行数的代码，可以通过<a href="http://prismjs.com/plugins/line-highlight/">Prism 插件</a>实现。所以我们只需要关注如何通过 jekyll 插件将 markdown 代码块转换成对应的 HTML 代码即可。</p>
-
-<p>之前介绍过如何在<a href="/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html">Github Pages 中使用第三方插件</a>。由于我的博客在本地进行编译，所以只需要将插件放在<code class="highlighter-rouge">_plugins</code>文件夹下即可。</p>
-
-<p>我搜索到一个<a href="https://github.com/gmurphey/jekyll-prism-plugin">Jekyll 插件</a>，已经很久没有维护了，ISSUE 也很久没有回复。看了代码后决定在此基础上进行修改，顺便学习一下自定义插件的相关知识。</p>
-
-<h3 id="liquid-模板引擎">Liquid 模板引擎</h3>
-
-<p><a href="https://github.com/Shopify/liquid">Liquid</a> 是使用 Ruby 编写的模版引擎。Jekyll 使用它进行 markdown 语法的解析。通过继承 Liquid 内部封装的类，可以自定义我们的语法块。</p>
-
-<p>以下是声明和注册代码，继承<a href="http://www.rubydoc.info/gems/liquid/Liquid/Block"> Block</a>而非 Tag 的原因很简单，我们需要使用闭合标签，类似<code class="highlighter-rouge">{% endprism %}</code>，否则一旦解析到闭合标签就会报错了。</p>
-<div>
-<pre class="line-numbers" data-line="2,11"><code class="language-ruby">module Jekyll
+{% endhighlight %}</code></pre></div><p>此时 Rouge 就做不到了，而且 Rouge 和 Pygments 似乎很久没有更新了，想找一个漂亮的样式也不容易。<p>我在网上搜了一下，发现了<a href=http://prismjs.com/ >Prism</a>这样一个库。MDN，Smashing magazine 很多技术网站都在使用，难怪样式看着有点眼熟。那么如何在 jekyll 中使用呢？<h2 id=编写-jekyll-插件>编写 jekyll 插件</h2><p>参考 Prism 文档，在项目中引入定制后的 JS 和 CSS 文件都很简单。值得一提的是之前提过的高亮特定行数的代码，可以通过<a href=http://prismjs.com/plugins/line-highlight/ >Prism 插件</a>实现。所以我们只需要关注如何通过 jekyll 插件将 markdown 代码块转换成对应的 HTML 代码即可。<p>之前介绍过如何在<a href=/coding/2017/07/22/%E5%9C%A8GithubPages%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6.html>Github Pages 中使用第三方插件</a>。由于我的博客在本地进行编译，所以只需要将插件放在<code class=highlighter-rouge>_plugins</code>文件夹下即可。<p>我搜索到一个<a href=https://github.com/gmurphey/jekyll-prism-plugin>Jekyll 插件</a>，已经很久没有维护了，ISSUE 也很久没有回复。看了代码后决定在此基础上进行修改，顺便学习一下自定义插件的相关知识。<h3 id=liquid-模板引擎>Liquid 模板引擎</h3><p><a href=https://github.com/Shopify/liquid>Liquid</a> 是使用 Ruby 编写的模版引擎。Jekyll 使用它进行 markdown 语法的解析。通过继承 Liquid 内部封装的类，可以自定义我们的语法块。<p>以下是声明和注册代码，继承<a href=http://www.rubydoc.info/gems/liquid/Liquid/Block> Block</a>而非 Tag 的原因很简单，我们需要使用闭合标签，类似<code class=highlighter-rouge>{% endprism %}</code>，否则一旦解析到闭合标签就会报错了。<div><pre class=line-numbers data-line=2,11><code class=language-ruby>module Jekyll
   class PrismBlock &lt; Liquid::Block
     include Liquid::StandardFilters
     def initialize(tag_name, markup, tokens)
@@ -168,35 +21,12 @@
     def render(context)
     end
 end
-Liquid::Template.register_tag(&#39;prism&#39;, Jekyll::PrismBlock)</code></pre>
-</div>
-
-<p>代码中还引入了<code class="highlighter-rouge">StandardFilters</code>，这个后续在输出 HTML 时会使用。</p>
-<div>
-<pre class="line-numbers" data-line="3"><code class="language-ruby">module Jekyll
+Liquid::Template.register_tag(&#39;prism&#39;, Jekyll::PrismBlock)</code></pre></div><p>代码中还引入了<code class=highlighter-rouge>StandardFilters</code>，这个后续在输出 HTML 时会使用。<div><pre class=line-numbers data-line=3><code class=language-ruby>module Jekyll
   class PrismBlock &lt; Liquid::Block
     include Liquid::StandardFilters
 end
-Liquid::Template.register_tag(&#39;prism&#39;, Jekyll::PrismBlock)</code></pre>
-</div>
-
-<p>真正的处理逻辑将在两个方法：构造函数<code class="highlighter-rouge">initialize()</code>和<code class="highlighter-rouge">render()</code>中完成。</p>
-
-<h3 id="解析行号">解析行号</h3>
-
-<p>通过方法签名<code class="highlighter-rouge">initialize(tag_name, markup, tokens)</code>可以看出，<code class="highlighter-rouge">markup</code>包含了代码语言和行号的声明。解析工作交给正则完成：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-ruby">OPTIONS_SYNTAX = %r{^([a-zA-Z0-9.+#-]+)((\s+\w+(=[0-9,-]+)?)*)$}
-markup.strip =~ OPTIONS_SYNTAX</code></pre>
-</div>
-
-<p>所以对于<code class="highlighter-rouge">{% prism ruby linenos=2,11-13 %}</code>这样的代码块声明，我们能够得到语言<code class="highlighter-rouge">ruby</code>，行号<code class="highlighter-rouge">linenos=2,11-13</code>。这部分基本不需要做修改，相关代码就不贴了。</p>
-
-<h3 id="输出-html">输出 HTML</h3>
-
-<p><code class="highlighter-rouge">render()</code>函数十分简单，我们按照 Prism 接受的 HTML 结构输出即可，这里我根据<code class="highlighter-rouge">linenos</code>决定是否展示全部行号，另外通过<code class="highlighter-rouge">data-line</code>配合 Prism 插件实现高亮特定行：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-ruby"># 转义内容
+Liquid::Template.register_tag(&#39;prism&#39;, Jekyll::PrismBlock)</code></pre></div><p>真正的处理逻辑将在两个方法：构造函数<code class=highlighter-rouge>initialize()</code>和<code class=highlighter-rouge>render()</code>中完成。<h3 id=解析行号>解析行号</h3><p>通过方法签名<code class=highlighter-rouge>initialize(tag_name, markup, tokens)</code>可以看出，<code class=highlighter-rouge>markup</code>包含了代码语言和行号的声明。解析工作交给正则完成：<div><pre class=line-numbers data-line=""><code class=language-ruby>OPTIONS_SYNTAX = %r{^([a-zA-Z0-9.+#-]+)((\s+\w+(=[0-9,-]+)?)*)$}
+markup.strip =~ OPTIONS_SYNTAX</code></pre></div><p>所以对于<code class=highlighter-rouge>{% prism ruby linenos=2,11-13 %}</code>这样的代码块声明，我们能够得到语言<code class=highlighter-rouge>ruby</code>，行号<code class=highlighter-rouge>linenos=2,11-13</code>。这部分基本不需要做修改，相关代码就不贴了。<h3 id=输出-html>输出 HTML</h3><p><code class=highlighter-rouge>render()</code>函数十分简单，我们按照 Prism 接受的 HTML 结构输出即可，这里我根据<code class=highlighter-rouge>linenos</code>决定是否展示全部行号，另外通过<code class=highlighter-rouge>data-line</code>配合 Prism 插件实现高亮特定行：<div><pre class=line-numbers data-line=""><code class=language-ruby># 转义内容
 code = h(super).strip
 linenos = &#39;&#39;
 linenos_content = @options[&quot;linenos&quot;]
@@ -208,119 +38,11 @@ end
     &lt;div&gt;
       &lt;pre #{linenos}&gt;&lt;code class=&#39;language-#{@lang}&#39;&gt;#{code}&lt;/code&gt;&lt;/pre&gt;
     &lt;/div&gt;
-HTML</code></pre>
-</div>
-
-<p>以上代码有两点需要注意：</p>
-<ol>
-  <li>类似 JS 中的字符串模版功能，Ruby 中也有类似的语法，在上面最终输出 HTML 内容中有使用，但是必须使用双引号包裹。</li>
-  <li>转义标签內的代码内容使用了<code class="highlighter-rouge">h()</code>函数，还记得开头引入的 StandardFilters 嘛，<code class="highlighter-rouge">h()</code>是里面<code class="highlighter-rouge">escape()</code>的<a href="https://github.com/Shopify/liquid/blob/master/lib/liquid/standardfilters.rb#L35-L38">同名函数</a>。这个函数接受输入流（这里就是代码块内容），返回解析后的 HTML 字符串。</li>
-</ol>
-
-<h2 id="总结">总结</h2>
-
-<p>深刻感觉到 Jekyll 用的人真的不多了，很多插件都处于无人维护的状态。</p>
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html" class="read-next-link"></a>
-            <section>
-                <span>判断元素是否在视口内</span>
-                <p>在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下：function ...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/intersection.png" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/movie/2017/08/05/%E5%9E%83%E5%9C%BE%E5%9B%B4%E5%9F%8E.html" class="read-next-link"></a>
-            <section>
-                <span>垃圾围城</span>
-                <p>前两天听《反派影评》，节目里说到西宁 FIRST 电影展播放了纪录片《塑料王国》完整版。很早之前我看过半小时的媒体...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/movie/plastic-china-post.jpg" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2019</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+HTML</code></pre></div><p>以上代码有两点需要注意：<ol><li>类似 JS 中的字符串模版功能，Ruby 中也有类似的语法，在上面最终输出 HTML 内容中有使用，但是必须使用双引号包裹。<li>转义标签內的代码内容使用了<code class=highlighter-rouge>h()</code>函数，还记得开头引入的 StandardFilters 嘛，<code class=highlighter-rouge>h()</code>是里面<code class=highlighter-rouge>escape()</code>的<a href=https://github.com/Shopify/liquid/blob/master/lib/liquid/standardfilters.rb#L35-L38>同名函数</a>。这个函数接受输入流（这里就是代码块内容），返回解析后的 HTML 字符串。</ol><h2 id=总结>总结</h2><p>深刻感觉到 Jekyll 用的人真的不多了，很多插件都处于无人维护的状态。</article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html class=read-next-link></a><section><span>判断元素是否在视口内</span><p>在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下：function ...</section><div class=filter></div><img src=/assets/img/intersection.png alt=""></div><div class=read-next-item><a href=/movie/2017/08/05/%E5%9E%83%E5%9C%BE%E5%9B%B4%E5%9F%8E.html class=read-next-link></a><section><span>垃圾围城</span><p>前两天听《反派影评》，节目里说到西宁 FIRST 电影展播放了纪录片《塑料王国》完整版。很早之前我看过半小时的媒体...</section><div class=filter></div><img src=/assets/img/movie/plastic-china-post.jpg alt=""></div></section><section class="post-footer-item comment"></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-<script src="/assets/js/jquery.nav.js"></script>
-<script>
-    function generateCatalog (selector) {
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -364,7 +86,11 @@ HTML</code></pre>
         end: null,
         scrollChange: null,
         padding: 80
-    });
-</script>
-</body>
-</html>
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

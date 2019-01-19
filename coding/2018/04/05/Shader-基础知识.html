@@ -1,68 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shader 基础知识 - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="Shader 基础知识">
-    <meta name="keywords"  content="WebGL">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>Shader 基础知识 | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="Shader 基础知识" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。" />
-<meta property="og:description" content="一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2018-04-05T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html","headline":"Shader 基础知识","dateModified":"2018-04-05T00:00:00+08:00","datePublished":"2018-04-05T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-
-    
-
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-    
-    <script src="/assets/js/glsl-canvas.min.js"></script>
-    <script>
-        function initArrayBuffer(gl, program, attribute, data, type, num) {
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Shader 基础知识 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="Shader 基础知识"><meta name=keywords content=WebGL><title>Shader 基础知识 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="Shader 基础知识"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。"><meta property=og:description content="一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-04-05T00:00:00+08:00><script type=application/ld+json>{"description":"一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html","headline":"Shader 基础知识","dateModified":"2018-04-05T00:00:00+08:00","datePublished":"2018-04-05T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/05/Shader-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
             // Create a buffer object
             var buffer = gl.createBuffer();
             if (!buffer) {
@@ -85,287 +24,66 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             return true;
-        }
-    </script>
-    
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+        }</script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-            <li><a href="/collectives.html">collectives</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#WebGL" class="post-tag">WebGL</a>
-            
-            
-        </div>
-        <h1>Shader 基础知识</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="18-04-05"><i class="iconfont icon-date"></i>05 Apr 2018</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/webgl/logo.png') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    <div class="catalog-container">
-        <div class="side-catalog">
-            <h3 class="catalog-title">
-                <a class="catalog-toggle" href="#">CATALOG</a>
-            </h3>
-            <ul class="catalog-body"></ul>
-        </div>
-    </div>
-    
-    <h2 class="post-subtitle">WebGL Programing Guide 学习笔记</h2>
-    
-    <article class="markdown-body">
-        <p>一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。</p>
-
-<h2 id="glsl-es-的一些有趣语法">GLSL ES 的一些有趣语法</h2>
-
-<h3 id="参数修饰符">参数修饰符</h3>
-
-<p><code class="highlighter-rouge">out</code> 可以代替 <code class="highlighter-rouge">return</code>，此时返回值类型得改成 <code class="highlighter-rouge">void</code>。而 <code class="highlighter-rouge">in</code> 可以省略，这是参数的默认属性。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">void luma2 (in vec3 color, out float brightness) {
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>Shader 基础知识</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-04-05><i class="iconfont icon-date"></i>05 Apr 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/logo.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>WebGL Programing Guide 学习笔记</h2><article class=markdown-body><p>一些在 2D 中使用 shader 的基础知识，暂不涉及 3D。<h2 id=glsl-es-的一些有趣语法>GLSL ES 的一些有趣语法</h2><h3 id=参数修饰符>参数修饰符</h3><p><code class=highlighter-rouge>out</code> 可以代替 <code class=highlighter-rouge>return</code>，此时返回值类型得改成 <code class=highlighter-rouge>void</code>。而 <code class=highlighter-rouge>in</code> 可以省略，这是参数的默认属性。<div><pre class=line-numbers data-line=""><code class=language-glsl>void luma2 (in vec3 color, out float brightness) {
     brightness = 0.2126 * color.r + 0.7162 * color.g + 0.0722 * color.b;
-}</code></pre>
-</div>
-
-<p>想起函数式编程中纯函数的概念，在 JS 中只能依靠约定保证参数在函数执行过程中不被修改。</p>
-
-<h3 id="精度修饰符">精度修饰符</h3>
-
-<p>更高的精度显然需要更大的存储空间。GLSL 给予开发者权衡性能的选择。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">#ifdef GL_ES
+}</code></pre></div><p>想起函数式编程中纯函数的概念，在 JS 中只能依靠约定保证参数在函数执行过程中不被修改。<h3 id=精度修饰符>精度修饰符</h3><p>更高的精度显然需要更大的存储空间。GLSL 给予开发者权衡性能的选择。<div><pre class=line-numbers data-line=""><code class=language-glsl>#ifdef GL_ES
 precision mediump float;
-#endif</code></pre>
-</div>
-
-<h2 id="高效存储-vertex-数据">高效存储 vertex 数据</h2>
-
-<p>如果想绘制多个点，多次调用 <code class="highlighter-rouge">drawArray()</code> ，每次绘制一个点显然不是一个高效的方法：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">// g_points = [x1, y1, x2, y2...]
+#endif</code></pre></div><h2 id=高效存储-vertex-数据>高效存储 vertex 数据</h2><p>如果想绘制多个点，多次调用 <code class=highlighter-rouge>drawArray()</code> ，每次绘制一个点显然不是一个高效的方法：<div><pre class=line-numbers data-line=""><code class=language-javascript>// g_points = [x1, y1, x2, y2...]
 for(var i = 0; i &lt; len; i += 2) {
     // a_Position 为 attribute 地址，向地址中写入 xyz
     gl.vertexAttrib3f(a_Position, g_points[i], g_points[i+1], 0.0);
     // 从第 0 个 vertex 开始，绘制 1 个
     gl.drawArrays(gl.POINTS, 0, 1);
-}</code></pre>
-</div>
-
-<p>一次性向 vertex shader 传递多个顶点信息，就需要使用 Buffer 了：</p>
-<ol>
-  <li>创建一个 buffer 对象 <code class="highlighter-rouge">gl.createBuffer()</code></li>
-  <li>绑定 buffer 对象到一个 target <code class="highlighter-rouge">gl.bindBuffer()</code></li>
-  <li>向 buffer 对象写入数据 <code class="highlighter-rouge">gl.bufferData()</code></li>
-  <li>分配 buffer 对象到 vertex shader 中的 attribute 变量 <code class="highlighter-rouge">gl.vertexAttribPointer()</code></li>
-  <li>开启分配完成传值 <code class="highlighter-rouge">gl.enableVertexAttribArray()</code></li>
-</ol>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/buffer.png" alt="使用 Buffer 步骤" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/buffer.png" data-alt="使用 Buffer 步骤">
-    </div>
-    <em>使用 Buffer 步骤</em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+}</code></pre></div><p>一次性向 vertex shader 传递多个顶点信息，就需要使用 Buffer 了：<ol><li>创建一个 buffer 对象 <code class=highlighter-rouge>gl.createBuffer()</code><li>绑定 buffer 对象到一个 target <code class=highlighter-rouge>gl.bindBuffer()</code><li>向 buffer 对象写入数据 <code class=highlighter-rouge>gl.bufferData()</code><li>分配 buffer 对象到 vertex shader 中的 attribute 变量 <code class=highlighter-rouge>gl.vertexAttribPointer()</code><li>开启分配完成传值 <code class=highlighter-rouge>gl.enableVertexAttribArray()</code></ol><p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/buffer.png alt="使用 Buffer 步骤"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/buffer.png data-alt="使用 Buffer 步骤"></div><em>使用 Buffer 步骤</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<p>之前只是在 Buffer 中存储了各个顶点的位置信息，如果每个顶点有不同的大小呢？
-使用多个 Buffer 看似可行，但是一旦顶点数量增多，或者每个顶点又需要不同颜色，多个 Buffer 的问题就显现出来了。
-这时候就需要在同一个 Buffer 中 <strong>分组</strong> 存储全部的顶点信息，也叫 <strong>interleaving</strong>。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">var verticesSizes = new Float32Array([
+    });</script><p>之前只是在 Buffer 中存储了各个顶点的位置信息，如果每个顶点有不同的大小呢？ 使用多个 Buffer 看似可行，但是一旦顶点数量增多，或者每个顶点又需要不同颜色，多个 Buffer 的问题就显现出来了。 这时候就需要在同一个 Buffer 中 <strong>分组</strong> 存储全部的顶点信息，也叫 <strong>interleaving</strong>。<div><pre class=line-numbers data-line=""><code class=language-javascript>var verticesSizes = new Float32Array([
     // 混合存储顶点坐标和大小
     0.0, 0.5, 10.0, // The 1st point
     -0.5, -0.5, 20.0, // The 2nd point
     0.5, -0.5, 30.0 // The 3rd point
-]);</code></pre>
-</div>
-
-<p><code class="highlighter-rouge">gl.vertexAttribPointer()</code> 最后两个参数可以指定 stride 的长度以及当前顶点信息在每个 stride 中的偏移量（offset）：</p>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/interleaving.png" alt="Stride &amp; Offset" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/interleaving.png" data-alt="Stride &amp; Offset">
-    </div>
-    <em>Stride &amp; Offset</em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+]);</code></pre></div><p><code class=highlighter-rouge>gl.vertexAttribPointer()</code> 最后两个参数可以指定 stride 的长度以及当前顶点信息在每个 stride 中的偏移量（offset）：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/interleaving.png alt="Stride &amp; Offset"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/interleaving.png data-alt="Stride &amp; Offset"></div><em>Stride &amp; Offset</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<p>这样就实现了在一个 Buffer 中存储全部顶点信息。值得注意的是，目前我们存储的顶点信息都是给 vertex shader 使用的，如果想要给 fragment shader 传递变量，例如顶点颜色，该如何使用呢？</p>
-
-<h2 id="shader-间传递变量">shader 间传递变量</h2>
-
-<p>从 vertex shader 向 fragment shader 传递变量需要使用 <code class="highlighter-rouge">varying</code>，为啥不是熟悉的 <code class="highlighter-rouge">attribute</code> 而需要这个额外的看起来像桥梁一样的新东西呢？</p>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/varying.png" alt="varying 变量" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/varying.png" data-alt="varying 变量">
-    </div>
-    <em>varying 变量</em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+    });</script><p>这样就实现了在一个 Buffer 中存储全部顶点信息。值得注意的是，目前我们存储的顶点信息都是给 vertex shader 使用的，如果想要给 fragment shader 传递变量，例如顶点颜色，该如何使用呢？<h2 id=shader-间传递变量>shader 间传递变量</h2><p>从 vertex shader 向 fragment shader 传递变量需要使用 <code class=highlighter-rouge>varying</code>，为啥不是熟悉的 <code class=highlighter-rouge>attribute</code> 而需要这个额外的看起来像桥梁一样的新东西呢？<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/varying.png alt="varying 变量"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/varying.png data-alt="varying 变量"></div><em>varying 变量</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800, 1400],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<p>要弄清这个问题，我们得知道 shader 间传值并不是这么简单的，中间会经历两个步骤：</p>
-<ul>
-  <li><strong>geometric shape assembly process</strong>: In this stage, the geometric shape is assem- bled from the specified vertex coordinates. The first argument of gl.drawArray() specifies which type of shape should be assembled.</li>
-  <li><strong>rasterization process</strong>: In this stage, the geometric shape assembled in the geometric assembly process is converted into fragments.</li>
-</ul>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/2stages.png" alt="vertex shader 和 fragment shader 之间" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/2stages.png" data-alt="vertex shader 和 fragment shader 之间">
-    </div>
-    <em>vertex shader 和 fragment shader 之间</em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+    });</script><p>要弄清这个问题，我们得知道 shader 间传值并不是这么简单的，中间会经历两个步骤：<ul><li><strong>geometric shape assembly process</strong>: In this stage, the geometric shape is assem- bled from the specified vertex coordinates. The first argument of gl.drawArray() specifies which type of shape should be assembled.<li><strong>rasterization process</strong>: In this stage, the geometric shape assembled in the geometric assembly process is converted into fragments.</ul><p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/2stages.png alt="vertex shader 和 fragment shader 之间"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/2stages.png data-alt="vertex shader 和 fragment shader 之间"></div><em>vertex shader 和 fragment shader 之间</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<p>可见在 vertex shader 和 fragment shader 中虽然变量同名（<code class="highlighter-rouge">v_Color</code>），但事实上并不是一一对应的关系。这也是 <code class="highlighter-rouge">varying</code> 名称的由来，线性插值会生成 vertex 间像素的值：</p>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/interpolation.png" alt="线性插值" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/interpolation.png" data-alt="线性插值">
-    </div>
-    <em>线性插值</em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+    });</script><p>可见在 vertex shader 和 fragment shader 中虽然变量同名（<code class=highlighter-rouge>v_Color</code>），但事实上并不是一一对应的关系。这也是 <code class=highlighter-rouge>varying</code> 名称的由来，线性插值会生成 vertex 间像素的值：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/interpolation.png alt=线性插值><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/interpolation.png data-alt=线性插值></div><em>线性插值</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800, 1400],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<p>在下面的例子中，三个顶点红绿蓝，借助线性插值，能生成平滑的效果：</p>
-<p data-height="265" data-theme-id="0" data-slug-hash="dmgLEK" data-default-tab="js,result" data-user="xiaoiver" data-embed-version="2" data-pen-title="dmgLEK" class="codepen">See the Pen <a href="https://codepen.io/xiaoiver/pen/dmgLEK/">dmgLEK</a> by xiaop (<a href="https://codepen.io/xiaoiver">@xiaoiver</a>) on <a href="https://codepen.io">CodePen</a>.</p>
-<script async="" src="https://static.codepen.io/assets/embed/ei.js"></script>
-
-<p>书中的例子使用了 Google 编写的 <code class="highlighter-rouge">webgl-utils</code>，但是在各个 CDN 上都没有找到。我使用了 <a href="https://webglfundamentals.org/docs/module-webgl-utils.html#.createProgramFromSources">webglfundamentals.org</a> 提供的 WebGL 工具库，完成加载 shader，创建 program 的工作，一定不能忘记调用 <code class="highlighter-rouge">gl.useProgram()</code>。</p>
-
-<h2 id="texture-纹理">texture 纹理</h2>
-
-<p>使用纹理是一个比较复杂的过程。</p>
-
-<h3 id="坐标转换">坐标转换</h3>
-
-<p>首先图片（PNG，JPEG）坐标系不同于 WebGL 坐标系，需要进行转换：</p>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/image-cord.png" alt="图片坐标到 WebGL 坐标映射" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/image-cord.png" data-alt="图片坐标到 WebGL 坐标映射">
-    </div>
-    <em>图片坐标到 WebGL 坐标映射</em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+    });</script><p>在下面的例子中，三个顶点红绿蓝，借助线性插值，能生成平滑的效果：<p data-height=265 data-theme-id=0 data-slug-hash=dmgLEK data-default-tab=js,result data-user=xiaoiver data-embed-version=2 data-pen-title=dmgLEK class=codepen>See the Pen <a href=https://codepen.io/xiaoiver/pen/dmgLEK/ >dmgLEK</a> by xiaop (<a href=https://codepen.io/xiaoiver>@xiaoiver</a>) on <a href=https://codepen.io>CodePen</a>.</p><script async src=https://static.codepen.io/assets/embed/ei.js></script><p>书中的例子使用了 Google 编写的 <code class=highlighter-rouge>webgl-utils</code>，但是在各个 CDN 上都没有找到。我使用了 <a href=https://webglfundamentals.org/docs/module-webgl-utils.html#.createProgramFromSources>webglfundamentals.org</a> 提供的 WebGL 工具库，完成加载 shader，创建 program 的工作，一定不能忘记调用 <code class=highlighter-rouge>gl.useProgram()</code>。<h2 id=texture-纹理>texture 纹理</h2><p>使用纹理是一个比较复杂的过程。<h3 id=坐标转换>坐标转换</h3><p>首先图片（PNG，JPEG）坐标系不同于 WebGL 坐标系，需要进行转换：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/image-cord.png alt="图片坐标到 WebGL 坐标映射"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/image-cord.png data-alt="图片坐标到 WebGL 坐标映射"></div><em>图片坐标到 WebGL 坐标映射</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<p>只需要反转一下 Y 轴即可：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);</code></pre>
-</div>
-
-<p>然后我们需要将 texture 坐标映射到 vertex shader 坐标系，例如这里只是简单平移一下，并不存在缩放。最终显示在 <code class="highlighter-rouge">-1 ~ 1</code> 的坐标系中：</p>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/texture-cord.png" alt="纹理坐标映射" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/texture-cord.png" data-alt="纹理坐标映射">
-    </div>
-    <em>纹理坐标映射</em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+    });</script><p>只需要反转一下 Y 轴即可：<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);</code></pre></div><p>然后我们需要将 texture 坐标映射到 vertex shader 坐标系，例如这里只是简单平移一下，并不存在缩放。最终显示在 <code class=highlighter-rouge>-1 ~ 1</code> 的坐标系中：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/texture-cord.png alt=纹理坐标映射><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/texture-cord.png data-alt=纹理坐标映射></div><em>纹理坐标映射</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<p>纹理坐标存储在 <code class="highlighter-rouge">a_TexCoord</code> 中：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">var verticesTexCoords = new Float32Array([
+    });</script><p>纹理坐标存储在 <code class=highlighter-rouge>a_TexCoord</code> 中：<div><pre class=line-numbers data-line=""><code class=language-javascript>var verticesTexCoords = new Float32Array([
     // Vertex coordinates, texture coordinate
     -0.5,  0.5,   0.0, 1.0,
     -0.5, -0.5,   0.0, 0.0,
@@ -375,247 +93,40 @@ for(var i = 0; i &lt; len; i += 2) {
 var a_TexCoord = gl.getAttribLocation(gl.program, &#39;a_TexCoord&#39;);
 // Assign the buffer object to a_TexCoord variable
 gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, FSIZE * 4, FSIZE * 2);
-gl.enableVertexAttribArray(a_TexCoord);</code></pre>
-</div>
-
-<h3 id="创建纹理对象">创建纹理对象</h3>
-
-<p>WebGL 中规定浏览器实现中至少有 <code class="highlighter-rouge">gl.TEXTURE0</code> 到 <code class="highlighter-rouge">gl.TEXTURE7</code> 这8个纹理单位（可能更多），每一个都可以关联到一种纹理类型，比如 <code class="highlighter-rouge">gl.TEXTURE_2D</code>。有点类似之前每一个 Buffer 对象都可以关联 <code class="highlighter-rouge">gl.ARRAY_BUFFER</code> 或者 <code class="highlighter-rouge">gl.ARRAY_ELEMENT_BUFFER</code>。甚至连创建语法也很相似：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">// 创建 texture
+gl.enableVertexAttribArray(a_TexCoord);</code></pre></div><h3 id=创建纹理对象>创建纹理对象</h3><p>WebGL 中规定浏览器实现中至少有 <code class=highlighter-rouge>gl.TEXTURE0</code> 到 <code class=highlighter-rouge>gl.TEXTURE7</code> 这8个纹理单位（可能更多），每一个都可以关联到一种纹理类型，比如 <code class=highlighter-rouge>gl.TEXTURE_2D</code>。有点类似之前每一个 Buffer 对象都可以关联 <code class=highlighter-rouge>gl.ARRAY_BUFFER</code> 或者 <code class=highlighter-rouge>gl.ARRAY_ELEMENT_BUFFER</code>。甚至连创建语法也很相似：<div><pre class=line-numbers data-line=""><code class=language-javascript>// 创建 texture
 var texture = gl.createTexture();
 // Enable texture unit0
 gl.activeTexture(gl.TEXTURE0);
 // Bind the texture object to the target
-gl.bindTexture(gl.TEXTURE_2D, texture);</code></pre>
-</div>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/texture-obj.png" alt="关联纹理对象" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/texture-obj.png" data-alt="关联纹理对象">
-    </div>
-    <em>关联纹理对象</em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+gl.bindTexture(gl.TEXTURE_2D, texture);</code></pre></div><p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/texture-obj.png alt=关联纹理对象><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/texture-obj.png data-alt=关联纹理对象></div><em>关联纹理对象</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<p>完成绑定之后，可以查询当前的纹理单元，但是要注意返回值不是简单的 01，需要使用 WebGL 内置常量：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">var activeTextureUnit = gl.getParameter(gl.ACTIVE_TEXTURE);
-if (activeTextureUnit == gl.TEXTURE0) {}</code></pre>
-</div>
-
-<h3 id="指定纹理参数">指定纹理参数</h3>
-
-<p>完成了纹理对象的创建，激活和绑定，随后需要设置一些纹理参数。这些参数指定了在某些场景下纹理的规则：</p>
-<ul>
-  <li><strong>gl.TEXTURE_MAG_FILTER</strong> 当纹理应用在大尺寸形状上时，例如 1x1 的纹理放大到 2x2。需要指定这些多出来的像素如何计算。算法有两种：<strong>gl.NEAREST</strong> 和 <strong>gl.LINEAR</strong>。</li>
-  <li><strong>gl.TEXTURE_MIN_FILTER</strong> 缩小纹理。算法同上。</li>
-  <li><strong>gl.TEXTURE_WRAP_S/T</strong> 纹理四周填充策略。例如默认值是重复拼贴 <strong>gl.REPEAT</strong>，有点类似 CSS 中 <code class="highlighter-rouge">background-image: repeat-x/y;</code>。使用边缘像素填充造成拖影效果 <strong>CLAMP_TO_EDGE</strong>。</li>
-</ul>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/texture-params.png" alt="4种纹理参数和效果" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/texture-params.png" data-alt="4种纹理参数和效果">
-    </div>
-    <em>4种纹理参数和效果</em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+    });</script><p>完成绑定之后，可以查询当前的纹理单元，但是要注意返回值不是简单的 01，需要使用 WebGL 内置常量：<div><pre class=line-numbers data-line=""><code class=language-javascript>var activeTextureUnit = gl.getParameter(gl.ACTIVE_TEXTURE);
+if (activeTextureUnit == gl.TEXTURE0) {}</code></pre></div><h3 id=指定纹理参数>指定纹理参数</h3><p>完成了纹理对象的创建，激活和绑定，随后需要设置一些纹理参数。这些参数指定了在某些场景下纹理的规则：<ul><li><strong>gl.TEXTURE_MAG_FILTER</strong> 当纹理应用在大尺寸形状上时，例如 1x1 的纹理放大到 2x2。需要指定这些多出来的像素如何计算。算法有两种：<strong>gl.NEAREST</strong> 和 <strong>gl.LINEAR</strong>。<li><strong>gl.TEXTURE_MIN_FILTER</strong> 缩小纹理。算法同上。<li><strong>gl.TEXTURE_WRAP_S/T</strong> 纹理四周填充策略。例如默认值是重复拼贴 <strong>gl.REPEAT</strong>，有点类似 CSS 中 <code class=highlighter-rouge>background-image: repeat-x/y;</code>。使用边缘像素填充造成拖影效果 <strong>CLAMP_TO_EDGE</strong>。</ul><p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/texture-params.png alt=4种纹理参数和效果><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/texture-params.png data-alt=4种纹理参数和效果></div><em>4种纹理参数和效果</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<p>「Professional WebGL Programming: Developing 3D Graphics for the Web」这本书介绍的更为详细。比如需要放大纹理贴图的场景，如果选择了 <strong>gl.NEAREST</strong> 参数，每个像素点的颜色就按照最近的 texel 的颜色设置。
-显然，这种方式计算起来是很快的，但是会呈现 <strong>pixelation</strong> 现象，十分生硬不自然。而 <strong>gl.LINEAR</strong> 参数会考虑四个 texel 的色值计算插值，但是放大后会呈现模糊的效果。
-<img src="/assets/img/webgl/texture-magnification.png" alt="" /></p>
-
-<p>在缩小时，不管使用 <strong>gl.NEAREST</strong> 还是 <strong>gl.LINEAR</strong> 都会造成锯齿化。
-<img src="/assets/img/webgl/texture-minification.png" alt="" /></p>
-
-<p>为了抗锯齿，可以提供多张不同分辨率的纹理，这种做法也叫做 mipmapping。
-在具体使用时，只要传入一个基础纹理，WebGL 会生成 4<em>4 2</em>2 1*1 等等不同 mipmap level 的小纹理。
-当然也可以手动上传多张分辨率的纹理。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-gl.generateMipmap(gl.TEXTURE_2D);</code></pre>
-</div>
-
-<p>应用之后 <strong>gl.TEXTURE_MIN_FILTER</strong> 就多了四种选择，也很好理解：</p>
-<ul>
-  <li>gl.NEAREST_MIPMAP_NEAREST 会选择最近的 mipmap level，然后在这个 level 下纹理中应用 <strong>gl.NEAREST</strong> 策略。</li>
-  <li>gl.NEAREST_MIPMAP_LINEAR</li>
-  <li>gl.LINEAR_MIPMAP_NEAREST</li>
-  <li>gl.LINEAR_MIPMAP_LINEAR</li>
-</ul>
-
-<p>这里不得不吐槽下 WebGL 内置的一些函数命名，虽然有些通过函数名就能判断参数类型和数目，但是像 <code class="highlighter-rouge">texParameteri()</code> 和 <code class="highlighter-rouge">vertexAttribPointer()</code> 这样部分缩写实在很难记忆。</p>
-
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);</code></pre>
-</div>
-
-<h3 id="上传图片到纹理对象中">上传图片到纹理对象中</h3>
-
-<p>接下来需要将图片上传到纹理对象中。
-在 WebGL 中，使用 <code class="highlighter-rouge">new Image()</code> 异步加载图片十分简单，以下操作都在成功回调函数中完成。
-这里需要根据图片格式指定纹理数据格式，例如对于 PNG 格式的图片，纹理数据必须使用 <code class="highlighter-rouge">gl.RGBA</code>，而对于 JPEG 格式，则使用 <code class="highlighter-rouge">gl.RGB</code>。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);</code></pre>
-</div>
-
-<p>这里多个参数，另一本「Professional WebGL Programming」中有更详细的介绍。有趣的是第三四个参数在 WebGL 中必须是完全相同的，而第五个参数需要与之匹配。比如：</p>
-
-<p>最常见的 RGBA 格式，每个通道各占据一个 byte，这样每个像素点总共 4 个 bytes。</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>format - type - bytes/texel
+    });</script><p>「Professional WebGL Programming: Developing 3D Graphics for the Web」这本书介绍的更为详细。比如需要放大纹理贴图的场景，如果选择了 <strong>gl.NEAREST</strong> 参数，每个像素点的颜色就按照最近的 texel 的颜色设置。 显然，这种方式计算起来是很快的，但是会呈现 <strong>pixelation</strong> 现象，十分生硬不自然。而 <strong>gl.LINEAR</strong> 参数会考虑四个 texel 的色值计算插值，但是放大后会呈现模糊的效果。 <img src=/assets/img/webgl/texture-magnification.png alt=""><p>在缩小时，不管使用 <strong>gl.NEAREST</strong> 还是 <strong>gl.LINEAR</strong> 都会造成锯齿化。 <img src=/assets/img/webgl/texture-minification.png alt=""><p>为了抗锯齿，可以提供多张不同分辨率的纹理，这种做法也叫做 mipmapping。 在具体使用时，只要传入一个基础纹理，WebGL 会生成 4<em>4 2</em>2 1*1 等等不同 mipmap level 的小纹理。 当然也可以手动上传多张分辨率的纹理。<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+gl.generateMipmap(gl.TEXTURE_2D);</code></pre></div><p>应用之后 <strong>gl.TEXTURE_MIN_FILTER</strong> 就多了四种选择，也很好理解：<ul><li>gl.NEAREST_MIPMAP_NEAREST 会选择最近的 mipmap level，然后在这个 level 下纹理中应用 <strong>gl.NEAREST</strong> 策略。<li>gl.NEAREST_MIPMAP_LINEAR<li>gl.LINEAR_MIPMAP_NEAREST<li>gl.LINEAR_MIPMAP_LINEAR</ul><p>这里不得不吐槽下 WebGL 内置的一些函数命名，虽然有些通过函数名就能判断参数类型和数目，但是像 <code class=highlighter-rouge>texParameteri()</code> 和 <code class=highlighter-rouge>vertexAttribPointer()</code> 这样部分缩写实在很难记忆。<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);</code></pre></div><h3 id=上传图片到纹理对象中>上传图片到纹理对象中</h3><p>接下来需要将图片上传到纹理对象中。 在 WebGL 中，使用 <code class=highlighter-rouge>new Image()</code> 异步加载图片十分简单，以下操作都在成功回调函数中完成。 这里需要根据图片格式指定纹理数据格式，例如对于 PNG 格式的图片，纹理数据必须使用 <code class=highlighter-rouge>gl.RGBA</code>，而对于 JPEG 格式，则使用 <code class=highlighter-rouge>gl.RGB</code>。<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);</code></pre></div><p>这里多个参数，另一本「Professional WebGL Programming」中有更详细的介绍。有趣的是第三四个参数在 WebGL 中必须是完全相同的，而第五个参数需要与之匹配。比如：<p>最常见的 RGBA 格式，每个通道各占据一个 byte，这样每个像素点总共 4 个 bytes。<div class=highlighter-rouge><div class=highlight><pre class=highlight><code>format - type - bytes/texel
 gl.RGBA	- gl.UNSIGNED_BYTE - 4
-</code></pre></div></div>
-
-<p>RGBA 格式也可以更精确的指定每个通道占据的 bits，比如 RGB 各 5 bits，A 通道 1 bit，这样总共是 2 bytes。</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>format - type - bytes/texel
+</code></pre></div></div><p>RGBA 格式也可以更精确的指定每个通道占据的 bits，比如 RGB 各 5 bits，A 通道 1 bit，这样总共是 2 bytes。<div class=highlighter-rouge><div class=highlight><pre class=highlight><code>format - type - bytes/texel
 gl.RGBA	- gl.UNSIGNED_SHORT_5_5_5_1 - 2
-</code></pre></div></div>
-
-<h3 id="fragment-shader-中的操作">fragment shader 中的操作</h3>
-
-<p>在 fragment shader 中读取纹理对象需要通过 sampler 完成。这是一个常量 <code class="highlighter-rouge">uniform sampler2D u_Sampler;</code>。</p>
-
-<p>之前纹理对象存储在 <code class="highlighter-rouge">gl.TEXTURE0</code> 中，这里只需要传一个序号就行了。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">gl.uniform1i(u_Sampler, 0);</code></pre>
-</div>
-
-<p>根据从 vertex shader 中传过来的坐标，使用 sampler，fragment shader 就能获取当前纹理中每个 fragment 对应的颜色：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">gl_FragColor = texture2D(u_Sampler, v_TexCoord);</code></pre>
-</div>
-
-<p>总结下，完整使用 texture 流程如下：</p>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/texture.png" alt="纹理完整流程" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/texture.png" data-alt="纹理完整流程">
-    </div>
-    <em>纹理完整流程</em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+</code></pre></div></div><h3 id=fragment-shader-中的操作>fragment shader 中的操作</h3><p>在 fragment shader 中读取纹理对象需要通过 sampler 完成。这是一个常量 <code class=highlighter-rouge>uniform sampler2D u_Sampler;</code>。<p>之前纹理对象存储在 <code class=highlighter-rouge>gl.TEXTURE0</code> 中，这里只需要传一个序号就行了。<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.uniform1i(u_Sampler, 0);</code></pre></div><p>根据从 vertex shader 中传过来的坐标，使用 sampler，fragment shader 就能获取当前纹理中每个 fragment 对应的颜色：<div><pre class=line-numbers data-line=""><code class=language-glsl>gl_FragColor = texture2D(u_Sampler, v_TexCoord);</code></pre></div><p>总结下，完整使用 texture 流程如下：<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/texture.png alt=纹理完整流程><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/texture.png data-alt=纹理完整流程></div><em>纹理完整流程</em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<h3 id="多个纹理混合">多个纹理混合</h3>
-
-<p>首先异步加载多张图片，需要保证全部加载完成再进行后续操作。
-在 fragment shader 中，由于颜色都是用 vec 向量表示，可以相乘，效果就是 rgba 各个部分相乘：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">gl_FragColor = color0 * color1;</code></pre>
-</div>
-
-<p>这种混合方式和 CSS 中 <code class="highlighter-rouge">background-blend-mode</code> 的<a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-blend-mode">一种混合方式</a>一致。在 PS 中也有类似图层混合方法：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-css">.simple-blended {
+    });</script><h3 id=多个纹理混合>多个纹理混合</h3><p>首先异步加载多张图片，需要保证全部加载完成再进行后续操作。 在 fragment shader 中，由于颜色都是用 vec 向量表示，可以相乘，效果就是 rgba 各个部分相乘：<div><pre class=line-numbers data-line=""><code class=language-glsl>gl_FragColor = color0 * color1;</code></pre></div><p>这种混合方式和 CSS 中 <code class=highlighter-rouge>background-blend-mode</code> 的<a href=https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-blend-mode>一种混合方式</a>一致。在 PS 中也有类似图层混合方法：<div><pre class=line-numbers data-line=""><code class=language-css>.simple-blended {
     background-image: url(image.jpg);
     background-color: red;
     background-blend-mode: multiply;
-}</code></pre>
-</div>
-
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html" class="read-next-link"></a>
-            <section>
-                <span>进入3D世界</span>
-                <p>之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/webgl/logo.png" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/03/26/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5-%E4%BA%8C.html" class="read-next-link"></a>
-            <section>
-                <span>字体加载最佳实践（二）</span>
-                <p>之前我们介绍了当前解决 FOIT 的最佳实践。在本篇中，我们将介绍通用的提升字体加载性能的方法。</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/font.png" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-<hr>
-<!-- 来必力City版安装代码 -->
-<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
-    <script type="text/javascript">
-   (function(d, s) {
+}</code></pre></div></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/04/10/%E8%BF%9B%E5%85%A53D%E4%B8%96%E7%95%8C.html class=read-next-link></a><section><span>进入3D世界</span><p>之前了解了一些 shader 的基础知识，现在终于可以进入激动人心的3D世界啦～</section><div class=filter></div><img src=/assets/img/webgl/logo.png alt=""></div><div class=read-next-item><a href=/coding/2018/03/26/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5-%E4%BA%8C.html class=read-next-link></a><section><span>字体加载最佳实践（二）</span><p>之前我们介绍了当前解决 FOIT 的最佳实践。在本篇中，我们将介绍通用的提升字体加载性能的方法。</section><div class=filter></div><img src=/assets/img/font.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -625,41 +136,11 @@ gl.RGBA	- gl.UNSIGNED_SHORT_5_5_5_1 - 2
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-    </script>
-<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
-</div>
-<!-- City版安装代码已完成 -->
-
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2019</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-<script src="/assets/js/jquery.nav.js"></script>
-<script>
-    function generateCatalog (selector) {
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -703,7 +184,11 @@ gl.RGBA	- gl.UNSIGNED_SHORT_5_5_5_1 - 2
         end: null,
         scrollChange: null,
         padding: 80
-    });
-</script>
-</body>
-</html>
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

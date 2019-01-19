@@ -1,129 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>判断元素是否在视口内 - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="判断元素是否在视口内">
-    <meta name="keywords"  content="javascript">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>判断元素是否在视口内 | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="判断元素是否在视口内" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下： function inViewport( el, h ) { var elH = el.offsetHeight, // 元素高度 scrolled = scrollY(), // 视口顶部距离document顶部的距离 viewed = scrolled + getViewportH(), // 视口底部距离document的距离 elTop = el.getBoundingClientRect().top, // 元素顶部距离document顶部的距离 elBottom = elTop + elH, // 元素底部距离document顶部的距离 h = h || 0; // 高度系数 return (elTop + elH * h) &lt;= viewed &amp;&amp; (elBottom) &gt;= scrolled; }" />
-<meta property="og:description" content="在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下： function inViewport( el, h ) { var elH = el.offsetHeight, // 元素高度 scrolled = scrollY(), // 视口顶部距离document顶部的距离 viewed = scrolled + getViewportH(), // 视口底部距离document的距离 elTop = el.getBoundingClientRect().top, // 元素顶部距离document顶部的距离 elBottom = elTop + elH, // 元素底部距离document顶部的距离 h = h || 0; // 高度系数 return (elTop + elH * h) &lt;= viewed &amp;&amp; (elBottom) &gt;= scrolled; }" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-08-20T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下： function inViewport( el, h ) { var elH = el.offsetHeight, // 元素高度 scrolled = scrollY(), // 视口顶部距离document顶部的距离 viewed = scrolled + getViewportH(), // 视口底部距离document的距离 elTop = el.getBoundingClientRect().top, // 元素顶部距离document顶部的距离 elBottom = elTop + elH, // 元素底部距离document顶部的距离 h = h || 0; // 高度系数 return (elTop + elH * h) &lt;= viewed &amp;&amp; (elBottom) &gt;= scrolled; }","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html","headline":"判断元素是否在视口内","dateModified":"2017-08-20T00:00:00+08:00","datePublished":"2017-08-20T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-
-    
-
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-    
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>判断元素是否在视口内 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=判断元素是否在视口内><meta name=keywords content=javascript><title>判断元素是否在视口内 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=判断元素是否在视口内><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下： function inViewport( el, h ) { var elH = el.offsetHeight, // 元素高度 scrolled = scrollY(), // 视口顶部距离document顶部的距离 viewed = scrolled + getViewportH(), // 视口底部距离document的距离 elTop = el.getBoundingClientRect().top, // 元素顶部距离document顶部的距离 elBottom = elTop + elH, // 元素底部距离document顶部的距离 h = h || 0; // 高度系数 return (elTop + elH * h) &lt;= viewed &amp;&amp; (elBottom) &gt;= scrolled; }"><meta property=og:description content="在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下： function inViewport( el, h ) { var elH = el.offsetHeight, // 元素高度 scrolled = scrollY(), // 视口顶部距离document顶部的距离 viewed = scrolled + getViewportH(), // 视口底部距离document的距离 elTop = el.getBoundingClientRect().top, // 元素顶部距离document顶部的距离 elBottom = elTop + elH, // 元素底部距离document顶部的距离 h = h || 0; // 高度系数 return (elTop + elH * h) &lt;= viewed &amp;&amp; (elBottom) &gt;= scrolled; }"><link rel=canonical href=https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html><meta property=og:url content=https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2017-08-20T00:00:00+08:00><script type=application/ld+json>{"description":"在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下： function inViewport( el, h ) { var elH = el.offsetHeight, // 元素高度 scrolled = scrollY(), // 视口顶部距离document顶部的距离 viewed = scrolled + getViewportH(), // 视口底部距离document的距离 elTop = el.getBoundingClientRect().top, // 元素顶部距离document顶部的距离 elBottom = elTop + elH, // 元素底部距离document顶部的距离 h = h || 0; // 高度系数 return (elTop + elH * h) &lt;= viewed &amp;&amp; (elBottom) &gt;= scrolled; }","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html","headline":"判断元素是否在视口内","dateModified":"2017-08-20T00:00:00+08:00","datePublished":"2017-08-20T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2017/08/20/%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E5%9C%A8%E8%A7%86%E5%8F%A3%E5%86%85.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-            <li><a href="/collectives.html">collectives</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#javascript" class="post-tag">javascript</a>
-            
-            
-        </div>
-        <h1>判断元素是否在视口内</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="17-08-20"><i class="iconfont icon-date"></i>20 Aug 2017</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/intersection.png') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    <div class="catalog-container">
-        <div class="side-catalog">
-            <h3 class="catalog-title">
-                <a class="catalog-toggle" href="#">CATALOG</a>
-            </h3>
-            <ul class="catalog-body"></ul>
-        </div>
-    </div>
-    
-    <h2 class="post-subtitle">新的API: IntersectionObserver</h2>
-    
-    <article class="markdown-body">
-        <p>在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">function inViewport( el, h ) {
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#javascript class=post-tag>javascript</a></div><h1>判断元素是否在视口内</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=17-08-20><i class="iconfont icon-date"></i>20 Aug 2017</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/intersection.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>新的API: IntersectionObserver</h2><article class=markdown-body><p>在懒加载图片的场景中，常常需要在滚动事件回调函数中检测目标图片是否在视口内，常用的检测方法如下：<div><pre class=line-numbers data-line=""><code class=language-javascript>function inViewport( el, h ) {
     var elH = el.offsetHeight, // 元素高度
         scrolled = scrollY(), // 视口顶部距离document顶部的距离
         viewed = scrolled + getViewportH(), // 视口底部距离document的距离
@@ -131,68 +11,13 @@
         elBottom = elTop + elH, // 元素底部距离document顶部的距离
         h = h || 0; // 高度系数
     return (elTop + elH * h) &lt;= viewed &amp;&amp; (elBottom) &gt;= scrolled;
-}</code></pre>
-</div>
-
-<p>这种方法的问题是使用<code class="highlighter-rouge">getBoundingClientRect()</code>读取元素尺寸数据时，会造成 re-layout，在滚动过程中会导致页面卡顿(jank)。</p>
-
-<h2 id="intersectionobserver">IntersectionObserver</h2>
-
-<p><a href="https://wicg.github.io/IntersectionObserver/">IntersectionObserver</a> 作为新引入的 API，异步查询元素相对于另一个元素（例如视口）的位置，不会影响主线程，可以解决检测方法带来的性能问题。</p>
-
-<p>首先我们需要创建一个观察对象，构造函数方法签名如下：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">new IntersectionObserver(entries =&gt; {}, options);</code></pre>
-</div>
-
-<p>随后将使用这个观察对象对元素的位置变化进行观测：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">io.observe(element);</code></pre>
-</div>
-
-<p>观察对象构造函数的第一个参数便是回调函数，这能避免旧方法中轮询带来的性能问题。
-在回调函数中，传入的参数是一个数组（可以观测多个元素），每个元素对象包含以下属性：</p>
-<ul>
-  <li><code class="highlighter-rouge">rootBounds</code>，<code class="highlighter-rouge">ClientRect</code>对象，等同于对根元素（默认值为视口）调用<code class="highlighter-rouge">getBoundingClientRect()</code></li>
-  <li><code class="highlighter-rouge">boundingClientRect</code>，<code class="highlighter-rouge">ClientRect</code>对象，等同于对被观测元素调用<code class="highlighter-rouge">getBoundingClientRect()</code></li>
-  <li><code class="highlighter-rouge">intersectionRect</code>，以上两个矩形的交集</li>
-  <li><code class="highlighter-rouge">intersectionRatio</code>，被观测元素被覆盖的比例，如下图所示：</li>
-</ul>
-
-<p class="responsive-image">
-    <img class="responsive-image__placeholder" src="/assets/img/resized/480/intersectratio.png" alt="" />
-    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/intersectratio.png" data-alt="">
-    </div>
-    <em></em>
-</p>
-
-<script>
-    new Imager('.responsive-image__delayed', {
+}</code></pre></div><p>这种方法的问题是使用<code class=highlighter-rouge>getBoundingClientRect()</code>读取元素尺寸数据时，会造成 re-layout，在滚动过程中会导致页面卡顿(jank)。<h2 id=intersectionobserver>IntersectionObserver</h2><p><a href=https://wicg.github.io/IntersectionObserver/ >IntersectionObserver</a> 作为新引入的 API，异步查询元素相对于另一个元素（例如视口）的位置，不会影响主线程，可以解决检测方法带来的性能问题。<p>首先我们需要创建一个观察对象，构造函数方法签名如下：<div><pre class=line-numbers data-line=""><code class=language-javascript>new IntersectionObserver(entries =&gt; {}, options);</code></pre></div><p>随后将使用这个观察对象对元素的位置变化进行观测：<div><pre class=line-numbers data-line=""><code class=language-javascript>io.observe(element);</code></pre></div><p>观察对象构造函数的第一个参数便是回调函数，这能避免旧方法中轮询带来的性能问题。 在回调函数中，传入的参数是一个数组（可以观测多个元素），每个元素对象包含以下属性：<ul><li><code class=highlighter-rouge>rootBounds</code>，<code class=highlighter-rouge>ClientRect</code>对象，等同于对根元素（默认值为视口）调用<code class=highlighter-rouge>getBoundingClientRect()</code><li><code class=highlighter-rouge>boundingClientRect</code>，<code class=highlighter-rouge>ClientRect</code>对象，等同于对被观测元素调用<code class=highlighter-rouge>getBoundingClientRect()</code><li><code class=highlighter-rouge>intersectionRect</code>，以上两个矩形的交集<li><code class=highlighter-rouge>intersectionRatio</code>，被观测元素被覆盖的比例，如下图所示：</ul><p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/intersectratio.png alt=""><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/intersectratio.png data-alt=""></div><em></em><p></p><script>new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });
-</script>
-
-<p>现在来看看观察对象的第二个参数，这是一个配置对象，其中包含3个重要的配置项：</p>
-<ol>
-  <li><code class="highlighter-rouge">root</code>，默认值为视口，在容器内滚动的场景中，我们可以指定根元素为容器</li>
-  <li><code class="highlighter-rouge">rootMargin</code>，顾名思义，值的格式与<code class="highlighter-rouge">margin</code>一样</li>
-  <li><code class="highlighter-rouge">threshold</code>，这个阈值甚至可以是一个列表，每次达到其中的一个阈值时都会触发回调函数，取值范围为[0-1]</li>
-</ol>
-
-<p>最后，相对于<code class="highlighter-rouge">observe()</code>观测方法，自然也有解除观测方法<code class="highlighter-rouge">unobserve()</code>。</p>
-
-<p>以上就是这个新 API 的全部内容了，下面让我们看看在实际场景中如何应用吧。</p>
-
-<h2 id="懒加载图片">懒加载图片</h2>
-
-<p>有了这个新的 API，实现滚动到视口内加载图片就十分简单了，其实就是多了新的判断方法，不再需要在滚动事件中获取了。</p>
-
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">// 创建观测对象
+    });</script><p>现在来看看观察对象的第二个参数，这是一个配置对象，其中包含3个重要的配置项：<ol><li><code class=highlighter-rouge>root</code>，默认值为视口，在容器内滚动的场景中，我们可以指定根元素为容器<li><code class=highlighter-rouge>rootMargin</code>，顾名思义，值的格式与<code class=highlighter-rouge>margin</code>一样<li><code class=highlighter-rouge>threshold</code>，这个阈值甚至可以是一个列表，每次达到其中的一个阈值时都会触发回调函数，取值范围为[0-1]</ol><p>最后，相对于<code class=highlighter-rouge>observe()</code>观测方法，自然也有解除观测方法<code class=highlighter-rouge>unobserve()</code>。<p>以上就是这个新 API 的全部内容了，下面让我们看看在实际场景中如何应用吧。<h2 id=懒加载图片>懒加载图片</h2><p>有了这个新的 API，实现滚动到视口内加载图片就十分简单了，其实就是多了新的判断方法，不再需要在滚动事件中获取了。<div><pre class=line-numbers data-line=""><code class=language-javascript>// 创建观测对象
 let observer = new IntersectionObserver(entries =&gt; {
     entries.forEach(entry =&gt; {
         // 图片和视口有交集了
@@ -207,46 +32,11 @@ let observer = new IntersectionObserver(entries =&gt; {
 // 观测所有图片
 images.forEach(image =&gt; {
     observer.observe(image);
-});</code></pre>
-</div>
-
-<p>当然，这里还有一些细节，例如：</p>
-<ol>
-  <li>考虑浏览器兼容性，目前<a href="https://caniuse.com/#feat=intersectionobserver">最新版 Chrome 和 Firefox 支持</a>良好。<a href="https://github.com/WICG/IntersectionObserver/tree/gh-pages/polyfill">polyfill</a></li>
-  <li>图片的 src 属性存放在例如 data-src 上</li>
-  <li>全部图片加载完毕，调用观测对象的<code class="highlighter-rouge">disconnect()</code>方法彻底关闭</li>
-</ol>
-
-<p>可以参考<a href="https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163">这篇文章</a>的实现。</p>
-
-<h2 id="多个容器中-sticky-的场景">多个容器中 sticky 的场景</h2>
-
-<p>同样，在 sticky 的场景中，IntersectionObserver 也有很好的应用。</p>
-
-<p>首先来看看过去的方式有哪有限制：</p>
-<ul>
-  <li>对于开发者而言，通过 CSS 规则<code class="highlighter-rouge">position: sticky</code>将控制行为完全交给浏览器。除了通过手动计算，完全不知道一个元素当前是否处于 sticky 状态，当然这个计算过程，又需要放在滚动事件中重复执行，容易造成 jank。</li>
-  <li>当涉及到多个独立容器的场景，计算过程将变得十分复杂。</li>
-</ul>
-
-<p><img src="/assets/img/sticky-regions.png" alt="" /></p>
-
-<p>对于开发者的一种理想状态是，能够监听自定义事件<code class="highlighter-rouge">sticky-change</code>，在元素 sticky 状态发生改变之时进行操作，这样就避免了在滚动事件处理函数中不断轮询。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">document.addEventListener(&#39;sticky-change&#39;, e =&gt; {
+});</code></pre></div><p>当然，这里还有一些细节，例如：<ol><li>考虑浏览器兼容性，目前<a href="https://caniuse.com/#feat=intersectionobserver">最新版 Chrome 和 Firefox 支持</a>良好。<a href=https://github.com/WICG/IntersectionObserver/tree/gh-pages/polyfill>polyfill</a><li>图片的 src 属性存放在例如 data-src 上<li>全部图片加载完毕，调用观测对象的<code class=highlighter-rouge>disconnect()</code>方法彻底关闭</ol><p>可以参考<a href=https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163>这篇文章</a>的实现。<h2 id=多个容器中-sticky-的场景>多个容器中 sticky 的场景</h2><p>同样，在 sticky 的场景中，IntersectionObserver 也有很好的应用。<p>首先来看看过去的方式有哪有限制：<ul><li>对于开发者而言，通过 CSS 规则<code class=highlighter-rouge>position: sticky</code>将控制行为完全交给浏览器。除了通过手动计算，完全不知道一个元素当前是否处于 sticky 状态，当然这个计算过程，又需要放在滚动事件中重复执行，容易造成 jank。<li>当涉及到多个独立容器的场景，计算过程将变得十分复杂。</ul><p><img src=/assets/img/sticky-regions.png alt=""><p>对于开发者的一种理想状态是，能够监听自定义事件<code class=highlighter-rouge>sticky-change</code>，在元素 sticky 状态发生改变之时进行操作，这样就避免了在滚动事件处理函数中不断轮询。<div><pre class=line-numbers data-line=""><code class=language-javascript>document.addEventListener(&#39;sticky-change&#39;, e =&gt; {
     const header = e.detail.target;  // header became sticky or stopped sticking.
     const sticking = e.detail.stuck; // true when header is sticky.
     header.classList.toggle(&#39;shadow&#39;, sticking); // add drop shadow when sticking.
-});</code></pre>
-</div>
-
-<p>首先我们需要为每一个容器建立首尾两个“哨兵” DOM。IO 需要关注它们和视口容器的重合度。</p>
-
-<p><img src="/assets/img/sentinelanimation.gif" alt="" /></p>
-
-<p>这里以头部的“哨兵”为例，每次一进入视口容器就需要开始计算位置信息。尾部哨兵略有不同，只有全部在容器中才需要开始计算。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const observer = new IntersectionObserver((records, observer) =&gt; {
+});</code></pre></div><p>首先我们需要为每一个容器建立首尾两个“哨兵” DOM。IO 需要关注它们和视口容器的重合度。<p><img src=/assets/img/sentinelanimation.gif alt=""><p>这里以头部的“哨兵”为例，每次一进入视口容器就需要开始计算位置信息。尾部哨兵略有不同，只有全部在容器中才需要开始计算。<div><pre class=line-numbers data-line=""><code class=language-javascript>const observer = new IntersectionObserver((records, observer) =&gt; {
     for (const record of records) {
         const targetInfo = record.boundingClientRect;
         const stickyTarget = record.target.parentElement.querySelector(&#39;.sticky&#39;);
@@ -267,101 +57,7 @@ images.forEach(image =&gt; {
 
 // Add the top sentinels to each section and attach an observer.
 const sentinels = addSentinels(container, &#39;sticky_sentinel--top&#39;);
-sentinels.forEach(el =&gt; observer.observe(el));</code></pre>
-</div>
-
-<p>发送自定义事件的代码就省略了。完整代码可参考原文中的<a href="https://ebidel.github.io/demos/sticky-position-event.html">DEMO 地址</a>。</p>
-
-<p>现在我们可以做到监听元素 sticky 状态的变动，由此引申到另一个问题，那就是元素其他 CSS 属性的变动也能够检测么？
-<code class="highlighter-rouge">MutationObserver</code>可以监听样式类的增减，但是计算出来的样式规则发生变动则不行。未来<a href="http://xml3d.org/xml3d/specification/styleobserver/"> Style Mutation Observer</a>将作为一个很好的补充。</p>
-
-<h2 id="总结">总结</h2>
-
-<p>IO 在需要计算两个元素重合状态，尤其是视口元素的场景中，可以完全替代滚动事件轮询的方式。</p>
-
-<h2 id="参考资料">参考资料</h2>
-
-<ul>
-  <li><a href="https://developers.google.com/web/updates/2016/04/intersectionobserver">Google Developer</a></li>
-  <li><a href="https://hacks.mozilla.org/2017/08/intersection-observer-comes-to-firefox/">MDN</a></li>
-  <li><a href="https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163">懒加载图片原文</a></li>
-  <li><a href="https://developers.google.com/web/updates/2017/09/sticky-headers">sticky场景 原文</a></li>
-  <li><a href="https://github.com/russellgoldenberg/scrollama">scrollama</a></li>
-</ul>
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html" class="read-next-link"></a>
-            <section>
-                <span>Node.js 中的消息队列</span>
-                <p>在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。通常处理请求参数，操作...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/work-queue.png" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html" class="read-next-link"></a>
-            <section>
-                <span>在 Jekyll 中使用代码高亮</span>
-                <p>代码高亮是一个技术博客的重要特性，Jekyll 中默认使用Rouge进行词法分析生成 DOM 结构，搭配自定义样式...</p>
-            </section>
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-<hr>
-<!-- 来必力City版安装代码 -->
-<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
-    <script type="text/javascript">
-   (function(d, s) {
+sentinels.forEach(el =&gt; observer.observe(el));</code></pre></div><p>发送自定义事件的代码就省略了。完整代码可参考原文中的<a href=https://ebidel.github.io/demos/sticky-position-event.html>DEMO 地址</a>。<p>现在我们可以做到监听元素 sticky 状态的变动，由此引申到另一个问题，那就是元素其他 CSS 属性的变动也能够检测么？ <code class=highlighter-rouge>MutationObserver</code>可以监听样式类的增减，但是计算出来的样式规则发生变动则不行。未来<a href=http://xml3d.org/xml3d/specification/styleobserver/ > Style Mutation Observer</a>将作为一个很好的补充。<h2 id=总结>总结</h2><p>IO 在需要计算两个元素重合状态，尤其是视口元素的场景中，可以完全替代滚动事件轮询的方式。<h2 id=参考资料>参考资料</h2><ul><li><a href=https://developers.google.com/web/updates/2016/04/intersectionobserver>Google Developer</a><li><a href=https://hacks.mozilla.org/2017/08/intersection-observer-comes-to-firefox/ >MDN</a><li><a href=https://deanhume.com/Home/BlogPost/lazy-loading-images-using-intersection-observer/10163>懒加载图片原文</a><li><a href=https://developers.google.com/web/updates/2017/09/sticky-headers>sticky场景 原文</a><li><a href=https://github.com/russellgoldenberg/scrollama>scrollama</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2017/09/16/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html class=read-next-link></a><section><span>Node.js 中的消息队列</span><p>在用户注册的场景中，服务端接收到提交的表单内容，将数据写入数据库，随后发送一封注册成功邮件。通常处理请求参数，操作...</section><div class=filter></div><img src=/assets/img/work-queue.png alt=""></div><div class=read-next-item><a href=/coding/2017/08/10/%E5%9C%A8jekyll%E4%B8%AD%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE.html class=read-next-link></a><section><span>在 Jekyll 中使用代码高亮</span><p>代码高亮是一个技术博客的重要特性，Jekyll 中默认使用Rouge进行词法分析生成 DOM 结构，搭配自定义样式...</section></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -371,41 +67,11 @@ sentinels.forEach(el =&gt; observer.observe(el));</code></pre>
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-    </script>
-<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
-</div>
-<!-- City版安装代码已完成 -->
-
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2019</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-<script src="/assets/js/jquery.nav.js"></script>
-<script>
-    function generateCatalog (selector) {
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -449,7 +115,11 @@ sentinels.forEach(el =&gt; observer.observe(el));</code></pre>
         end: null,
         scrollChange: null,
         padding: 80
-    });
-</script>
-</body>
-</html>
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

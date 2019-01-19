@@ -1,146 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在 iOS 下使用 iframe 的种种问题 - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="在 iOS 下使用 iframe 的种种问题">
-    <meta name="keywords"  content="CSS, javascript">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>在 iOS 下使用 iframe 的种种问题 | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="在 iOS 下使用 iframe 的种种问题" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。 查阅资料发现 AMP 提供了很多针对这类问题的 Hack 方法，可能是因为 AMP 需要考虑站长站点嵌入在 iframe 的场景吧。" />
-<meta property="og:description" content="最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。 查阅资料发现 AMP 提供了很多针对这类问题的 Hack 方法，可能是因为 AMP 需要考虑站长站点嵌入在 iframe 的场景吧。" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2018-05-20T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。 查阅资料发现 AMP 提供了很多针对这类问题的 Hack 方法，可能是因为 AMP 需要考虑站长站点嵌入在 iframe 的场景吧。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html","headline":"在 iOS 下使用 iframe 的种种问题","dateModified":"2018-05-20T00:00:00+08:00","datePublished":"2018-05-20T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-
-    
-
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-    
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>在 iOS 下使用 iframe 的种种问题 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="在 iOS 下使用 iframe 的种种问题"><meta name=keywords content="CSS, javascript"><title>在 iOS 下使用 iframe 的种种问题 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="在 iOS 下使用 iframe 的种种问题"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。 查阅资料发现 AMP 提供了很多针对这类问题的 Hack 方法，可能是因为 AMP 需要考虑站长站点嵌入在 iframe 的场景吧。"><meta property=og:description content="最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。 查阅资料发现 AMP 提供了很多针对这类问题的 Hack 方法，可能是因为 AMP 需要考虑站长站点嵌入在 iframe 的场景吧。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-05-20T00:00:00+08:00><script type=application/ld+json>{"description":"最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。 查阅资料发现 AMP 提供了很多针对这类问题的 Hack 方法，可能是因为 AMP 需要考虑站长站点嵌入在 iframe 的场景吧。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html","headline":"在 iOS 下使用 iframe 的种种问题","dateModified":"2018-05-20T00:00:00+08:00","datePublished":"2018-05-20T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-            <li><a href="/collectives.html">collectives</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#CSS" class="post-tag">CSS</a>
-            
-            <a href="https://xiaoiver.github.io/tags#javascript" class="post-tag">javascript</a>
-            
-            
-        </div>
-        <h1>在 iOS 下使用 iframe 的种种问题</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="18-05-20"><i class="iconfont icon-date"></i>20 May 2018</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/iframe.jpg') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    <div class="catalog-container">
-        <div class="side-catalog">
-            <h3 class="catalog-title">
-                <a class="catalog-toggle" href="#">CATALOG</a>
-            </h3>
-            <ul class="catalog-body"></ul>
-        </div>
-    </div>
-    
-    <h2 class="post-subtitle">fixed 元素，宽度被撑开...</h2>
-    
-    <article class="markdown-body">
-        <p>最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。
-查阅资料发现 AMP 提供了很多针对这类问题的 Hack 方法，可能是因为 AMP 需要考虑站长站点嵌入在 iframe 的场景吧。</p>
-
-<h2 id="iframe-内滚动">iframe 内滚动</h2>
-
-<p>我们都知道在 body 上滚动时会触发一些浏览器的默认特性，比如隐藏顶部地址栏和底部导航栏。
-而换成容器内滚动会丢失这部分特性，iframe 也是一种容器，一样面临这样的问题。</p>
-
-<p>那么有没有办法在 body 上滚动呢？</p>
-
-<p>有一种尝试是在 iframe 内触发 <code class="highlighter-rouge">touch</code> 系列事件时，实时将计算的滑动距离设置到 iframe 高度上，以触发 body 的滚动。
-但是实际操作时，会有明显的延迟卡顿。</p>
-
-<p>也有开发者提出新增 API <a href="https://github.com/bokand/root-scroller/blob/master/howto.md">root-scroller</a>，让任意滚动容器都可以成为类似 BODY 这样的根容器，以具有浏览器默认行为。</p>
-
-<p>所以权衡之下，通常还是会选择 iframe 绝对定位，在容器内滚动：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-html">&lt;html&gt;
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#CSS class=post-tag>CSS</a> <a href=https://xiaoiver.github.io/tags#javascript class=post-tag>javascript</a></div><h1>在 iOS 下使用 iframe 的种种问题</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-05-20><i class="iconfont icon-date"></i>20 May 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/iframe.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>fixed 元素，宽度被撑开...</h2><article class=markdown-body><p>最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。 查阅资料发现 AMP 提供了很多针对这类问题的 Hack 方法，可能是因为 AMP 需要考虑站长站点嵌入在 iframe 的场景吧。<h2 id=iframe-内滚动>iframe 内滚动</h2><p>我们都知道在 body 上滚动时会触发一些浏览器的默认特性，比如隐藏顶部地址栏和底部导航栏。 而换成容器内滚动会丢失这部分特性，iframe 也是一种容器，一样面临这样的问题。<p>那么有没有办法在 body 上滚动呢？<p>有一种尝试是在 iframe 内触发 <code class=highlighter-rouge>touch</code> 系列事件时，实时将计算的滑动距离设置到 iframe 高度上，以触发 body 的滚动。 但是实际操作时，会有明显的延迟卡顿。<p>也有开发者提出新增 API <a href=https://github.com/bokand/root-scroller/blob/master/howto.md>root-scroller</a>，让任意滚动容器都可以成为类似 BODY 这样的根容器，以具有浏览器默认行为。<p>所以权衡之下，通常还是会选择 iframe 绝对定位，在容器内滚动：<div><pre class=line-numbers data-line=""><code class=language-html>&lt;html&gt;
 &lt;head&gt;
     &lt;title&gt;I’m a Web App and I show AMP documents&lt;/title&gt;
     &lt;style&gt;
@@ -158,18 +21,7 @@
         scrolling=&quot;yes&quot;
         src=&quot;https://cdn.ampproject.org/c/pub1.com/doc1&quot;&gt;&lt;/iframe&gt;
 &lt;/body&gt;
-&lt;/html&gt;</code></pre>
-</div>
-
-<p>注意我们没有应用 CSS <code class="highlighter-rouge">overflow</code> 属性，而是直接使用 iframe 的 <code class="highlighter-rouge">scrolling</code> 属性。这个属性已经被 HTML5 规范<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe">废弃</a>，但是由于历史原因，很多浏览器还是支持。</p>
-
-<p>但是 iOS 不支持这个属性，详见 <a href="https://bugs.webkit.org/show_bug.cgi?id=149264">Bug Report</a> 以及 <a href="http://output.jsbin.com/dedega">Online Demo</a>。</p>
-
-<h3 id="原始方案">原始方案</h3>
-
-<p>AMP 最初使用了这么一种解决方法：虽然 iframe 不能滚动，但是可以把 HTML 和 BODY 作为滚动容器，让其中的内容滚动。<a href="http://output.jsbin.com/deyibinehu">Online Demo</a></p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-html">&lt;html style=&quot;overflow-y: auto; -webkit-overflow-scrolling: touch;&quot;&gt;
+&lt;/html&gt;</code></pre></div><p>注意我们没有应用 CSS <code class=highlighter-rouge>overflow</code> 属性，而是直接使用 iframe 的 <code class=highlighter-rouge>scrolling</code> 属性。这个属性已经被 HTML5 规范<a href=https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe>废弃</a>，但是由于历史原因，很多浏览器还是支持。<p>但是 iOS 不支持这个属性，详见 <a href="https://bugs.webkit.org/show_bug.cgi?id=149264">Bug Report</a> 以及 <a href=http://output.jsbin.com/dedega>Online Demo</a>。<h3 id=原始方案>原始方案</h3><p>AMP 最初使用了这么一种解决方法：虽然 iframe 不能滚动，但是可以把 HTML 和 BODY 作为滚动容器，让其中的内容滚动。<a href=http://output.jsbin.com/deyibinehu>Online Demo</a><div><pre class=line-numbers data-line=""><code class=language-html>&lt;html style=&quot;overflow-y: auto; -webkit-overflow-scrolling: touch;&quot;&gt;
 &lt;head&gt;&lt;/head&gt;
 &lt;body
     style=&quot;
@@ -182,32 +34,7 @@
         bottom: 0;
     &quot;&gt;
 &lt;/body&gt;
-&lt;/html&gt;</code></pre>
-</div>
-
-<p>虽然 iframe 可以滚动了，但是这种方法存在以下问题：</p>
-<ol>
-  <li>在 AMP 中，用户定义在 body 上的部分 CSS 规则会失效，例如 <code class="highlighter-rouge">margin</code></li>
-  <li>由于在容器内滚动，<code class="highlighter-rouge">body.scrollTop</code> 会始终为 0，<code class="highlighter-rouge">body.scrollHeight</code> 也等于视口高度而非实际全部内容高度</li>
-</ol>
-
-<p>第二个问题影响很大，例如要实现“回到顶部”这样的组件，就无法通过 <code class="highlighter-rouge">window.scrollTo()</code> 完成了。
-针对这个问题，AMP 给出了这样的 HACK 方案：</p>
-<ul>
-  <li>向 <code class="highlighter-rouge">&lt;body&gt;</code> 中插入一个不可见的定位元素 <code class="highlighter-rouge">&lt;div&gt;</code>，使用绝对定位 <code class="highlighter-rouge">position:absolute;top:0;left:0;width:0;height:0;visibility:hidden;</code></li>
-  <li>这样在滚动时，通过 <code class="highlighter-rouge">-topElement.getBoundingClientRect().top</code> 得到顶部的滚动距离</li>
-  <li>类似的，插入另一个底部定位元素，通过 <code class="highlighter-rouge">endElement.offsetTop</code> 获取滚动高度</li>
-  <li>创建一个新的顶部定位元素，在执行滚动到某个位置时，改变其 <code class="highlighter-rouge">top</code>，然后调用 <code class="highlighter-rouge">scrollIntoView()</code></li>
-</ul>
-
-<p>很麻烦是不是，需要创建三个定位元素。于是 AMP 很快提出了一种<strong>改进方案</strong>。</p>
-
-<h3 id="改进方案">改进方案</h3>
-
-<p>既然直接在 body 上滚动会有损失，在 body 外再套一个 wrapper。
-之所以选择 <code class="highlighter-rouge"><span class="nt">&lt;html&gt;</span></code> 是为了保证 <code class="highlighter-rouge">html &gt; body</code> 这样的规则能继续生效。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-html">&lt;html AMP
+&lt;/html&gt;</code></pre></div><p>虽然 iframe 可以滚动了，但是这种方法存在以下问题：<ol><li>在 AMP 中，用户定义在 body 上的部分 CSS 规则会失效，例如 <code class=highlighter-rouge>margin</code><li>由于在容器内滚动，<code class=highlighter-rouge>body.scrollTop</code> 会始终为 0，<code class=highlighter-rouge>body.scrollHeight</code> 也等于视口高度而非实际全部内容高度</ol><p>第二个问题影响很大，例如要实现“回到顶部”这样的组件，就无法通过 <code class=highlighter-rouge>window.scrollTo()</code> 完成了。 针对这个问题，AMP 给出了这样的 HACK 方案：<ul><li>向 <code class=highlighter-rouge>&lt;body&gt;</code> 中插入一个不可见的定位元素 <code class=highlighter-rouge>&lt;div&gt;</code>，使用绝对定位 <code class=highlighter-rouge>position:absolute;top:0;left:0;width:0;height:0;visibility:hidden;</code><li>这样在滚动时，通过 <code class=highlighter-rouge>-topElement.getBoundingClientRect().top</code> 得到顶部的滚动距离<li>类似的，插入另一个底部定位元素，通过 <code class=highlighter-rouge>endElement.offsetTop</code> 获取滚动高度<li>创建一个新的顶部定位元素，在执行滚动到某个位置时，改变其 <code class=highlighter-rouge>top</code>，然后调用 <code class=highlighter-rouge>scrollIntoView()</code></ul><p>很麻烦是不是，需要创建三个定位元素。于是 AMP 很快提出了一种<strong>改进方案</strong>。<h3 id=改进方案>改进方案</h3><p>既然直接在 body 上滚动会有损失，在 body 外再套一个 wrapper。 之所以选择 <code class=highlighter-rouge><span class=nt>&lt;html&gt;</span></code> 是为了保证 <code class=highlighter-rouge>html &gt; body</code> 这样的规则能继续生效。<div><pre class=line-numbers data-line=""><code class=language-html>&lt;html AMP
     style=&quot;overflow-y: auto; -webkit-overflow-scrolling: touch;&quot;&gt;
     &lt;head&gt;&lt;/head&gt;
     &lt;html id=&quot;i-amp-html-wrapper&quot;
@@ -224,13 +51,7 @@
         &lt;body style=&quot;position: relative;&quot;&gt;
         &lt;/body&gt;
     &lt;/html&gt;
-&lt;/html&gt;</code></pre>
-</div>
-
-<p>为了生成上述结构，AMP 中使用 JS 对于原站点 HTML 进行改造。
-值得注意的是，由于 body 不再是根元素的子节点，需要通过 <code class="highlighter-rouge">defineProperty</code> 保证 <code class="highlighter-rouge">document.body</code> 依然可访问。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">// Create wrapper.
+&lt;/html&gt;</code></pre></div><p>为了生成上述结构，AMP 中使用 JS 对于原站点 HTML 进行改造。 值得注意的是，由于 body 不再是根元素的子节点，需要通过 <code class=highlighter-rouge>defineProperty</code> 保证 <code class=highlighter-rouge>document.body</code> 依然可访问。<div><pre class=line-numbers data-line=""><code class=language-javascript>// Create wrapper.
 const wrapper = document.createElement(&#39;html&#39;);
 wrapper.id = &#39;i-amp-html-wrapper&#39;;
 
@@ -249,26 +70,7 @@ wrapper.appendChild(body);
 
 Object.defineProperty(document, &#39;body&#39;, {
     get: () =&gt; body,
-});</code></pre>
-</div>
-
-<p>AMP 目前使用的就是这种方案，但是我在 iOS 7 的测试中，会报出错误。
-原因是不支持在例如 <code class="highlighter-rouge">document</code> 这样的对象上调用 <code class="highlighter-rouge">defineProperty</code>。</p>
-
-<p>在我们的开发场景下，为了兼容 iOS 7，最终采用的其实是第一种原始方案。
-当然如果不考虑 iOS 7 的覆盖情况，可以大胆采用这个改进方案。</p>
-
-<p>如果说不支持非标准的 <code class="highlighter-rouge">scrolling</code> 属性还可以理解，下面这个问题就很莫名了。</p>
-
-<h2 id="fixed-元素滚动问题">fixed 元素滚动问题</h2>
-
-<p>iframe 中的 fixed 元素在 iframe 滚动时会上下跳动，似乎一直无法确定自己的位置。<a href="https://drive.google.com/file/d/0B_v8thsbiGyDMXZMZkRFZGFRbjA/view">Video</a> <a href="http://output.jsbin.com/fusijum/quiet">Online Demo</a></p>
-
-<p>这也是一个 iOS 的 Bug，可以看到 2016 年就已经存在 <a href="https://bugs.webkit.org/show_bug.cgi?id=154399">Bug Report</a>了。</p>
-
-<p>AMP 使用了这样一个 Hack 方法：创建一个 <code class="highlighter-rouge">body</code> 的兄弟节点，将原有页面中所有的 fixed 元素移动到这个节点中，要注意设置正确的 <code class="highlighter-rouge">z-index</code>。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-html">&lt;html&gt;
+});</code></pre></div><p>AMP 目前使用的就是这种方案，但是我在 iOS 7 的测试中，会报出错误。 原因是不支持在例如 <code class=highlighter-rouge>document</code> 这样的对象上调用 <code class=highlighter-rouge>defineProperty</code>。<p>在我们的开发场景下，为了兼容 iOS 7，最终采用的其实是第一种原始方案。 当然如果不考虑 iOS 7 的覆盖情况，可以大胆采用这个改进方案。<p>如果说不支持非标准的 <code class=highlighter-rouge>scrolling</code> 属性还可以理解，下面这个问题就很莫名了。<h2 id=fixed-元素滚动问题>fixed 元素滚动问题</h2><p>iframe 中的 fixed 元素在 iframe 滚动时会上下跳动，似乎一直无法确定自己的位置。<a href=https://drive.google.com/file/d/0B_v8thsbiGyDMXZMZkRFZGFRbjA/view>Video</a> <a href=http://output.jsbin.com/fusijum/quiet>Online Demo</a><p>这也是一个 iOS 的 Bug，可以看到 2016 年就已经存在 <a href="https://bugs.webkit.org/show_bug.cgi?id=154399">Bug Report</a>了。<p>AMP 使用了这样一个 Hack 方法：创建一个 <code class=highlighter-rouge>body</code> 的兄弟节点，将原有页面中所有的 fixed 元素移动到这个节点中，要注意设置正确的 <code class=highlighter-rouge>z-index</code>。<div><pre class=line-numbers data-line=""><code class=language-html>&lt;html&gt;
 &lt;body&gt;...&lt;/body&gt;
 &lt;div id=&quot;fixed-layer&quot;
     style=&quot;
@@ -283,55 +85,12 @@ Object.defineProperty(document, &#39;body&#39;, {
         style=&quot;pointer-events: initial; z-index: 11;&quot;&gt;
     &lt;/div&gt;
 &lt;/div&gt;
-&lt;/html&gt;</code></pre>
-</div>
-
-<p>这种方法的缺点很明显，改变了原有页面结构，会导致部分 CSS 规则匹配不上。不过对于 AMP 这样可以限制开发者使用组件的场景，倒是可以接受。</p>
-
-<h2 id="宽度被撑开">宽度被撑开</h2>
-
-<p>当我们给 iframe 设置宽度 <code class="highlighter-rouge">100%</code> 时，例如 <code class="highlighter-rouge">&lt;iframe width="100%"&gt;&lt;/iframe&gt;</code> 或者通过 CSS，我们希望其中的内容是响应式的，不应该出现滚动条。</p>
-
-<p>但是 iOS 下存在<a href="https://stackoverflow.com/questions/23083462/how-to-get-an-iframe-to-be-responsive-in-ios-safari">问题</a>，<code class="highlighter-rouge">width: 100%</code> 似乎被浏览器的默认设置覆盖了，无法得到应用。</p>
-
-<p>有一种 HACK 方式如下，在 <a href="https://github.com/ampproject/amphtml/issues/11133">AMP ISSUE</a> 中也采用了类似思路，使用 <code class="highlighter-rouge">min-width</code> 覆盖掉 iOS Safari 对于 <code class="highlighter-rouge">width</code> 的默认设置：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-css">iframe {
+&lt;/html&gt;</code></pre></div><p>这种方法的缺点很明显，改变了原有页面结构，会导致部分 CSS 规则匹配不上。不过对于 AMP 这样可以限制开发者使用组件的场景，倒是可以接受。<h2 id=宽度被撑开>宽度被撑开</h2><p>当我们给 iframe 设置宽度 <code class=highlighter-rouge>100%</code> 时，例如 <code class=highlighter-rouge>&lt;iframe width="100%"&gt;&lt;/iframe&gt;</code> 或者通过 CSS，我们希望其中的内容是响应式的，不应该出现滚动条。<p>但是 iOS 下存在<a href=https://stackoverflow.com/questions/23083462/how-to-get-an-iframe-to-be-responsive-in-ios-safari>问题</a>，<code class=highlighter-rouge>width: 100%</code> 似乎被浏览器的默认设置覆盖了，无法得到应用。<p>有一种 HACK 方式如下，在 <a href=https://github.com/ampproject/amphtml/issues/11133>AMP ISSUE</a> 中也采用了类似思路，使用 <code class=highlighter-rouge>min-width</code> 覆盖掉 iOS Safari 对于 <code class=highlighter-rouge>width</code> 的默认设置：<div><pre class=line-numbers data-line=""><code class=language-css>iframe {
     width: 1px;
     min-width: 100%;
-}</code></pre>
-</div>
-
-<h2 id="滚动穿透">滚动穿透</h2>
-
-<p>这个问题倒不是 iframe 独有，而是 iOS 下普遍存在的问题。</p>
-
-<p>在常见的对话框浮层场景下，在 <code class="highlighter-rouge">fixed</code> 定位的浮层上滚动时，很容易滚动到下层的 <code class="highlighter-rouge">body</code> 上，造成穿透现象。</p>
-
-<p><img src="/assets/img/1_default_bottom_overscroll.gif" alt="" /></p>
-
-<p>首先想到的方案是在下层容器上禁用滚动：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-css">html, body {
+}</code></pre></div><h2 id=滚动穿透>滚动穿透</h2><p>这个问题倒不是 iframe 独有，而是 iOS 下普遍存在的问题。<p>在常见的对话框浮层场景下，在 <code class=highlighter-rouge>fixed</code> 定位的浮层上滚动时，很容易滚动到下层的 <code class=highlighter-rouge>body</code> 上，造成穿透现象。<p><img src=/assets/img/1_default_bottom_overscroll.gif alt=""><p>首先想到的方案是在下层容器上禁用滚动：<div><pre class=line-numbers data-line=""><code class=language-css>html, body {
     overflow: hidden;
-}</code></pre>
-</div>
-
-<p>但存在两个问题：</p>
-<ol>
-  <li>在安卓上可行，iOS 下无效</li>
-  <li>关闭浮层时需要恢复 <code class="highlighter-rouge">body</code> 上的滚动距离，因为禁用滚动的瞬间会丢失当前的滚动距离</li>
-</ol>
-
-<p>为了解决这两个问题，开发者总结出了以下方案。</p>
-
-<h3 id="body-scroll-lock">body-scroll-lock</h3>
-
-<p><img src="/assets/img/body-scroll-lock.png" alt="" /></p>
-
-<p>大致思路是安卓上沿用 <code class="highlighter-rouge">overflow: hidden</code> 方案。iOS 上监听 <code class="highlighter-rouge">touch</code> 系列事件，在滚动到顶部和底部时禁用掉浏览器默认行为：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">const clientY = event.targetTouches[0].clientY - initialClientY;
+}</code></pre></div><p>但存在两个问题：<ol><li>在安卓上可行，iOS 下无效<li>关闭浮层时需要恢复 <code class=highlighter-rouge>body</code> 上的滚动距离，因为禁用滚动的瞬间会丢失当前的滚动距离</ol><p>为了解决这两个问题，开发者总结出了以下方案。<h3 id=body-scroll-lock>body-scroll-lock</h3><p><img src=/assets/img/body-scroll-lock.png alt=""><p>大致思路是安卓上沿用 <code class=highlighter-rouge>overflow: hidden</code> 方案。iOS 上监听 <code class=highlighter-rouge>touch</code> 系列事件，在滚动到顶部和底部时禁用掉浏览器默认行为：<div><pre class=line-numbers data-line=""><code class=language-javascript>const clientY = event.targetTouches[0].clientY - initialClientY;
 // 滚动到顶
 if (targetElement &amp;&amp; targetElement.scrollTop === 0 &amp;&amp; clientY &gt; 0) {
     return preventDefault(event);
@@ -339,22 +98,7 @@ if (targetElement &amp;&amp; targetElement.scrollTop === 0 &amp;&amp; clientY &g
 // 滚动到底
 if (isTargetElementTotallyScrolled(targetElement) &amp;&amp; clientY &lt; 0) {
     return preventDefault(event);
-}</code></pre>
-</div>
-
-<p>虽然不会存在滚动穿透问题了，但是这个方案依然存在两个问题：</p>
-<ol>
-  <li>安卓上恢复滚动距离的问题依然存在</li>
-  <li>iOS 上由于禁用掉了浏览器默认行为，弹性滚动也不存在了</li>
-</ol>
-
-<p>那么有没有完美的解决方案呢？</p>
-
-<h3 id="1px-滚动">1px 滚动</h3>
-
-<p>通过观察我们发现，只有滚动超过顶部或者底部触发 iOS 的默认行为才会带来问题，那么如果我们能在滚动到边缘时保留 1px 的距离，这个问题也就不存在了。参考<a href="https://github.com/luster-io/prevent-overscroll/blob/master/index.js">这个 gist</a>的做法：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-javascript">el.addEventListener(&#39;touchstart&#39;, function() {
+}</code></pre></div><p>虽然不会存在滚动穿透问题了，但是这个方案依然存在两个问题：<ol><li>安卓上恢复滚动距离的问题依然存在<li>iOS 上由于禁用掉了浏览器默认行为，弹性滚动也不存在了</ol><p>那么有没有完美的解决方案呢？<h3 id=1px-滚动>1px 滚动</h3><p>通过观察我们发现，只有滚动超过顶部或者底部触发 iOS 的默认行为才会带来问题，那么如果我们能在滚动到边缘时保留 1px 的距离，这个问题也就不存在了。参考<a href=https://github.com/luster-io/prevent-overscroll/blob/master/index.js>这个 gist</a>的做法：<div><pre class=line-numbers data-line=""><code class=language-javascript>el.addEventListener(&#39;touchstart&#39;, function() {
     let top = el.scrollTop;
     let totalScroll = el.scrollHeight;
     let currentScroll = top + el.offsetHeight;
@@ -364,146 +108,9 @@ if (isTargetElementTotallyScrolled(targetElement) &amp;&amp; clientY &lt; 0) {
     } else if (currentScroll === totalScroll) {
         el.scrollTop = top - 1;
     }
-});</code></pre>
-</div>
-
-<p>其实 Google AMP 也是这么做的，在 iOS 上打开 AMP 页面，滚动到顶触发 iOS 的弹性滚动，仔细观察页面会有一个轻微的不易察觉的滚动。</p>
-
-<p>但是有两点需要注意：</p>
-<ul>
-  <li>最好不要监听 <code class="highlighter-rouge">touchstart</code> 事件，否则在一些第三方浏览器（UC）中，会出现点击输入框弹起软键盘时出现不必要的滚动。应该监听 <code class="highlighter-rouge">scroll</code> 事件。</li>
-  <li>如果监听的是 <code class="highlighter-rouge">scroll</code> 事件，页面在初始状态就应该触发一次，或者直接调用滚动 1px。<code class="highlighter-rouge">touchstart</code> 则不需要。</li>
-</ul>
-
-<h2 id="uc手百-隐藏-iframe-造成页面未响应">UC/手百 隐藏 iframe 造成页面未响应</h2>
-
-<p>这个问题一般的场景不会遇到，包括 AMP，是关于隐藏掉已有的 iframe 造成的。</p>
-
-<p>在 MIP 的多页面切换方案中，进行页面切换时，会把当前的 <code class="highlighter-rouge">&lt;iframe&gt;</code> 进行隐藏/展现，使用 <code class="highlighter-rouge">display: none</code>。
-但是在 iOS 的 <strong>UC/手百</strong> 下，切换时会出现页面不响应，假死的现象，十分奇怪。</p>
-
-<p>打开这个简单的 <strong><em>测试页面 /mip/examples/page/iframe/uc.html</em></strong> ，就可以复现，步骤如下：</p>
-<ol>
-  <li>原始页面使用 <code class="highlighter-rouge">&lt;iframe&gt;</code> 嵌入一个测试页面 <code class="highlighter-rouge">scroll.html</code></li>
-  <li>点击隐藏按钮隐藏掉整个 iframe</li>
-  <li>原始页面不响应，表现为无法滚动，按钮无法点击等等</li>
-</ol>
-
-<p>测试页面 <code class="highlighter-rouge">scroll.html</code> 包含一个菜单，使用了 iOS 弹性滚动。另外还包含以下测试：</p>
-<ol>
-  <li>嵌入 <code class="highlighter-rouge">m.baidu</code>，<code class="highlighter-rouge">AMP 页面</code> 都会出现这种情况。而 PC 百度，eleme H5 则不会出现。</li>
-  <li>使用以下方法隐藏 <code class="highlighter-rouge">&lt;iframe&gt;</code> 同样会出问题：
-    <ul>
-      <li><code class="highlighter-rouge">visibility: hidden</code></li>
-      <li><code class="highlighter-rouge">opacity: 0</code> + <code class="highlighter-rouge">height: 0</code> + <code class="highlighter-rouge">width: 0</code></li>
-    </ul>
-  </li>
-</ol>
-
-<p>经过一番探索，发现 iOS 下 UC/手百 使用的是 UIWebView，而使用了较新的 WKWebview 的例如微信就不存在这个问题。
-UIWebView 除了这个奇怪的问题，还有诸如 <strong>scroll 事件延迟</strong> 等其他滚动相关的问题，<a href="https://harttle.land/2018/06/23/uiwebview-bugs.html">详见</a>。</p>
-
-<p>总之，有问题的页面使用了弹性滚动 <code class="highlighter-rouge">-webkit-overflow-scrolling: touch;</code>。
-而一旦不使用这个属性，或者在隐藏 iframe 的同时由被嵌入的页面去掉这个属性，就不会出现问题。</p>
-<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 需要在隐藏的同时去掉 -webkit-overflow-scrolling: touch;</span>
-<span class="nx">iframe</span><span class="p">.</span><span class="nx">contentDocument</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">'.menu'</span><span class="p">).</span><span class="nx">classList</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="s1">'touch-scrolling'</span><span class="p">)</span>
-</code></pre></div></div>
-
-<p>最终，我们使用了这种方法覆盖掉弹性滚动特性，在页面 <code class="highlighter-rouge">&lt;iframe&gt;</code> 隐藏时插入一段固定的
-<code class="highlighter-rouge">&lt;style&gt;* {-webkit-overflow-scrolling: auto!important;}&lt;/style&gt;</code>
-<a href="https://github.com/mipengine/mip2/issues/19">ISSUE</a></p>
-
-<h2 id="总结">总结</h2>
-
-<p>iOS + iframe，简直就是无尽的麻烦。</p>
-
-<h2 id="参考资料">参考资料</h2>
-
-<ul>
-  <li><a href="https://medium.com/@dvoytenko/amp-ios-scrolling-and-position-fixed-b854a5a0d451">AMP, iOS, Scrolling and Position Fixed</a></li>
-  <li><a href="https://hackernoon.com/amp-ios-scrolling-and-position-fixed-redo-the-wrapper-approach-8874f0ee7876">AMP, iOS, Scrolling and Position Fixed Redo — the wrapper approach</a></li>
-  <li><a href="http://frederic-wang.fr/amp-and-igalia-working-together-to-improve-the-web-platform.html">The AMP Project and Igalia working together to improve WebKit and the Web Platform</a></li>
-  <li><a href="https://medium.com/jsdownunder/locking-body-scroll-for-all-devices-22def9615177">Body scroll lock — making it work with everything</a></li>
-  <li><a href="http://blog.christoffer.online/2015-06-10-six-things-i-learnt-about-ios-rubberband-overflow-scrolling/">Six things I learnt about iOS Safari’s rubber band scrolling</a></li>
-  <li><a href="https://github.com/mipengine/mip2/issues/19">MIP ISSUE - iOS 下 UC/手百 切换页面造成未响应</a></li>
-</ul>
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/05/25/%E5%85%89%E7%85%A7%E5%9F%BA%E7%A1%80.html" class="read-next-link"></a>
-            <section>
-                <span>光照基础</span>
-                <p>之前我们已经了解了：  Shader 基础知识  WebGL 3D 基础知识，包括基本的矩阵变换和观察视角</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/webgl/logo.png" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html" class="read-next-link"></a>
-            <section>
-                <span>编译 Node.js 可执行文件</span>
-                <p>最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/nexe.jpeg" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-<hr>
-<!-- 来必力City版安装代码 -->
-<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
-    <script type="text/javascript">
-   (function(d, s) {
+});</code></pre></div><p>其实 Google AMP 也是这么做的，在 iOS 上打开 AMP 页面，滚动到顶触发 iOS 的弹性滚动，仔细观察页面会有一个轻微的不易察觉的滚动。<p>但是有两点需要注意：<ul><li>最好不要监听 <code class=highlighter-rouge>touchstart</code> 事件，否则在一些第三方浏览器（UC）中，会出现点击输入框弹起软键盘时出现不必要的滚动。应该监听 <code class=highlighter-rouge>scroll</code> 事件。<li>如果监听的是 <code class=highlighter-rouge>scroll</code> 事件，页面在初始状态就应该触发一次，或者直接调用滚动 1px。<code class=highlighter-rouge>touchstart</code> 则不需要。</ul><h2 id=uc手百-隐藏-iframe-造成页面未响应>UC/手百 隐藏 iframe 造成页面未响应</h2><p>这个问题一般的场景不会遇到，包括 AMP，是关于隐藏掉已有的 iframe 造成的。<p>在 MIP 的多页面切换方案中，进行页面切换时，会把当前的 <code class=highlighter-rouge>&lt;iframe&gt;</code> 进行隐藏/展现，使用 <code class=highlighter-rouge>display: none</code>。 但是在 iOS 的 <strong>UC/手百</strong> 下，切换时会出现页面不响应，假死的现象，十分奇怪。<p>打开这个简单的 <strong><em>测试页面 /mip/examples/page/iframe/uc.html</em></strong> ，就可以复现，步骤如下：<ol><li>原始页面使用 <code class=highlighter-rouge>&lt;iframe&gt;</code> 嵌入一个测试页面 <code class=highlighter-rouge>scroll.html</code><li>点击隐藏按钮隐藏掉整个 iframe<li>原始页面不响应，表现为无法滚动，按钮无法点击等等</ol><p>测试页面 <code class=highlighter-rouge>scroll.html</code> 包含一个菜单，使用了 iOS 弹性滚动。另外还包含以下测试：<ol><li>嵌入 <code class=highlighter-rouge>m.baidu</code>，<code class=highlighter-rouge>AMP 页面</code> 都会出现这种情况。而 PC 百度，eleme H5 则不会出现。<li>使用以下方法隐藏 <code class=highlighter-rouge>&lt;iframe&gt;</code> 同样会出问题：<ul><li><code class=highlighter-rouge>visibility: hidden</code><li><code class=highlighter-rouge>opacity: 0</code> + <code class=highlighter-rouge>height: 0</code> + <code class=highlighter-rouge>width: 0</code></ul></ol><p>经过一番探索，发现 iOS 下 UC/手百 使用的是 UIWebView，而使用了较新的 WKWebview 的例如微信就不存在这个问题。 UIWebView 除了这个奇怪的问题，还有诸如 <strong>scroll 事件延迟</strong> 等其他滚动相关的问题，<a href=https://harttle.land/2018/06/23/uiwebview-bugs.html>详见</a>。<p>总之，有问题的页面使用了弹性滚动 <code class=highlighter-rouge>-webkit-overflow-scrolling: touch;</code>。 而一旦不使用这个属性，或者在隐藏 iframe 的同时由被嵌入的页面去掉这个属性，就不会出现问题。<div class="language-javascript highlighter-rouge"><div class=highlight><pre class=highlight><code><span class=c1>// 需要在隐藏的同时去掉 -webkit-overflow-scrolling: touch;</span>
+<span class=nx>iframe</span><span class=p>.</span><span class=nx>contentDocument</span><span class=p>.</span><span class=nx>querySelector</span><span class=p>(</span><span class=s1>'.menu'</span><span class=p>).</span><span class=nx>classList</span><span class=p>.</span><span class=nx>remove</span><span class=p>(</span><span class=s1>'touch-scrolling'</span><span class=p>)</span>
+</code></pre></div></div><p>最终，我们使用了这种方法覆盖掉弹性滚动特性，在页面 <code class=highlighter-rouge>&lt;iframe&gt;</code> 隐藏时插入一段固定的 <code class=highlighter-rouge>&lt;style&gt;* {-webkit-overflow-scrolling: auto!important;}&lt;/style&gt;</code> <a href=https://github.com/mipengine/mip2/issues/19>ISSUE</a><h2 id=总结>总结</h2><p>iOS + iframe，简直就是无尽的麻烦。<h2 id=参考资料>参考资料</h2><ul><li><a href=https://medium.com/@dvoytenko/amp-ios-scrolling-and-position-fixed-b854a5a0d451>AMP, iOS, Scrolling and Position Fixed</a><li><a href=https://hackernoon.com/amp-ios-scrolling-and-position-fixed-redo-the-wrapper-approach-8874f0ee7876>AMP, iOS, Scrolling and Position Fixed Redo — the wrapper approach</a><li><a href=http://frederic-wang.fr/amp-and-igalia-working-together-to-improve-the-web-platform.html>The AMP Project and Igalia working together to improve WebKit and the Web Platform</a><li><a href=https://medium.com/jsdownunder/locking-body-scroll-for-all-devices-22def9615177>Body scroll lock — making it work with everything</a><li><a href=http://blog.christoffer.online/2015-06-10-six-things-i-learnt-about-ios-rubberband-overflow-scrolling/ >Six things I learnt about iOS Safari’s rubber band scrolling</a><li><a href=https://github.com/mipengine/mip2/issues/19>MIP ISSUE - iOS 下 UC/手百 切换页面造成未响应</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/05/25/%E5%85%89%E7%85%A7%E5%9F%BA%E7%A1%80.html class=read-next-link></a><section><span>光照基础</span><p>之前我们已经了解了： Shader 基础知识 WebGL 3D 基础知识，包括基本的矩阵变换和观察视角</section><div class=filter></div><img src=/assets/img/webgl/logo.png alt=""></div><div class=read-next-item><a href=/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html class=read-next-link></a><section><span>编译 Node.js 可执行文件</span><p>最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，...</section><div class=filter></div><img src=/assets/img/nexe.jpeg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -513,41 +120,11 @@ UIWebView 除了这个奇怪的问题，还有诸如 <strong>scroll 事件延迟
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-    </script>
-<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
-</div>
-<!-- City版安装代码已完成 -->
-
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2019</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-<script src="/assets/js/jquery.nav.js"></script>
-<script>
-    function generateCatalog (selector) {
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -591,7 +168,11 @@ UIWebView 除了这个奇怪的问题，还有诸如 <strong>scroll 事件延迟
         end: null,
         scrollChange: null,
         padding: 80
-    });
-</script>
-</body>
-</html>
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

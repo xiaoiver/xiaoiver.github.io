@@ -1,68 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>噪声的艺术（二） - xiaOp的博客</title>
-    <meta name="author"  content="潘宇琪">
-    <meta name="description" content="噪声的艺术（二）">
-    <meta name="keywords"  content="WebGL">
-
-    <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>噪声的艺术（二） | xiaOp的博客</title>
-<meta name="generator" content="Jekyll v3.6.2" />
-<meta property="og:title" content="噪声的艺术（二）" />
-<meta name="author" content="xiaOp" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="在上一篇「噪声的艺术」中我们学习了 Value Noise, Gradient Noise 以及 Simplex Noise 这三种创建噪声的方法。" />
-<meta property="og:description" content="在上一篇「噪声的艺术」中我们学习了 Value Noise, Gradient Noise 以及 Simplex Noise 这三种创建噪声的方法。" />
-<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/08/03/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%BA%8C.html" />
-<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/08/03/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%BA%8C.html" />
-<meta property="og:site_name" content="xiaOp的博客" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2018-08-03T00:00:00+08:00" />
-<script type="application/ld+json">
-{"description":"在上一篇「噪声的艺术」中我们学习了 Value Noise, Gradient Noise 以及 Simplex Noise 这三种创建噪声的方法。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/08/03/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%BA%8C.html","headline":"噪声的艺术（二）","dateModified":"2018-08-03T00:00:00+08:00","datePublished":"2018-08-03T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/08/03/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%BA%8C.html"},"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-
-
-    <meta name="theme-color" content="#4acaa8">
-    <meta name="msapplication-TileColor" content="#4acaa8">
-    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
-
-    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/08/03/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%BA%8C.html">
-    <link rel="manifest" href="/manifest.json">
-
-    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
-    <link rel="stylesheet" href="/assets/css/github-markdown.css">
-    <link rel="stylesheet" href="/assets/css/prism.css">
-    <link rel="stylesheet" href="/assets/css/share.min.css">
-    <link rel="stylesheet" href="/assets/css/app.min.css">
-    <link rel="stylesheet" href="/assets/css/post.min.css">
-
-    
-
-    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/assets/js/Imager.min.js"></script>
-    
-    <script src="/assets/js/glsl-canvas.min.js"></script>
-    <script>
-        function initArrayBuffer(gl, program, attribute, data, type, num) {
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>噪声的艺术（二） - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=噪声的艺术（二）><meta name=keywords content=WebGL><title>噪声的艺术（二） | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=噪声的艺术（二）><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="在上一篇「噪声的艺术」中我们学习了 Value Noise, Gradient Noise 以及 Simplex Noise 这三种创建噪声的方法。"><meta property=og:description content="在上一篇「噪声的艺术」中我们学习了 Value Noise, Gradient Noise 以及 Simplex Noise 这三种创建噪声的方法。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/08/03/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%BA%8C.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/08/03/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%BA%8C.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-08-03T00:00:00+08:00><script type=application/ld+json>{"description":"在上一篇「噪声的艺术」中我们学习了 Value Noise, Gradient Noise 以及 Simplex Noise 这三种创建噪声的方法。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/08/03/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%BA%8C.html","headline":"噪声的艺术（二）","dateModified":"2018-08-03T00:00:00+08:00","datePublished":"2018-08-03T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/08/03/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%BA%8C.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/08/03/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%BA%8C.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
             // Create a buffer object
             var buffer = gl.createBuffer();
             if (!buffer) {
@@ -85,150 +24,25 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             return true;
-        }
-    </script>
-    
-</head>
-
-<body>
-    <!--[if lt IE 10]>
+        }</script><body><!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]-->
-<input id="nm-switch" type="hidden" value="false">
-
-<header class="g-header">
-    <div class="g-logo">
-      <a href="/"></a>
-    </div>
-    <i id="menu-toggle" class="iconfont icon-menu"></i>
-    <nav class="g-nav">
-        <ul>
-            
-            <li><a href="/">home</a></li>
-            
-            <li><a href="/tags.html">tags</a></li>
-            
-            <li><a href="/collectives.html">collectives</a></li>
-            
-        </ul>
-    </nav>
-</header>
-
-
-<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
-    <div class="post-wrapper">
-        <div class="post-tags">
-            
-            
-            <a href="https://xiaoiver.github.io/tags#WebGL" class="post-tag">WebGL</a>
-            
-            
-        </div>
-        <h1>噪声的艺术（二）</h1>
-        <div class="post-meta">
-            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
-            <time class="post-meta-item" datetime="18-08-03"><i class="iconfont icon-date"></i>03 Aug 2018</time>
-        </div>
-    </div>
-    
-    <div class="filter"></div>
-    <div class="post-cover" style="background: url('/assets/img/webgl/solas.png') center no-repeat; background-size: cover;">
-    
-</header>
-
-<div class="post-content">
-    <div class="catalog-container">
-        <div class="side-catalog">
-            <h3 class="catalog-title">
-                <a class="catalog-toggle" href="#">CATALOG</a>
-            </h3>
-            <ul class="catalog-body"></ul>
-        </div>
-    </div>
-    
-    <h2 class="post-subtitle">网格噪声</h2>
-    
-    <article class="markdown-body">
-        <p>在上一篇<a href="/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html">「噪声的艺术」</a>中我们学习了 Value Noise, Gradient Noise 以及 Simplex Noise 这三种创建噪声的方法。</p>
-
-<p>「the book of shaders」还介绍了另一类重要的基于网格的生成方法，能模拟自然界中细胞的纹理。
-在深入学习之前，让我们首先来介绍一个非常好用的工具库。</p>
-
-<h2 id="glsl-canvas">GLSL-Canvas</h2>
-
-<p>「the book of shaders」页面上包含了很多使用 Canvas 绘制的例子，相比在 ShaderToy 上写然后在博客中使用 iframe 嵌入引用，要简便许多，因此我也在博客中采用了这种做法。</p>
-
-<p>在 Jekyll 中使用十分简单，例如我想在所有包含了 WebGL tag 的博文中都引入 <a href="https://github.com/patriciogonzalezvivo/glslCanvas">GLSL-Canvas</a>：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-html">{% if page.tags contains &#39;WebGL&#39; %}
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>噪声的艺术（二）</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-08-03><i class="iconfont icon-date"></i>03 Aug 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/solas.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>网格噪声</h2><article class=markdown-body><p>在上一篇<a href=/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html>「噪声的艺术」</a>中我们学习了 Value Noise, Gradient Noise 以及 Simplex Noise 这三种创建噪声的方法。<p>「the book of shaders」还介绍了另一类重要的基于网格的生成方法，能模拟自然界中细胞的纹理。 在深入学习之前，让我们首先来介绍一个非常好用的工具库。<h2 id=glsl-canvas>GLSL-Canvas</h2><p>「the book of shaders」页面上包含了很多使用 Canvas 绘制的例子，相比在 ShaderToy 上写然后在博客中使用 iframe 嵌入引用，要简便许多，因此我也在博客中采用了这种做法。<p>在 Jekyll 中使用十分简单，例如我想在所有包含了 WebGL tag 的博文中都引入 <a href=https://github.com/patriciogonzalezvivo/glslCanvas>GLSL-Canvas</a>：<div><pre class=line-numbers data-line=""><code class=language-html>{% if page.tags contains &#39;WebGL&#39; %}
     &lt;script src=&quot;/assets/js/glsl-canvas.min.js&quot;&gt;&lt;/script&gt;
-{% endif %}</code></pre>
-</div>
-
-<p>使用方法十分简单，通过 <code class="highlighter-rouge">[data-]</code> 可以传递 vertex/fragment shader 源代码，并且可以传入其中用到的纹理。在运行时 GLSL-Canvas 会异步请求这些静态资源，初始化 WebGL 环境，传入预设的一些 uniform 变量例如 <code class="highlighter-rouge">u_time</code> <code class="highlighter-rouge">u_tex0</code>，随后开始绘制：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-html">&lt;canvas class=&quot;glslCanvas&quot; data-fragment-url=&quot;/assets/shaders/moon.frag&quot; width=&quot;300&quot; height=&quot;300&quot; data-textures=&quot;/assets/img/webgl/shaders/moon.jpg&quot;&gt;&lt;/canvas&gt;</code></pre>
-</div>
-
-<p>使用例子中的 <code class="highlighter-rouge">moon.frag</code> 后效果如下：</p>
-<div class="glsl-canvas-wrapper">
-    <canvas class="glslCanvas" data-fragment-url="/assets/shaders/moon.frag" width="300" height="300" data-textures="/assets/img/webgl/shaders/moon.jpg"></canvas>
-</div>
-
-<p>在介绍网格之前，先来复习一下距离场的概念。</p>
-
-<h2 id="距离场">距离场</h2>
-
-<p>计算四个象限中，每个象限中的每个 fragment 到某个特征点（例如第一象限的 0.3,0.3）的距离，并通过 <code class="highlighter-rouge">frag</code> 保留距离的小数部分形成周期变换效果。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">st = st *2.-1.;
+{% endif %}</code></pre></div><p>使用方法十分简单，通过 <code class=highlighter-rouge>[data-]</code> 可以传递 vertex/fragment shader 源代码，并且可以传入其中用到的纹理。在运行时 GLSL-Canvas 会异步请求这些静态资源，初始化 WebGL 环境，传入预设的一些 uniform 变量例如 <code class=highlighter-rouge>u_time</code> <code class=highlighter-rouge>u_tex0</code>，随后开始绘制：<div><pre class=line-numbers data-line=""><code class=language-html>&lt;canvas class=&quot;glslCanvas&quot; data-fragment-url=&quot;/assets/shaders/moon.frag&quot; width=&quot;300&quot; height=&quot;300&quot; data-textures=&quot;/assets/img/webgl/shaders/moon.jpg&quot;&gt;&lt;/canvas&gt;</code></pre></div><p>使用例子中的 <code class=highlighter-rouge>moon.frag</code> 后效果如下：<div class=glsl-canvas-wrapper><canvas class=glslCanvas data-fragment-url=/assets/shaders/moon.frag width=300 height=300 data-textures=/assets/img/webgl/shaders/moon.jpg></canvas></div><p>在介绍网格之前，先来复习一下距离场的概念。<h2 id=距离场>距离场</h2><p>计算四个象限中，每个象限中的每个 fragment 到某个特征点（例如第一象限的 0.3,0.3）的距离，并通过 <code class=highlighter-rouge>frag</code> 保留距离的小数部分形成周期变换效果。<div><pre class=line-numbers data-line=""><code class=language-glsl>st = st *2.-1.;
 d = length(abs(st)-.3);
-gl_FragColor = vec4(vec3(fract(d*11.008)),1.0);</code></pre>
-</div>
-
-<p>这种类似水波纹的“场”的效果如下：</p>
-<div class="glsl-canvas-wrapper">
-    <canvas class="glslCanvas" data-fragment-url="/assets/shaders/distance-field0.frag" width="300" height="300"></canvas>
-</div>
-
-<p>距离场中的“距离”不仅仅限于到某一个固定点的距离，也可以是到某一组特征点集的最小距离。
-例如我们定义一组特征点：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">vec2 point[5];
+gl_FragColor = vec4(vec3(fract(d*11.008)),1.0);</code></pre></div><p>这种类似水波纹的“场”的效果如下：<div class=glsl-canvas-wrapper><canvas class=glslCanvas data-fragment-url=/assets/shaders/distance-field0.frag width=300 height=300></canvas></div><p>距离场中的“距离”不仅仅限于到某一个固定点的距离，也可以是到某一组特征点集的最小距离。 例如我们定义一组特征点：<div><pre class=line-numbers data-line=""><code class=language-glsl>vec2 point[5];
 point[0] = vec2(0.580,0.660);
 point[1] = vec2(0.60,0.07);
 point[2] = vec2(0.790,0.640);
 point[3] =  vec2(0.31,0.26);
-point[4] = vec2(0.520,0.020);</code></pre>
-</div>
-
-<p>计算每个 fragment 到这一组特征点距离的最小值：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">float m_dist = 1.; // 保存最小距离
+point[4] = vec2(0.520,0.020);</code></pre></div><p>计算每个 fragment 到这一组特征点距离的最小值：<div><pre class=line-numbers data-line=""><code class=language-glsl>float m_dist = 1.; // 保存最小距离
 for (int i = 0; i &lt; 5; i++) {
     float dist = distance(st, point[i]);
     m_dist = min(m_dist, dist);
 }
 color += m_dist;
 // 使用 sin 制造波纹效果
-color += step(.7,abs(sin(50.0*m_dist)))*.3;</code></pre>
-</div>
-
-<p>效果如下：</p>
-<div class="glsl-canvas-wrapper">
-    <canvas class="glslCanvas" data-fragment-url="/assets/shaders/distance-field.frag" width="300" height="300"></canvas>
-</div>
-
-<p>上面的做法存在一个很明显的问题，当我们需要扩大这种随机效果，就需要增加特征点，也就增加了 for 循环的执行次数。
-当特征点集数量变得越来越大时，每个 fragment 计算量都很大，GPU 性能必然不高。有没有办法减少运算量呢？</p>
-
-<h2 id="网格">网格</h2>
-
-<p>之前我们在<a href="/coding/2018/07/20/%E7%BB%98%E5%88%B6-Pattern.html">「绘制 Pattern」</a>中已经学到了如何划分空间到一个个小的网格区域。我们可以为每个网格生成一个随机的特征点，对于某一个网格内的 fragment，只需要计算与他所在网格相邻的 8 个网格中特征点的最小距离，这就大大减少了运算量。这就是 Steven Worley 的论文中的主要思想。</p>
-
-<p>生成随机特征点使用了之前学过的 <code class="highlighter-rouge">random</code> 方法，由于是确定性随机，每个网格内的特征点是固定的。</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">// 划分网格
+color += step(.7,abs(sin(50.0*m_dist)))*.3;</code></pre></div><p>效果如下：<div class=glsl-canvas-wrapper><canvas class=glslCanvas data-fragment-url=/assets/shaders/distance-field.frag width=300 height=300></canvas></div><p>上面的做法存在一个很明显的问题，当我们需要扩大这种随机效果，就需要增加特征点，也就增加了 for 循环的执行次数。 当特征点集数量变得越来越大时，每个 fragment 计算量都很大，GPU 性能必然不高。有没有办法减少运算量呢？<h2 id=网格>网格</h2><p>之前我们在<a href=/coding/2018/07/20/%E7%BB%98%E5%88%B6-Pattern.html>「绘制 Pattern」</a>中已经学到了如何划分空间到一个个小的网格区域。我们可以为每个网格生成一个随机的特征点，对于某一个网格内的 fragment，只需要计算与他所在网格相邻的 8 个网格中特征点的最小距离，这就大大减少了运算量。这就是 Steven Worley 的论文中的主要思想。<p>生成随机特征点使用了之前学过的 <code class=highlighter-rouge>random</code> 方法，由于是确定性随机，每个网格内的特征点是固定的。<div><pre class=line-numbers data-line=""><code class=language-glsl>// 划分网格
 vec2 i_st = floor(st);
 vec2 f_st = fract(st);
 float m_dist = 1.;
@@ -246,173 +60,17 @@ for (int y= -1; y &lt;= 1; y++) {
         m_dist = min(m_dist, dist);
     }
 }
-color += m_dist;</code></pre>
-</div>
-
-<p>效果如下，注意我们标注出了每个网格的边界，内部的特征点，并结合了 <code class="highlighter-rouge">u_time</code> 实时变换特征点的位置：</p>
-<div class="glsl-canvas-wrapper">
-    <canvas class="glslCanvas" data-fragment-url="/assets/shaders/cellular-noise.frag" width="300" height="300"></canvas>
-</div>
-
-<p>顺便复习一下直线的画法：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">// 画出每个网格白色的特征点
+color += m_dist;</code></pre></div><p>效果如下，注意我们标注出了每个网格的边界，内部的特征点，并结合了 <code class=highlighter-rouge>u_time</code> 实时变换特征点的位置：<div class=glsl-canvas-wrapper><canvas class=glslCanvas data-fragment-url=/assets/shaders/cellular-noise.frag width=300 height=300></canvas></div><p>顺便复习一下直线的画法：<div><pre class=line-numbers data-line=""><code class=language-glsl>// 画出每个网格白色的特征点
 color += 1.-step(.02, m_dist);
 // 画出每个网格红色边框
-color.r += step(.98, f_st.x) + step(.98, f_st.y);</code></pre>
-</div>
-
-<h2 id="voronoi-算法">Voronoi 算法</h2>
-
-<blockquote>
-  <p>这个算法也可以从特征点而非像素点的角度理解。在那种情况下，算法可以表述为：每个特征点向外扩张生长，直到它碰到其它扩张的区域。这反映了自然界的生长规则。生命的形态是由内部扩张、生长的力量和限制性的外部力量共同决定的。模拟这种行为的算法以 Georgy Voronoi 命名。</p>
-</blockquote>
-
-<p>在使用这个算法绘制具体图案时，除了保存最小距离，还可以额外保存当前 fragment 到最近的特征点的向量。使用这个向量我们可以进行着色。在下面的例子中，我们使用这个向量表示 rg 分量：</p>
-<div>
-<pre class="line-numbers" data-line=""><code class="language-glsl">color.rg = m_point;
+color.r += step(.98, f_st.x) + step(.98, f_st.y);</code></pre></div><h2 id=voronoi-算法>Voronoi 算法</h2><blockquote><p>这个算法也可以从特征点而非像素点的角度理解。在那种情况下，算法可以表述为：每个特征点向外扩张生长，直到它碰到其它扩张的区域。这反映了自然界的生长规则。生命的形态是由内部扩张、生长的力量和限制性的外部力量共同决定的。模拟这种行为的算法以 Georgy Voronoi 命名。</blockquote><p>在使用这个算法绘制具体图案时，除了保存最小距离，还可以额外保存当前 fragment 到最近的特征点的向量。使用这个向量我们可以进行着色。在下面的例子中，我们使用这个向量表示 rg 分量：<div><pre class=line-numbers data-line=""><code class=language-glsl>color.rg = m_point;
 // 也可以得到一个灰度值
-color += dot(m_point,vec2(.3,.6));</code></pre>
-</div>
-
-<p>效果如下，当鼠标代表的特征点向一个已有特征点移动时，颜色也慢慢接近，正是“近朱者赤”。</p>
-<div class="glsl-canvas-wrapper">
-    <canvas class="glslCanvas" data-fragment-url="/assets/shaders/voronoi.frag" width="300" height="300"></canvas>
-</div>
-
-<blockquote>
-  <p>注意 Steven Worley 的原始方法中，每个网格的特征点数是可变的，对大多数网格来说不止一个。在他的 C 语言实现中，这是用来提早退出来加速循环。GLSL 循环不允许动态的迭代次数，所以你可能更希望一个网格对应一个特征点。</p>
-</blockquote>
-
-<h2 id="优化-voronoi">优化 Voronoi</h2>
-
-<p>Stefan Gustavson 优化了 Steven Worley 的<a href="http://webstaff.itn.liu.se/~stegu/GLSL-cellular/GLSL-cellular-notes.pdf">算法</a>，除了使用到特征点的最小距离，还使用了第二小距离。主要优化点来自相邻网格的选择，对一个 2x2 的矩阵作遍历（而不是 3x3 的矩阵）。这显著地减少了工作量，但是会在网格边缘制造人工痕迹。</p>
-
-<p>使用 2x2 网格 + 距离最小值效果如下：</p>
-<div class="glsl-canvas-wrapper">
-    <canvas class="glslCanvas" data-fragment-url="/assets/shaders/voronoi2.frag" width="300" height="300"></canvas>
-</div>
-
-<p>其他版本具体实现可以参考 <a href="https://github.com/ashima/webgl-noise/tree/master/src">webgl-noise</a>。包括使用 3x3 网格以及使用最小距离 F1 和第二小距离 F2。</p>
-
-<p>比如使用 2x2 网格 + 距离最小值 F1 + 第二小距离 F2 效果如下：</p>
-<div class="glsl-canvas-wrapper">
-    <canvas class="glslCanvas" data-fragment-url="/assets/shaders/2d-cnoise.frag" width="300" height="300"></canvas>
-</div>
-
-<p>顺便提一句，在 WebGL 中也可以使用 <a href="https://github.com/glslify/glslify">glslify</a> 进行类似 Node.js 的模块管理。</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#pragma glslify: noise = require('glsl-noise/simplex/3d')
-</code></pre></div></div>
-
-<h2 id="参考资料">参考资料</h2>
-
-<ul>
-  <li><a href="https://thebookofshaders.com/12/?lan=ch">the book of shaders - 网格噪声</a></li>
-  <li><a href="https://zhuanlan.zhihu.com/p/41076746">Pixel-Shader 之「噪声」</a></li>
-  <li><a href="http://www.iquilezles.org/www/articles/voronoilines/voronoilines.htm">IQ 大神的优化</a></li>
-</ul>
-
-    </article>
-    
-    <div class="social-share-wrapper">
-        <div class="social-share"></div>
-    </div>
-    
-</div>
-
-<section class="author-detail">
-    <section class="post-footer-item author-card">
-        <div class="avatar">
-            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
-        </div>
-        <div class="author-name" rel="author">潘宇琪</div>
-        <div class="bio">
-            <p>分享写代码，听音乐，看电影的心得</p>
-        </div>
-        
-        <ul class="sns-links">
-            
-            <li>
-                <a href="//github.com/xiaoiver" target="_blank">
-                    <i class="iconfont icon-github"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.douban.com/people/150275082/" target="_blank">
-                    <i class="iconfont icon-douban"></i>
-                </a>
-            </li>
-            
-            <li>
-                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
-                    <i class="iconfont icon-zhihu"></i>
-                </a>
-            </li>
-            
-        </ul>
-        
-    </section>
-    <section class="post-footer-item read-next">
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/08/10/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%B8%89.html" class="read-next-link"></a>
-            <section>
-                <span>噪声的艺术（三）</span>
-                <p>在「噪声的艺术（一）」中我们学习了 Value Noise, Gradient Noise 以及 Simplex ...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/webgl/quiles.jpg" alt="">
-            
-        </div>
-        
-        
-        <div class="read-next-item">
-            <a href="/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html" class="read-next-link"></a>
-            <section>
-                <span>噪声的艺术</span>
-                <p>最近学习「the book of shaders」，了解到这种完全依靠 fragment shader 绘制，而不...</p>
-            </section>
-            
-            <div class="filter"></div>
-            <img src="/assets/img/webgl/tbs-cover.jpg" alt="">
-            
-        </div>
-        
-    </section>
-    <section class="post-footer-item comment">
-        
-
-    </section>
-</section>
-
-<footer class="g-footer">
-    <section>xiaOp的博客 © 2019</section>
-    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
-</footer>
-
-<div class="update-toast">
-    <span class="update-toast-text">站点发生更新，请手动刷新</span>
-    <span class="update-toast-refresh-btn"></span>
-</div>
-
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<script src="/assets/js/social-share.min.js"></script>
-<script>
-    socialShare('.social-share', {
+color += dot(m_point,vec2(.3,.6));</code></pre></div><p>效果如下，当鼠标代表的特征点向一个已有特征点移动时，颜色也慢慢接近，正是“近朱者赤”。<div class=glsl-canvas-wrapper><canvas class=glslCanvas data-fragment-url=/assets/shaders/voronoi.frag width=300 height=300></canvas></div><blockquote><p>注意 Steven Worley 的原始方法中，每个网格的特征点数是可变的，对大多数网格来说不止一个。在他的 C 语言实现中，这是用来提早退出来加速循环。GLSL 循环不允许动态的迭代次数，所以你可能更希望一个网格对应一个特征点。</blockquote><h2 id=优化-voronoi>优化 Voronoi</h2><p>Stefan Gustavson 优化了 Steven Worley 的<a href=http://webstaff.itn.liu.se/~stegu/GLSL-cellular/GLSL-cellular-notes.pdf>算法</a>，除了使用到特征点的最小距离，还使用了第二小距离。主要优化点来自相邻网格的选择，对一个 2x2 的矩阵作遍历（而不是 3x3 的矩阵）。这显著地减少了工作量，但是会在网格边缘制造人工痕迹。<p>使用 2x2 网格 + 距离最小值效果如下：<div class=glsl-canvas-wrapper><canvas class=glslCanvas data-fragment-url=/assets/shaders/voronoi2.frag width=300 height=300></canvas></div><p>其他版本具体实现可以参考 <a href=https://github.com/ashima/webgl-noise/tree/master/src>webgl-noise</a>。包括使用 3x3 网格以及使用最小距离 F1 和第二小距离 F2。<p>比如使用 2x2 网格 + 距离最小值 F1 + 第二小距离 F2 效果如下：<div class=glsl-canvas-wrapper><canvas class=glslCanvas data-fragment-url=/assets/shaders/2d-cnoise.frag width=300 height=300></canvas></div><p>顺便提一句，在 WebGL 中也可以使用 <a href=https://github.com/glslify/glslify>glslify</a> 进行类似 Node.js 的模块管理。<div class=highlighter-rouge><div class=highlight><pre class=highlight><code>#pragma glslify: noise = require('glsl-noise/simplex/3d')
+</code></pre></div></div><h2 id=参考资料>参考资料</h2><ul><li><a href="https://thebookofshaders.com/12/?lan=ch">the book of shaders - 网格噪声</a><li><a href=https://zhuanlan.zhihu.com/p/41076746>Pixel-Shader 之「噪声」</a><li><a href=http://www.iquilezles.org/www/articles/voronoilines/voronoilines.htm>IQ 大神的优化</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/08/10/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF-%E4%B8%89.html class=read-next-link></a><section><span>噪声的艺术（三）</span><p>在「噪声的艺术（一）」中我们学习了 Value Noise, Gradient Noise 以及 Simplex ...</section><div class=filter></div><img src=/assets/img/webgl/quiles.jpg alt=""></div><div class=read-next-item><a href=/coding/2018/08/01/%E5%99%AA%E5%A3%B0%E7%9A%84%E8%89%BA%E6%9C%AF.html class=read-next-link></a><section><span>噪声的艺术</span><p>最近学习「the book of shaders」，了解到这种完全依靠 fragment shader 绘制，而不...</section><div class=filter></div><img src=/assets/img/webgl/tbs-cover.jpg alt=""></div></section><section class="post-footer-item comment"></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });
-</script>
-<script src="/assets/js/prism.min.js"></script>
-<script src="/assets/js/index.min.js"></script>
-<script src="/assets/js/jquery.nav.js"></script>
-<script>
-    function generateCatalog (selector) {
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -456,7 +114,11 @@ color += dot(m_point,vec2(.3,.6));</code></pre>
         end: null,
         scrollChange: null,
         padding: 80
-    });
-</script>
-</body>
-</html>
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>
