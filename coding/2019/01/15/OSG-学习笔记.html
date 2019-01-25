@@ -116,7 +116,102 @@ ss-&gt;setAttribute(program);
 // 添加 Uniform
 osg::ref_ptr&lt;osg::Uniform&gt; rgbUniform(
     new osg::Uniform(&quot;rgb&quot;, osg::Vec3(0.2, 0.2, 1.0)));
-ss-&gt;addUniform(rgbUniform);</code></pre></div><h3 id=状态机-state>状态机 State</h3><p>StateSet 包含了状态集合，而状态机 State 则维护了一个 StateSet 栈，通过 <code class=highlighter-rouge>push/popStateSet()</code> 控制，此时并不会真正应用这些状态变更，只有调用 <code class=highlighter-rouge>apply()</code> 才会真正根据状态集合渲染。还记得开头说到的“状态改动最少化”吗，这里就是这条优化原则的实践之一。<p><img src=http://www.bricoworks.com/articles/stateset/state.png alt=""><h2 id=场景图中的节点>场景图中的节点</h2><p>各种的节点类型等到后续介绍到渲染流程时会有更全面的认识，这里仅介绍一个特殊的节点类型 Transform。<h3 id=transform>Transform</h3><p>不同于 Three.js 等大多数 3D 引擎将变换矩阵作为节点属性的做法，OSG 将 Transform 也抽象成场景图中的节点（PositionAttitudeTransform），影响后续子节点的 worldMatrix 计算： <img src=https://stackedboxes.org/img/2011/01/osg-lightened-viewer.png alt=""><p>PAT 节点的使用也很简单，和其他类型节点一样，可以被添加为其他节点的子节点：<div><pre class=line-numbers data-line=""><code class=language-c++>osg::ref_ptr&lt;osg::PositionAttitudeTransform&gt; lightPAT(
+ss-&gt;addUniform(rgbUniform);</code></pre></div><h2 id=状态机及优化手段>状态机及优化手段</h2><p>StateSet 包含了状态集合，而状态机 State 则维护了一个 StateSet 栈，通过 <code class=highlighter-rouge>push/popStateSet()</code> 控制，此时并不会真正应用这些状态变更，只有调用 <code class=highlighter-rouge>apply()</code> 才会真正根据状态集合渲染。还记得开头说到的“状态改动最少化”吗，这里就是这条优化原则的实践之一。<p><img src=/assets/img/webgl/state&amp;state-set.png alt=""><p>从上图可以看出，State &amp; StateSet 提供了当单个物体状态发生改变时，最小化应用这种改变的优化手段。那么当渲染多个物体时，我们也理所应当根据它们的状态进行排序，这样连续渲染过程中发生的状态切换以及 API 的重复调用也会是最少的。例如在 <a href=https://kripken.github.io/emscripten-site/docs/optimizing/Optimizing-WebGL.html#avoid-redundant-calls>Optimizing WebGL: Avoid Redundant Calls</a> 一节中就举了这样一个例子，其中第二次绘制中带有 * 号的语句都是多余的：<div><pre class=line-numbers data-line=""><code class=language-c++>// First draw
+glBindBuffer(...);
+glVertexAttribPointer(...);
+glActiveTexture(0);
+glBindTexture(GL_TEXTURE_2D, texture1);
+glActiveTexture(1);
+glBindTexture(GL_TEXTURE_2D, texture2);
+glDrawArrays(...);
+
+// Second draw (back-to-back)
+glBindBuffer(...);
+glVertexAttribPointer(...);
+glActiveTexture(0); // (*)
+glBindTexture(GL_TEXTURE_2D, texture1); // (*)
+glActiveTexture(1); // (*)
+glBindTexture(GL_TEXTURE_2D, texture2); // (*)
+glDrawArrays(...);</code></pre></div><p>因此一些 3D 引擎会根据完整的状态（使用的 Shader，Texture 等）生成一个 hash 值作为排序依据。 但是在 OSG 中，状态并不是集中在绘制对象本身上，而是分散在场景图各个节点的 StateSet 上，为此 OSG 又引入了 StateGraph 的概念。<h3 id=stategraph>StateGraph</h3><p>如果我们把场景图中的每个节点关联的 StateSet 称作一棵“状态树”，那么 StateGraph 可以形成一棵与之对应的“渲染树”。 例如上图 State 中保存的一组 StateSet 栈，其中每一组栈顶的 StateAttribute 对应的 StateGraph 如下图所示： <img src=/assets/img/webgl/stategraph.png alt=""><p>在遍历节点时，会同时构建“状态树”和“渲染树”，将深度信息存储在 StateGraph 对象的 <code class=highlighter-rouge>_depth</code> 属性中，后续在状态转移中会用到。 同时 StateGraph 提供了状态转移的静态方法 <code class=highlighter-rouge>moveStateGraph()</code>，在下一篇文章介绍渲染流程时会看到 RenderLeaf 中的调用：<div><pre class=line-numbers data-line=""><code class=language-javascript>StateGraph.moveStateGraph = (function() {
+    // 临时栈，用于保存状态新旧节点多余的状态，减少对象分配
+    var stack = new PooledArray();
+    var stackArray = stack.getArray();
+    return function(state, sgCurrentArg, sgNewArg) {
+        StateGraph.statsNbMoveStateGraph++;
+
+        stack.reset();
+        var sgNew = sgNewArg;
+        var sgCurrent = sgCurrentArg;
+        var i, l;
+        if (sgNew === sgCurrent || sgNew === undefined) return;
+
+        // 处理根节点
+        // 处理兄弟节点
+        // 处理深度不同节点
+    };
+})();</code></pre></div><p>根据新旧节点的深度值分成以下三种情况。首先是处理根节点：<div><pre class=line-numbers data-line=""><code class=language-javascript>// 没有当前节点，说明是根节点
+if (sgCurrent === undefined) {
+    // 1. 拷贝新状态到临时栈中
+    do {
+        if (sgNew._stateset !== undefined) {
+            stack.push(sgNew._stateset);
+        }
+        sgNew = sgNew._parent;
+    } while (sgNew);
+    // 2. 新状态入栈
+    for (i = stack._length - 1, l = 0; i &gt;= l; --i) {
+        state.pushStateSet(stackArray[i]);
+    }
+    return;
+}</code></pre></div><p>处理兄弟节点：<div><pre class=line-numbers data-line=""><code class=language-javascript>else if (sgCurrent._parent === sgNew._parent) {
+    // 新旧两个状态为兄弟节点，拥有同样的父节点
+    // 1. 旧状态出栈
+    if (sgCurrent._stateset !== undefined) {
+        state.popStateSet();
+    }
+    // 2. 新状态入栈
+    if (sgNew._stateset !== undefined) {
+        state.pushStateSet(sgNew._stateset);
+    }
+    return;
+}</code></pre></div><p>新旧节点深度不同时处理起来要复杂一些，需要使用到开头的临时栈暂存一些状态信息。 另外要注意，前面提到过只有真正调用 <code class=highlighter-rouge>state.push/popStateSet()</code> 才会真正应用状态的变更：<div><pre class=line-numbers data-line=""><code class=language-javascript>// 1. 旧节点深度更深，状态依次出栈
+while (sgCurrent._depth &gt; sgNew._depth) {
+    if (sgCurrent._stateset !== undefined) {
+        state.popStateSet();
+    }
+    sgCurrent = sgCurrent._parent;
+}
+
+// 2.1 清空临时栈
+stack.reset();
+// 2.2 新节点深度更深，先将新状态入临时栈
+while (sgNew._depth &gt; sgCurrent._depth) {
+    if (sgNew._stateset !== undefined) {
+        stack.push(sgNew._stateset);
+    }
+    sgNew = sgNew._parent;
+}
+
+// 3. 此时新旧节点深度一致，需要找到两者共同的祖先节点，直至根节点
+while (sgCurrent !== sgNew) {
+    if (sgCurrent._stateset !== undefined) {
+        // 旧节点出栈，应用变更
+        state.popStateSet();
+    }
+    // 退回旧节点父节点
+    sgCurrent = sgCurrent._parent;
+
+    // 新节点入临时栈
+    if (sgNew._stateset !== undefined) {
+        stack.push(sgNew._stateset);
+    }
+    // 退回新节点父节点
+    sgNew = sgNew._parent;
+}
+// 新节点入栈，应用变更
+for (i = stack._length - 1, l = 0; i &gt;= l; --i) {
+    state.pushStateSet(stackArray[i]);
+}</code></pre></div><p>虽然有些绕，但搞懂 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关系是非常有必要的。<h2 id=场景图中的节点>场景图中的节点</h2><p>各种的节点类型等到后续介绍到渲染流程时会有更全面的认识，这里仅介绍一个特殊的节点类型 Transform。<h3 id=transform>Transform</h3><p>不同于 Three.js 等大多数 3D 引擎将变换矩阵作为节点属性的做法，OSG 将 Transform 也抽象成场景图中的节点（PositionAttitudeTransform），影响后续子节点的 worldMatrix 计算： <img src=https://stackedboxes.org/img/2011/01/osg-lightened-viewer.png alt=""><p>PAT 节点的使用也很简单，和其他类型节点一样，可以被添加为其他节点的子节点：<div><pre class=line-numbers data-line=""><code class=language-c++>osg::ref_ptr&lt;osg::PositionAttitudeTransform&gt; lightPAT(
     new osg::PositionAttitudeTransform());
 
 lightPAT-&gt;setPosition(osg::Vec3(5.0, 12.0, 3.0));
@@ -141,7 +236,7 @@ computeLocalToWorldMatrix: function(matrix) {
         mat4.copy(matrix, this.matrix);
     }
     return true;
-},</code></pre></div><h2 id=总结>总结</h2><p>现在我们有了对于场景图中节点、状态、状态集合等概念的基本了解，在下一篇中我们将深入了解 OSG 完整的渲染流程。<h2 id=参考资料>参考资料</h2><ul><li>http://www.openscenegraph.org/index.php/documentation/knowledge-base/36-what-is-a-scene-graph<li>https://stackedboxes.org/2010/05/05/osg-part-1-the-basics/<li><a href=https://github.com/cedricpinson/osgjs>OSG.js</a><li>http://www.bricoworks.com/articles/stateset/stateset.html<li>https://stackoverflow.com/questions/30534367/how-to-implement-a-scene-graph-to-webgl<li>「OSG 最长的一帧」</ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2019/01/01/Camera-%E8%AE%BE%E8%AE%A1-%E4%BA%8C.html class=read-next-link></a><section><span>Camera 设计（二）</span><p>在上一篇文章中我们介绍了如何使用四元数表示旋转，本篇将根据「WebGL Insights - 23.Designi...</section><div class=filter></div><img src=/assets/img/webgl/gis-1.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+},</code></pre></div><h2 id=总结>总结</h2><p>现在我们有了对于场景图中节点、状态机 State、状态集合 StateSet 和 StateGraph 等概念的基本了解，在下一篇中我们将深入了解 OSG 完整的渲染流程。<h2 id=参考资料>参考资料</h2><ul><li>http://www.openscenegraph.org/index.php/documentation/knowledge-base/36-what-is-a-scene-graph<li>https://stackedboxes.org/2010/05/05/osg-part-1-the-basics/<li><a href=https://github.com/cedricpinson/osgjs>OSG.js</a><li>http://www.bricoworks.com/articles/stateset/stateset.html<li>https://stackoverflow.com/questions/30534367/how-to-implement-a-scene-graph-to-webgl<li>「OSG 最长的一帧」</ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2019/01/20/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C.html class=read-next-link></a><section><span>OSG 学习笔记（二）</span><p>在上一篇文章中我们了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关系。</section><div class=filter></div><img src=/assets/img/webgl/openscenegraph-course.jpg alt=""></div><div class=read-next-item><a href=/coding/2019/01/01/Camera-%E8%AE%BE%E8%AE%A1-%E4%BA%8C.html class=read-next-link></a><section><span>Camera 设计（二）</span><p>在上一篇文章中我们介绍了如何使用四元数表示旋转，本篇将根据「WebGL Insights - 23.Designi...</section><div class=filter></div><img src=/assets/img/webgl/gis-1.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }

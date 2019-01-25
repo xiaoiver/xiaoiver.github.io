@@ -67,7 +67,7 @@ function isEar(ear) {
     }
 
     return true;
-}</code></pre></div><p>最终我们使用 earcut 得到了分割之后的 indices 数组，供后续 drawElements 使用。 有一点需要注意，如果 indices 使用了 Uint32Array 存储，则需要使用对应的 gl.UNSIGNED_INT 类型，WebGL1 需要开启 <a href=https://developer.mozilla.org/en-US/docs/Web/API/OES_element_index_uint>OES_element_index_uint</a> 扩展：<div><pre class=line-numbers data-line=""><code class=language-javascript>import earcut from &#39;earcut&#39;;
+}</code></pre></div><p>上述代码涉及到如何判断一个点是否在三角形中，在光栅化实现中一种常见的办法是将判定点和直线位置关系的「edge function」作用于三角形的三边。感兴趣的话可以阅读 <a href="http://link.zhihu.com/?target=https%3A//www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage">a Practical Implementation (The Rasterization Stage)</a>：<p>最终我们使用 earcut 得到了分割之后的 indices 数组，供后续 drawElements 使用。 有一点需要注意，如果 indices 使用了 Uint32Array 存储，则需要使用对应的 gl.UNSIGNED_INT 类型，WebGL1 需要开启 <a href=https://developer.mozilla.org/en-US/docs/Web/API/OES_element_index_uint>OES_element_index_uint</a> 扩展：<div><pre class=line-numbers data-line=""><code class=language-javascript>import earcut from &#39;earcut&#39;;
 
 let indices = earcut([10,0, 0,50, 60,60, 70,10]); // returns [1,0,3, 3,2,1]
 indices = new Uint32Array(indices);
