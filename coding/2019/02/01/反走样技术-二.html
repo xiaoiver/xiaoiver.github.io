@@ -1,0 +1,300 @@
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>反走样技术（二） - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=反走样技术（二）><meta name=keywords content=WebGL><title>反走样技术（二） | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=反走样技术（二）><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="「Nvidia 原版 FXAA_WhitePaper.pdf」🔗 反走样技术总结 「Implementing FXAA」🔗 Three.js FXAAShader.js"><meta property=og:description content="「Nvidia 原版 FXAA_WhitePaper.pdf」🔗 反走样技术总结 「Implementing FXAA」🔗 Three.js FXAAShader.js"><link rel=canonical href=https://xiaoiver.github.io/coding/2019/02/01/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%BA%8C.html><meta property=og:url content=https://xiaoiver.github.io/coding/2019/02/01/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%BA%8C.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2019-02-01T00:00:00+08:00><script type=application/ld+json>{"description":"「Nvidia 原版 FXAA_WhitePaper.pdf」🔗 反走样技术总结 「Implementing FXAA」🔗 Three.js FXAAShader.js","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2019/02/01/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%BA%8C.html","headline":"反走样技术（二）","dateModified":"2019-02-01T00:00:00+08:00","datePublished":"2019-02-01T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2019/02/01/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%BA%8C.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2019/02/01/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%BA%8C.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
+            // Create a buffer object
+            var buffer = gl.createBuffer();
+            if (!buffer) {
+                console.log('Failed to create the buffer object');
+                return false;
+            }
+            // Write date into the buffer object
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+            // Assign the buffer object to the attribute variable
+            var a_attribute = gl.getAttribLocation(program, attribute);
+            if (a_attribute < 0) {
+                console.log('Failed to get the storage location of ' + attribute);
+                return false;
+            }
+            gl.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
+            // Enable the assignment of the buffer object to the attribute variable
+            gl.enableVertexAttribArray(a_attribute);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            return true;
+        }</script><body><!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>反走样技术（二）</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=19-02-01><i class="iconfont icon-date"></i>01 Feb 2019</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/quaternion.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>基于形态学的方法 FXAA</h2><article class=markdown-body><ul><li>「Nvidia 原版 FXAA_WhitePaper.pdf」<a href=https://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf>🔗</a><li><a href=https://zhuanlan.zhihu.com/p/28800047>反走样技术总结</a><li>「Implementing FXAA」<a href=http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html>🔗</a><li><a href=https://github.com/mrdoob/three.js/blob/master/examples/js/shaders/FXAAShader.js>Three.js FXAAShader.js</a></ul><p>推荐阅读「Implementing FXAA」，相较 nvidia 原版以及 Three.js 的实现可读性要高很多。 其他实现还有 clay.gl 中的 [fxaa3.glsl]（https://github.com/pyalot/webgl-deferred-irradiance-volumes/blob/master/src/antialias/fxaa3_11_preprocessed.shaderlib）<h2 id=算法思路>算法思路</h2><p>FXAA 和 MLAA 以及 SMAA 一样，都是基于几何反走样的方法，基本步骤来自原始论文，对应下面的 8 张图：<ol><li>non-linear RGB 输入<li>基于亮度的边缘检测，红色部分<li>检测到的边缘按水平和垂直方向进行分类<li>Given edge orientation, the highest contrast pixel pair 90 degrees to the edge is selected, in blue/green<li>沿边缘方向向两侧（红色代表负向，蓝色正向）检测，找到亮度变化大的一端<li>Given the ends of the edge, pixel position on the edge is transformed into to a sub-pixel shift 90 degrees perpendicular to the edge to reduce the aliasing, red/blue for -/+ horizontal shift and gold/skyblue for -/+ vertical shift<li>The input texture is re-sampled given this sub-pixel offset<li>使用一个低通滤波器进行模糊处理</ol><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549078818327-64dacb4f-e4aa-49a6-9256-6c8a02a95bce.png#align=left&amp;display=inline&amp;height=375&amp;linkTarget=_blank&amp;name=%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202019-02-02%20%E4%B8%8A%E5%8D%8811.39.36.png&amp;originHeight=720&amp;originWidth=1432&amp;size=1761141&amp;width=746" alt="屏幕快照 2019-02-02 上午11.39.36.png"><p>下面结合具体实现。<h2 id=边缘检测>边缘检测</h2><p>和 MLAA &amp; SMAA 一样，首先需要检测边缘。<blockquote><p>为了更好的通用性，FXAA 使用 sRGB 空间的颜色作为输入，并根据局部的亮度对比度来确定一个像素是否是边缘像素。这也就是表示 FXAA 一般应该发生在 Tone Mapping 之后，或者也可以把 Tone Mapping 和 FXAA 整合成一个 pass。</blockquote><p>RGB 提取亮度，之前在 HDR Tone Mapping 中已经介绍过了。另外需要注意，这里进行了 gamma 校正转换到 sRGB 空间，虽然只是估算（sqrt 约等于 pow(1/2.2)）：<div><pre class=line-numbers data-line=""><code class=language-glsl>float rgb2luma(vec3 rgb){
+    return sqrt(dot(rgb, vec3(0.299, 0.587, 0.114)));
+}</code></pre></div><p>边缘检测部分很简单：<div><pre class=line-numbers data-line=""><code class=language-glsl>vec3 colorCenter = texture(screenTexture,In.uv).rgb;
+
+// 当前 fragment亮度
+float lumaCenter = rgb2luma(colorCenter);
+
+// 上下左右四个邻居亮度
+float lumaDown = rgb2luma(textureOffset(screenTexture,In.uv,ivec2(0,-1)).rgb);
+float lumaUp = rgb2luma(textureOffset(screenTexture,In.uv,ivec2(0,1)).rgb);
+float lumaLeft = rgb2luma(textureOffset(screenTexture,In.uv,ivec2(-1,0)).rgb);
+float lumaRight = rgb2luma(textureOffset(screenTexture,In.uv,ivec2(1,0)).rgb);
+
+// 找到最大最小值
+float lumaMin = min(lumaCenter,min(min(lumaDown,lumaUp),min(lumaLeft,lumaRight)));
+float lumaMax = max(lumaCenter,max(max(lumaDown,lumaUp),max(lumaLeft,lumaRight)));
+
+// 计算差值
+float lumaRange = lumaMax - lumaMin;
+
+// 低于阈值，跳过后续 FXAA 处理
+if(lumaRange &lt; max(EDGE_THRESHOLD_MIN,lumaMax*EDGE_THRESHOLD_MAX)){
+    fragColor = colorCenter;
+    return;
+}</code></pre></div><h2 id=边缘形态>边缘形态</h2><p>相较 MLAA 多达 16 种的边缘形态，边缘形态只简单考虑水平和垂直两种：<br>例如 horizontal: <code class=highlighter-rouge>|(upleft - left) - (left - downleft)| + 2 * |(up - center) - (center - down)| + |(upright - right) - (right - downright)|</code><div><pre class=line-numbers data-line=""><code class=language-glsl>// 对角线
+float lumaDownLeft = rgb2luma(textureOffset(screenTexture,In.uv,ivec2(-1,-1)).rgb);
+float lumaUpRight = rgb2luma(textureOffset(screenTexture,In.uv,ivec2(1,1)).rgb);
+float lumaUpLeft = rgb2luma(textureOffset(screenTexture,In.uv,ivec2(-1,1)).rgb);
+float lumaDownRight = rgb2luma(textureOffset(screenTexture,In.uv,ivec2(1,-1)).rgb);
+
+// 水平垂直方向
+float lumaDownUp = lumaDown + lumaUp;
+float lumaLeftRight = lumaLeft + lumaRight;
+
+// 4个角
+float lumaLeftCorners = lumaDownLeft + lumaUpLeft;
+float lumaDownCorners = lumaDownLeft + lumaDownRight;
+float lumaRightCorners = lumaDownRight + lumaUpRight;
+float lumaUpCorners = lumaUpRight + lumaUpLeft;
+
+// 水平垂直方向计算差值
+float edgeHorizontal =  abs(-2.0 * lumaLeft + lumaLeftCorners)  + abs(-2.0 * lumaCenter + lumaDownUp ) * 2.0    + abs(-2.0 * lumaRight + lumaRightCorners);
+float edgeVertical =    abs(-2.0 * lumaUp + lumaUpCorners)      + abs(-2.0 * lumaCenter + lumaLeftRight) * 2.0  + abs(-2.0 * lumaDown + lumaDownCorners);
+
+// 判断方向，水平 or 垂直
+bool isHorizontal = (edgeHorizontal &gt;= edgeVertical);</code></pre></div><p>由于边缘可能经过像素两侧（左右，上下），需要进一步判断：<div><pre class=line-numbers data-line=""><code class=language-glsl>// 两侧邻居
+float luma1 = isHorizontal ? lumaDown : lumaLeft;
+float luma2 = isHorizontal ? lumaUp : lumaRight;
+// 当前方向上的差值
+float gradient1 = luma1 - lumaCenter;
+float gradient2 = luma2 - lumaCenter;
+
+// 哪边差值更大？
+bool is1Steepest = abs(gradient1) &gt;= abs(gradient2);
+
+// 作为阈值供后续查找端点时使用
+float gradientScaled = 0.25*max(abs(gradient1),abs(gradient2));
+
+// 纹素尺寸
+float stepLength = isHorizontal ? inverseScreenSize.y : inverseScreenSize.x;
+
+// 平均亮度
+float lumaLocalAverage = 0.0;
+
+if(is1Steepest){
+    // 反向
+    stepLength = - stepLength;
+    lumaLocalAverage = 0.5*(luma1 + lumaCenter);
+} else {
+    lumaLocalAverage = 0.5*(luma2 + lumaCenter);
+}
+
+// 沿边缘方向移动半个纹素
+vec2 currentUv = In.uv;
+if(isHorizontal){
+    currentUv.y += stepLength * 0.5;
+} else {
+    currentUv.x += stepLength * 0.5;
+}</code></pre></div><p>例如当前 fragment 在红圈处，现在我们找到了 currentUv（绿叉处）<br><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549023896931-7321d4d7-2e7e-4bab-9c7a-e8513c925d2a.png#align=left&amp;display=inline&amp;height=253&amp;linkTarget=_blank&amp;name=image.png&amp;originHeight=956&amp;originWidth=1452&amp;size=40212&amp;width=385" alt=image.png><br>下一步需要找到边缘的首尾。<h2 id=查找线段端点>查找线段端点</h2><p>这一步相较 MLAA 就更简单了，不需要考虑 crossing edge 的多种形态，只需要沿边缘方向向两侧查找：<div><pre class=line-numbers data-line=""><code class=language-glsl>// 一个纹素偏移量
+vec2 offset = isHorizontal ? vec2(inverseScreenSize.x,0.0) : vec2(0.0,inverseScreenSize.y);
+// 当前边缘点两侧
+vec2 uv1 = currentUv - offset;
+vec2 uv2 = currentUv + offset;
+
+// 两侧亮度与均值的差值
+float lumaEnd1 = rgb2luma(texture(screenTexture,uv1).rgb);
+float lumaEnd2 = rgb2luma(texture(screenTexture,uv2).rgb);
+lumaEnd1 -= lumaLocalAverage;
+lumaEnd2 -= lumaLocalAverage;
+
+// 大于该方向上的阈值，认为到达了边缘的端点处
+bool reached1 = abs(lumaEnd1) &gt;= gradientScaled;
+bool reached2 = abs(lumaEnd2) &gt;= gradientScaled;
+bool reachedBoth = reached1 &amp;&amp; reached2;
+
+// 没有到达边缘，继续向两侧查找
+if(!reached1){
+    uv1 -= offset;
+}
+if(!reached2){
+    uv2 += offset;
+}</code></pre></div><p>GLSL 中并不支持递归，因此只能通过有限次的循环实现，为了提升查找效率，会逐渐加大偏移量的步长 QUALITY。另外，如果不使用 for 循环的话也可以嵌套多层，fxaa3.glsl 中就是这么实现的。<div><pre class=line-numbers data-line=""><code class=language-glsl>if(!reachedBoth){
+    for(int i = 2; i &lt; ITERATIONS; i++){
+ 			  // 省略检测代码，同上
+        // QUALITY 5次之后会增加，例如 1.5, 2.0...
+        if(!reached1){
+            uv1 -= offset * QUALITY(i);
+        }
+        if(!reached2){
+            uv2 += offset * QUALITY(i);
+        }
+        // 到达端点跳出
+        if(reachedBoth){ break; }
+    }
+}</code></pre></div><p>现在我们找到了线段的端点（蓝色）uv1 uv2：<br><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549024921691-090581b5-aec3-45a3-bc21-e8d6ec6af97c.png#align=left&amp;display=inline&amp;height=248&amp;linkTarget=_blank&amp;name=image.png&amp;originHeight=956&amp;originWidth=1452&amp;size=42598&amp;width=377" alt=image.png><h2 id=混合>混合</h2><p>找到端点后，需要知道 currentUv 离哪个端点更近，以及线段总长度。这样就可以计算出覆盖率，本质上就是一个线性插值渐变的过程：<div><pre class=line-numbers data-line=""><code class=language-glsl>// 两侧线段长度
+float distance1 = isHorizontal ? (In.uv.x - uv1.x) : (In.uv.y - uv1.y);
+float distance2 = isHorizontal ? (uv2.x - In.uv.x) : (uv2.y - In.uv.y);
+
+// 离哪个端点更近？
+bool isDirection1 = distance1 &lt; distance2;
+float distanceFinal = min(distance1, distance2);
+
+// 线段总长度
+float edgeThickness = (distance1 + distance2);
+
+// 找到
+float pixelOffset = - distanceFinal / edgeThickness + 0.5;</code></pre></div><p>这里有一点需要注意，为了防止 近端点亮度大于均值而中心亮度小于均值这种情况的出现，需要保证整体亮度变化方向一致。如果不一致则不应用偏移量：<div><pre class=line-numbers data-line=""><code class=language-glsl>// 中心和平均亮度比较
+bool isLumaCenterSmaller = lumaCenter &lt; lumaLocalAverage;
+
+// 近端点 和 中心到平均亮度的变化不一致
+bool correctVariation = ((isDirection1 ? lumaEnd1 : lumaEnd2) &lt; 0.0) != isLumaCenterSmaller;
+
+// 如果不一致则不应用偏移量
+float finalOffset = correctVariation ? pixelOffset : 0.0;</code></pre></div><h3 id=subpixel-antialiasing>Subpixel antialiasing</h3><p>关于 Sub-Pixel 这篇「<strong>Understanding Sub-Pixel (LCD Screen) Anti-Aliased Font Rendering</strong>」<a href=http://alienryderflex.com/sub_pixel/ >🔗</a><blockquote><p>The first circle just turns the whole RGB triplet completely on or completely off. The second circle varies the strength of each RGB triplet to generate intermediate shades of grey. But the third circle varies the strength of each display element separately to achieve the best possible rendition of a sharp-edged circle</blockquote><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549078073047-6640228a-5f54-477e-9d6f-989ec06bebfa.png#align=left&amp;display=inline&amp;height=110&amp;linkTarget=_blank&amp;name=image.png&amp;originHeight=220&amp;originWidth=225&amp;size=1921&amp;width=113" alt=image.png><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549078080701-c7252504-980f-4e72-8c0c-4c52aaa814b6.png#align=left&amp;display=inline&amp;height=110&amp;linkTarget=_blank&amp;name=image.png&amp;originHeight=220&amp;originWidth=227&amp;size=2387&amp;width=114" alt=image.png><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549078061983-3bc1313e-f00d-4033-b999-232a04bbda08.png#align=left&amp;display=inline&amp;height=110&amp;linkTarget=_blank&amp;name=image.png&amp;originHeight=220&amp;originWidth=224&amp;size=2479&amp;width=112" alt=image.png><br>开启后的效果图：<br><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/svg/158945/1549078233892-3f2f255d-768b-4ea1-b40c-665fb1233471.svg#align=left&amp;display=inline&amp;height=252&amp;linkTarget=_blank&amp;name=Antialias-vrs-Cromapixel.svg&amp;originHeight=252&amp;originWidth=400&amp;size=217684&amp;width=400" alt=Antialias-vrs-Cromapixel.svg><p>the amount of sub-pixel aliasing removal，会影响锐度：<div><pre class=line-numbers data-line=""><code class=language-glsl>//   1.00 - upper limit (softer)
+//   0.75 - default amount of filtering
+//   0.50 - lower limit (sharper, less sub-pixel aliasing removal)
+//   0.25 - almost off
+//   0.00 - completely off
+FxaaFloat fxaaQualitySubpix,</code></pre></div><p>取 sub-pixel 和之前计算出的偏移量的较大者：<div><pre class=line-numbers data-line=""><code class=language-glsl>SUBPIXEL_QUALITY = 0.75 // fxaaQualitySubpix
+
+// 3x3 neighborhood，加权平均（上下左右2，四个角1）
+float lumaAverage = (1.0/12.0) * (2.0 * (lumaDownUp + lumaLeftRight) + lumaLeftCorners + lumaRightCorners);
+// Ratio of the delta between the global average and the center luma, over the luma range in the 3x3 neighborhood.
+float subPixelOffset1 = clamp(abs(lumaAverage - lumaCenter)/lumaRange,0.0,1.0);
+float subPixelOffset2 = (-2.0 * subPixelOffset1 + 3.0) * subPixelOffset1 * subPixelOffset1;
+// Compute a sub-pixel offset based on this delta.
+float subPixelOffsetFinal = subPixelOffset2 * subPixelOffset2 * SUBPIXEL_QUALITY;
+
+// Pick the biggest of the two offsets.
+finalOffset = max(finalOffset,subPixelOffsetFinal);</code></pre></div><h2 id=最终效果>最终效果</h2><p>取偏移后的纹素颜色作为最终输出：<div><pre class=line-numbers data-line=""><code class=language-glsl>// 计算偏移量
+vec2 finalUv = In.uv;
+if(isHorizontal){
+    finalUv.y += finalOffset * stepLength;
+} else {
+    finalUv.x += finalOffset * stepLength;
+}
+
+// 取偏移后的纹素输出
+vec3 finalColor = texture(screenTexture,finalUv).rgb;
+fragColor = finalColor;</code></pre></div><p>优点很明显，实现简单开销小（相比 SMAA 所需的三个 pass，FXAA 只需要一个），但是效果不是十分优秀。<br><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549025433974-8ec1ea74-c30b-4a9b-a850-112dfd4b0d96.png#align=left&amp;display=inline&amp;height=253&amp;linkTarget=_blank&amp;name=image.png&amp;originHeight=956&amp;originWidth=1452&amp;size=66183&amp;width=384" alt=image.png><p>以上是 nvidia 原作者提出的第一版 FXAA 的实现，随后他提出了目前广为使用的第三版，也是很多引擎中采用的 FXAA 3.x。<br><h2 id=fxaa-的后续改进>FXAA 的后续改进</h2><p>在阅读 clay.gl 源码时发现目前使用的 fxaa 实现相对简单，来自 glsl-fxaa <a href=https://github.com/mattdesl/glsl-fxaa>🔗</a><blockquote><p>A WebGL implementation of Fast Approximate Anti-Aliasing (FXAA v2). This is a screen-space technique. The code was originally from <a href=https://www.geeks3d.com/20110405/fxaa-fast-approximate-anti-aliasing-demo-glsl-opengl-test-radeon-geforce/3/ >Geeks3D.com</a> and cleaned up by <a href=https://github.com/mitsuhiko/webgl-meincraft>Armin Ronacher</a> for WebGL.</blockquote><h3 id=dependent-texture-reads>dependent texture reads</h3><p><br><br>在这个版本的实现中，介绍到使用了一种优化方式：<blockquote><p>This FXAA shader uses 9 <strong>dependent texture reads</strong>. For various mobile GPUs (particularly iOS), we can optimize the shader by making 5 of the texture2D calls <strong>non-dependent</strong>. To do this, the coordinates have to be computed in the vertex shader and passed along:</blockquote><p>那么啥是 **dependent texture reads **呢？来自 sf 的一个回答：<br><a href=https://stackoverflow.com/questions/1054096/what-is-a-dependent-texture-read>https://stackoverflow.com/questions/1054096/what-is-a-dependent-texture-read</a><blockquote><p>An important implication is that the texture coordinates (where you look up from) is not determined until the middle of execution of the shader… there’s no kind of static analysis you can do on the shader (even knowing the values of all parameters) that will tell you what the <strong>coordinates will be ahead of time</strong></blockquote><p>因此为了在编译时而非运行时就知道获取纹理坐标，在 vs 中计算好 4 个邻居坐标并通过 varying 传递给 fs：<div><pre class=line-numbers data-line=""><code class=language-glsl>// tex.vs
+
+void texcoords(vec2 fragCoord, vec2 resolution,
+			out vec2 v_rgbNW, out vec2 v_rgbNE,
+			out vec2 v_rgbSW, out vec2 v_rgbSE,
+			out vec2 v_rgbM) {
+	vec2 inverseVP = 1.0 / resolution.xy;
+	v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;
+	v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;
+	v_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;
+	v_rgbSE = (fragCoord + vec2(1.0, 1.0)) * inverseVP;
+	v_rgbM = vec2(fragCoord * inverseVP);
+}
+
+#pragma glslify: export(texcoords)</code></pre></div><p>但是上面那个问答中也提到了，这种过于深入硬件体层实现的优化在新款 GPU 中已经是不需要的了。<br>毕竟 glsl-fxaa 也是写于 4、5 年前的，同样的还有 <a href=https://github.com/mattdesl/three-shader-fxaa>https://github.com/mattdesl/three-shader-fxaa</a>。<br>下面来看看 FXAA 3.x 的实现方式。<h3 id=3x>3.x</h3><p>由于原作者的博客已经失效了，目前只能找到这一篇历史文档：<a href=http://archive.is/Y7Ns>http://archive.is/Y7Ns</a>，其中说到作者实现了第一版（也就是上面的基础实现）之后，又优化了第二、三版，但是目前我只找到了 FXAA3，也就是当前应用广泛的实现。一开始光看没有注释的源码有些难以理解，直观感觉就是相较于第一版要精简一些。后来找到了作者在 SIGGRAPH 2011 上的一份 Slide <a href=http://iryoku.com/aacourse/downloads/09-FXAA-3.11-in-15-Slides.pdf>🔗</a>，其中详细介绍了算法的思路，才算真正理解。<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549199780431-fdf1a8b6-b0a5-4ced-94d8-30c4c85581a2.png#align=left&amp;display=inline&amp;height=420&amp;linkTarget=_blank&amp;name=%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202019-02-03%20%E4%B8%8B%E5%8D%889.16.00.png&amp;originHeight=1266&amp;originWidth=2248&amp;size=1149942&amp;width=746" alt="屏幕快照 2019-02-03 下午9.16.00.png"><p>首先按照图中定义的 2 tap filter，x 轴方向需要反向。<br>然后取 xy 亮度变化小的那个方向，进行缩放。<br>最后限定 filter width 为 -8 到 8 之间。<div><pre class=line-numbers data-line=""><code class=language-glsl>mediump vec2 dir;
+// x 轴方向需要反向
+dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));
+dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));
+
+float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) *
+	(0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);
+
+// 取得 xy 较小的变化方向进行缩放
+float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);
+
+// filter width FXAA_SPAN_MAX = 8
+dir = min(
+	vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),
+	max(
+  	vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),
+		dir * rcpDirMin // 缩放
+  )
+) * inverseVP;</code></pre></div><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549199637086-2b160a4f-58a5-4f4c-a66a-e5a1193771e1.png#align=left&amp;display=inline&amp;height=422&amp;linkTarget=_blank&amp;name=%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202019-02-03%20%E4%B8%8B%E5%8D%889.13.39.png&amp;originHeight=1268&amp;originWidth=2244&amp;size=761717&amp;width=746" alt="屏幕快照 2019-02-03 下午9.13.39.png"><blockquote><p>If full‐width filter width estimation is too large, then there is a chance the filter kernel will sample from regions off the local edge. In this case noise will be introduced by the filter kernel. This step attempts to <strong>remove this noise</strong>.</blockquote><p>顺便把 subpixel 反走样也做了，取 0，1/3，2/3 和 1 处四个的纹素：<div><pre class=line-numbers data-line=""><code class=language-glsl>// 2-tap sub-pixel 反走样 1/3 和 2/3
+vec3 rgbA = 0.5 * (
+  texture2D(tex, fragCoord * inverseVP + dir * (1.0 / 3.0 - 0.5)).xyz +
+  texture2D(tex, fragCoord * inverseVP + dir * (2.0 / 3.0 - 0.5)).xyz);
+// 4-tap 再加上 0 和 1
+vec3 rgbB = rgbA * 0.5 + 0.25 * (
+  texture2D(tex, fragCoord * inverseVP + dir * -0.5).xyz +
+  texture2D(tex, fragCoord * inverseVP + dir * 0.5).xyz);
+
+float lumaB = dot(rgbB, luma);
+// 如果 4-tap filter 引入的噪声导致超出了亮度的范围，只返回 2-tap 结果
+if ((lumaB &lt; lumaMin) || (lumaB &gt; lumaMax))
+	color = vec4(rgbA, texColor.a);
+else
+	color = vec4(rgbB, texColor.a);
+return color;</code></pre></div></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html class=read-next-link></a><section><span>反走样技术（三）</span><p>前两篇关于几何反走样 MLAA/SMAA 和 FXAA 都是基于 post-processing 后处理完成的。在...</section><div class=filter></div><img src=/assets/img/webgl/quaternion.jpg alt=""></div><div class=read-next-item><a href=/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html class=read-next-link></a><section><span>反走样技术（一）</span><p>最近在学习一些通用的 postprocessing 技术，看到 Three.js 中的 SMAA 实现。结合知乎上...</section><div class=filter></div><img src=/assets/img/webgl/quaternion.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+        // init
+        var P = $('.markdown-body'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    $('.catalog-body').onePageNav({
+        currentClass: "active",
+        changeHash: !1,
+        easing: "swing",
+        filter: "",
+        scrollSpeed: 700,
+        scrollOffset: 0,
+        scrollThreshold: .2,
+        begin: null,
+        end: null,
+        scrollChange: null,
+        padding: 80
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>
