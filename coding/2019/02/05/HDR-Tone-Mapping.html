@@ -1,0 +1,263 @@
+<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>HDR Tone Mapping - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="HDR Tone Mapping"><meta name=keywords content=WebGL><title>HDR Tone Mapping | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="HDR Tone Mapping"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="「Photographic Tone Reproduction for Digital Images」🔗「Gradient Domain High Dynamic Range Compression」🔗「Tone mapping进化论」https://zhuanlan.zhihu.com/p/21983679「Tone mapping: A quick survey」🔗「Filmic Tonemapping Operators」🔗「ACES Filmic Tone Mapping Curve」🔗「Converting RGB to LogLuv in a fragment shader」🔗「RGBM color encoding」🔗「理解高范围动态光」🔗「Three.js 实现」🔗「Three.js 效果」🔗http://examples.claygl.xyz/examples/basicPanoramaHDR.html"><meta property=og:description content="「Photographic Tone Reproduction for Digital Images」🔗「Gradient Domain High Dynamic Range Compression」🔗「Tone mapping进化论」https://zhuanlan.zhihu.com/p/21983679「Tone mapping: A quick survey」🔗「Filmic Tonemapping Operators」🔗「ACES Filmic Tone Mapping Curve」🔗「Converting RGB to LogLuv in a fragment shader」🔗「RGBM color encoding」🔗「理解高范围动态光」🔗「Three.js 实现」🔗「Three.js 效果」🔗http://examples.claygl.xyz/examples/basicPanoramaHDR.html"><link rel=canonical href=https://xiaoiver.github.io/coding/2019/02/05/HDR-Tone-Mapping.html><meta property=og:url content=https://xiaoiver.github.io/coding/2019/02/05/HDR-Tone-Mapping.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2019-02-05T00:00:00+08:00><script type=application/ld+json>{"description":"「Photographic Tone Reproduction for Digital Images」🔗「Gradient Domain High Dynamic Range Compression」🔗「Tone mapping进化论」https://zhuanlan.zhihu.com/p/21983679「Tone mapping: A quick survey」🔗「Filmic Tonemapping Operators」🔗「ACES Filmic Tone Mapping Curve」🔗「Converting RGB to LogLuv in a fragment shader」🔗「RGBM color encoding」🔗「理解高范围动态光」🔗「Three.js 实现」🔗「Three.js 效果」🔗http://examples.claygl.xyz/examples/basicPanoramaHDR.html","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2019/02/05/HDR-Tone-Mapping.html","headline":"HDR Tone Mapping","dateModified":"2019-02-05T00:00:00+08:00","datePublished":"2019-02-05T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2019/02/05/HDR-Tone-Mapping.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2019/02/05/HDR-Tone-Mapping.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
+            // Create a buffer object
+            var buffer = gl.createBuffer();
+            if (!buffer) {
+                console.log('Failed to create the buffer object');
+                return false;
+            }
+            // Write date into the buffer object
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+            // Assign the buffer object to the attribute variable
+            var a_attribute = gl.getAttribLocation(program, attribute);
+            if (a_attribute < 0) {
+                console.log('Failed to get the storage location of ' + attribute);
+                return false;
+            }
+            gl.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
+            // Enable the assignment of the buffer object to the attribute variable
+            gl.enableVertexAttribArray(a_attribute);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            return true;
+        }</script><body><!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>HDR Tone Mapping</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=19-02-05><i class="iconfont icon-date"></i>05 Feb 2019</time></div></div><div class=filter></div><div class=post-cover style="background: url('https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549519347047-9e150ee0-2f35-4bda-a5da-66b8caeff4b5.png#align=left&display=inline&height=209&linkTarget=_blank&originHeight=842&originWidth=1278&size=0&width=317') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><article class=markdown-body><p>「Photographic Tone Reproduction for Digital Images」<a href=http://www.cs.huji.ac.il/~danix/hdr/hdrc.pdf>🔗</a><br>「Gradient Domain High Dynamic Range Compression」<a href="">🔗</a><br>「Tone mapping进化论」<a href=https://zhuanlan.zhihu.com/p/21983679>https://zhuanlan.zhihu.com/p/21983679</a><br>「Tone mapping: A quick survey」<a href="https://www.phototalks.idv.tw/academic/?p=861">🔗</a><br>「Filmic Tonemapping Operators」<a href=http://filmicworlds.com/blog/filmic-tonemapping-operators/ >🔗</a><br>「ACES Filmic Tone Mapping Curve」<a href=https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/ >🔗</a><br>「Converting RGB to LogLuv in a fragment shader」<a href="http://realtimecollisiondetection.net/blog/?p=15">🔗</a><br>「RGBM color encoding」<a href=http://graphicrants.blogspot.com/2009/04/rgbm-color-encoding.html>🔗</a><br>「理解高范围动态光」<a href=http://www.xionggf.com/articles/graphic/misc/inside_hdr.html>🔗</a><br>「Three.js 实现」<a href=https://github.com/mrdoob/three.js/blob/master/examples/js/shaders/ToneMapShader.js>🔗</a><br>「Three.js 效果」<a href=https://threejs.org/examples/#webgl_shaders_tonemapping>🔗</a><br><a href=http://examples.claygl.xyz/examples/basicPanoramaHDR.html>http://examples.claygl.xyz/examples/basicPanoramaHDR.html</a><h2 id=问题描述>问题描述</h2><p>亮处过曝，暗处太黑丢失细节。<blockquote><p>The purpose of the <strong>Tone Mapping</strong> function is to <strong>map the wide range of high dynamic range (HDR) colors into low dynamic range (LDR)</strong> that a display can output. This is the last stage of post processing that is done after the normal rendering during post processing.</blockquote><h2 id=摄影学经验>摄影学经验</h2><p>摄影学中将 scene zone 映射到 print zone：<br><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549000177768-2e3844da-ad35-40ae-bb7d-d0c9a8488f69.png#align=left&amp;display=inline&amp;height=329&amp;linkTarget=_blank&amp;name=%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202019-02-01%20%E4%B8%8B%E5%8D%881.49.10.png&amp;originHeight=752&amp;originWidth=1254&amp;size=144310&amp;width=549" alt="屏幕快照 2019-02-01 下午1.49.10.png"><br>术语<ul><li><strong>动态范围 Dynamic range</strong>: In computer graphics the dynamic range of a scene is expressed as the ratio of the highest scene luminance to the lowest scene luminance<li><strong>基调？Key</strong>: The key of a scene indicates whether it is subjectively light, normal, or dark. A white-painted room would be high-key, and a dim stable would be low-key</ul><h2 id=reinhard基础算法>Reinhard 基础算法</h2><p>首先计算出场景的基调（key），选取 N 个像素点的亮度进行 log 平均。这里原论文有一处错误 <a href="https://www.phototalks.idv.tw/academic/?p=861">🔗</a>：<br><img src="https://intranetproxy.alipay.com/skylark/lark/__latex/f3afef1902f79ab793712a99f71bbdab.svg#card=math&amp;code=%5Cbar%7BL%7D_%7Bw%7D%20%3D%20exp%28%5Cfrac%7B1%7D%7BN%7D%5Csum_%7Bx%2Cy%7D%7Blog%28%5Cdelta%2B%20L_%7Bw%7D%28x%2Cy%29%29%7D%29&amp;height=49&amp;width=261" alt=""><br>调节像素点亮度时，需要用到 a 这个表示 normal-key 基调的值：<br><img src="https://intranetproxy.alipay.com/skylark/lark/__latex/abd81d03c129732392470442011970b0.svg#card=math&amp;code=L%28x%2Cy%29%20%3D%20%5Cfrac%7Ba%7D%7B%5Cbar%7BL%7D_%7Bw%7D%7DL_%7Bw%7D%28x%2Cy%29&amp;height=41&amp;width=163" alt=""><br>不同 a 取值效果如下，越大调节后自然越亮：<br><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549003718743-b508b3af-2f0b-4f35-befc-d2e7cadf87b3.png#align=left&amp;display=inline&amp;height=285&amp;linkTarget=_blank&amp;name=%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202019-02-01%20%E4%B8%8B%E5%8D%882.48.08.png&amp;originHeight=732&amp;originWidth=1098&amp;size=182721&amp;width=428" alt="屏幕快照 2019-02-01 下午2.48.08.png"><p>显然这种线性调节的效果在实际应用中是有问题的，Lwhite 是场景中的最高亮度：<br><img src="https://intranetproxy.alipay.com/skylark/lark/__latex/457d851c955e717fbeb8278d579b7149.svg#card=math&amp;code=L_%7Bd%7D%28x%2Cy%29%20%3D%20%5Cfrac%7BL%28x%2Cy%29%281%20%2B%20%5Cfrac%7BL%28x%2Cy%29%7D%7BL%5E%7B2%7D_%7Bwhite%7D%7D%29%7D%7B1%2BL%28x%2Cy%29%7D&amp;height=65&amp;width=222" alt=""><p>但是仍不完美，尤其是在很高动态范围的场景下，依然会丢失细节。<h2 id=改进>改进</h2><p>作者观察到，在传统打印技术中，为了提高打印结果的质量，通常会采用一种 dodying-and-burning 的方法。该方法的原理是根据打印内容的不同，在不同区域减少光亮度（dodying）或者增加光亮度（burning）。<p>所以关键是对于场景的基调的计算。<br>原论文中首先找出对比度大的边缘包围的区域，然后对该区域进行处理。<blockquote><p>尋找區域亮度VV以強化亮部壓縮的細節就是該論文重點。論文中以DoG (difference of Gaussian)實作。當V和L相差較大時則會保留細節。這裡用到Blob detection的技巧，利用DoG或LoG (Laplician of Gaussian)來偵測一個合適的feature scale (在<a href=http://en.wikipedia.org/wiki/Scale-invariant_feature_transform>SIFT</a>中最廣為人知)，在這裡是尋找一個以 L 為中心的最大區塊使得內部的亮度最接近，並且該區塊沒有顯著的gradient變化。</blockquote><p>因此，作者提出利用高斯核卷积的方法来找出这些区域。<br><h2 id=webgl-实现>WebGL 实现</h2><h3 id=基础版本-hdr>基础版本 HDR</h3><p>先来看基础算法的实现：<div><pre class=line-numbers data-line=""><code class=language-glsl>uniform float averageLuminance; // 场景中的平均亮度，默认值 1.0
+uniform float middleGrey; // 公式中的 a，默认值 0.6
+uniform float minLuminance; // 默认值 0.01
+uniform float maxLuminance; // 默认值 16
+
+vec3 ToneMap( vec3 vColor ) {
+  #ifdef ADAPTED_LUMINANCE
+  // 动态计算场景基调
+  float fLumAvg = texture2D(luminanceMap, vec2(0.5, 0.5)).r;
+  #else
+  // 基础算法
+  float fLumAvg = averageLuminance;
+  #endif
+
+  // 计算颜色对应的相对亮度，公式中的 Lw(x,y)
+  float fLumPixel = linearToRelativeLuminance( vColor );
+	
+  // 首先进行线性调节
+  float fLumScaled = (fLumPixel * middleGrey) / max( minLuminance, fLumAvg );
+	
+  // 引入 Lwhite
+  float fLumCompressed = (fLumScaled * (1.0 + (fLumScaled / (maxLuminance * maxLuminance)))) / (1.0 + fLumScaled);
+  return fLumCompressed * vColor;
+}</code></pre></div><p>这里涉及到亮度的计算，RGB 色彩空间到 CIE：<img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/svg/158945/1549007595479-a39da1c0-9115-4cfc-adf4-3677cc82d604.svg#align=left&amp;display=inline&amp;height=27&amp;linkTarget=_blank&amp;originHeight=21&amp;originWidth=323&amp;size=0&amp;width=420" alt=""><div><pre class=line-numbers data-line=""><code class=language-glsl>// https://en.wikipedia.org/wiki/Relative_luminance
+float linearToRelativeLuminance( const in vec3 color ) {
+	vec3 weights = vec3( 0.2126, 0.7152, 0.0722 );
+	return dot( weights, color.rgb );
+}</code></pre></div><h3 id=adaptive-hdr>Adaptive HDR</h3><p>下面来看改进版，并没有使用原论文中卷积的方式。<p>首先需要开启 OES_texture_float 扩展，让浮点帧缓冲可以存储超过 0.0 到 1.0 范围的浮点值。<div><pre class=line-numbers data-line=""><code class=language-javascript>// 开启扩展
+if ( renderer.extensions.get( &#39;OES_texture_half_float_linear&#39; ) ) {
+	parameters.type = THREE.FloatType;
+}
+// 创建动态 HDR RenderTarget
+var hdrRenderTarget = new THREE.WebGLRenderTarget( windowThirdX, height, parameters );</code></pre></div><p>后处理中我们只需要关注 AdaptiveToneMappingPass：<div><pre class=line-numbers data-line=""><code class=language-javascript>var adaptToneMappingPass = new THREE.AdaptiveToneMappingPass( true, 256 );
+adaptToneMappingPass.needsSwap = true;
+// 全局辉光
+var bloomPass = new THREE.BloomPass();
+// gamma 校正
+var gammaCorrectionPass = new THREE.ShaderPass( THREE.GammaCorrectionShader );
+gammaCorrectionPass.renderToScreen = true;</code></pre></div><p>原论文中使用卷积运算十分复杂，Three.js 使用了一种相对简单基于时间的方案：<br>首先初始化三个 RT：<div><pre class=line-numbers data-line=""><code class=language-javascript>// https://github.com/mrdoob/three.js/blob/master/examples/js/postprocessing/AdaptiveToneMappingPass.js
+
+this.luminanceRT = new THREE.WebGLRenderTarget( this.resolution, this.resolution, pars );
+this.luminanceRT.texture.name = &quot;AdaptiveToneMappingPass.l&quot;;
+this.luminanceRT.texture.generateMipmaps = false;
+
+this.previousLuminanceRT = new THREE.WebGLRenderTarget( this.resolution, this.resolution, pars );
+this.previousLuminanceRT.texture.name = &quot;AdaptiveToneMappingPass.pl&quot;;
+this.previousLuminanceRT.texture.generateMipmaps = false;
+
+// We only need mipmapping for the current luminosity because we want a down-sampled version to sample in our adaptive shader
+pars.minFilter = THREE.LinearMipMapLinearFilter;
+pars.generateMipmaps = true;
+this.currentLuminanceRT = new THREE.WebGLRenderTarget( this.resolution, this.resolution, pars );
+this.currentLuminanceRT.texture.name = &quot;AdaptiveToneMappingPass.cl&quot;;</code></pre></div><p>然后输出亮度到 currentLuminanceRT 中：<div><pre class=line-numbers data-line=""><code class=language-javascript>// 简单调用 linearToRelativeLuminance 的 Shader
+this.quad.material = this.materialLuminance;
+this.materialLuminance.uniforms.tDiffuse.value = readBuffer.texture;
+renderer.render( this.scene, this.camera, this.currentLuminanceRT );</code></pre></div><p>然后取得当前帧到上一帧的差值，连同 previousLuminanceRT 一起传入 AdaptiveShader 中，输出结果到 luminanceRT 中：<div><pre class=line-numbers data-line=""><code class=language-javascript>this.materialAdaptiveLum.uniforms.delta.value = deltaTime;
+this.materialAdaptiveLum.uniforms.lastLum.value = this.previousLuminanceRT.texture;
+this.materialAdaptiveLum.uniforms.currentLum.value = this.currentLuminanceRT.texture;
+renderer.render( this.scene, this.camera, this.luminanceRT );</code></pre></div><p>最后拷贝计算结果 luminanceRT 到 previousLuminanceRT，完成当前渲染 pass：<div><pre class=line-numbers data-line=""><code class=language-javascript>this.quad.material = this.materialCopy;
+this.copyUniforms.tDiffuse.value = this.luminanceRT.texture;
+renderer.render( this.scene, this.camera, this.previousLuminanceRT );</code></pre></div><p>所以关键就在 AdaptiveShader 的实现，如何计算出每个 fragment 的亮度。<br>这里使用了上一帧的亮度加上当前帧的差值乘以一个基于时间的系数：<div><pre class=line-numbers data-line=""><code class=language-glsl>uniform sampler2D lastLum; // 上一帧亮度
+uniform sampler2D currentLum; // 当前帧亮度
+uniform float minLuminance; // 0.01
+uniform float delta; // 0.016
+uniform float tau; // 1.0
+
+void main() {
+
+    vec4 lastLum = texture2D( lastLum, vUv, MIP_LEVEL_1X1 );
+    vec4 currentLum = texture2D( currentLum, vUv, MIP_LEVEL_1X1 );
+
+    float fLastLum = max( minLuminance, lastLum.r );
+    float fCurrentLum = max( minLuminance, currentLum.r );
+
+    //The adaption seems to work better in extreme lighting differences
+    //if the input luminance is squared.
+    fCurrentLum *= fCurrentLum;
+
+    // Adapt the luminance using Pattanaik&#39;s technique
+    float fAdaptedLum = fLastLum + (fCurrentLum - fLastLum) * (1.0 - exp(-delta * tau));
+    gl_FragColor.r = fAdaptedLum;
+}</code></pre></div><p>值得注意的是，注释中提到使用的是 Pattanaik 的模型，但是我在网上查了下，也只找到<a href=http://www.cs.ucf.edu/~sumant/publications/sig00.pdf>这一篇</a>，里面并没有具体的算法公式。直到后来在知乎上读到「<a href=https://zhuanlan.zhihu.com/p/21983679>Tone mapping进化论</a>」，里面提到了用 exp 来模拟 S 曲线（Reinhard 改进版曲线也是 S 型），才理解到这个系数的由来：<div><pre class=line-numbers data-line=""><code class=language-glsl>float3 CEToneMapping(float3 color, float adapted_lum) 
+{
+    return 1 - exp(-adapted_lum * color);
+}</code></pre></div><h2 id=filmic-tonemapping>Filmic Tonemapping</h2><blockquote><p>这个方法的本质是把原图和让艺术家用专业照相软件模拟胶片的感觉，人肉 tone mapping 后的结果去做曲线拟合，得到一个高次曲线的表达式。这样的表达式应用到渲染结果后，就能在很大程度上自动接近人工调整的结果。</blockquote><p>原作者在「Filmic Tonemapping Operators」<a href=http://filmicworlds.com/blog/filmic-tonemapping-operators/ >🔗</a>文章中详细介绍了一些人工调整，拟合参数的选择。<br>clay.gl 中也曾经采用过，不过目前 HDR 的实现选择了另一种 ACES，后面会介绍。<p>文章中介绍了几种实现：<blockquote><p>Next up is the optimized formula by Jim Hejl and Richard Burgess-Dawson. I completely forgot about Richard in the GDC talk, but he shares the credit with Jim</blockquote><div><pre class=line-numbers data-line=""><code class=language-glsl>// hdr.glsl
+
+vec3 filmicToneMap(vec3 color)
+{
+    vec3 x = max(vec3(0.0), color - 0.004);
+    return (x*(6.2*x+0.5))/(x*(6.2*x+1.7)+0.06);
+}</code></pre></div><p>原作者的实现：<div><pre class=line-numbers data-line=""><code class=language-glsl>// hdr.glsl
+
+const vec3 whiteScale = vec3(11.2);
+
+vec3 uncharted2ToneMap(vec3 x)
+{
+    const float A = 0.22;   // Shoulder Strength
+    const float B = 0.30;   // Linear Strength
+    const float C = 0.10;   // Linear Angle
+    const float D = 0.20;   // Toe Strength
+    const float E = 0.01;   // Toe Numerator
+    const float F = 0.30;   //Toe Denominator
+
+    return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F))-E/F;
+}
+
+vec3 color = uncharted2ToneMap(tex) / uncharted2ToneMap(whiteScale);</code></pre></div><blockquote><p>这个方法开启了 tone mapping 的新路径，让人们知道了曲线拟合的好处。并且，其他颜色空间的变换，比如gamma 矫正，也可以一起合并到这个曲线里来，一次搞定，不会增加额外开销。缺点就是运算量有点大，两个多项式的计算，并且相除。</blockquote><p><br><h2 id=aces>ACES</h2><p>来自 Oscar 专业电影团队的成果：<blockquote><p>他们发明的东西叫<a href="http://link.zhihu.com/?target=http%3A//www.oscars.org/science-technology/sci-tech-projects/aces">Academy Color Encoding System（ACES）</a>，是一套颜色编码系统，或者说是一个新的颜色空间。它是一个通用的数据交换格式，一方面可以不同的输入设备转成ACES，另一方面可以把ACES在不同的显示设备上正确显示。不管你是LDR，还是HDR，都可以在ACES里表达出来。这就直接解决了VDR的问题，不同设备间都可以互通数据。 然而对于实时渲染来说，没必要用全套ACES。因为第一，没有什么“输入设备”。渲染出来的HDR图像就是个线性的数据，所以直接就在ACES空间中。而输出的时候需要一次tone mapping，转到LDR或另一个HDR。也就是说，我们只要ACES里的非常小的一条路径，而不是纷繁复杂的整套体系。</blockquote><p>「<a href=https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/ >ACES Filmic Tone Mapping Curve</a>」中拟合的也是一条 S 曲线，可见和专业人士提供的曲线（虚线）重合度已经很高了，因此现在主流 3D 引擎（包括 clay.gl）HDR 方案也都是选择的这种方法：<br><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549021113086-4406fcdd-4612-45f3-9671-43b94c8cb82a.png#align=left&amp;display=inline&amp;height=166&amp;linkTarget=_blank&amp;originHeight=366&amp;originWidth=576&amp;size=0&amp;width=261" alt=""><div><pre class=line-numbers data-line=""><code class=language-glsl>vec3 ACESToneMapping(vec3 color)
+{
+    const float A = 2.51;
+    const float B = 0.03;
+    const float C = 2.43;
+    const float D = 0.59;
+    const float E = 0.14;
+    return (color * (A * color + B)) / (color * (C * color + D) + E);
+}</code></pre></div><h3 id=unreal-中的实现>Unreal 中的实现</h3><p><a href=https://docs.unrealengine.com/en-us/Engine/Rendering/PostProcessEffects/ColorGrading>https://docs.unrealengine.com/en-us/Engine/Rendering/PostProcessEffects/ColorGrading</a><blockquote><p>As of Unreal Engine version 4.15, the filmic tone mapper was enabled as the <strong>default tone mapper</strong>.</blockquote><p>拟合 S 曲线的在线展示：<br><a href=https://www.desmos.com/calculator/h8rbdpawxj>https://www.desmos.com/calculator/h8rbdpawxj</a><h3 id=曝光度>曝光度</h3><p>曝光度是可以调节的，当超过默认值 1 时，ToneMapping 会将 HDR 映射到 LDR。<br>以下是 clay.gl 中的实现：<div><pre class=line-numbers data-line=""><code class=language-glsl>uniform float exposure : 1.0;
+
+// Adjust exposure
+// From KlayGE
+#ifdef LUM_ENABLED
+    float fLum = texture2D(lum, vec2(0.5, 0.5)).r;
+    float adaptedLumDest = 3.0 / (max(0.1, 1.0 + 10.0*eyeAdaption(fLum)));
+    float exposureBias = adaptedLumDest * exposure;
+#else
+    float exposureBias = exposure;
+#endif
+
+// 应用曝光度进入 HDR
+texel.rgb *= exposureBias;
+// 通过 ACES ToneMapping 映射成 LDR
+texel.rgb = ACESToneMapping(texel.rgb);</code></pre></div><p>来自 Unreal 同样曝光度设为 3，应用了 ACES 之后（左侧）明显比老版本的 ToneMapping （右侧）保留了更多细节：<br><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549519347047-9e150ee0-2f35-4bda-a5da-66b8caeff4b5.png#align=left&amp;display=inline&amp;height=209&amp;linkTarget=_blank&amp;originHeight=842&amp;originWidth=1278&amp;size=0&amp;width=317" alt=""><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549519346930-507e21de-1cb3-402d-b272-198e67e906c8.png#align=left&amp;display=inline&amp;height=208&amp;linkTarget=_blank&amp;originHeight=842&amp;originWidth=1278&amp;size=0&amp;width=316" alt=""><h2 id=rgbm>RGBM</h2><p>现在我们有了各种各样的 Tone Mapping 算法，那么一个关键的问题是，如何存储这些超出 0 -255 范围的 RGB 颜色值呢？<p>先来看看 clay.gl 中是怎么做的，在需要使用 HDR 的地方提供了 decode 和 encode 函数：<div><pre class=line-numbers data-line=""><code class=language-glsl>@export clay.util.rgbm
+@import clay.util.rgbm_decode
+@import clay.util.rgbm_encode
+
+vec4 decodeHDR(vec4 color)
+{
+#if defined(RGBM_DECODE) || defined(RGBM)
+    return vec4(RGBMDecode(color, 8.12), 1.0);
+#else
+    return color;
+#endif
+}
+
+vec4 encodeHDR(vec4 color)
+{
+#if defined(RGBM_ENCODE) || defined(RGBM)
+    return RGBMEncode(color.xyz, 8.12);
+#else
+    return color;
+#endif
+}
+
+@end</code></pre></div><p>那么这里的 RGBM 又是什么呢？下面就通过以下两篇文章来了解一下：<ul><li>「Converting RGB to LogLuv in a fragment shader」<a href="http://realtimecollisiondetection.net/blog/?p=15">🔗</a><li>「RGBM color encoding」<a href=http://graphicrants.blogspot.com/2009/04/rgbm-color-encoding.html>🔗</a></ul><p>相较 LogLuv 涉及的 log 运算，RGBM 编码时在 a 分量中存储的是亮度的 range，因此 decode 时特别简单。<br>关于这个 range 的值，原版中定义为 6，clay.gl 中则定义为 8.12：<div><pre class=line-numbers data-line=""><code class=language-glsl>@export clay.util.rgbm_decode
+vec3 RGBMDecode(vec4 rgbm, float range) {
+  return range * rgbm.rgb * rgbm.a;
+}
+@end
+
+@export clay.util.rgbm_encode
+vec4 RGBMEncode(vec3 color, float range) {
+    if (dot(color, color) == 0.0) {
+        return vec4(0.0);
+    }
+    vec4 rgbm;
+    color /= range;
+    rgbm.a = clamp(max(max(color.r, color.g), max(color.b, 1e-6)), 0.0, 1.0);
+    rgbm.a = ceil(rgbm.a * 255.0) / 255.0;
+    rgbm.rgb = color / rgbm.a;
+    return rgbm;
+}
+@end</code></pre></div><p>当然除了这两种编码方式，还有 <a href=http://lousodrome.net/blog/light/tag/rgbm/ >http://lousodrome.net/blog/light/tag/rgbm/</a> 中提到的 RGBE 等若干种。</article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2019/02/06/Lensflare.html class=read-next-link></a><section><span>Lensflare</span><p>webgl_lensflarespseudo-lens-flare</section><div class=filter></div><img src="https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549443420530-b4e0077f-c0a0-417a-862f-8f75b758d375.png#align=left&display=inline&height=798&linkTarget=_blank&name=image.png&originHeight=1596&originWidth=2778&size=3578605&width=1389" alt=""></div><div class=read-next-item><a href=/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html class=read-next-link></a><section><span>反走样技术（四）</span><p>现在我们已经了解了基于形态学的反走样技术 MLAA/SMAA 和 FXAA，也了解了拥有硬件支持的 MSAA。严格...</section><div class=filter></div><img src=/assets/img/webgl/quaternion.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+        sites: ['wechat','weibo','douban','twitter'],
+        wechatQrcodeTitle: "分享到微信朋友圈",
+        wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+        // init
+        var P = $('.markdown-body'),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    $('.catalog-body').onePageNav({
+        currentClass: "active",
+        changeHash: !1,
+        easing: "swing",
+        filter: "",
+        scrollSpeed: 700,
+        scrollOffset: 0,
+        scrollThreshold: .2,
+        begin: null,
+        end: null,
+        scrollChange: null,
+        padding: 80
+    });</script><script>window.onload = function () {
+                    var script = document.createElement('script');
+                    var firstScript = document.getElementsByTagName('script')[0];
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = '/sw-register.js?v=' + Date.now();
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                };</script>

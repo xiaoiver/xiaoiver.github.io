@@ -1,6 +1,24 @@
 [
   
     {
+      "title"    : "Bloom",
+      "tags"     : "WebGL",
+      "url"      : "/coding/2019/02/07/Bloom.html"
+    } ,
+  
+    {
+      "title"    : "Lensflare",
+      "tags"     : "WebGL",
+      "url"      : "/coding/2019/02/06/Lensflare.html"
+    } ,
+  
+    {
+      "title"    : "HDR Tone Mapping",
+      "tags"     : "WebGL",
+      "url"      : "/coding/2019/02/05/HDR-Tone-Mapping.html"
+    } ,
+  
+    {
       "title"    : "反走样技术（四）",
       "tags"     : "WebGL",
       "url"      : "/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html"
