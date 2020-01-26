@@ -1,7 +1,68 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>反走样技术（一） - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=反走样技术（一）><meta name=keywords content=WebGL><title>反走样技术（一） | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=反走样技术（一）><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="最近在学习一些通用的 postprocessing 技术，看到 Three.js 中的 SMAA 实现。结合知乎上这篇 「反走样技术（一）：几何反走样」 文章，深入了解了下其中基于形态学反走样的 MLAA 和 SMAA 思路和实现方式。"><meta property=og:description content="最近在学习一些通用的 postprocessing 技术，看到 Three.js 中的 SMAA 实现。结合知乎上这篇 「反走样技术（一）：几何反走样」 文章，深入了解了下其中基于形态学反走样的 MLAA 和 SMAA 思路和实现方式。"><link rel=canonical href=https://xiaoiver.github.io/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html><meta property=og:url content=https://xiaoiver.github.io/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2019-01-31T00:00:00+08:00><script type=application/ld+json>{"description":"最近在学习一些通用的 postprocessing 技术，看到 Three.js 中的 SMAA 实现。结合知乎上这篇 「反走样技术（一）：几何反走样」 文章，深入了解了下其中基于形态学反走样的 MLAA 和 SMAA 思路和实现方式。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html","headline":"反走样技术（一）","dateModified":"2019-01-31T00:00:00+08:00","datePublished":"2019-01-31T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反走样技术（一） - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="反走样技术（一）">
+    <meta name="keywords"  content="WebGL">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>反走样技术（一） | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="反走样技术（一）" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="最近在学习一些通用的 postprocessing 技术，看到 Three.js 中的 SMAA 实现。结合知乎上这篇 「反走样技术（一）：几何反走样」 文章，深入了解了下其中基于形态学反走样的 MLAA 和 SMAA 思路和实现方式。" />
+<meta property="og:description" content="最近在学习一些通用的 postprocessing 技术，看到 Three.js 中的 SMAA 实现。结合知乎上这篇 「反走样技术（一）：几何反走样」 文章，深入了解了下其中基于形态学反走样的 MLAA 和 SMAA 思路和实现方式。" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-01-31T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"最近在学习一些通用的 postprocessing 技术，看到 Three.js 中的 SMAA 实现。结合知乎上这篇 「反走样技术（一）：几何反走样」 文章，深入了解了下其中基于形态学反走样的 MLAA 和 SMAA 思路和实现方式。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html","headline":"反走样技术（一）","dateModified":"2019-01-31T00:00:00+08:00","datePublished":"2019-01-31T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+    <script src="/assets/js/glsl-canvas.min.js"></script>
+    <script>
+        function initArrayBuffer(gl, program, attribute, data, type, num) {
             // Create a buffer object
             var buffer = gl.createBuffer();
             if (!buffer) {
@@ -24,16 +85,201 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             return true;
-        }</script><body><!--[if lt IE 10]>
+        }
+    </script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>反走样技术（一）</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=19-01-31><i class="iconfont icon-date"></i>31 Jan 2019</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/quaternion.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>基于形态学的方法 MLAA & SMAA</h2><article class=markdown-body><p>最近在学习一些通用的 postprocessing 技术，看到 Three.js 中的 SMAA 实现。结合知乎上这篇 <a href=https://zhuanlan.zhihu.com/p/28800047>「反走样技术（一）：几何反走样」</a> 文章，深入了解了下其中基于形态学反走样的 MLAA 和 SMAA 思路和实现方式。<h2 id=几何反走样基于形态学的方法>几何反走样：基于形态学的方法</h2><p>走样问题在之前实现实时软阴影时就已经遇到过了。<p>引用「反走样技术（一）：几何反走样」一文中关于形态学反走样的介绍：<blockquote><p>形态学反走样属于 Screen Space AA 的一类，它的基本思路是：假设同一物体在某些信息上存在连续性，那么可以通过检测像素在这些信息（颜色，深度，法线）上的不连续找出一些边缘，同时这些边缘根据局部形状不同会形成一些形态模式（pattern），我们通过总结出一些固有模式，然后通过这些模式反推（拟合）出采样前几何边界的解析形式（直线方程），最后通过这些方程再来计算每个像素的覆盖率，利用覆盖率的结果重新混合原始颜色（也就是resolve过程），最终达到反走样的目的。</blockquote><p>MLAA(Morphological Antialiasing) 和 SMAA(Subpixel Morphological Antialiasing) 在算法思路上并无区别，只是 MLAA 算法最初提出来是基于 CPU 的算法，而 SMAA 则结合 GPU 的特点进行了工程上的优化。<h2 id=mlaa>MLAA</h2><p>作者在「GPU Pro2」中介绍过 MLAA： <img src=/assets/img/webgl/mlaa1.png style="width: 300px"><p>以下是 Slide 中总结的具体步骤：<ul><li>Translate MLAA to use simple textures<li>Use pre-computed textures:<ul><li>Avoid dynamic branching<li>Avoid calculating areas on the fly</ul><li>Leverage bilinear filtering to the limit<li>Share calculations between pixels (pixels share edges!)<li>Mask operations by using the stencil buffer</ul><p>下面我们来看看具体的思路。<h3 id=算法思路>算法思路</h3><p>我们想找到边缘处的蓝线，蓝线以下黑色，以上白色： <img src=/assets/img/webgl/mlaa2.png style="width: 300px"><p>其中存在若干性能问题：<ol><li>查找<script type=math/tex>d_{left}</script><script type=math/tex>d_{right}</script>端点开销大<li>查找 crossing edge（黄圈部分）开销大<li>找到 crossing edge 之后 revectorization（线段形态）仍有 16 种（4个端点组合）<li>以上重复 4 个方向，一个像素点可能有 4 条直线经过</ol><p>解决方法：<ul><li>针对 1、2 点，引入 post-processing：<strong>bilinear filtering</strong><li>针对 3 点，使用预先生成的纹理图<li>针对 4 点，只计算上，左两个方向，减少相邻像素点的重复计算</ul><p><img src=/assets/img/webgl/mlaa3.png alt="图片 1.png"><p>下面来看实现细节。<h3 id=实现细节>实现细节</h3><p>一共会经过 3 个 pass：<ol><li>边缘检测，生成 edge texture<li>从每个不连续像素出发，找到经过它的直线的两个端点，记录端点的距离及整个线条的形状（这个形状模式最多有16种），并估算当前像素被这条线段切分后的两个部分的面积<li>每个像素最多被四个不同方向的线条切分，则该像素最多有四个面积权重，根据该权重，取周围像素和当前像素进行颜色混合</ol><p><img src=/assets/img/webgl/mlaa4.png alt="图片 1.png"><h4 id=边缘检测>边缘检测</h4><p>这部分具体实现省略，最终输出到纹理图中，假设边缘像素值为1，否则为0。<h4 id=2nd-pass>2nd pass</h4><p><img src=/assets/img/webgl/mlaa5.png><p>首先是查找 d，正常情况下需要读取第一步中生成的边缘纹理图，比较相邻两个像素点的值，需要读取纹理两次。但是如果使用 <strong>bilinear filtering</strong>，对相邻像素点的中点插值后，就只需要读取一次。 例如下图左侧读取菱形处的值为 1，说明仍处于边缘中，不是端点。而右图值为 0.5，说明来到了边缘的端点处。<p><img src=/assets/img/webgl/mlaa6.png style="width: 300px"> <img src=/assets/img/webgl/mlaa7.png style="width: 300px"><p>然后我们需要找到端点线条的形状，仍然采用 <strong>bilinear filtering</strong>。但是问题是在如下两种情况下值相同，仍然无法完全区分： <img src=/assets/img/webgl/mlaa8.png style="width: 300px"><p>解决办法是通过在采样点处增加 0.25 的偏移量来区分：<br><img src=/assets/img/webgl/mlaa9.png alt="图片 1.png"><br>最后需要计算覆盖面积。根据前面的优化方案，把 16 种线段形态以及面积覆盖率全部预计算到了一张贴图上，然后根据找到的端点位置和长度作为索引去查找这张4D贴图。<br><img src=/assets/img/webgl/mlaa10.png alt="图片 1.png"><h4 id=neighborhood-blending>Neighborhood Blending</h4><p>根据上一步计算出的面积覆盖率 a，求最终 c 点的像素值：<br><img src=/assets/img/webgl/mlaa11.png alt="图片 1.png"><h2 id=smaa>SMAA</h2><p>主要思路和 MLAA 一样，但是在 b、c 这两步做了边缘锐化和对角线处理的优化，以提升展示效果。<br><img src=/assets/img/webgl/mlaa12.png alt="图片 1.png"><h3 id=local-contrast-adaptation>Local Contrast Adaptation</h3><p>实际的边缘并不是黑白分明的，常常是渐变的，为了得到更准确的结果，我们需要扩大比较范围，除了上下左右，还要考虑上上和左左。<br>例如下图中绿色边缘其实并不精确： <img src=/assets/img/webgl/mlaa13.png style="width: 500px"><h3 id=sharp-geometric-features>Sharp Geometric Features</h3><p>之前 MLAA 在重建线段形态时（16种），如果遇到这种阶梯状在角落处会失真： <img src=/assets/img/webgl/mlaa14.png style="width: 300px"><p>解决方法也很简单，增加一种线段的类型，扩大查找端点的范围就行了：<br><img src=/assets/img/webgl/mlaa15.png alt="图片 1.png"><h3 id=diagonals>Diagonals</h3><p>MLAA 在遇到另一种线段的形态时，也会出现较差的效果。左图中对角线方向并不笔直，而是呈现锯齿状： <img src=/assets/img/webgl/mlaa16.png style="width: 300px"> <img src=/assets/img/webgl/mlaa17.png style="width: 300px"><p>解决方式就是增加对角线的形态以及面积覆盖率的贴图： <img src=/assets/img/webgl/mlaa18.png style="width: 300px"><h3 id=wipaccurate-searches>「WIP」Accurate Searches</h3><p>这部分是为了改进查找端点的精确性，提升查找效率。<h2 id=webgl-实现>WebGL 实现</h2><p>原作者论文中的实现是 OpenGL 版本的，WebGL 的版本基于 Three.js 的后处理 Composer。 <a href=https://threejs.org/examples/#webgl_postprocessing_smaa>Three.js 实现</a><h3 id=边缘检测实现>边缘检测实现</h3><p>对于边缘纹理进行线性插值：<div><pre class=line-numbers data-line=""><code class=language-javascript>this.edgesRT = new THREE.WebGLRenderTarget( width, height, {
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#WebGL" class="post-tag">WebGL</a>
+            
+            
+        </div>
+        <h1>反走样技术（一）</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="19-01-31"><i class="iconfont icon-date"></i>31 Jan 2019</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/webgl/quaternion.jpg') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <h2 class="post-subtitle">基于形态学的方法 MLAA & SMAA</h2>
+    
+    <article class="markdown-body">
+        <p>最近在学习一些通用的 postprocessing 技术，看到 Three.js 中的 SMAA 实现。结合知乎上这篇 <a href="https://zhuanlan.zhihu.com/p/28800047">「反走样技术（一）：几何反走样」</a> 文章，深入了解了下其中基于形态学反走样的 MLAA 和 SMAA 思路和实现方式。</p>
+
+<h2 id="几何反走样基于形态学的方法">几何反走样：基于形态学的方法</h2>
+
+<p>走样问题在之前实现实时软阴影时就已经遇到过了。</p>
+
+<p>引用「反走样技术（一）：几何反走样」一文中关于形态学反走样的介绍：</p>
+<blockquote>
+  <p>形态学反走样属于 Screen Space AA 的一类，它的基本思路是：假设同一物体在某些信息上存在连续性，那么可以通过检测像素在这些信息（颜色，深度，法线）上的不连续找出一些边缘，同时这些边缘根据局部形状不同会形成一些形态模式（pattern），我们通过总结出一些固有模式，然后通过这些模式反推（拟合）出采样前几何边界的解析形式（直线方程），最后通过这些方程再来计算每个像素的覆盖率，利用覆盖率的结果重新混合原始颜色（也就是resolve过程），最终达到反走样的目的。</p>
+</blockquote>
+
+<p>MLAA(Morphological Antialiasing) 和 SMAA(Subpixel Morphological Antialiasing) 在算法思路上并无区别，只是 MLAA 算法最初提出来是基于 CPU 的算法，而 SMAA 则结合 GPU 的特点进行了工程上的优化。</p>
+
+<h2 id="mlaa">MLAA</h2>
+
+<p>作者在「GPU Pro2」中介绍过 MLAA：
+<img src="/assets/img/webgl/mlaa1.png" style="width: 300px;" /></p>
+
+<p>以下是 Slide 中总结的具体步骤：</p>
+<ul>
+  <li>Translate MLAA to use simple textures</li>
+  <li>Use pre-computed textures:
+    <ul>
+      <li>Avoid dynamic branching</li>
+      <li>Avoid calculating areas on the fly</li>
+    </ul>
+  </li>
+  <li>Leverage bilinear filtering to the limit</li>
+  <li>Share calculations between pixels (pixels share edges!)</li>
+  <li>Mask operations by using the stencil buffer</li>
+</ul>
+
+<p>下面我们来看看具体的思路。</p>
+
+<h3 id="算法思路">算法思路</h3>
+
+<p>我们想找到边缘处的蓝线，蓝线以下黑色，以上白色：
+<img src="/assets/img/webgl/mlaa2.png" style="width: 300px;" /></p>
+
+<p>其中存在若干性能问题：</p>
+<ol>
+  <li>查找 <script type="math/tex">d_{left}</script> <script type="math/tex">d_{right}</script> 端点开销大</li>
+  <li>查找 crossing edge（黄圈部分）开销大</li>
+  <li>找到 crossing edge 之后 revectorization（线段形态）仍有 16 种（4个端点组合）</li>
+  <li>以上重复 4 个方向，一个像素点可能有 4 条直线经过</li>
+</ol>
+
+<p>解决方法：</p>
+<ul>
+  <li>针对 1、2 点，引入 post-processing：<strong>bilinear filtering</strong></li>
+  <li>针对 3 点，使用预先生成的纹理图</li>
+  <li>针对 4 点，只计算上，左两个方向，减少相邻像素点的重复计算</li>
+</ul>
+
+<p><img src="/assets/img/webgl/mlaa3.png" alt="图片 1.png" /></p>
+
+<p>下面来看实现细节。</p>
+
+<h3 id="实现细节">实现细节</h3>
+
+<p>一共会经过 3 个 pass：</p>
+<ol>
+  <li>边缘检测，生成 edge texture</li>
+  <li>从每个不连续像素出发，找到经过它的直线的两个端点，记录端点的距离及整个线条的形状（这个形状模式最多有16种），并估算当前像素被这条线段切分后的两个部分的面积</li>
+  <li>每个像素最多被四个不同方向的线条切分，则该像素最多有四个面积权重，根据该权重，取周围像素和当前像素进行颜色混合</li>
+</ol>
+
+<p><img src="/assets/img/webgl/mlaa4.png" alt="图片 1.png" /></p>
+<h4 id="边缘检测">边缘检测</h4>
+<p>这部分具体实现省略，最终输出到纹理图中，假设边缘像素值为1，否则为0。</p>
+<h4 id="2nd-pass">2nd pass</h4>
+<p><img src="/assets/img/webgl/mlaa5.png" /></p>
+
+<p>首先是查找 d，正常情况下需要读取第一步中生成的边缘纹理图，比较相邻两个像素点的值，需要读取纹理两次。但是如果使用 <strong>bilinear filtering</strong>，对相邻像素点的中点插值后，就只需要读取一次。
+例如下图左侧读取菱形处的值为 1，说明仍处于边缘中，不是端点。而右图值为 0.5，说明来到了边缘的端点处。</p>
+
+<p><img src="/assets/img/webgl/mlaa6.png" style="width: 300px;" />
+<img src="/assets/img/webgl/mlaa7.png" style="width: 300px;" /></p>
+
+<p>然后我们需要找到端点线条的形状，仍然采用 <strong>bilinear filtering</strong>。但是问题是在如下两种情况下值相同，仍然无法完全区分：
+<img src="/assets/img/webgl/mlaa8.png" style="width: 300px;" /></p>
+
+<p>解决办法是通过在采样点处增加 0.25 的偏移量来区分：<br /><img src="/assets/img/webgl/mlaa9.png" alt="图片 1.png" /><br />最后需要计算覆盖面积。根据前面的优化方案，把 16 种线段形态以及面积覆盖率全部预计算到了一张贴图上，然后根据找到的端点位置和长度作为索引去查找这张4D贴图。<br /><img src="/assets/img/webgl/mlaa10.png" alt="图片 1.png" /></p>
+
+<h4 id="neighborhood-blending">Neighborhood Blending</h4>
+<p>根据上一步计算出的面积覆盖率 a，求最终 c 点的像素值：<br /><img src="/assets/img/webgl/mlaa11.png" alt="图片 1.png" /></p>
+
+<h2 id="smaa">SMAA</h2>
+<p>主要思路和 MLAA 一样，但是在 b、c 这两步做了边缘锐化和对角线处理的优化，以提升展示效果。<br /><img src="/assets/img/webgl/mlaa12.png" alt="图片 1.png" /></p>
+<h3 id="local-contrast-adaptation">Local Contrast Adaptation</h3>
+<p>实际的边缘并不是黑白分明的，常常是渐变的，为了得到更准确的结果，我们需要扩大比较范围，除了上下左右，还要考虑上上和左左。<br />例如下图中绿色边缘其实并不精确：
+<img src="/assets/img/webgl/mlaa13.png" style="width: 500px;" /></p>
+
+<h3 id="sharp-geometric-features">Sharp Geometric Features</h3>
+<p>之前 MLAA 在重建线段形态时（16种），如果遇到这种阶梯状在角落处会失真：
+<img src="/assets/img/webgl/mlaa14.png" style="width: 300px;" /></p>
+
+<p>解决方法也很简单，增加一种线段的类型，扩大查找端点的范围就行了：<br /><img src="/assets/img/webgl/mlaa15.png" alt="图片 1.png" /></p>
+
+<h3 id="diagonals">Diagonals</h3>
+<p>MLAA 在遇到另一种线段的形态时，也会出现较差的效果。左图中对角线方向并不笔直，而是呈现锯齿状：
+<img src="/assets/img/webgl/mlaa16.png" style="width: 300px;" />
+<img src="/assets/img/webgl/mlaa17.png" style="width: 300px;" /></p>
+
+<p>解决方式就是增加对角线的形态以及面积覆盖率的贴图：
+<img src="/assets/img/webgl/mlaa18.png" style="width: 300px;" /></p>
+
+<h3 id="wipaccurate-searches">「WIP」Accurate Searches</h3>
+<p>这部分是为了改进查找端点的精确性，提升查找效率。</p>
+
+<h2 id="webgl-实现">WebGL 实现</h2>
+
+<p>原作者论文中的实现是 OpenGL 版本的，WebGL 的版本基于 Three.js 的后处理 Composer。
+<a href="https://threejs.org/examples/#webgl_postprocessing_smaa">Three.js 实现</a></p>
+
+<h3 id="边缘检测实现">边缘检测实现</h3>
+<p>对于边缘纹理进行线性插值：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">this.edgesRT = new THREE.WebGLRenderTarget( width, height, {
   depthBuffer: false,
   stencilBuffer: false,
   generateMipmaps: false,
   minFilter: THREE.LinearFilter,
   format: THREE.RGBFormat
 });
-this.edgesRT.texture.name = &quot;SMAAPass.edges&quot;;</code></pre></div><p>vs 中记录采样点附近上下左右以及左左，上上一共六个邻节点的纹理坐标：<div><pre class=line-numbers data-line=""><code class=language-glsl>uniform vec2 resolution;
+this.edgesRT.texture.name = &quot;SMAAPass.edges&quot;;</code></pre>
+</div>
+
+<p>vs 中记录采样点附近上下左右以及左左，上上一共六个邻节点的纹理坐标：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">uniform vec2 resolution;
 
 varying vec2 vUv;
 varying vec4 vOffset[ 3 ];
@@ -45,7 +291,12 @@ void SMAAEdgeDetectionVS( vec2 texcoord ) {
   vOffset[ 1 ] = texcoord.xyxy + resolution.xyxy * vec4(  1.0, 0.0, 0.0, -1.0 );
   // 左左，上上
   vOffset[ 2 ] = texcoord.xyxy + resolution.xyxy * vec4( -2.0, 0.0, 0.0,  2.0 );
-}</code></pre></div><p>fs 中负责将边缘检测判断结果输出到 rg 分量中：<div><pre class=line-numbers data-line=""><code class=language-glsl>// 以下是具体方法实现
+}</code></pre>
+</div>
+
+<p>fs 中负责将边缘检测判断结果输出到 rg 分量中：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">// 以下是具体方法实现
 gl_FragColor = SMAAColorEdgeDetectionPS( vUv, vOffset, tDiffuse );
 
 // 记录颜色 delta
@@ -80,7 +331,15 @@ float maxDelta = max( max( max( delta.x, delta.y ), delta.z ), delta.w );
 edges.xy *= step( 0.5 * maxDelta, delta.xy );
 
 // 输出到最终纹理中
-return vec4( edges, 0.0, 0.0 );</code></pre></div><h3 id=查找端点形态>查找端点&amp;形态</h3><p>这部分是最复杂的一步，首先在上一步边缘检测中，纹理图的 rg 分量表示边缘在垂直或者水平方向。 如果在水平方向，需要向左右两侧查找<script type=math/tex>d_{left}</script>和<script type=math/tex>d_{right}</script>：<div><pre class=line-numbers data-line=""><code class=language-glsl>// 判断当前像素点是否是边缘
+return vec4( edges, 0.0, 0.0 );</code></pre>
+</div>
+
+<h3 id="查找端点形态">查找端点&amp;形态</h3>
+
+<p>这部分是最复杂的一步，首先在上一步边缘检测中，纹理图的 rg 分量表示边缘在垂直或者水平方向。
+如果在水平方向，需要向左右两侧查找 <script type="math/tex">d_{left}</script> 和 <script type="math/tex">d_{right}</script>：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">// 判断当前像素点是否是边缘
 vec2 e = texture2D( edgesTex, texcoord ).rg;
 // 是水平方向的边缘
 if ( e.g &gt; 0.0 ) {
@@ -93,7 +352,12 @@ if ( e.g &gt; 0.0 ) {
   d.x = coords.x;
   
   // 查找端点 e1
-  float e1 = texture2D( edgesTex, coords, 0.0 ).r;</code></pre></div><p>同理查找 dRight 和 e2，此时有了边缘长度以及两个端点 e1 e2，就可以在形态纹理（160 x 560）中查找了：<div><pre class=line-numbers data-line=""><code class=language-glsl>weights.rg = SMAAArea( areaTex, sqrt_d, e1, e2, float( subsampleIndices.y ) );
+  float e1 = texture2D( edgesTex, coords, 0.0 ).r;</code></pre>
+</div>
+
+<p>同理查找 dRight 和 e2，此时有了边缘长度以及两个端点 e1 e2，就可以在形态纹理（160 x 560）中查找了：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">weights.rg = SMAAArea( areaTex, sqrt_d, e1, e2, float( subsampleIndices.y ) );
 
 vec2 SMAAArea( sampler2D areaTex, vec2 dist, float e1, float e2, float offset ) {
   // Rounding prevents precision errors of bilinear filtering:
@@ -107,7 +371,13 @@ vec2 SMAAArea( sampler2D areaTex, vec2 dist, float e1, float e2, float offset ) 
 
   // 查找面积覆盖率
   return texture2D( areaTex, texcoord, 0.0 ).rg;
-}</code></pre></div><h3 id=最终混合>最终混合</h3><p>经过当前 fragment 的直线有四条（上下左右），我们需要找到覆盖面积最大的一条进行后续的混合：<div><pre class=line-numbers data-line=""><code class=language-glsl>vec4 SMAANeighborhoodBlendingPS( vec2 texcoord, vec4 offset[ 2 ], sampler2D colorTex, sampler2D blendTex )
+}</code></pre>
+</div>
+
+<h3 id="最终混合">最终混合</h3>
+<p>经过当前 fragment 的直线有四条（上下左右），我们需要找到覆盖面积最大的一条进行后续的混合：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">vec4 SMAANeighborhoodBlendingPS( vec2 texcoord, vec4 offset[ 2 ], sampler2D colorTex, sampler2D blendTex )
 
 // Fetch the blending weights for current pixel:
 vec4 a;
@@ -141,7 +411,102 @@ Cop.xyz = pow(Cop.xyz, vec3(2.2));
 vec4 mixed = mix(C, Cop, s);
 mixed.xyz = pow(mixed.xyz, vec3(1.0 / 2.2));
 
-return mixed;</code></pre></div><h3 id=webgl2>WebGL2</h3><p><a href=https://github.com/shrekshao/MoveWebGL1EngineToWebGL2/blob/master/Move-a-WebGL-1-Engine-To-WebGL-2-Blog-2.md#multisampled-renderbuffers>https://github.com/shrekshao/MoveWebGL1EngineToWebGL2/blob/master/Move-a-WebGL-1-Engine-To-WebGL-2-Blog-2.md#multisampled-renderbuffers</a><h2 id=总结>总结</h2><p>本文总结了基于形态学的几何反走样技术 MLAA 和 SMAA，在下一篇中我们将介绍基于时间的方法 TAA。 其实在 SMAA Paper 和 Slide 最后也介绍了 SMAA 和 TAA 结合的使用方式。<h2 id=参考资料>参考资料</h2><ul><li><a href=https://zhuanlan.zhihu.com/p/28800047>反走样技术（一）：几何反走样</a><li><a href=http://www.iryoku.com/smaa/downloads/SMAA-Enhanced-Subpixel-Morphological-Antialiasing.pdf>SMAA Paper</a><li><a href=http://www.iryoku.com/smaa/downloads/SMAA-Enhanced-Subpixel-Morphological-Antialiasing.pptx>SMAA Slide</a><li><a href=https://threejs.org/examples/#webgl_postprocessing_smaa>Three.js 实现</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2019/02/01/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%BA%8C.html class=read-next-link></a><section><span>反走样技术（二）</span><p>「Nvidia 原版 FXAA_WhitePaper.pdf」🔗 反走样技术总结 「Implementin...</section><div class=filter></div><img src=/assets/img/webgl/quaternion.jpg alt=""></div><div class=read-next-item><a href=/coding/2019/01/21/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%89.html class=read-next-link></a><section><span>OSG 学习笔记（三）</span><p>在之前的文章中我们已经了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关...</section><div class=filter></div><img src=/assets/img/webgl/openscenegraph-course.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+return mixed;</code></pre>
+</div>
+
+<h3 id="webgl2">WebGL2 </h3>
+<p><a href="https://github.com/shrekshao/MoveWebGL1EngineToWebGL2/blob/master/Move-a-WebGL-1-Engine-To-WebGL-2-Blog-2.md#multisampled-renderbuffers">https://github.com/shrekshao/MoveWebGL1EngineToWebGL2/blob/master/Move-a-WebGL-1-Engine-To-WebGL-2-Blog-2.md#multisampled-renderbuffers</a></p>
+
+<h2 id="总结">总结</h2>
+
+<p>本文总结了基于形态学的几何反走样技术 MLAA 和 SMAA，在下一篇中我们将介绍基于时间的方法 TAA。
+其实在 SMAA Paper 和 Slide 最后也介绍了 SMAA 和 TAA 结合的使用方式。</p>
+
+<h2 id="参考资料">参考资料</h2>
+
+<ul>
+  <li><a href="https://zhuanlan.zhihu.com/p/28800047">反走样技术（一）：几何反走样</a></li>
+  <li><a href="http://www.iryoku.com/smaa/downloads/SMAA-Enhanced-Subpixel-Morphological-Antialiasing.pdf">SMAA Paper</a></li>
+  <li><a href="http://www.iryoku.com/smaa/downloads/SMAA-Enhanced-Subpixel-Morphological-Antialiasing.pptx">SMAA Slide</a></li>
+  <li><a href="https://threejs.org/examples/#webgl_postprocessing_smaa">Three.js 实现</a></li>
+</ul>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2019/02/01/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%BA%8C.html" class="read-next-link"></a>
+            <section>
+                <span>反走样技术（二）</span>
+                <p>  「Nvidia 原版 FXAA_WhitePaper.pdf」🔗  反走样技术总结  「Implementin...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/quaternion.jpg" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2019/01/21/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%89.html" class="read-next-link"></a>
+            <section>
+                <span>OSG 学习笔记（三）</span>
+                <p>在之前的文章中我们已经了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/openscenegraph-course.jpg" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -151,11 +516,41 @@ return mixed;</code></pre></div><h3 id=webgl2>WebGL2</h3><p><a href=https://gith
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2020</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -199,11 +594,7 @@ return mixed;</code></pre></div><h3 id=webgl2>WebGL2</h3><p><a href=https://gith
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>

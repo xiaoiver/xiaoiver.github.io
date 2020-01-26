@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "我们的日本行",
+      "tags"     : "travel-notes",
+      "url"      : "/music/2020/01/25/%E6%88%91%E4%BB%AC%E7%9A%84%E6%97%A5%E6%9C%AC%E8%A1%8C.html"
+    } ,
+  
+    {
       "title"    : "Bloom",
       "tags"     : "WebGL",
       "url"      : "/coding/2019/02/07/Bloom.html"

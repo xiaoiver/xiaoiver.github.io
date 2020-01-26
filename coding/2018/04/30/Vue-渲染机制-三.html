@@ -1,9 +1,130 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Vue 渲染机制（三） - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="Vue 渲染机制（三）"><meta name=keywords content=vue><title>Vue 渲染机制（三） | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="Vue 渲染机制（三）"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="之前我们已经生成了 VNode，将 VNode 渲染成真实 DOM 的工作在 __patch__() 中进行："><meta property=og:description content="之前我们已经生成了 VNode，将 VNode 渲染成真实 DOM 的工作在 __patch__() 中进行："><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-04-30T00:00:00+08:00><script type=application/ld+json>{"description":"之前我们已经生成了 VNode，将 VNode 渲染成真实 DOM 的工作在 __patch__() 中进行：","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html","headline":"Vue 渲染机制（三）","dateModified":"2018-04-30T00:00:00+08:00","datePublished":"2018-04-30T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue 渲染机制（三） - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="Vue 渲染机制（三）">
+    <meta name="keywords"  content="vue">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>Vue 渲染机制（三） | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="Vue 渲染机制（三）" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="之前我们已经生成了 VNode，将 VNode 渲染成真实 DOM 的工作在 __patch__() 中进行：" />
+<meta property="og:description" content="之前我们已经生成了 VNode，将 VNode 渲染成真实 DOM 的工作在 __patch__() 中进行：" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-04-30T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"之前我们已经生成了 VNode，将 VNode 渲染成真实 DOM 的工作在 __patch__() 中进行：","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html","headline":"Vue 渲染机制（三）","dateModified":"2018-04-30T00:00:00+08:00","datePublished":"2018-04-30T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#vue class=post-tag>vue</a></div><h1>Vue 渲染机制（三）</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-04-30><i class="iconfont icon-date"></i>30 Apr 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/vue-render.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>从 VNode 到 DOM</h2><article class=markdown-body><p>之前我们已经生成了 VNode，将 VNode 渲染成真实 DOM 的工作在 <code class=highlighter-rouge>__patch__()</code> 中进行：<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/core/instance/render.js
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#vue" class="post-tag">vue</a>
+            
+            
+        </div>
+        <h1>Vue 渲染机制（三）</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="18-04-30"><i class="iconfont icon-date"></i>30 Apr 2018</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/vue-render.png') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <h2 class="post-subtitle">从 VNode 到 DOM</h2>
+    
+    <article class="markdown-body">
+        <p>之前我们已经生成了 VNode，将 VNode 渲染成真实 DOM 的工作在 <code class="highlighter-rouge">__patch__()</code> 中进行：</p>
+
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/core/instance/render.js
 
 Vue.prototype._update = function (vnode, hydrating) {
     const vm = this;
@@ -34,7 +155,19 @@ Vue.prototype._update = function (vnode, hydrating) {
         // updates
         vm.$el = vm.__patch__(prevVnode, vnode);
     }
-};</code></pre></div><h2 id=平台化-patch>平台化 patch</h2><p>patch 方法和平台相关，比如在浏览器环境中需要生成 DOM，所以在 <code class=highlighter-rouge>/platform</code> 文件夹下：<div><pre class=line-numbers data-line=""><code class=language-javascript>Vue.prototype.__patch__ = inBrowser ? patch : noop;</code></pre></div><p>其中需要定义一些和平台相关的操作方法，比如使用了 DOM API 的一系列操作：<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/platforms/web/runtime/node-ops.js
+};</code></pre>
+</div>
+
+<h2 id="平台化-patch">平台化 patch</h2>
+
+<p>patch 方法和平台相关，比如在浏览器环境中需要生成 DOM，所以在 <code class="highlighter-rouge">/platform</code> 文件夹下：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">Vue.prototype.__patch__ = inBrowser ? patch : noop;</code></pre>
+</div>
+
+<p>其中需要定义一些和平台相关的操作方法，比如使用了 DOM API 的一系列操作：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/platforms/web/runtime/node-ops.js
 
 export function createElement(tagName, vnode) {
     const elm = document.createElement(tagName);
@@ -47,13 +180,31 @@ export function createTextNode(text) {
 
 export function createComment(text) {
     return document.createComment(text);
-}</code></pre></div><p>patch 方法肩负了初始创建和 Diff 新旧节点两个任务。 另外，定义了一系列生命周期方法，便于平台方提供自定义处理逻辑。<div><pre class=line-numbers data-line=""><code class=language-javascript>const hooks = [&#39;create&#39;, &#39;activate&#39;, &#39;update&#39;, &#39;remove&#39;, &#39;destroy&#39;];</code></pre></div><h2 id=创建新节点>创建新节点</h2><p>我们先来看创建新节点的部分：<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/core/vdom/patch.js
+}</code></pre>
+</div>
+
+<p>patch 方法肩负了初始创建和 Diff 新旧节点两个任务。
+另外，定义了一系列生命周期方法，便于平台方提供自定义处理逻辑。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">const hooks = [&#39;create&#39;, &#39;activate&#39;, &#39;update&#39;, &#39;remove&#39;, &#39;destroy&#39;];</code></pre>
+</div>
+
+<h2 id="创建新节点">创建新节点</h2>
+
+<p>我们先来看创建新节点的部分：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/core/vdom/patch.js
 
 if (isUndef(oldVnode)) {
     // empty mount (likely as component), create new root element
     isInitialPatch = true;
     createElm(vnode, insertedVnodeQueue, parentElm, refElm);
-}</code></pre></div><p>创建 DOM 元素的方法使用之前封装的 DOM API，DOM 节点存放在 <code class=highlighter-rouge>vnode.elm</code> 上<div><pre class=line-numbers data-line=""><code class=language-javascript>function createElm(vnode, insertedVnodeQueue, parentElm, refElm, nested) {
+}</code></pre>
+</div>
+
+<p>创建 DOM 元素的方法使用之前封装的 DOM API，DOM 节点存放在 <code class="highlighter-rouge">vnode.elm</code> 上</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">function createElm(vnode, insertedVnodeQueue, parentElm, refElm, nested) {
     vnode.isRootInsert = !nested; // for transition enter check
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
         return;
@@ -92,7 +243,14 @@ if (isUndef(oldVnode)) {
         vnode.elm = nodeOps.createTextNode(vnode.text);
         insert(parentElm, vnode.elm, refElm);
     }
-}</code></pre></div><h3 id=scoped-css>Scoped CSS</h3><p>在 DOM 节点上添加 <code class=highlighter-rouge>data-xxx</code> 属性：<div><pre class=line-numbers data-line=""><code class=language-javascript>function setScope(vnode) {
+}</code></pre>
+</div>
+
+<h3 id="scoped-css">Scoped CSS</h3>
+
+<p>在 DOM 节点上添加 <code class="highlighter-rouge">data-xxx</code> 属性：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">function setScope(vnode) {
     let i;
     if (isDef(i = vnode.functionalScopeId)) {
         nodeOps.setAttribute(vnode.elm, i, &#39;&#39;);
@@ -115,14 +273,27 @@ if (isUndef(oldVnode)) {
     ) {
         nodeOps.setAttribute(vnode.elm, i, &#39;&#39;);
     }
-}</code></pre></div><h2 id=diff-算法>Diff 算法</h2><p>除了创建新节点，patch 方法也需要比较新旧 VNode 节点，执行更新操作。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/core/vdom/patch.js
+}</code></pre>
+</div>
+
+<h2 id="diff-算法">Diff 算法</h2>
+
+<p>除了创建新节点，patch 方法也需要比较新旧 VNode 节点，执行更新操作。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/core/vdom/patch.js
 
 else {
     const isRealElement = isDef(oldVnode.nodeType);
     if (!isRealElement &amp;&amp; sameVnode(oldVnode, vnode)) {
         // patch existing root node
         patchVnode(oldVnode, vnode, insertedVnodeQueue, removeOnly);
-    }</code></pre></div><p>除了执行最开始提到的平台钩子，<code class=highlighter-rouge>data.hook</code> 是前一篇文章中介绍过的，在创建元素型 VNode 时定义的。 一些简单的情况比较好理解，比如如果只是文本改变，只需要调用 <code class=highlighter-rouge>setTextContent()</code> 设置文本内容。<div><pre class=line-numbers data-line=""><code class=language-javascript>function patchVnode(oldVnode, vnode, insertedVnodeQueue, removeOnly) {
+    }</code></pre>
+</div>
+
+<p>除了执行最开始提到的平台钩子，<code class="highlighter-rouge">data.hook</code> 是前一篇文章中介绍过的，在创建元素型 VNode 时定义的。
+一些简单的情况比较好理解，比如如果只是文本改变，只需要调用 <code class="highlighter-rouge">setTextContent()</code> 设置文本内容。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">function patchVnode(oldVnode, vnode, insertedVnodeQueue, removeOnly) {
     if (oldVnode === vnode) {
         return;
     }
@@ -178,7 +349,12 @@ else {
             i(oldVnode, vnode);
         }
     }
-}</code></pre></div><p>所以核心是 <code class=highlighter-rouge>updateChildren()</code> 方法，这里面就涉及到 Diff 算法的核心，其实就是深度优先遍历。在比较新老两组子节点时，我们分别设置一头一尾两个指针，比较过程中两组指针都相遇了就终止：<div><pre class=line-numbers data-line=""><code class=language-javascript>function updateChildren(parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
+}</code></pre>
+</div>
+
+<p>所以核心是 <code class="highlighter-rouge">updateChildren()</code> 方法，这里面就涉及到 Diff 算法的核心，其实就是深度优先遍历。在比较新老两组子节点时，我们分别设置一头一尾两个指针，比较过程中两组指针都相遇了就终止：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">function updateChildren(parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
     let oldStartIdx = 0;
     let newStartIdx = 0;
     let oldEndIdx = oldCh.length - 1;
@@ -190,7 +366,12 @@ else {
 
     while (oldStartIdx &lt;= oldEndIdx &amp;&amp; newStartIdx &lt;= newEndIdx) {
     }
-}</code></pre></div><p>当新老头尾节点相同时，直接应用上面提到的 <code class=highlighter-rouge>patchVnode()</code>：<div><pre class=line-numbers data-line=""><code class=language-javascript>else if (sameVnode(oldStartVnode, newStartVnode)) {
+}</code></pre>
+</div>
+
+<p>当新老头尾节点相同时，直接应用上面提到的 <code class="highlighter-rouge">patchVnode()</code>：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">else if (sameVnode(oldStartVnode, newStartVnode)) {
     patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue);
     oldStartVnode = oldCh[++oldStartIdx];
     newStartVnode = newCh[++newStartIdx];
@@ -199,7 +380,12 @@ else if (sameVnode(oldEndVnode, newEndVnode)) {
     patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue);
     oldEndVnode = oldCh[--oldEndIdx];
     newEndVnode = newCh[--newEndIdx];
-}</code></pre></div><p>当发现新的头部节点恰好就是老的尾部节点时，只需要移动老的尾部节点到头部就能完成更新操作，反之亦然。<div><pre class=line-numbers data-line=""><code class=language-javascript>else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
+}</code></pre>
+</div>
+
+<p>当发现新的头部节点恰好就是老的尾部节点时，只需要移动老的尾部节点到头部就能完成更新操作，反之亦然。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
     patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue);
     canMove &amp;&amp; nodeOps.insertBefore(parentElm, oldStartVnode.elm, nodeOps.nextSibling(oldEndVnode.elm));
     oldStartVnode = oldCh[++oldStartIdx];
@@ -210,7 +396,12 @@ else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
     canMove &amp;&amp; nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm);
     oldEndVnode = oldCh[--oldEndIdx];
     newStartVnode = newCh[++newStartIdx];
-}</code></pre></div><p>如果发现新节点的 key 在老数组中不存在，需要创建新元素。如果存在就只要移动节点，这也是 Vue 列表元素通常需要设置 <code class=highlighter-rouge>key</code> 属性的原因，能帮助高效地完成更新。<div><pre class=line-numbers data-line=""><code class=language-javascript>else {
+}</code></pre>
+</div>
+
+<p>如果发现新节点的 key 在老数组中不存在，需要创建新元素。如果存在就只要移动节点，这也是 Vue 列表元素通常需要设置 <code class="highlighter-rouge">key</code> 属性的原因，能帮助高效地完成更新。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">else {
     if (isUndef(oldKeyToIdx)) {
         oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx);
     }
@@ -235,12 +426,30 @@ else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
         }
     }
     newStartVnode = newCh[++newStartIdx];
-}</code></pre></div><p>最后，如果老数组已经处理完，而新数组还有，直接把新数组中的多余内容添加进来：<div><pre class=line-numbers data-line=""><code class=language-javascript>if (oldStartIdx &gt; oldEndIdx) {
+}</code></pre>
+</div>
+
+<p>最后，如果老数组已经处理完，而新数组还有，直接把新数组中的多余内容添加进来：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">if (oldStartIdx &gt; oldEndIdx) {
     refElm = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm;
     addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue);
-}</code></pre></div><p>同样如果老数组出现了多余元素，直接删掉就完成了更新。<div><pre class=line-numbers data-line=""><code class=language-javascript>else if (newStartIdx &gt; newEndIdx) {
+}</code></pre>
+</div>
+
+<p>同样如果老数组出现了多余元素，直接删掉就完成了更新。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">else if (newStartIdx &gt; newEndIdx) {
     removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
-}</code></pre></div><h2 id=hydrate>Hydrate</h2><p>还有第三种情况，就是 SSR 中的前端混合。在检查到 DOM 元素上确实包含服务端渲染的标记后，执行 <code class=highlighter-rouge>hydrate()</code>。 这个方法也定义在 vdom 中，似乎违背了与平台无关的原则，毕竟里面操作的是 DOM。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/core/vdom/patch.js
+}</code></pre>
+</div>
+
+<h2 id="hydrate">Hydrate</h2>
+
+<p>还有第三种情况，就是 SSR 中的前端混合。在检查到 DOM 元素上确实包含服务端渲染的标记后，执行 <code class="highlighter-rouge">hydrate()</code>。
+这个方法也定义在 vdom 中，似乎违背了与平台无关的原则，毕竟里面操作的是 DOM。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/core/vdom/patch.js
 
 // DOM 元素上是否有 data-server-rendered 标记
 if (oldVnode.nodeType === 1 &amp;&amp; oldVnode.hasAttribute(SSR_ATTR)) {
@@ -252,7 +461,12 @@ if (isTrue(hydrating)) {
     if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
         invokeInsertHook(vnode, insertedVnodeQueue, true);
         return oldVnode;
-    }</code></pre></div><p>终于见到了开发模式下经常出现的 mismatch 警告。<div><pre class=line-numbers data-line=""><code class=language-javascript>let bailed = false;
+    }</code></pre>
+</div>
+
+<p>终于见到了开发模式下经常出现的 mismatch 警告。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">let bailed = false;
 
 function hydrate(elm, vnode, insertedVnodeQueue) {
     // mismatch 警告，比较 DOM 和 VNode
@@ -267,7 +481,14 @@ function hydrate(elm, vnode, insertedVnodeQueue) {
         data,
         children
     } = vnode;
-    // 省略后续...</code></pre></div><h3 id=触发-init-钩子>触发 init 钩子</h3><p>触发 init 钩子<div><pre class=line-numbers data-line=""><code class=language-javascript>if (isDef(data)) {
+    // 省略后续...</code></pre>
+</div>
+
+<h3 id="触发-init-钩子">触发 init 钩子</h3>
+
+<p>触发 init 钩子</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">if (isDef(data)) {
     if (isDef(i = data.hook) &amp;&amp; isDef(i = i.init)) {
         i(
             vnode,
@@ -280,7 +501,12 @@ function hydrate(elm, vnode, insertedVnodeQueue) {
         initComponent(vnode, insertedVnodeQueue);
         return true;
     }
-}</code></pre></div><p>对 DOM 元素的子节点递归调用 hydrate：<div><pre class=line-numbers data-line=""><code class=language-javascript>if (isDef(tag)) {
+}</code></pre>
+</div>
+
+<p>对 DOM 元素的子节点递归调用 hydrate：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">if (isDef(tag)) {
     if (isDef(children)) {
         // 空节点，直接重新渲染
         if (!elm.hasChildNodes()) {
@@ -300,7 +526,15 @@ function hydrate(elm, vnode, insertedVnodeQueue) {
             }
         }
     }
-}</code></pre></div><h3 id=重新生成属性>重新生成属性</h3><p>在混合过程中，某些属性不需要重新创建初始化，例如一些静态的 <code class=highlighter-rouge>class</code> <code class=highlighter-rouge>style</code> 等等。 但是例如事件绑定工作是需要重新执行一遍的，这里就需要调用这些属性的 <code class=highlighter-rouge>create</code> 钩子。<div><pre class=line-numbers data-line=""><code class=language-javascript>const isRenderedModule = makeMap(&#39;attrs,style,class,staticClass,staticStyle,key&#39;);
+}</code></pre>
+</div>
+
+<h3 id="重新生成属性">重新生成属性</h3>
+
+<p>在混合过程中，某些属性不需要重新创建初始化，例如一些静态的 <code class="highlighter-rouge">class</code> <code class="highlighter-rouge">style</code> 等等。
+但是例如事件绑定工作是需要重新执行一遍的，这里就需要调用这些属性的 <code class="highlighter-rouge">create</code> 钩子。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">const isRenderedModule = makeMap(&#39;attrs,style,class,staticClass,staticStyle,key&#39;);
 
 if (isDef(data)) {
     for (const key in data) {
@@ -309,7 +543,14 @@ if (isDef(data)) {
             break;
         }
     }
-}</code></pre></div><h2 id=收尾工作>收尾工作</h2><p>在 patch 和 hydrate 完成后都会调用 insert 钩子<div><pre class=line-numbers data-line=""><code class=language-javascript>function invokeInsertHook(vnode, queue, initial) {
+}</code></pre>
+</div>
+
+<h2 id="收尾工作">收尾工作</h2>
+
+<p>在 patch 和 hydrate 完成后都会调用 insert 钩子</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">function invokeInsertHook(vnode, queue, initial) {
     // delay insert hooks for component root nodes, invoke them after the
     // element is really inserted
     if (isTrue(initial) &amp;&amp; isDef(vnode.parent)) {
@@ -320,7 +561,12 @@ if (isDef(data)) {
             queue[i].data.hook.insert(queue[i]);
         }
     }
-}</code></pre></div><p>而 insert 钩子会给 Vue 实例添加完成标记，并执行 <code class=highlighter-rouge>mounted()</code> 生命周期函数。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/core/vdom/create-component.js
+}</code></pre>
+</div>
+
+<p>而 insert 钩子会给 Vue 实例添加完成标记，并执行 <code class="highlighter-rouge">mounted()</code> 生命周期函数。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/core/vdom/create-component.js
 
 insert(vnode) {
     const {context, componentInstance} = vnode;
@@ -330,7 +576,91 @@ insert(vnode) {
     }
 
     // 省略 keep-alive 相关处理
-},</code></pre></div><p>至此终于完成了整个 <code class=highlighter-rouge>$mount()</code> 的渲染流程。<h2 id=总结>总结</h2><p>这部分包含的内容很多，包括了关于 VNode 的 Diff 算法以及 SSR 客户端混合逻辑。</article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/05/01/Vue-+-Custom-Elements.html class=read-next-link></a><section><span>Vue + Custom Elements</span><p>都知道 Polymer 以 WebComponents 为基础，其实 Vue 也有与之结合的插件，代码不多，最近抽...</section><div class=filter></div><img src=/assets/img/vue-custom-element-logo-text.png alt=""></div><div class=read-next-item><a href=/coding/2018/04/29/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%BA%8C.html class=read-next-link></a><section><span>Vue 渲染机制（二）</span><p>上文介绍了在编译阶段，从 HTML 字符串到 render() 函数的生成过程。让我们回到运行阶段的 $mount...</section><div class=filter></div><img src=/assets/img/vue-render.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+},</code></pre>
+</div>
+
+<p>至此终于完成了整个 <code class="highlighter-rouge">$mount()</code> 的渲染流程。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>这部分包含的内容很多，包括了关于 VNode 的 Diff 算法以及 SSR 客户端混合逻辑。</p>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/05/01/Vue-+-Custom-Elements.html" class="read-next-link"></a>
+            <section>
+                <span>Vue + Custom Elements</span>
+                <p>都知道 Polymer 以 WebComponents 为基础，其实 Vue 也有与之结合的插件，代码不多，最近抽...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/vue-custom-element-logo-text.png" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/04/29/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%BA%8C.html" class="read-next-link"></a>
+            <section>
+                <span>Vue 渲染机制（二）</span>
+                <p>上文介绍了在编译阶段，从 HTML 字符串到 render() 函数的生成过程。让我们回到运行阶段的 $mount...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/vue-render.png" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -340,11 +670,41 @@ insert(vnode) {
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2020</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -388,11 +748,7 @@ insert(vnode) {
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>

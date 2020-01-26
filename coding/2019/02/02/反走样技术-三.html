@@ -1,7 +1,68 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>反走样技术（三） - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=反走样技术（三）><meta name=keywords content=WebGL><title>反走样技术（三） | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=反走样技术（三）><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="前两篇关于几何反走样 MLAA/SMAA 和 FXAA 都是基于 post-processing 后处理完成的。 在这篇文章中我们将介绍 SSAA 和 MSAA 这两种更加依赖 GPU 实现的反走样技术。"><meta property=og:description content="前两篇关于几何反走样 MLAA/SMAA 和 FXAA 都是基于 post-processing 后处理完成的。 在这篇文章中我们将介绍 SSAA 和 MSAA 这两种更加依赖 GPU 实现的反走样技术。"><link rel=canonical href=https://xiaoiver.github.io/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html><meta property=og:url content=https://xiaoiver.github.io/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2019-02-02T00:00:00+08:00><script type=application/ld+json>{"description":"前两篇关于几何反走样 MLAA/SMAA 和 FXAA 都是基于 post-processing 后处理完成的。 在这篇文章中我们将介绍 SSAA 和 MSAA 这两种更加依赖 GPU 实现的反走样技术。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html","headline":"反走样技术（三）","dateModified":"2019-02-02T00:00:00+08:00","datePublished":"2019-02-02T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反走样技术（三） - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="反走样技术（三）">
+    <meta name="keywords"  content="WebGL">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>反走样技术（三） | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="反走样技术（三）" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="前两篇关于几何反走样 MLAA/SMAA 和 FXAA 都是基于 post-processing 后处理完成的。 在这篇文章中我们将介绍 SSAA 和 MSAA 这两种更加依赖 GPU 实现的反走样技术。" />
+<meta property="og:description" content="前两篇关于几何反走样 MLAA/SMAA 和 FXAA 都是基于 post-processing 后处理完成的。 在这篇文章中我们将介绍 SSAA 和 MSAA 这两种更加依赖 GPU 实现的反走样技术。" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-02-02T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"前两篇关于几何反走样 MLAA/SMAA 和 FXAA 都是基于 post-processing 后处理完成的。 在这篇文章中我们将介绍 SSAA 和 MSAA 这两种更加依赖 GPU 实现的反走样技术。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html","headline":"反走样技术（三）","dateModified":"2019-02-02T00:00:00+08:00","datePublished":"2019-02-02T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+    <script src="/assets/js/glsl-canvas.min.js"></script>
+    <script>
+        function initArrayBuffer(gl, program, attribute, data, type, num) {
             // Create a buffer object
             var buffer = gl.createBuffer();
             if (!buffer) {
@@ -24,9 +85,90 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             return true;
-        }</script><body><!--[if lt IE 10]>
+        }
+    </script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>反走样技术（三）</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=19-02-02><i class="iconfont icon-date"></i>02 Feb 2019</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/quaternion.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>SSAA & MSAA</h2><article class=markdown-body><p>前两篇关于几何反走样 MLAA/SMAA 和 FXAA 都是基于 post-processing 后处理完成的。 在这篇文章中我们将介绍 SSAA 和 MSAA 这两种更加依赖 GPU 实现的反走样技术。<h1 id=ssaa>SSAA</h1><p>来自 <a href=https://zhuanlan.zhihu.com/p/28800047>https://zhuanlan.zhihu.com/p/28800047</a><p><strong>SSAA（Supersampling Anti-Aliasing）</strong>可以说是图形学中最简单粗暴的反走样方法，但同时也最有效，它唯一也是致命的缺点是性能太差。开篇已经说过，任何类型的走样归根结底都是因为欠采样，那么我们只需要<strong>增加采样数</strong>，就可以减轻走样现象。这就是 SSAA，所以 SSAA 简单的来说可以分三步：<p>（1）在一个像素内取若干个子采样点<br>（2）对子像素点进行颜色计算（采样）<br>（3）根据子像素的颜色和位置，利用一个称之为 resolve 的合成阶段，计算当前像素的最终颜色输出<p>不同 SSAA 方式在子采样位置的选取和最终 resolve 使用的滤波器上有所不同，可以使用不同的采样模板（规则采样，旋转采样，随机采样，抖动采样等）或者不同的滤波函数（方波滤波器或者高斯滤波器）。<br>SSAA <strong>同时是几何反走样和着色反走样方法</strong>，因为它不但增加了当前几何覆盖函数（Coverage）的采样率，也对渲染方程进行了更高频率的采样（单独计算每个子像素的颜色）。<p><img src=/assets/img/webgl/ssaa1.png alt=image.png><h2 id=webgl-实现>WebGL 实现</h2><p>来自 Three.js：<a href=https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_ssaa.html>🔗</a><div><pre class=line-numbers data-line=""><code class=language-javascript>composer = new THREE.EffectComposer( renderer );
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#WebGL" class="post-tag">WebGL</a>
+            
+            
+        </div>
+        <h1>反走样技术（三）</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="19-02-02"><i class="iconfont icon-date"></i>02 Feb 2019</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/webgl/quaternion.jpg') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <h2 class="post-subtitle">SSAA & MSAA</h2>
+    
+    <article class="markdown-body">
+        <p>前两篇关于几何反走样 MLAA/SMAA 和 FXAA 都是基于 post-processing 后处理完成的。
+在这篇文章中我们将介绍 SSAA 和 MSAA 这两种更加依赖 GPU 实现的反走样技术。</p>
+
+<h1 id="ssaa">SSAA</h1>
+
+<p>来自 <a href="https://zhuanlan.zhihu.com/p/28800047">https://zhuanlan.zhihu.com/p/28800047</a></p>
+
+<p><strong>SSAA（Supersampling Anti-Aliasing）</strong>可以说是图形学中最简单粗暴的反走样方法，但同时也最有效，它唯一也是致命的缺点是性能太差。开篇已经说过，任何类型的走样归根结底都是因为欠采样，那么我们只需要<strong>增加采样数</strong>，就可以减轻走样现象。这就是 SSAA，所以 SSAA 简单的来说可以分三步：</p>
+
+<p>（1）在一个像素内取若干个子采样点<br />（2）对子像素点进行颜色计算（采样）<br />（3）根据子像素的颜色和位置，利用一个称之为 resolve 的合成阶段，计算当前像素的最终颜色输出</p>
+
+<p>不同 SSAA 方式在子采样位置的选取和最终 resolve 使用的滤波器上有所不同，可以使用不同的采样模板（规则采样，旋转采样，随机采样，抖动采样等）或者不同的滤波函数（方波滤波器或者高斯滤波器）。<br />SSAA <strong>同时是几何反走样和着色反走样方法</strong>，因为它不但增加了当前几何覆盖函数（Coverage）的采样率，也对渲染方程进行了更高频率的采样（单独计算每个子像素的颜色）。</p>
+
+<p><img src="/assets/img/webgl/ssaa1.png" alt="image.png" /></p>
+
+<h2 id="webgl-实现">WebGL 实现</h2>
+
+<p>来自 Three.js：<a href="https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_ssaa.html">🔗</a></p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">composer = new THREE.EffectComposer( renderer );
 
 ssaaRenderPass = new THREE.SSAARenderPass( scene, camera );
 ssaaRenderPass.unbiased = false;
@@ -34,7 +176,14 @@ composer.addPass( ssaaRenderPass );
 
 copyPass = new THREE.ShaderPass( THREE.CopyShader );
 copyPass.renderToScreen = true;
-composer.addPass( copyPass );</code></pre></div><h3 id=采样模版>采样模版</h3><p>这里选用了抖动采样作为采样模版：<a href=https://docs.microsoft.com/zh-cn/windows/desktop/api/d3d11/ne-d3d11-d3d11_standard_multisample_quality_levels>🔗</a><br><img src=/assets/img/webgl/ssaa2.png alt=""><div><pre class=line-numbers data-line=""><code class=language-javascript>THREE.SSAARenderPass.JitterVectors = [
+composer.addPass( copyPass );</code></pre>
+</div>
+
+<h3 id="采样模版">采样模版</h3>
+
+<p>这里选用了抖动采样作为采样模版：<a href="https://docs.microsoft.com/zh-cn/windows/desktop/api/d3d11/ne-d3d11-d3d11_standard_multisample_quality_levels">🔗</a><br /><img src="/assets/img/webgl/ssaa2.png" alt="" /></p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">THREE.SSAARenderPass.JitterVectors = [
 	[
 		[ 0, 0 ]
 	],
@@ -49,7 +198,14 @@ composer.addPass( copyPass );</code></pre></div><h3 id=采样模版>采样模版
 		[ - 5, 5 ], [ - 7, - 1 ], [ 3, 7 ], [ 7, - 7 ]
 	],
     ...
-];</code></pre></div><h3 id=多次渲染>多次渲染</h3><p>有了采样模版，就可以进行多次采样计算了，这里使用到了 <a href=https://threejs.org/docs/#api/en/cameras/PerspectiveCamera.setViewOffset>PerspectiveCamera.setViewOffset</a>，在每一次采样过程中改变偏移量，当然别忘了循环结束后重置：<div><pre class=line-numbers data-line=""><code class=language-javascript>for ( var i = 0; i &lt; jitterOffsets.length; i ++ ) {
+];</code></pre>
+</div>
+
+<h3 id="多次渲染">多次渲染</h3>
+
+<p>有了采样模版，就可以进行多次采样计算了，这里使用到了 <a href="https://threejs.org/docs/#api/en/cameras/PerspectiveCamera.setViewOffset">PerspectiveCamera.setViewOffset</a>，在每一次采样过程中改变偏移量，当然别忘了循环结束后重置：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">for ( var i = 0; i &lt; jitterOffsets.length; i ++ ) {
   var jitterOffset = jitterOffsets[ i ];
 
   if ( this.camera.setViewOffset ) {
@@ -60,16 +216,43 @@ composer.addPass( copyPass );</code></pre></div><h3 id=采样模版>采样模版
   //...
 }
 // 计算结束后清除偏移量
-if ( this.camera.clearViewOffset ) this.camera.clearViewOffset();</code></pre></div><p>那么多次采样的权重是否应该都相同呢？这样只需要简单平均多次采样的结果就可以了。<blockquote><p>the theory is that equal weights for each sample lead to an <strong>accumulation of rounding errors</strong>. The following equation varies the sampleWeight per sample so that it is uniformly distributed across a range of values whose rounding errors cancel each other out.</blockquote><p><a href=https://en.wikipedia.org/wiki/Round-off_error#Accumulation_of_roundoff_error>https://en.wikipedia.org/wiki/Round-off_error#Accumulation_of_roundoff_error</a><div><pre class=line-numbers data-line=""><code class=language-javascript>var sampleWeight = baseSampleWeight; // 1 / jitterOffsets.length
+if ( this.camera.clearViewOffset ) this.camera.clearViewOffset();</code></pre>
+</div>
+
+<p>那么多次采样的权重是否应该都相同呢？这样只需要简单平均多次采样的结果就可以了。</p>
+<blockquote>
+  <p>the theory is that equal weights for each sample lead to an <strong>accumulation of rounding errors</strong>. The following equation varies the sampleWeight per sample so that it is uniformly distributed across a range of values whose rounding errors cancel each other out.</p>
+</blockquote>
+
+<p><a href="https://en.wikipedia.org/wiki/Round-off_error#Accumulation_of_roundoff_error">https://en.wikipedia.org/wiki/Round-off_error#Accumulation_of_roundoff_error</a></p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">var sampleWeight = baseSampleWeight; // 1 / jitterOffsets.length
 if ( this.unbiased ) {
 	var uniformCenteredDistribution = ( - 0.5 + ( i + 0.5 ) / jitterOffsets.length );
 	sampleWeight += roundingRange * uniformCenteredDistribution;
-}</code></pre></div><p>最后输出到 sampleRenderTarget 中供下一步混合使用：<div><pre class=line-numbers data-line=""><code class=language-javascript>renderer.setClearColor( this.clearColor, this.clearAlpha );
-renderer.render( this.scene, this.camera, this.sampleRenderTarget, true );</code></pre></div><h3 id=混合>混合</h3><p>在混合场景中，我们需要创建一个使用正交投影的相机以及供 CopyPass 使用的一个简单平面：<div><pre class=line-numbers data-line=""><code class=language-javascript>this.camera2 = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+}</code></pre>
+</div>
+
+<p>最后输出到 sampleRenderTarget 中供下一步混合使用：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">renderer.setClearColor( this.clearColor, this.clearAlpha );
+renderer.render( this.scene, this.camera, this.sampleRenderTarget, true );</code></pre>
+</div>
+
+<h3 id="混合">混合</h3>
+
+<p>在混合场景中，我们需要创建一个使用正交投影的相机以及供 CopyPass 使用的一个简单平面：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">this.camera2 = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 this.scene2	= new THREE.Scene();
 this.quad2 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2, 2 ), this.copyMaterial );
 this.quad2.frustumCulled = false; // Avoid getting clipped
-this.scene2.add( this.quad2 );</code></pre></div><p>在负责拷贝的后处理 Shader 中，blending: THREE.AdditiveBlending 是关键，因为多次采样结果需要加权平均：<div><pre class=line-numbers data-line=""><code class=language-javascript>this.copyMaterial = new THREE.ShaderMaterial({
+this.scene2.add( this.quad2 );</code></pre>
+</div>
+
+<p>在负责拷贝的后处理 Shader 中，blending: THREE.AdditiveBlending 是关键，因为多次采样结果需要加权平均：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">this.copyMaterial = new THREE.ShaderMaterial({
 		uniforms: this.copyUniforms,
 		vertexShader: copyShader.vertexShader,
 		fragmentShader: copyShader.fragmentShader,
@@ -78,7 +261,12 @@ this.scene2.add( this.quad2 );</code></pre></div><p>在负责拷贝的后处理 
 		blending: THREE.AdditiveBlending, // 累加
 		depthTest: false,
 		depthWrite: false
-});</code></pre></div><p>要特别注意由于需要进行累加，只有第一次渲染需要清空 color buffer：<div><pre class=line-numbers data-line=""><code class=language-javascript>// 混合权重
+});</code></pre>
+</div>
+
+<p>要特别注意由于需要进行累加，只有第一次渲染需要清空 color buffer：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// 混合权重
 this.copyUniforms[ &quot;opacity&quot; ].value = sampleWeight;
 this.copyUniforms[ &quot;tDiffuse&quot; ].value = this.sampleRenderTarget.texture;
 // 只有第一次渲染需要清空
@@ -86,30 +274,106 @@ if ( i === 0 ) {
 	renderer.setClearColor( 0x000000, 0.0 );
 }
 // 混合
-renderer.render( this.scene2, this.camera2, this.renderToScreen ? null : writeBuffer, ( i === 0 ) );</code></pre></div><h2 id=实际效果>实际效果</h2><p>性能太差，采样点增加到 16 个就已经卡顿严重。和拥有硬件支持的 MSAA 完全没得比，即使对于几何和颜色走样都有改善。<h2 id=msaamultisample-anti-aliasing>MSAA（Multisample Anti-Aliasing）</h2><blockquote><p>SSAA中每个像素需要多次计算着色，这对实时渲染的开销是巨大的（想想4K和1080P的性能差异），我们开始也说过，实际上<strong>人眼对几何走样更敏感</strong>，能否解耦几何覆盖函数的采样率和着色方程的采样率呢？答案是肯定的。MSAA的原理很简单，它仍然把一个像素划分为若干个子采样点，但是相较于SSAA，每个子采样点的颜色值完全依赖于对应像素的颜色值进行简单的复制（该子采样点位于当前像素光栅化结果的覆盖范围内），不进行单独计算。此外它的做法和SSAA相同，每个子像素会在光栅化阶段分别计算自身的Z值和模板值，有完整的Z-Test和Stencil-Test并单独保存在Z-Buffer和Stencil-Buffer里，就是我们需要的几何覆盖信息。类似于SSAA，MSAA也需要一个resolve的过程，在早期（DX9/10?）这个过程是显卡的一个固有单元在执行，执行的方式一般也就是简单的Box Filter，随着可编程管线的功能逐渐强大，现在可以通过Pixel Shader来访问相应的MSAA Texture，并且定制resolve的算法。<strong>由于 MSAA 拥有硬件支持，相对开销比较小，又能很好地解决几何走样问题，在游戏中应用非常广泛</strong>（我们在游戏画质选项中常看到的 4x/8x/16x 抗锯齿一般说的就是 MSAA 的子采样点数量分别为4/8/16个）。</blockquote><p><img src=/assets/img/webgl/ssaa3.png alt=image.png><h2 id=webgl-实现-1>WebGL 实现</h2><h3 id=内置实现>内置实现</h3><p><a href=https://stackoverflow.com/questions/50255282/webgl2-has-anti-alias-automatically-built-in>https://stackoverflow.com/questions/50255282/webgl2-has-anti-alias-automatically-built-in</a><blockquote><p>By setting it to <code class=highlighter-rouge>false</code> you’re telling the browser “Don’t turn on antialiasing” period. For example if you’re making a pixelated game you might want to tell the browser to not antialias.</blockquote><p><br>首先开发者可以强制设置为 false，这样浏览器一定不会应用，在一些像素游戏场景下常见。在 FXAA/MLAA 等使用后处理进行几何反走样的例子中也会手动关闭，以保证真实效果。<p>然后即使设置为 true，实际是否应用 MSAA/SSAA 反走样还是由浏览器实现决定，这也是规范规定的：<div><pre class=line-numbers data-line=""><code class=language-javascript>const gl = canvas.getContext(webglVersion, {
+renderer.render( this.scene2, this.camera2, this.renderToScreen ? null : writeBuffer, ( i === 0 ) );</code></pre>
+</div>
+
+<h2 id="实际效果">实际效果</h2>
+
+<p>性能太差，采样点增加到 16 个就已经卡顿严重。和拥有硬件支持的 MSAA 完全没得比，即使对于几何和颜色走样都有改善。</p>
+
+<h2 id="msaamultisample-anti-aliasing">MSAA（Multisample Anti-Aliasing）</h2>
+
+<blockquote>
+  <p>SSAA中每个像素需要多次计算着色，这对实时渲染的开销是巨大的（想想4K和1080P的性能差异），我们开始也说过，实际上<strong>人眼对几何走样更敏感</strong>，能否解耦几何覆盖函数的采样率和着色方程的采样率呢？答案是肯定的。MSAA的原理很简单，它仍然把一个像素划分为若干个子采样点，但是相较于SSAA，每个子采样点的颜色值完全依赖于对应像素的颜色值进行简单的复制（该子采样点位于当前像素光栅化结果的覆盖范围内），不进行单独计算。此外它的做法和SSAA相同，每个子像素会在光栅化阶段分别计算自身的Z值和模板值，有完整的Z-Test和Stencil-Test并单独保存在Z-Buffer和Stencil-Buffer里，就是我们需要的几何覆盖信息。类似于SSAA，MSAA也需要一个resolve的过程，在早期（DX9/10?）这个过程是显卡的一个固有单元在执行，执行的方式一般也就是简单的Box Filter，随着可编程管线的功能逐渐强大，现在可以通过Pixel Shader来访问相应的MSAA Texture，并且定制resolve的算法。<strong>由于 MSAA 拥有硬件支持，相对开销比较小，又能很好地解决几何走样问题，在游戏中应用非常广泛</strong>（我们在游戏画质选项中常看到的 4x/8x/16x 抗锯齿一般说的就是 MSAA 的子采样点数量分别为4/8/16个）。</p>
+</blockquote>
+
+<p><img src="/assets/img/webgl/ssaa3.png" alt="image.png" /></p>
+<h2 id="webgl-实现-1">WebGL 实现</h2>
+
+<h3 id="内置实现">内置实现</h3>
+
+<p><a href="https://stackoverflow.com/questions/50255282/webgl2-has-anti-alias-automatically-built-in">https://stackoverflow.com/questions/50255282/webgl2-has-anti-alias-automatically-built-in</a></p>
+<blockquote>
+  <p>By setting it to <code class="highlighter-rouge">false</code> you’re telling the browser “Don’t turn on antialiasing” period. For example if you’re making a pixelated game you might want to tell the browser to not antialias.</p>
+</blockquote>
+
+<p><br />首先开发者可以强制设置为 false，这样浏览器一定不会应用，在一些像素游戏场景下常见。在 FXAA/MLAA 等使用后处理进行几何反走样的例子中也会手动关闭，以保证真实效果。</p>
+
+<p>然后即使设置为 true，实际是否应用 MSAA/SSAA 反走样还是由浏览器实现决定，这也是规范规定的：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">const gl = canvas.getContext(webglVersion, {
 	antialias: true
-});</code></pre></div><p>因此为了测试反走样是否生效，可以用一段简单的测试代码，画一个红色的三角形，然后检查四个点是否只有红黑两种颜色，如果是则说明没有进行颜色反走样：<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.drawArrays(gl.TRIANGLES, 0, 3);
+});</code></pre>
+</div>
+
+<p>因此为了测试反走样是否生效，可以用一段简单的测试代码，画一个红色的三角形，然后检查四个点是否只有红黑两种颜色，如果是则说明没有进行颜色反走样：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">gl.drawArrays(gl.TRIANGLES, 0, 3);
 const pixels = new Uint8Array(2 * 2 * 4);
 gl.readPixels(0, 0, 2, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 const isNotAntialiased = 
   isRedOrBlack(pixels[ 0]) &amp;&amp; 
   isRedOrBlack(pixels[ 4]) &amp;&amp; 
   isRedOrBlack(pixels[ 8]) &amp;&amp; 
-  isRedOrBlack(pixels[12]) ;</code></pre></div><p>看起来 WebGL 内置的反走样实现开发者并不是完全可控。<h3 id=webgl2>WebGL2</h3><p>WebGL2 的实现可以参考：<ul><li><a href=https://github.com/shrekshao/MoveWebGL1EngineToWebGL2/blob/master/Move-a-WebGL-1-Engine-To-WebGL-2-Blog-2.md#multisampled-renderbuffers>https://github.com/shrekshao/MoveWebGL1EngineToWebGL2/blob/master/Move-a-WebGL-1-Engine-To-WebGL-2-Blog-2.md#multisampled-renderbuffers</a><li><a href=http://webglsamples.org/WebGL2Samples/#fbo_multisample>http://webglsamples.org/WebGL2Samples/#fbo_multisample</a></ul><p>总共需要两个 Pass，第一个绘制到开启了 MSAA 的 renderBuffer 中，第二个通过后处理读取纹理绘制到屏幕上。<blockquote><p>pre-z pass –&gt; rendering pass to FBO –&gt; postprocessing pass –&gt; render to window</blockquote><p><br><h4 id=1st-passrenderbuffer>1st Pass：renderBuffer</h4><p>在这个 Pass 中，需要使用到 WebGL2 中新加入的 API：<ul><li><strong><code class=highlighter-rouge>clearBuffer[fiuv]()</code></strong> <a href=https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/clearBuffer>🔗</a><li><strong><code class=highlighter-rouge>renderbufferStorageMultisample(target, samples, internalFormat, width, height);</code></strong></ul><p>首先绑定 renderBuffer 并应用 MSAA，下面的例子中子采样点数量为 4：<div><pre class=line-numbers data-line=""><code class=language-javascript>var colorRenderbuffer = gl.createRenderbuffer();
+  isRedOrBlack(pixels[12]) ;</code></pre>
+</div>
+
+<p>看起来 WebGL 内置的反走样实现开发者并不是完全可控。</p>
+
+<h3 id="webgl2">WebGL2</h3>
+
+<p>WebGL2 的实现可以参考：</p>
+<ul>
+  <li><a href="https://github.com/shrekshao/MoveWebGL1EngineToWebGL2/blob/master/Move-a-WebGL-1-Engine-To-WebGL-2-Blog-2.md#multisampled-renderbuffers">https://github.com/shrekshao/MoveWebGL1EngineToWebGL2/blob/master/Move-a-WebGL-1-Engine-To-WebGL-2-Blog-2.md#multisampled-renderbuffers</a></li>
+  <li><a href="http://webglsamples.org/WebGL2Samples/#fbo_multisample">http://webglsamples.org/WebGL2Samples/#fbo_multisample</a></li>
+</ul>
+
+<p>总共需要两个 Pass，第一个绘制到开启了 MSAA 的 renderBuffer 中，第二个通过后处理读取纹理绘制到屏幕上。</p>
+<blockquote>
+  <p>pre-z pass –&gt; rendering pass to FBO –&gt; postprocessing pass –&gt; render to window</p>
+</blockquote>
+
+<p><br /></p>
+<h4 id="1st-passrenderbuffer">1st Pass：renderBuffer</h4>
+
+<p>在这个 Pass 中，需要使用到 WebGL2 中新加入的 API：</p>
+<ul>
+  <li><strong><code class="highlighter-rouge">clearBuffer[fiuv]()</code></strong> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/clearBuffer">🔗</a></li>
+  <li><strong><code class="highlighter-rouge">renderbufferStorageMultisample(target, samples, internalFormat, width, height);</code></strong></li>
+</ul>
+
+<p>首先绑定 renderBuffer 并应用 MSAA，下面的例子中子采样点数量为 4：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">var colorRenderbuffer = gl.createRenderbuffer();
 gl.bindRenderbuffer(gl.RENDERBUFFER, colorRenderbuffer);
 gl.renderbufferStorageMultisample(gl.RENDERBUFFER, 4, gl.RGBA8, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y);
 
 // 绑定到 fbo
 gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffers[FRAMEBUFFER.RENDERBUFFER]);
 gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, colorRenderbuffer);
-gl.bindFramebuffer(gl.FRAMEBUFFER, null);</code></pre></div><p>然后开始绘制到 renderBuffer 中：<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffers[FRAMEBUFFER.RENDERBUFFER]);
+gl.bindFramebuffer(gl.FRAMEBUFFER, null);</code></pre>
+</div>
+
+<p>然后开始绘制到 renderBuffer 中：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffers[FRAMEBUFFER.RENDERBUFFER]);
 // 清除 Color buffer，序号为 0，清除颜色设置为黑色
 gl.clearBufferfv(gl.COLOR, 0, [0.0, 0.0, 0.0, 1.0]);
 gl.useProgram(programs[PROGRAM.TEXTURE]);
 // 切换 vao
 gl.bindVertexArray(vertexArrays[PROGRAM.TEXTURE]);
 // 省略传入 uniform
-gl.drawArrays(gl.LINE_LOOP, 0, vertexCount);</code></pre></div><p>接下来如何输出到 TEXTURE0 是一个问题，WebGL2 并没有支持 multisample 的纹理：<blockquote><p>Pay attention to the fact that the multisample renderbuffers <strong>cannot be directly bound to textures</strong>, but they can be resolved to single-sample textures using the <strong>blitFramebuffer</strong> call</blockquote><p><br><br>这里就需要使用 WebGL2 中新加入的另一个 API：**blitFramebuffer **了，它的作用就是从 readBuffer 传递像素到 writeBuffer 中：<div><pre class=line-numbers data-line=""><code class=language-javascript>// 绑定读写两个 buffer
+gl.drawArrays(gl.LINE_LOOP, 0, vertexCount);</code></pre>
+</div>
+
+<p>接下来如何输出到 TEXTURE0 是一个问题，WebGL2 并没有支持 multisample 的纹理：</p>
+<blockquote>
+  <p>Pay attention to the fact that the multisample renderbuffers <strong>cannot be directly bound to textures</strong>, but they can be resolved to single-sample textures using the <strong>blitFramebuffer</strong> call</p>
+</blockquote>
+
+<p><br /><br />这里就需要使用 WebGL2 中新加入的另一个 API：**blitFramebuffer **了，它的作用就是从 readBuffer 传递像素到 writeBuffer 中：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// 绑定读写两个 buffer
 gl.bindFramebuffer(gl.READ_FRAMEBUFFER, framebuffers[FRAMEBUFFER.RENDERBUFFER]);
 gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffers[FRAMEBUFFER.COLORBUFFER]);
 // 清除 COLORBUFFER
@@ -119,14 +383,26 @@ gl.blitFramebuffer(
   0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y,
   0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y,
   gl.COLOR_BUFFER_BIT, gl.NEAREST
-);</code></pre></div><h4 id=2nd-pass绘制到屏幕>2nd Pass：绘制到屏幕</h4><p>现在我们经过 multisample 的纹理已经在 TEXTURE0 中了：<div><pre class=line-numbers data-line=""><code class=language-javascript>gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+);</code></pre>
+</div>
+
+<h4 id="2nd-pass绘制到屏幕">2nd Pass：绘制到屏幕</h4>
+
+<p>现在我们经过 multisample 的纹理已经在 TEXTURE0 中了：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 gl.useProgram(programs[PROGRAM.SPLASH]);
 gl.uniform1i(diffuseLocation, 0);
 gl.activeTexture(gl.TEXTURE0);
 gl.bindTexture(gl.TEXTURE_2D, texture);
 gl.bindVertexArray(vertexArrays[PROGRAM.SPLASH]);
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
-gl.clear(gl.COLOR_BUFFER_BIT);</code></pre></div><p>就是一个后处理 CopyShader 的实现：<div><pre class=line-numbers data-line=""><code class=language-glsl>#version 300 es
+gl.clear(gl.COLOR_BUFFER_BIT);</code></pre>
+</div>
+
+<p>就是一个后处理 CopyShader 的实现：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">#version 300 es
 precision highp float;
 precision highp int;
 uniform sampler2D diffuse;
@@ -135,13 +411,103 @@ out vec4 color;
 void main()
 {
 	color = texture(diffuse, uv);
-}</code></pre></div><p>最终效果如下，可见颜色反走样效果很明显：<br><img src=/assets/img/webgl/ssaa4.png alt="屏幕快照 2019-02-04 上午10.37.09.png"><h3 id=threejs-实现>Three.js 实现</h3><p>Three.js 在最近的一次 PR <a href=https://github.com/mrdoob/three.js/pull/15541>https://github.com/mrdoob/three.js/pull/15541</a> 中引入了这个 WebGL2 特性。<p>用法如下 <a href=https://github.com/mrdoob/three.js/blob/master/examples/webgl2_multisampled_renderbuffers.html>🔗</a><div><pre class=line-numbers data-line=""><code class=language-javascript>var parameters = {
+}</code></pre>
+</div>
+
+<p>最终效果如下，可见颜色反走样效果很明显：<br /><img src="/assets/img/webgl/ssaa4.png" alt="屏幕快照 2019-02-04 上午10.37.09.png" /></p>
+
+<h3 id="threejs-实现">Three.js 实现</h3>
+
+<p>Three.js 在最近的一次 PR <a href="https://github.com/mrdoob/three.js/pull/15541">https://github.com/mrdoob/three.js/pull/15541</a> 中引入了这个 WebGL2 特性。</p>
+
+<p>用法如下 <a href="https://github.com/mrdoob/three.js/blob/master/examples/webgl2_multisampled_renderbuffers.html">🔗</a></p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">var parameters = {
   format: THREE.RGBFormat,
   stencilBuffer: false
 };
 var size = renderer.getDrawingBufferSize();
 var renderTarget = new THREE.WebGLMultisampleRenderTarget( size.width, size.height, parameters );
-composer1 = new THREE.EffectComposer( renderer, renderTarget );</code></pre></div></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html class=read-next-link></a><section><span>反走样技术（四）</span><p>现在我们已经了解了基于形态学的反走样技术 MLAA/SMAA 和 FXAA，也了解了拥有硬件支持的 MSAA。严格...</section><div class=filter></div><img src=/assets/img/webgl/quaternion.jpg alt=""></div><div class=read-next-item><a href=/coding/2019/02/01/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%BA%8C.html class=read-next-link></a><section><span>反走样技术（二）</span><p>「Nvidia 原版 FXAA_WhitePaper.pdf」🔗 反走样技术总结 「Implementin...</section><div class=filter></div><img src=/assets/img/webgl/quaternion.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+composer1 = new THREE.EffectComposer( renderer, renderTarget );</code></pre>
+</div>
+
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html" class="read-next-link"></a>
+            <section>
+                <span>反走样技术（四）</span>
+                <p>现在我们已经了解了基于形态学的反走样技术 MLAA/SMAA 和 FXAA，也了解了拥有硬件支持的 MSAA。严格...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/quaternion.jpg" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2019/02/01/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%BA%8C.html" class="read-next-link"></a>
+            <section>
+                <span>反走样技术（二）</span>
+                <p>  「Nvidia 原版 FXAA_WhitePaper.pdf」🔗  反走样技术总结  「Implementin...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/quaternion.jpg" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -151,11 +517,41 @@ composer1 = new THREE.EffectComposer( renderer, renderTarget );</code></pre></di
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2020</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -199,11 +595,7 @@ composer1 = new THREE.EffectComposer( renderer, renderTarget );</code></pre></di
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>

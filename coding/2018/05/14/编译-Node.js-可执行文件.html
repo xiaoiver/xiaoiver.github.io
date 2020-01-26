@@ -1,9 +1,142 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>编译 Node.js 可执行文件 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="编译 Node.js 可执行文件"><meta name=keywords content=nodejs><title>编译 Node.js 可执行文件 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="编译 Node.js 可执行文件"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，electron 就用不到了。不过仍然需要打包 Node.js 执行环境进来。"><meta property=og:description content="最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，electron 就用不到了。不过仍然需要打包 Node.js 执行环境进来。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-05-14T00:00:00+08:00><script type=application/ld+json>{"description":"最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，electron 就用不到了。不过仍然需要打包 Node.js 执行环境进来。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html","headline":"编译 Node.js 可执行文件","dateModified":"2018-05-14T00:00:00+08:00","datePublished":"2018-05-14T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编译 Node.js 可执行文件 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="编译 Node.js 可执行文件">
+    <meta name="keywords"  content="nodejs">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>编译 Node.js 可执行文件 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="编译 Node.js 可执行文件" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，electron 就用不到了。不过仍然需要打包 Node.js 执行环境进来。" />
+<meta property="og:description" content="最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，electron 就用不到了。不过仍然需要打包 Node.js 执行环境进来。" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-05-14T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，electron 就用不到了。不过仍然需要打包 Node.js 执行环境进来。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html","headline":"编译 Node.js 可执行文件","dateModified":"2018-05-14T00:00:00+08:00","datePublished":"2018-05-14T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#nodejs class=post-tag>nodejs</a></div><h1>编译 Node.js 可执行文件</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-05-14><i class="iconfont icon-date"></i>14 May 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/nexe.jpeg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>使用 nexe 进行跨平台编译</h2><article class=markdown-body><p>最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，electron 就用不到了。不过仍然需要打包 Node.js 执行环境进来。<p>一番搜索之后找到了 <a href=https://github.com/nexe/nexe>nexe</a> 这个库。简单介绍一下它的几个关键特性：<ul><li>支持命令行和编程式调用两种使用方式<li>支持选择构建目标为不同操作系统<li>支持打包不同 Node.js 版本</ul><p>下面我们看一下它的使用方法。<h2 id=内置打包工具>内置打包工具</h2><p>首先默认使用的打包工具是 Fusebox，但是也支持通过 <code class=highlighter-rouge>bundle</code> 选项切换成其他构建工具。例如我们使用自定义的构建方法：<div><pre class=line-numbers data-line=""><code class=language-javascript>// build.js
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#nodejs" class="post-tag">nodejs</a>
+            
+            
+        </div>
+        <h1>编译 Node.js 可执行文件</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="18-05-14"><i class="iconfont icon-date"></i>14 May 2018</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/nexe.jpeg') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <h2 class="post-subtitle">使用 nexe 进行跨平台编译</h2>
+    
+    <article class="markdown-body">
+        <p>最近遇到一个小需求，希望写一个 Windows 可执行文件，做一些监听 U 盘插入事件的事情。由于不需要 GUI，electron 就用不到了。不过仍然需要打包 Node.js 执行环境进来。</p>
+
+<p>一番搜索之后找到了 <a href="https://github.com/nexe/nexe">nexe</a> 这个库。简单介绍一下它的几个关键特性：</p>
+<ul>
+  <li>支持命令行和编程式调用两种使用方式</li>
+  <li>支持选择构建目标为不同操作系统</li>
+  <li>支持打包不同 Node.js 版本</li>
+</ul>
+
+<p>下面我们看一下它的使用方法。</p>
+
+<h2 id="内置打包工具">内置打包工具</h2>
+
+<p>首先默认使用的打包工具是 Fusebox，但是也支持通过 <code class="highlighter-rouge">bundle</code> 选项切换成其他构建工具。例如我们使用自定义的构建方法：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// build.js
 
 const nexe = require(&#39;nexe&#39;);
 nexe.compile({
@@ -11,7 +144,13 @@ nexe.compile({
     target: &#39;win32-x64-8.9.4&#39;,
     bundle: &#39;./nexe-bundle.js&#39;,
     silent: false
-});</code></pre></div><p>在构建方法中，我们就可以使用任意构建工具编译 JS 文件了，只要最后返回最终结果。 这里我们使用 Webpack 4：<div><pre class=line-numbers data-line=""><code class=language-javascript>// nexe-bundle.js
+});</code></pre>
+</div>
+
+<p>在构建方法中，我们就可以使用任意构建工具编译 JS 文件了，只要最后返回最终结果。
+这里我们使用 Webpack 4：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// nexe-bundle.js
 
 const webpack = require(&#39;pify&#39;)(require(&quot;webpack&quot;))
 const fs = require(&#39;fs&#39;)
@@ -26,7 +165,26 @@ module.exports.createBundle = function (options) {
         fs.unlinkSync(&#39;./dist/tmp.js&#39;)
         return result
     })
-}</code></pre></div><h2 id=选择目标平台>选择目标平台</h2><p>nexe 支持 Mac Windows Linux 平台下的构建。通过 <code class=highlighter-rouge>target: 'win32-x64-8.9.4'</code> 我们可以选择操作系统以及 Node.js 版本。 全部可用的列表在<a href=https://github.com/nexe/nexe/releases>这里</a>。<p>首次构建时会下载目标平台下的运行环境，并进行缓存。<p>需要注意的是，由于某些第三方库依赖当前运行环境，所以要想编译跨平台的程序最好在目标平台上进行构建。 例如在 Mac 上想要构建 Windows 下的 exe，最好安装虚拟机，比如 Parallel Desktop。<h3 id=node-gyp>node-gyp</h3><p>Node.js 虽然强大，但是在使用某些平台底层的功能时，还是需要依赖 C++ 编写的组件。在 Node.js 中，可以通过 <a href=https://github.com/nodejs/node-gyp>node-gyp</a> 将这些原生代码编译成 node 模块，在运行时很方便地进行调用。<p>以 <a href=https://github.com/MadLittleMods/node-usb-detection/ >node-usb-detection</a> 为例，在 <code class=highlighter-rouge>binding.gyp</code> 文件中：<div><pre class=line-numbers data-line=""><code class=language-javascript>{
+}</code></pre>
+</div>
+
+<h2 id="选择目标平台">选择目标平台</h2>
+
+<p>nexe 支持 Mac Windows Linux 平台下的构建。通过 <code class="highlighter-rouge">target: 'win32-x64-8.9.4'</code> 我们可以选择操作系统以及 Node.js 版本。
+全部可用的列表在<a href="https://github.com/nexe/nexe/releases">这里</a>。</p>
+
+<p>首次构建时会下载目标平台下的运行环境，并进行缓存。</p>
+
+<p>需要注意的是，由于某些第三方库依赖当前运行环境，所以要想编译跨平台的程序最好在目标平台上进行构建。
+例如在 Mac 上想要构建 Windows 下的 exe，最好安装虚拟机，比如 Parallel Desktop。</p>
+
+<h3 id="node-gyp">node-gyp</h3>
+
+<p>Node.js 虽然强大，但是在使用某些平台底层的功能时，还是需要依赖 C++ 编写的组件。在 Node.js 中，可以通过 <a href="https://github.com/nodejs/node-gyp">node-gyp</a> 将这些原生代码编译成 node 模块，在运行时很方便地进行调用。</p>
+
+<p>以 <a href="https://github.com/MadLittleMods/node-usb-detection/">node-usb-detection</a> 为例，在 <code class="highlighter-rouge">binding.gyp</code> 文件中：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">{
   &quot;targets&quot;: [
     {
       &quot;target_name&quot;: &quot;detection&quot;,
@@ -64,10 +222,65 @@ module.exports.createBundle = function (options) {
       ]
     }
   ]
-}</code></pre></div><p>更详细的例子可以参考 <a href=https://nodejs.org/api/addons.html>Node.js addons 文档</a>。<h3 id=windows-上的可怕经历>Windows 上的可怕经历</h3><p>在 Windows 虚拟机上的编译经历可谓困难重重。<p>首先按照 <code class=highlighter-rouge>node-gyp</code> 的安装<a href=https://github.com/nodejs/node-gyp#on-windows>说明</a>，执行：<div><pre class=line-numbers data-line=""><code class=language-bash>npm install --global --production windows-build-tools</code></pre></div><p>这一步会安装 Python 和 VS 构建工具。这时候可以检查下 <code class=highlighter-rouge>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0</code> 下是否有 <code class=highlighter-rouge>v140</code> 也就是 VS2015 的构建工具。<p>一切顺利的话就可以开始安装 npm 依赖了，很多使用了 <code class=highlighter-rouge>node-gyp</code> 的第三方依赖此时会进行 <code class=highlighter-rouge>prebuilt-install</code>，开始构建 node addon。<p>运行时如果出现如下错误 <code class=highlighter-rouge>MSB4019</code>：<blockquote><p>error MSB4019: The imported project “C:\Microsoft.Cpp.Default.props” was not found. Confirm that the path in the<import>declaration is correct, a nd that the file exists on disk.</import></blockquote><p>需要在 CMD 中设置环境变量，这里我们设置成之前安装好的 VS2015 的路径。相关 <a href=https://github.com/nodejs/node-gyp/issues/671#issuecomment-266815133>ISSUE</a>：<div><pre class=line-numbers data-line=""><code class=language-bash>SET VCTargetsPath=C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\v140</code></pre></div><p>如果出现如下错误 <code class=highlighter-rouge>MSB8036</code>：<blockquote><p>MSB8036: The Windows SDK version 8.1 was not found. Install the required version of Windows SDK</blockquote><p>则需要配置 npm 环境变量，相关 <a href=https://github.com/felixrieseberg/windows-build-tools/issues/9>ISSUE</a><div><pre class=line-numbers data-line=""><code class=language-bash>npm config set msvs_version 2015</code></pre></div><p>总之，遇到问题可以先在 MS 官方的<a href=https://github.com/Microsoft/nodejs-guidelines/blob/master/windows-environment.md#resolving-common-issues>指导意见</a> 中查找，能少走一些弯路。<h2 id=示例监听-u-盘插拔>示例：监听 U 盘插拔</h2><p>回到我们最初的需求，希望监听 U 盘的插拔。<p>启动监听后，进程不会退出，类似 DOS 中的 <code class=highlighter-rouge>pause</code> 语句。 在监听到 <code class=highlighter-rouge>add</code> 事件时，回调函数会传入插入 USB 设备的对象。<div><pre class=line-numbers data-line=""><code class=language-javascript>const usbDetect = require(&#39;usb-detection&#39;);
+}</code></pre>
+</div>
+
+<p>更详细的例子可以参考 <a href="https://nodejs.org/api/addons.html">Node.js addons 文档</a>。</p>
+
+<h3 id="windows-上的可怕经历">Windows 上的可怕经历</h3>
+
+<p>在 Windows 虚拟机上的编译经历可谓困难重重。</p>
+
+<p>首先按照 <code class="highlighter-rouge">node-gyp</code> 的安装<a href="https://github.com/nodejs/node-gyp#on-windows">说明</a>，执行：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-bash">npm install --global --production windows-build-tools</code></pre>
+</div>
+
+<p>这一步会安装 Python 和 VS 构建工具。这时候可以检查下 <code class="highlighter-rouge">C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0</code> 下是否有 <code class="highlighter-rouge">v140</code> 也就是 VS2015 的构建工具。</p>
+
+<p>一切顺利的话就可以开始安装 npm 依赖了，很多使用了 <code class="highlighter-rouge">node-gyp</code> 的第三方依赖此时会进行 <code class="highlighter-rouge">prebuilt-install</code>，开始构建 node addon。</p>
+
+<p>运行时如果出现如下错误 <code class="highlighter-rouge">MSB4019</code>：</p>
+<blockquote>
+  <p>error MSB4019: The imported
+project “C:\Microsoft.Cpp.Default.props” was not found. Confirm that the path in the <Import> declaration is correct, a
+nd that the file exists on disk.</Import></p>
+</blockquote>
+
+<p>需要在 CMD 中设置环境变量，这里我们设置成之前安装好的 VS2015 的路径。相关 <a href="https://github.com/nodejs/node-gyp/issues/671#issuecomment-266815133">ISSUE</a>：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-bash">SET VCTargetsPath=C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\v140</code></pre>
+</div>
+
+<p>如果出现如下错误 <code class="highlighter-rouge">MSB8036</code>：</p>
+<blockquote>
+  <p>MSB8036: The Windows SDK version 8.1 was not found. Install the required version of Windows SDK</p>
+</blockquote>
+
+<p>则需要配置 npm 环境变量，相关 <a href="https://github.com/felixrieseberg/windows-build-tools/issues/9">ISSUE</a></p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-bash">npm config set msvs_version 2015</code></pre>
+</div>
+
+<p>总之，遇到问题可以先在 MS 官方的<a href="https://github.com/Microsoft/nodejs-guidelines/blob/master/windows-environment.md#resolving-common-issues">指导意见</a> 中查找，能少走一些弯路。</p>
+
+<h2 id="示例监听-u-盘插拔">示例：监听 U 盘插拔</h2>
+
+<p>回到我们最初的需求，希望监听 U 盘的插拔。</p>
+
+<p>启动监听后，进程不会退出，类似 DOS 中的 <code class="highlighter-rouge">pause</code> 语句。
+在监听到 <code class="highlighter-rouge">add</code> 事件时，回调函数会传入插入 USB 设备的对象。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">const usbDetect = require(&#39;usb-detection&#39;);
 
 usbDetect.startMonitoring();
-usbDetect.on(&#39;add&#39;, device =&gt; {});</code></pre></div><p>值得注意的是在这个设备对象中，是不包含挂载点的，更多的是一些底层设备信息。 一些更高层次得操作，例如试图获取挂载点，并没有提供，相关<a href=https://github.com/MadLittleMods/node-usb-detection/issues/19>ISSUE</a>。<div><pre class=line-numbers data-line=""><code class=language-javascript>{
+usbDetect.on(&#39;add&#39;, device =&gt; {});</code></pre>
+</div>
+
+<p>值得注意的是在这个设备对象中，是不包含挂载点的，更多的是一些底层设备信息。
+一些更高层次得操作，例如试图获取挂载点，并没有提供，相关<a href="https://github.com/MadLittleMods/node-usb-detection/issues/19">ISSUE</a>。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">{
 	locationId: 0,
 	vendorId: 5824,
 	productId: 1155,
@@ -75,7 +288,14 @@ usbDetect.on(&#39;add&#39;, device =&gt; {});</code></pre></div><p>值得注意�
 	manufacturer: &#39;PJRC.COM, LLC.&#39;,
 	serialNumber: &#39;&#39;,
 	deviceAddress: 11
-}</code></pre></div><p>为了获取当前得挂载路径，不得不借助其他库，例如 <code class=highlighter-rouge>drivelist</code>。 通过定时遍历当前所有驱动设备，我们能找出其中的 USB 存储设备，得到其挂载点。 之所以使用定时器是因为挂载需要时间，触发 USB 设备的 <code class=highlighter-rouge>add</code> 事件时还没有挂载好。<div><pre class=line-numbers data-line=""><code class=language-javascript>const drivelist = require(&#39;drivelist&#39;);
+}</code></pre>
+</div>
+
+<p>为了获取当前得挂载路径，不得不借助其他库，例如 <code class="highlighter-rouge">drivelist</code>。
+通过定时遍历当前所有驱动设备，我们能找出其中的 USB 存储设备，得到其挂载点。
+之所以使用定时器是因为挂载需要时间，触发 USB 设备的 <code class="highlighter-rouge">add</code> 事件时还没有挂载好。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">const drivelist = require(&#39;drivelist&#39;);
 let checkUSBIntervalID;
 
 checkUSBIntervalID = setInterval(() =&gt; {
@@ -92,7 +312,109 @@ checkUSBIntervalID = setInterval(() =&gt; {
             }
         });
     });
-}, 1000);</code></pre></div><p>得到了挂载点信息，就可以使用 <code class=highlighter-rouge>fs</code> 模块进行文件操作了：<div><pre class=line-numbers data-line=""><code class=language-javascript>mountpoints: [ { path: &#39;/Volumes/KINGSTON&#39;, label: &#39;KINGSTON&#39; } ],</code></pre></div><h2 id=查找-node-addon>查找 node addon</h2><p>最后我们关注一下 nexe 中的一个技术细节。<p>使用 <code class=highlighter-rouge>node-gyp</code> 编译之后得到 node addon，可以通过 <code class=highlighter-rouge>bindings</code> 模块使用。 例如之前介绍过的 <code class=highlighter-rouge>usb-detection</code> 是这么使用的：<div><pre class=line-numbers data-line=""><code class=language-javascript>var detection = require(&#39;bindings&#39;)(&#39;detection.node&#39;);</code></pre></div><p>那么 <code class=highlighter-rouge>nexe</code> 是如何解决运行时 node addon 路径查找的呢？<p>按照官方文档的说法，编译之后的 <code class=highlighter-rouge>.node</code> 文件会生成在 <code class=highlighter-rouge>build/Release/</code> 目录下，解析路径时也会默认从这里开始查找。<blockquote><p>Next, invoke the node-gyp build command to generate the compiled addon.node file. This will be put into the build/Release/ directory.</blockquote><p>nexe 利用 Fusebox 的转译插件（类似 Babel），对代码中的 <code class=highlighter-rouge>bindings</code> 路径进行了<a href=https://github.com/nexe/nexe/blob/dev/src/bundling/bindings-rewrite.ts#L59>重写</a>。</article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html class=read-next-link></a><section><span>在 iOS 下使用 iframe 的种种问题</span><p>最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。查阅资料发现 AMP 提供...</section><div class=filter></div><img src=/assets/img/iframe.jpg alt=""></div><div class=read-next-item><a href=/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html class=read-next-link></a><section><span>Babel 插件开发</span><p>之前通过 the-super-tiny-compiler 学习了一下一个简单编译器的通用执行步骤： Parse ...</section><div class=filter></div><img src=/assets/img/babel.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+}, 1000);</code></pre>
+</div>
+
+<p>得到了挂载点信息，就可以使用 <code class="highlighter-rouge">fs</code> 模块进行文件操作了：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">mountpoints: [ { path: &#39;/Volumes/KINGSTON&#39;, label: &#39;KINGSTON&#39; } ],</code></pre>
+</div>
+
+<h2 id="查找-node-addon">查找 node addon</h2>
+
+<p>最后我们关注一下 nexe 中的一个技术细节。</p>
+
+<p>使用 <code class="highlighter-rouge">node-gyp</code> 编译之后得到 node addon，可以通过 <code class="highlighter-rouge">bindings</code> 模块使用。
+例如之前介绍过的 <code class="highlighter-rouge">usb-detection</code> 是这么使用的：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">var detection = require(&#39;bindings&#39;)(&#39;detection.node&#39;);</code></pre>
+</div>
+
+<p>那么 <code class="highlighter-rouge">nexe</code> 是如何解决运行时 node addon 路径查找的呢？</p>
+
+<p>按照官方文档的说法，编译之后的 <code class="highlighter-rouge">.node</code> 文件会生成在 <code class="highlighter-rouge">build/Release/</code> 目录下，解析路径时也会默认从这里开始查找。</p>
+<blockquote>
+  <p>Next, invoke the node-gyp build command to generate the compiled addon.node file. This will be put into the build/Release/ directory.</p>
+</blockquote>
+
+<p>nexe 利用 Fusebox 的转译插件（类似 Babel），对代码中的 <code class="highlighter-rouge">bindings</code> 路径进行了<a href="https://github.com/nexe/nexe/blob/dev/src/bundling/bindings-rewrite.ts#L59">重写</a>。</p>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/05/20/%E5%9C%A8-iOS-%E4%B8%8B%E4%BD%BF%E7%94%A8-iframe-%E7%9A%84%E7%A7%8D%E7%A7%8D%E9%97%AE%E9%A2%98.html" class="read-next-link"></a>
+            <section>
+                <span>在 iOS 下使用 iframe 的种种问题</span>
+                <p>最近在项目中使用 iframe，在 iOS Safari 浏览器的测试中遇到了不少问题。查阅资料发现 AMP 提供...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/iframe.jpg" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/05/12/Babel-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91.html" class="read-next-link"></a>
+            <section>
+                <span>Babel 插件开发</span>
+                <p>之前通过 the-super-tiny-compiler 学习了一下一个简单编译器的通用执行步骤：  Parse ...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/babel.png" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -102,11 +424,41 @@ checkUSBIntervalID = setInterval(() =&gt; {
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2020</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -150,11 +502,7 @@ checkUSBIntervalID = setInterval(() =&gt; {
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>

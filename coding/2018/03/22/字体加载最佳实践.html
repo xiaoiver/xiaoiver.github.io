@@ -1,20 +1,197 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>字体加载最佳实践 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=字体加载最佳实践><meta name=keywords content="CSS, Font"><title>字体加载最佳实践 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=字体加载最佳实践><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="字体文件在项目中的应用可以说是非常普遍的。例如使用第三方字体，以 iconfont 形式存在的字体图标等等。 但是加载这些字体文件可不是简单一句 @font-face 就完事了。"><meta property=og:description content="字体文件在项目中的应用可以说是非常普遍的。例如使用第三方字体，以 iconfont 形式存在的字体图标等等。 但是加载这些字体文件可不是简单一句 @font-face 就完事了。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/03/22/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/03/22/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-03-22T00:00:00+08:00><script type=application/ld+json>{"description":"字体文件在项目中的应用可以说是非常普遍的。例如使用第三方字体，以 iconfont 形式存在的字体图标等等。 但是加载这些字体文件可不是简单一句 @font-face 就完事了。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/03/22/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html","headline":"字体加载最佳实践","dateModified":"2018-03-22T00:00:00+08:00","datePublished":"2018-03-22T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/03/22/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/03/22/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字体加载最佳实践 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="字体加载最佳实践">
+    <meta name="keywords"  content="CSS, Font">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>字体加载最佳实践 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="字体加载最佳实践" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="字体文件在项目中的应用可以说是非常普遍的。例如使用第三方字体，以 iconfont 形式存在的字体图标等等。 但是加载这些字体文件可不是简单一句 @font-face 就完事了。" />
+<meta property="og:description" content="字体文件在项目中的应用可以说是非常普遍的。例如使用第三方字体，以 iconfont 形式存在的字体图标等等。 但是加载这些字体文件可不是简单一句 @font-face 就完事了。" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/03/22/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/03/22/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-03-22T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"字体文件在项目中的应用可以说是非常普遍的。例如使用第三方字体，以 iconfont 形式存在的字体图标等等。 但是加载这些字体文件可不是简单一句 @font-face 就完事了。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/03/22/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html","headline":"字体加载最佳实践","dateModified":"2018-03-22T00:00:00+08:00","datePublished":"2018-03-22T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/03/22/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/03/22/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#CSS class=post-tag>CSS</a> <a href=https://xiaoiver.github.io/tags#Font class=post-tag>Font</a></div><h1>字体加载最佳实践</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-03-22><i class="iconfont icon-date"></i>22 Mar 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/font.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>不只是 @font-face</h2><article class=markdown-body><p>字体文件在项目中的应用可以说是非常普遍的。例如使用第三方字体，以 iconfont 形式存在的字体图标等等。 但是加载这些字体文件可不是简单一句 <code class=highlighter-rouge>@font-face</code> 就完事了。<p>本文主要参考 <a href=https://www.zachleat.com/web/comprehensive-webfonts/ >comprehensive-webfonts</a>，将介绍加载字体存在的问题和最佳实践。<h2 id=恼人的-foit>恼人的 FOIT</h2><p>首屏加载中的 FOUC（Flash of Unstyled Content） 是需要极力避免的，为此我们常常将关键路径使用的样式内联到 HTML 中。 同样的，字体文件在加载完成之前，浏览器会使用缺省字体显示内容，这就是 FOUT（Flash of Unstyled Text）。 但是问题就出在这里，除了 IE，其他浏览器都会等待 3 秒才展示系统字体，这就造成了 3 秒的 FOIT（Flash of Invisible Text）。用户不得不面对长达 3 秒消失了文字的内容。<p><img src=/assets/img/fout-foit.png alt="FOUT &amp; FOIT"><h2 id=font-display>font-display</h2><p>为了让浏览器立即使用缺省字体现实内容，可以使用 <a href=https://tabatkins.github.io/specs/css-font-display/#valdef-font-face-font-display-swap>font-display</a> 这个 CSS 新属性。<p>立即使用缺省字体，Web 字体加载完成后立即更换，重新渲染：<div><pre class=line-numbers data-line=""><code class=language-css>font-display: swap;</code></pre></div><p>这里有一个 <a href="https://www.youtube.com/watch?v=yRrrL0Mg1pM&amp;t=487s">Chrome Devtool 实战视频</a>，需翻墙。 一切都很美好，缺点是<a href="http://caniuse.com/#search=font-display">浏览器支持度</a>。<h2 id=内联字体>内联字体</h2><p>既然担心字体文件过大，影响加载时间，那么使用 data uri 内联是个不错的选择，可以完全避免 FOUT 和 FOIT。<div><pre class=line-numbers data-line=""><code class=language-css>@font-face {
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#CSS" class="post-tag">CSS</a>
+            
+            <a href="https://xiaoiver.github.io/tags#Font" class="post-tag">Font</a>
+            
+            
+        </div>
+        <h1>字体加载最佳实践</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="18-03-22"><i class="iconfont icon-date"></i>22 Mar 2018</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/font.png') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <h2 class="post-subtitle">不只是 @font-face</h2>
+    
+    <article class="markdown-body">
+        <p>字体文件在项目中的应用可以说是非常普遍的。例如使用第三方字体，以 iconfont 形式存在的字体图标等等。
+但是加载这些字体文件可不是简单一句 <code class="highlighter-rouge">@font-face</code> 就完事了。</p>
+
+<p>本文主要参考 <a href="https://www.zachleat.com/web/comprehensive-webfonts/">comprehensive-webfonts</a>，将介绍加载字体存在的问题和最佳实践。</p>
+
+<h2 id="恼人的-foit">恼人的 FOIT</h2>
+
+<p>首屏加载中的 FOUC（Flash of Unstyled Content） 是需要极力避免的，为此我们常常将关键路径使用的样式内联到 HTML 中。
+同样的，字体文件在加载完成之前，浏览器会使用缺省字体显示内容，这就是 FOUT（Flash of Unstyled Text）。
+但是问题就出在这里，除了 IE，其他浏览器都会等待 3 秒才展示系统字体，这就造成了 3 秒的 FOIT（Flash of Invisible Text）。用户不得不面对长达 3 秒消失了文字的内容。</p>
+
+<p><img src="/assets/img/fout-foit.png" alt="FOUT &amp; FOIT" /></p>
+
+<h2 id="font-display">font-display</h2>
+
+<p>为了让浏览器立即使用缺省字体现实内容，可以使用 <a href="https://tabatkins.github.io/specs/css-font-display/#valdef-font-face-font-display-swap">font-display</a> 这个 CSS 新属性。</p>
+
+<p>立即使用缺省字体，Web 字体加载完成后立即更换，重新渲染：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-css">font-display: swap;</code></pre>
+</div>
+
+<p>这里有一个 <a href="https://www.youtube.com/watch?v=yRrrL0Mg1pM&amp;t=487s">Chrome Devtool 实战视频</a>，需翻墙。
+一切都很美好，缺点是<a href="http://caniuse.com/#search=font-display">浏览器支持度</a>。</p>
+
+<h2 id="内联字体">内联字体</h2>
+
+<p>既然担心字体文件过大，影响加载时间，那么使用 data uri 内联是个不错的选择，可以完全避免 FOUT 和 FOIT。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-css">@font-face {
 	font-family: Lato;
     src: url(&#39;data:application/x-font-woff;charset=utf-8;base64...&#39;);
-}</code></pre></div><p>但是存在以下问题：<ol><li>影响首屏性能。毕竟将字体也引入到了关键路径之中，需要谨慎选择文件的大小和数量。<li>由于完全指定了使用的字体，<code class=highlighter-rouge>@font-face</code> 特有的提供多种文件格式供浏览器选择就无法使用了。<li>多个字体无法并行加载。</ol><p>为了避免 CSS 阻塞渲染，之前<a href=/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html>《让骨架屏更快渲染》</a>一文使用了 JS 异步加载 CSS，这里也可以借鉴下：<div><pre class=line-numbers data-line=""><code class=language-html>&lt;script&gt;
+}</code></pre>
+</div>
+
+<p>但是存在以下问题：</p>
+<ol>
+  <li>影响首屏性能。毕竟将字体也引入到了关键路径之中，需要谨慎选择文件的大小和数量。</li>
+  <li>由于完全指定了使用的字体，<code class="highlighter-rouge">@font-face</code> 特有的提供多种文件格式供浏览器选择就无法使用了。</li>
+  <li>多个字体无法并行加载。</li>
+</ol>
+
+<p>为了避免 CSS 阻塞渲染，之前<a href="/coding/2018/03/13/%E8%AE%A9%E9%AA%A8%E6%9E%B6%E5%B1%8F%E6%9B%B4%E5%BF%AB%E6%B8%B2%E6%9F%93.html">《让骨架屏更快渲染》</a>一文使用了 JS 异步加载 CSS，这里也可以借鉴下：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-html">&lt;script&gt;
     /*! loadCSS: load a CSS file asynchronously*/
     (function(e){&quot;use strict&quot;;var t=function(t,n,r)});
 	loadCSS(&quot;async-data-uri.css&quot;);
-&lt;/script&gt;</code></pre></div><p>当然这并不能解决 2，3 两点。<h2 id=css-font-loading-api>CSS Font Loading API</h2><p>为了增加开发者对于字体加载状态的控制，目前处于草案阶段的 <a href=https://drafts.csswg.org/css-font-loading/ >CSS Font Loading API</a> 是值得关注的。<p>从草案中提供的 API 示例来看，我们可以得知页面中使用的全部字体何时加载完成：<div><pre class=line-numbers data-line=""><code class=language-javascript>document.fonts.ready.then(function() {
+&lt;/script&gt;</code></pre>
+</div>
+
+<p>当然这并不能解决 2，3 两点。</p>
+
+<h2 id="css-font-loading-api">CSS Font Loading API</h2>
+
+<p>为了增加开发者对于字体加载状态的控制，目前处于草案阶段的 <a href="https://drafts.csswg.org/css-font-loading/">CSS Font Loading API</a> 是值得关注的。</p>
+
+<p>从草案中提供的 API 示例来看，我们可以得知页面中使用的全部字体何时加载完成：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">document.fonts.ready.then(function() {
     // 全部加载完成后显示
     var content = document.getElementById(&quot;content&quot;);
     content.style.visibility = &quot;visible&quot;;
-});</code></pre></div><p>通过 <code class=highlighter-rouge>load</code> 加载指定字体：<div><pre class=line-numbers data-line=""><code class=language-javascript>function drawStuff() {
+});</code></pre>
+</div>
+
+<p>通过 <code class="highlighter-rouge">load</code> 加载指定字体：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">function drawStuff() {
     var ctx = document.getElementById(&quot;c&quot;).getContext(&quot;2d&quot;);
 
     ctx.fillStyle = &quot;red&quot;;
@@ -22,14 +199,28 @@
     ctx.fillText(&quot;Hello!&quot;, 100, 100);
 }
 document.fonts.load(&quot;50px MyDownloadableFont&quot;)
-    .then(drawStuff, handleError);</code></pre></div><h3 id=第三方字体加载库>第三方字体加载库</h3><p>又到了熟悉的 polyfill 出场了。我们可以借助第三方字体加载库，在加载完成后，在根元素上应用 CSS Class，实现 FOUT + swap 的效果。<p>首先正常使用 <code class=highlighter-rouge>@font-face</code>:<div><pre class=line-numbers data-line=""><code class=language-javascript>@font-face {
+    .then(drawStuff, handleError);</code></pre>
+</div>
+
+<h3 id="第三方字体加载库">第三方字体加载库</h3>
+
+<p>又到了熟悉的 polyfill 出场了。我们可以借助第三方字体加载库，在加载完成后，在根元素上应用 CSS Class，实现 FOUT + swap 的效果。</p>
+
+<p>首先正常使用 <code class="highlighter-rouge">@font-face</code>:</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">@font-face {
     font-family: Lato;
     src: url(&#39;font-lato/lato-regular-webfont.woff2&#39;) format(&#39;woff2&#39;),
         url(&#39;font-lato/lato-regular-webfont.woff&#39;) format(&#39;woff&#39;);
 }
 .fonts-loaded body {
     font-family: Lato, sans-serif;
-}</code></pre></div><p>使用 <a href=https://github.com/bramstein/fontfaceobserver>Font Face Observer</a>，这里可以使用一个小技巧避免多次访问重复请求字体文件：<div><pre class=line-numbers data-line=""><code class=language-javascript>var fontA = new FontFaceObserver(&#39;Lato&#39;);
+}</code></pre>
+</div>
+
+<p>使用 <a href="https://github.com/bramstein/fontfaceobserver">Font Face Observer</a>，这里可以使用一个小技巧避免多次访问重复请求字体文件：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">var fontA = new FontFaceObserver(&#39;Lato&#39;);
 var fontB = new FontFaceObserver(&#39;LatoBold&#39;, {
     weight: 700
 });
@@ -40,7 +231,19 @@ Promise.all([
     document.documentElement.className += &quot; fonts-loaded&quot;;
     // 加载完成后添加标记，后续访问时可以以此判断不重复加载字体
     sessionStorage.fontsLoadedFoutWithClassPolyfill = true;
-});</code></pre></div><p>使用类似思路的还有更有名的 <a href=https://github.com/typekit/webfontloader>Web Font Loader</a>。 后续的方案也都基于 CSS Font Loading API 及其 polyfill。<h2 id=分阶段加载>分阶段加载</h2><p>在英文字体中，同一个字体常常会有多个变体，例如加粗，斜体等等。渐进式地加载这些字体，能够减少 FOIT 时间。 例如这里分成两个阶段，第一阶段仅仅加载一个基础字体，完成后立即应用展示。随后开始第二阶段全部字体的加载应用。 值得注意的是基础字体这里需要声明两遍 <code class=highlighter-rouge>LatoInitial</code> 和 <code class=highlighter-rouge>Lato</code>：<div><pre class=line-numbers data-line=""><code class=language-css>@font-face {
+});</code></pre>
+</div>
+
+<p>使用类似思路的还有更有名的 <a href="https://github.com/typekit/webfontloader">Web Font Loader</a>。
+后续的方案也都基于 CSS Font Loading API 及其 polyfill。</p>
+
+<h2 id="分阶段加载">分阶段加载</h2>
+
+<p>在英文字体中，同一个字体常常会有多个变体，例如加粗，斜体等等。渐进式地加载这些字体，能够减少 FOIT 时间。
+例如这里分成两个阶段，第一阶段仅仅加载一个基础字体，完成后立即应用展示。随后开始第二阶段全部字体的加载应用。
+值得注意的是基础字体这里需要声明两遍 <code class="highlighter-rouge">LatoInitial</code> 和 <code class="highlighter-rouge">Lato</code>：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-css">@font-face {
 	font-family: LatoInitial;
 	src: url(&#39;font-lato/lato-regular-webfont.woff2&#39;) format(&#39;woff2&#39;),
 		url(&#39;font-lato/lato-regular-webfont.woff&#39;) format(&#39;woff&#39;);
@@ -67,7 +270,13 @@ body {
 }
 .fonts-loaded-2 body {
 	font-family: Lato;
-}</code></pre></div><p>你可能会好奇 <code class=highlighter-rouge>Lato</code> 拥有两个字体资源 <code class=highlighter-rouge>regular</code> 和 <code class=highlighter-rouge>bold</code>，在实际使用中浏览器会选择哪一个呢？ 可以参考 <a href=https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/ >Font selection algorithm &amp; Font synthesis</a>，这里就不展开了。<div><pre class=line-numbers data-line=""><code class=language-javascript>if( &quot;fonts&quot; in document ) {
+}</code></pre>
+</div>
+
+<p>你可能会好奇 <code class="highlighter-rouge">Lato</code> 拥有两个字体资源 <code class="highlighter-rouge">regular</code> 和 <code class="highlighter-rouge">bold</code>，在实际使用中浏览器会选择哪一个呢？
+可以参考 <a href="https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/">Font selection algorithm &amp; Font synthesis</a>，这里就不展开了。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">if( &quot;fonts&quot; in document ) {
     if( sessionStorage.fontsLoadedFoft ) {
         document.documentElement.className += &quot; fonts-loaded-2&quot;;
         return;
@@ -86,7 +295,115 @@ body {
             sessionStorage.fontsLoadedFoft = true;
         });
     });
-}</code></pre></div><h2 id=最佳实践>最佳实践！</h2><p>其实到目前为止，已经称得上是比较理想的方案了。<p>对于英文字体，在第一阶段中加载的基础字体还可以精简，例如使用仅仅包含字母的 <code class=highlighter-rouge>LatoSubset</code> 以减少文件大小。 这还不算完，既然已经精简过，使用 data uri 增加的首屏加载时间将完全优于增加的网络开销。 <a href=https://github.com/zachleat/web-font-loading-recipes/blob/master/critical-foft-data-uri-polyfill.html>Demo</a><h2 id=关于字体图标的一点想法>关于字体图标的一点想法</h2><p>使用 iconfont 的时候，其实是希望出现 FOIT，反而要避免 FOUT。否则首屏将出现一个大大的 <code class=highlighter-rouge>search</code> 文字。<div><pre class=line-numbers data-line=""><code class=language-html>&lt;span class=&#39;material-icon&#39;&gt;search&lt;/span&gt;</code></pre></div><p>这时上述提到的方法虽然不能直接使用，但 CSS Font Loading API 还是能派上用场。 一种理想的做法是默认字体图标不可见，字体加载完成后变为可见。 可以参考 <a href=https://blog.typekit.com/2010/10/29/font-events-controlling-the-fout/ >Typekit 中的例子</a>。<h2 id=参考资料>参考资料</h2><ul><li><a href=https://github.com/zachleat/web-font-loading-recipes>各种方案 Demo</a><li><a href=https://drafts.csswg.org/css-font-loading/ >CSS Font Loading API</a><li><a href=https://helpx.adobe.com/typekit/using/embed-codes.html#Advancedembedcode>Typekit</a><li><a href=https://github.com/bramstein/fontfaceobserver>Font Face Observer</a><li><a href=https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/ >Font selection algorithm &amp; Font synthesis</a><li><a href=https://www.sitepoint.com/optimizing-web-fonts-for-performance-the-state-of-the-art/ >另一篇总结性文章</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/03/26/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5-%E4%BA%8C.html class=read-next-link></a><section><span>字体加载最佳实践（二）</span><p>之前我们介绍了当前解决 FOIT 的最佳实践。在本篇中，我们将介绍通用的提升字体加载性能的方法。</section><div class=filter></div><img src=/assets/img/font.png alt=""></div><div class=read-next-item><a href=/coding/2018/03/18/Houdini.html class=read-next-link></a><section><span>Houdini</span><p>最近读了几篇关于 Houdini 的文章，大部分都是 Phil Walton 写的，深感该提案之于 CSS 的重要...</section><div class=filter></div><img src=/assets/img/houdini.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+}</code></pre>
+</div>
+
+<h2 id="最佳实践">最佳实践！</h2>
+
+<p>其实到目前为止，已经称得上是比较理想的方案了。</p>
+
+<p>对于英文字体，在第一阶段中加载的基础字体还可以精简，例如使用仅仅包含字母的 <code class="highlighter-rouge">LatoSubset</code> 以减少文件大小。
+这还不算完，既然已经精简过，使用 data uri 增加的首屏加载时间将完全优于增加的网络开销。
+<a href="https://github.com/zachleat/web-font-loading-recipes/blob/master/critical-foft-data-uri-polyfill.html">Demo</a></p>
+
+<h2 id="关于字体图标的一点想法">关于字体图标的一点想法</h2>
+
+<p>使用 iconfont 的时候，其实是希望出现 FOIT，反而要避免 FOUT。否则首屏将出现一个大大的 <code class="highlighter-rouge">search</code> 文字。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-html">&lt;span class=&#39;material-icon&#39;&gt;search&lt;/span&gt;</code></pre>
+</div>
+
+<p>这时上述提到的方法虽然不能直接使用，但 CSS Font Loading API 还是能派上用场。
+一种理想的做法是默认字体图标不可见，字体加载完成后变为可见。
+可以参考 <a href="https://blog.typekit.com/2010/10/29/font-events-controlling-the-fout/">Typekit 中的例子</a>。</p>
+
+<h2 id="参考资料">参考资料</h2>
+
+<ul>
+  <li><a href="https://github.com/zachleat/web-font-loading-recipes">各种方案 Demo</a></li>
+  <li><a href="https://drafts.csswg.org/css-font-loading/">CSS Font Loading API</a></li>
+  <li><a href="https://helpx.adobe.com/typekit/using/embed-codes.html#Advancedembedcode">Typekit</a></li>
+  <li><a href="https://github.com/bramstein/fontfaceobserver">Font Face Observer</a></li>
+  <li><a href="https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/">Font selection algorithm &amp; Font synthesis</a></li>
+  <li><a href="https://www.sitepoint.com/optimizing-web-fonts-for-performance-the-state-of-the-art/">另一篇总结性文章</a></li>
+</ul>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/03/26/%E5%AD%97%E4%BD%93%E5%8A%A0%E8%BD%BD%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5-%E4%BA%8C.html" class="read-next-link"></a>
+            <section>
+                <span>字体加载最佳实践（二）</span>
+                <p>之前我们介绍了当前解决 FOIT 的最佳实践。在本篇中，我们将介绍通用的提升字体加载性能的方法。</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/font.png" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/03/18/Houdini.html" class="read-next-link"></a>
+            <section>
+                <span>Houdini</span>
+                <p>最近读了几篇关于 Houdini 的文章，大部分都是 Phil Walton 写的，深感该提案之于 CSS 的重要...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/houdini.jpg" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -96,11 +413,41 @@ body {
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2020</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -144,11 +491,7 @@ body {
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>

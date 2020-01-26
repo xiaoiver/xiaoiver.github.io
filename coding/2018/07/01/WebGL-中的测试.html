@@ -1,7 +1,68 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>WebGL 中的测试 - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="WebGL 中的测试"><meta name=keywords content=WebGL><title>WebGL 中的测试 | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="WebGL 中的测试"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="最近看到「WebGL Insights」中的第4篇文章，其中有一节「Automated Testing of WebGL Applications」。 仔细想想，JS 中的自动测试框架有很多，ava，Karma 等等，e2e 也有 nightwatch。 但是对于 WebGL 程序应该如何测试呢？"><meta property=og:description content="最近看到「WebGL Insights」中的第4篇文章，其中有一节「Automated Testing of WebGL Applications」。 仔细想想，JS 中的自动测试框架有很多，ava，Karma 等等，e2e 也有 nightwatch。 但是对于 WebGL 程序应该如何测试呢？"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/07/01/WebGL-%E4%B8%AD%E7%9A%84%E6%B5%8B%E8%AF%95.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/07/01/WebGL-%E4%B8%AD%E7%9A%84%E6%B5%8B%E8%AF%95.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-07-01T00:00:00+08:00><script type=application/ld+json>{"description":"最近看到「WebGL Insights」中的第4篇文章，其中有一节「Automated Testing of WebGL Applications」。 仔细想想，JS 中的自动测试框架有很多，ava，Karma 等等，e2e 也有 nightwatch。 但是对于 WebGL 程序应该如何测试呢？","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/07/01/WebGL-%E4%B8%AD%E7%9A%84%E6%B5%8B%E8%AF%95.html","headline":"WebGL 中的测试","dateModified":"2018-07-01T00:00:00+08:00","datePublished":"2018-07-01T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/07/01/WebGL-%E4%B8%AD%E7%9A%84%E6%B5%8B%E8%AF%95.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/07/01/WebGL-%E4%B8%AD%E7%9A%84%E6%B5%8B%E8%AF%95.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL 中的测试 - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="WebGL 中的测试">
+    <meta name="keywords"  content="WebGL">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>WebGL 中的测试 | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="WebGL 中的测试" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="最近看到「WebGL Insights」中的第4篇文章，其中有一节「Automated Testing of WebGL Applications」。 仔细想想，JS 中的自动测试框架有很多，ava，Karma 等等，e2e 也有 nightwatch。 但是对于 WebGL 程序应该如何测试呢？" />
+<meta property="og:description" content="最近看到「WebGL Insights」中的第4篇文章，其中有一节「Automated Testing of WebGL Applications」。 仔细想想，JS 中的自动测试框架有很多，ava，Karma 等等，e2e 也有 nightwatch。 但是对于 WebGL 程序应该如何测试呢？" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/07/01/WebGL-%E4%B8%AD%E7%9A%84%E6%B5%8B%E8%AF%95.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/07/01/WebGL-%E4%B8%AD%E7%9A%84%E6%B5%8B%E8%AF%95.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-07-01T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"最近看到「WebGL Insights」中的第4篇文章，其中有一节「Automated Testing of WebGL Applications」。 仔细想想，JS 中的自动测试框架有很多，ava，Karma 等等，e2e 也有 nightwatch。 但是对于 WebGL 程序应该如何测试呢？","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/07/01/WebGL-%E4%B8%AD%E7%9A%84%E6%B5%8B%E8%AF%95.html","headline":"WebGL 中的测试","dateModified":"2018-07-01T00:00:00+08:00","datePublished":"2018-07-01T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/07/01/WebGL-%E4%B8%AD%E7%9A%84%E6%B5%8B%E8%AF%95.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/07/01/WebGL-%E4%B8%AD%E7%9A%84%E6%B5%8B%E8%AF%95.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+    <script src="/assets/js/glsl-canvas.min.js"></script>
+    <script>
+        function initArrayBuffer(gl, program, attribute, data, type, num) {
             // Create a buffer object
             var buffer = gl.createBuffer();
             if (!buffer) {
@@ -24,13 +85,117 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             return true;
-        }</script><body><!--[if lt IE 10]>
+        }
+    </script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>WebGL 中的测试</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-07-01><i class="iconfont icon-date"></i>01 Jul 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/logo.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>WebGL Insights - Automated Testing of WebGL Applications</h2><article class=markdown-body><p>最近看到「WebGL Insights」中的第4篇文章，其中有一节「Automated Testing of WebGL Applications」。 仔细想想，JS 中的自动测试框架有很多，ava，Karma 等等，e2e 也有 nightwatch。 但是对于 WebGL 程序应该如何测试呢？<p>首先想到对于 JS 文件中使用的纯算法类代码，是完全可以通过单元测试完成的。难点在于渲染类的功能代码，尤其是 shader 中的代码运行在 GPU 中，JS 单元测试库可完全不能用。<h2 id=运行环境>运行环境</h2><p>首先完全 Mock 一个 WebGL 环境是不现实的，我们必须让 WebGL 代码跑在浏览器环境中得到真实的结果。<h3 id=electron>electron</h3><p>在持续集成自动化测试中，可以通过 electron 启动一个浏览器窗口。在 Medium <a href=https://medium.com/social-tables-tech/how-we-test-webgl-on-continuous-integration-37a1ead55fd7>一篇文章</a>中就介绍了这种做法。<div><pre class=line-numbers data-line=""><code class=language-javascript>const win = new BrowserWindow({ show: false });
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#WebGL" class="post-tag">WebGL</a>
+            
+            
+        </div>
+        <h1>WebGL 中的测试</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="18-07-01"><i class="iconfont icon-date"></i>01 Jul 2018</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/webgl/logo.png') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <h2 class="post-subtitle">WebGL Insights - Automated Testing of WebGL Applications</h2>
+    
+    <article class="markdown-body">
+        <p>最近看到「WebGL Insights」中的第4篇文章，其中有一节「Automated Testing of WebGL Applications」。
+仔细想想，JS 中的自动测试框架有很多，ava，Karma 等等，e2e 也有 nightwatch。
+但是对于 WebGL 程序应该如何测试呢？</p>
+
+<p>首先想到对于 JS 文件中使用的纯算法类代码，是完全可以通过单元测试完成的。难点在于渲染类的功能代码，尤其是 shader 中的代码运行在 GPU 中，JS 单元测试库可完全不能用。</p>
+
+<h2 id="运行环境">运行环境</h2>
+
+<p>首先完全 Mock 一个 WebGL 环境是不现实的，我们必须让 WebGL 代码跑在浏览器环境中得到真实的结果。</p>
+
+<h3 id="electron">electron</h3>
+
+<p>在持续集成自动化测试中，可以通过 electron 启动一个浏览器窗口。在 Medium <a href="https://medium.com/social-tables-tech/how-we-test-webgl-on-continuous-integration-37a1ead55fd7">一篇文章</a>中就介绍了这种做法。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">const win = new BrowserWindow({ show: false });
 server({ electronWin: win });
 // 载入包含 WebGL 代码的页面
-win.loadURL(`http://localhost:${port}`);</code></pre></div><p>文中还提供了完整的 <a href=https://github.com/socialtables/webgl-test-ci>Docker 镜像</a>，十分贴心。<h3 id=headless-gl>headless-gl</h3><p>相比 electron 的启动速度，<a href=https://github.com/stackgl/headless-gl>headless-gl</a>由于只实现了 WebGL 相关的功能，无需启动整个浏览器窗口，因此速度具有优势。<p>在 WebGL 的实现上，通过 node-gyp 实现了在 Node 环境运行。之前在<a href=https://xiaoiver.github.io/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html#node-gyp>「编译 Node.js 可执行文件」</a>一文中简单介绍过一下：<div><pre class=line-numbers data-line=""><code class=language-glsl>var nativeGL = require(&#39;bindings&#39;)(&#39;webgl&#39;)
-var gl = nativeGL.WebGLRenderingContext.prototype</code></pre></div><p>接下来的问题是，如何判断渲染结果的正确性呢？<h2 id=判别方法>判别方法</h2><p>对于页面渲染效果方面，如果是组件相关的单元测试，可以使用 Karma 启动 Chrome 然后通过 DOM API 判断某些组件是否正确渲染完成。 而如果需要 e2e 的完整验证，可以使用 nightwatch 提供的基本断言以及包含了更丰富浏览器 API 的 WebDriver 协议扩展。 但是对于使用 WebGL 渲染的内容，这些办法似乎都不好使。<p>对于这种场景，文章中提到了一种非常直观判断方法。那就是通过和正确结果截图进行比较，来判断本次渲染结果是否正确。 虽然这种方法存在明显的局限性，就算比对失败，也很难查找错误原因，但是目前似乎也没有更好的方法了。<p>对于简单场景，作者在文中提到了实践中使用另一种方法，用于简单判断渲染没有失败。 方法本身很直接，就判断一个像素点。<div><pre class=line-numbers data-line=""><code class=language-javascript>it(&#39;renders&#39;, function() {
+win.loadURL(`http://localhost:${port}`);</code></pre>
+</div>
+
+<p>文中还提供了完整的 <a href="https://github.com/socialtables/webgl-test-ci">Docker 镜像</a>，十分贴心。</p>
+
+<h3 id="headless-gl">headless-gl</h3>
+
+<p>相比 electron 的启动速度，<a href="https://github.com/stackgl/headless-gl">headless-gl</a>由于只实现了 WebGL 相关的功能，无需启动整个浏览器窗口，因此速度具有优势。</p>
+
+<p>在 WebGL 的实现上，通过 node-gyp 实现了在 Node 环境运行。之前在<a href="https://xiaoiver.github.io/coding/2018/05/14/%E7%BC%96%E8%AF%91-Node.js-%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html#node-gyp">「编译 Node.js 可执行文件」</a>一文中简单介绍过一下：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">var nativeGL = require(&#39;bindings&#39;)(&#39;webgl&#39;)
+var gl = nativeGL.WebGLRenderingContext.prototype</code></pre>
+</div>
+
+<p>接下来的问题是，如何判断渲染结果的正确性呢？</p>
+
+<h2 id="判别方法">判别方法</h2>
+
+<p>对于页面渲染效果方面，如果是组件相关的单元测试，可以使用 Karma 启动 Chrome 然后通过 DOM API 判断某些组件是否正确渲染完成。
+而如果需要 e2e 的完整验证，可以使用 nightwatch 提供的基本断言以及包含了更丰富浏览器 API 的 WebDriver 协议扩展。
+但是对于使用 WebGL 渲染的内容，这些办法似乎都不好使。</p>
+
+<p>对于这种场景，文章中提到了一种非常直观判断方法。那就是通过和正确结果截图进行比较，来判断本次渲染结果是否正确。
+虽然这种方法存在明显的局限性，就算比对失败，也很难查找错误原因，但是目前似乎也没有更好的方法了。</p>
+
+<p>对于简单场景，作者在文中提到了实践中使用另一种方法，用于简单判断渲染没有失败。
+方法本身很直接，就判断一个像素点。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">it(&#39;renders&#39;, function() {
     var gl = createContext();
     setupCamera(gl);
     drawPolygon(gl);
@@ -39,19 +204,192 @@ var gl = nativeGL.WebGLRenderingContext.prototype</code></pre></div><p>接下来
     gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
     expect(pixels).not.toEqual([0, 0, 0, 0]);
     destroyContext(context);
-});</code></pre></div><p>对于 shader 中的代码，也可以借鉴之前的方式，如果符合预期就输出某个特定颜色。 然后继续通过 <code class=highlighter-rouge>gl.readPixels</code> 进行验证：<div><pre class=line-numbers data-line=""><code class=language-glsl>void main() {
+});</code></pre>
+</div>
+
+<p>对于 shader 中的代码，也可以借鉴之前的方式，如果符合预期就输出某个特定颜色。
+然后继续通过 <code class="highlighter-rouge">gl.readPixels</code> 进行验证：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">void main() {
     mat2 m = mat2(1.0, 2.0, 3.0, 4.0);
     mat2 mt = mat2(1.0, 3.0, 2.0, 4.0);
     gl_FragColor = vec4(czm_transpose(m) == mt);
-}</code></pre></div><p>不过这种方式局限性也很明显，一个测试用例只能判断一种情况，对于复杂情况就无能为力了，毕竟只能输出一种颜色。<p>文中还提到了 glsl-unit，不过并没有展开。乍一看颇有 JUnit 的架势，但是搜索一番会发现，原本 Google Code 上的代码迁移到了 <a href=https://github.com/NicolasPelletier/glsl-unit>GitHub</a> 上，不过页面中介绍赫然写着：<blockquote><p>Automatically exported from code.google.com/p/glsl-unit - DONT USE FOR DEVELOPMENT</blockquote><p>访问项目主页也显示 Python 2.5 不可用之类的信息，看来已经年久失修了。缺乏文档和用例，实在是没法使用了。<h2 id=性能测试>性能测试</h2><p>之前总结过一篇文章，关于<a href=/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html> RAIL 性能评估模型</a>。在 JS 中可以通过打点或者 performance API 的方式计算某个方法或是页面渲染某些特定阶段的执行时间。那么在 WebGL 中也能这样使用吗？<p>在回答这个问题之前，可以先来了解一下一个 WebGL 程序运行时依赖的各个软件组件。 「Professional WebGL Programming: Developing 3D Graphics for the Web」书中在第八章中给出了相关的示意图： <img src=/assets/img/webgl/webgl-parts.png alt=""><p>简单概括下，有点类似知乎上常见的“地址栏输入 URL 后经历了哪些步骤”这样的问题：<ol><li>URL 通过浏览器传入 WebKit 内核，使用 HTTP 栈创建对于目标网页的请求<li>HTTP 请求经过 TCP/IP 封装，通过网络层发送<li>服务端响应请求，返回页面 HTML<li>经过网络层，TCP/IP 和 HTTP 解包到达 WebKit 内核，开始构建 DOM 树<li>HTML 中包含的 JS 代码交给 V8 引擎执行，V8 编译成机器码在 CPU 上运行<li>如果这些 JS 代码中包含了对于 WebGL API 的调用，V8 返回给 WebKit，由 WebKit 调用 OpenGL ES 2.0 API。其中 shader 代码由 OpenGL ES 2.0 Lib 编译成二进制代码通过 kernal GPU driver 上传给 GPU<li>texture，vertex buffer 等等一切准备就绪，GPU 开始渲染</ol><p>了解了整个流程，就知道之前用于 JS 的打点方式不可行，因为对于 WebGL API 的调用不是立刻执行的：<div><pre class=line-numbers data-line=""><code class=language-javascript>let t0 = window.performance.now();
+}</code></pre>
+</div>
+
+<p>不过这种方式局限性也很明显，一个测试用例只能判断一种情况，对于复杂情况就无能为力了，毕竟只能输出一种颜色。</p>
+
+<p>文中还提到了 glsl-unit，不过并没有展开。乍一看颇有 JUnit 的架势，但是搜索一番会发现，原本 Google Code 上的代码迁移到了 <a href="https://github.com/NicolasPelletier/glsl-unit">GitHub</a> 上，不过页面中介绍赫然写着：</p>
+
+<blockquote>
+  <p>Automatically exported from code.google.com/p/glsl-unit - DONT USE FOR DEVELOPMENT</p>
+</blockquote>
+
+<p>访问项目主页也显示 Python 2.5 不可用之类的信息，看来已经年久失修了。缺乏文档和用例，实在是没法使用了。</p>
+
+<h2 id="性能测试">性能测试</h2>
+
+<p>之前总结过一篇文章，关于<a href="/coding/2017/06/09/%E4%BB%A5%E7%94%A8%E6%88%B7%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87.html"> RAIL 性能评估模型</a>。在 JS 中可以通过打点或者 performance API 的方式计算某个方法或是页面渲染某些特定阶段的执行时间。那么在 WebGL 中也能这样使用吗？</p>
+
+<p>在回答这个问题之前，可以先来了解一下一个 WebGL 程序运行时依赖的各个软件组件。
+「Professional WebGL Programming: Developing 3D Graphics for the Web」书中在第八章中给出了相关的示意图：
+<img src="/assets/img/webgl/webgl-parts.png" alt="" /></p>
+
+<p>简单概括下，有点类似知乎上常见的“地址栏输入 URL 后经历了哪些步骤”这样的问题：</p>
+<ol>
+  <li>URL 通过浏览器传入 WebKit 内核，使用 HTTP 栈创建对于目标网页的请求</li>
+  <li>HTTP 请求经过 TCP/IP 封装，通过网络层发送</li>
+  <li>服务端响应请求，返回页面 HTML</li>
+  <li>经过网络层，TCP/IP  和 HTTP 解包到达 WebKit 内核，开始构建 DOM 树</li>
+  <li>HTML 中包含的 JS 代码交给 V8 引擎执行，V8 编译成机器码在 CPU 上运行</li>
+  <li>如果这些 JS 代码中包含了对于 WebGL API 的调用，V8 返回给 WebKit，由 WebKit 调用 OpenGL ES 2.0 API。其中 shader 代码由 OpenGL ES 2.0 Lib 编译成二进制代码通过 kernal GPU driver 上传给 GPU</li>
+  <li>texture，vertex buffer 等等一切准备就绪，GPU 开始渲染</li>
+</ol>
+
+<p>了解了整个流程，就知道之前用于 JS 的打点方式不可行，因为对于 WebGL API 的调用不是立刻执行的：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">let t0 = window.performance.now();
 gl.drawElements(gl.TRIANGLE_STRIP, ...); 
-let t1 = window.performance.now();</code></pre></div><h3 id=glfinish>gl.finish</h3><p>对于 <code class=highlighter-rouge>gl.finish()</code> MDN 中这样介绍：<blockquote><p>The WebGLRenderingContext.finish() method of the WebGL API blocks execution until all previously called commands are finished.</blockquote><p>这意味着这个方法会阻塞主线程，所以我们能够这样使用：<div><pre class=line-numbers data-line=""><code class=language-javascript>let t0 = window.performance.now();
+let t1 = window.performance.now();</code></pre>
+</div>
+
+<h3 id="glfinish">gl.finish</h3>
+
+<p>对于 <code class="highlighter-rouge">gl.finish()</code> MDN 中这样介绍：</p>
+<blockquote>
+  <p>The WebGLRenderingContext.finish() method of the WebGL API blocks execution until all previously called commands are finished.</p>
+</blockquote>
+
+<p>这意味着这个方法会阻塞主线程，所以我们能够这样使用：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">let t0 = window.performance.now();
 gl.drawElements(gl.TRIANGLE_STRIP, ...); 
 gl.finish()
-let t1 = window.performance.now();</code></pre></div><p>但是 GPU 出于性能考虑，在具体实现中并不一定会尊重这种阻塞行为。我自己试了一下，加了之后也确实和前一种并无差别。<h3 id=webglsync>WebGLSync</h3><p>在 StackExchange 上有<a href=https://computergraphics.stackexchange.com/questions/4964/how-to-know-when-rendering-is-complete-in-webgl>一个回答</a> 提供了另一种方法，使用 WebGL2 中的 WebGLSync 对象。从 <a href="https://caniuse.com/#feat=webgl2">CanIUse WebGL2</a> 可见目前只有高版本 Chrome 才支持。<p>首先使用 <code class=highlighter-rouge>fenceSync</code> 设置一个 WebGLSync 对象，加入 GL 命令队列中。<blockquote><p>The WebGL2RenderingContext.fenceSync() method of the WebGL 2 API creates a new WebGLSync object and inserts it into the GL command stream.</blockquote><p>使用 <code class=highlighter-rouge>getSyncParameter</code> 可以检查对象的状态，如果在设置后立即检查，显然是 <strong>gl.UNSIGNALED</strong> 状态。<div><pre class=line-numbers data-line=""><code class=language-javascript>// 想检测的执行过程
+let t1 = window.performance.now();</code></pre>
+</div>
+
+<p>但是 GPU 出于性能考虑，在具体实现中并不一定会尊重这种阻塞行为。我自己试了一下，加了之后也确实和前一种并无差别。</p>
+
+<h3 id="webglsync">WebGLSync</h3>
+
+<p>在 StackExchange 上有<a href="https://computergraphics.stackexchange.com/questions/4964/how-to-know-when-rendering-is-complete-in-webgl">一个回答</a>
+提供了另一种方法，使用 WebGL2 中的 WebGLSync 对象。从 <a href="https://caniuse.com/#feat=webgl2">CanIUse WebGL2</a> 可见目前只有高版本 Chrome 才支持。</p>
+
+<p>首先使用 <code class="highlighter-rouge">fenceSync</code> 设置一个 WebGLSync 对象，加入 GL 命令队列中。</p>
+<blockquote>
+  <p>The WebGL2RenderingContext.fenceSync() method of the WebGL 2 API creates a new WebGLSync object and inserts it into the GL command stream.</p>
+</blockquote>
+
+<p>使用 <code class="highlighter-rouge">getSyncParameter</code> 可以检查对象的状态，如果在设置后立即检查，显然是 <strong>gl.UNSIGNALED</strong> 状态。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// 想检测的执行过程
 gl.drawElements(gl.TRIANGLE_STRIP, ...); 
 let sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
-let signaled = gl.getSyncParameter(sync, gl.SYNC_STATUS);</code></pre></div><p>不必我们手动去轮询 Sync 对象的状态，<code class=highlighter-rouge>clientWaitSync</code> 可以阻塞主线程，直至 Sync 对象状态改变或者达到超时时间。<blockquote><p>The WebGL2RenderingContext.clientWaitSync() method of the WebGL 2 API blocks and waits for a WebGLSync object to become signaled or a given timeout to be passed.</blockquote><div><pre class=line-numbers data-line=""><code class=language-javascript>let status = gl.clientWaitSync(sync, 0, 0);</code></pre></div><p>在实际测试时，如果设置了大于 0 的超时时间，Chrome 会有一个警告。这点非常奇怪，上面的回答中提问者也提到了这一点：<blockquote><p>WebGL: INVALID_OPERATION: clientWaitSync: timeout &gt; MAX_CLIENT_WAIT_TIMEOUT_WEBGL</blockquote><p>完整的例子可以参考：<p data-height=265 data-theme-id=0 data-slug-hash=KBaEZW data-default-tab=js,result data-user=xiaoiver data-embed-version=2 data-pen-title="measure perf" class=codepen>See the Pen <a href=https://codepen.io/xiaoiver/pen/KBaEZW/ >measure perf</a> by xiaop (<a href=https://codepen.io/xiaoiver>@xiaoiver</a>) on <a href=https://codepen.io>CodePen</a>.</p><script async src=https://static.codepen.io/assets/embed/ei.js></script><h2 id=参考资料>参考资料</h2><ul><li><a href=https://github.com/stackgl/headless-gl>headless-gl</a><li><a href=https://medium.com/social-tables-tech/how-we-test-webgl-on-continuous-integration-37a1ead55fd7>How we test WebGL on Continuous Integration</a><li><a href=https://computergraphics.stackexchange.com/questions/4964/how-to-know-when-rendering-is-complete-in-webgl>how-to-know-when-rendering-is-complete-in-webgl</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/07/20/%E7%BB%98%E5%88%B6-Pattern.html class=read-next-link></a><section><span>绘制 Pattern</span><p>在设置页面背景时，使用 Pattern 这种平铺的效果是很常见的做法，其中使用 CSS 属性是最常规的了：body...</section><div class=filter></div><img src=/assets/img/webgl/pattern.jpg alt=""></div><div class=read-next-item><a href=/coding/2018/06/23/GMTC-%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%A4%A7%E4%BC%9A%E8%AE%B0%E5%BD%95.html class=read-next-link></a><section><span>GMTC 前端技术大会记录</span><p>本周参加了为期两天的 GMTC 前端技术大会，在 PWA 专场上做了一个分享，也听了几场其他老师的演讲，在此记录一...</section><div class=filter></div><img src=/assets/img/gmtc/gmtc.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+let signaled = gl.getSyncParameter(sync, gl.SYNC_STATUS);</code></pre>
+</div>
+
+<p>不必我们手动去轮询 Sync 对象的状态，<code class="highlighter-rouge">clientWaitSync</code> 可以阻塞主线程，直至 Sync 对象状态改变或者达到超时时间。</p>
+<blockquote>
+  <p>The WebGL2RenderingContext.clientWaitSync() method of the WebGL 2 API blocks and waits for a WebGLSync object to become signaled or a given timeout to be passed.</p>
+</blockquote>
+
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">let status = gl.clientWaitSync(sync, 0, 0);</code></pre>
+</div>
+
+<p>在实际测试时，如果设置了大于 0 的超时时间，Chrome 会有一个警告。这点非常奇怪，上面的回答中提问者也提到了这一点：</p>
+<blockquote>
+  <p>WebGL: INVALID_OPERATION: clientWaitSync: timeout &gt; MAX_CLIENT_WAIT_TIMEOUT_WEBGL</p>
+</blockquote>
+
+<p>完整的例子可以参考：</p>
+<p data-height="265" data-theme-id="0" data-slug-hash="KBaEZW" data-default-tab="js,result" data-user="xiaoiver" data-embed-version="2" data-pen-title="measure perf" class="codepen">See the Pen <a href="https://codepen.io/xiaoiver/pen/KBaEZW/">measure perf</a> by xiaop (<a href="https://codepen.io/xiaoiver">@xiaoiver</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async="" src="https://static.codepen.io/assets/embed/ei.js"></script>
+
+<h2 id="参考资料">参考资料</h2>
+
+<ul>
+  <li><a href="https://github.com/stackgl/headless-gl">headless-gl</a></li>
+  <li><a href="https://medium.com/social-tables-tech/how-we-test-webgl-on-continuous-integration-37a1ead55fd7">How we test WebGL on Continuous Integration</a></li>
+  <li><a href="https://computergraphics.stackexchange.com/questions/4964/how-to-know-when-rendering-is-complete-in-webgl">how-to-know-when-rendering-is-complete-in-webgl</a></li>
+</ul>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/07/20/%E7%BB%98%E5%88%B6-Pattern.html" class="read-next-link"></a>
+            <section>
+                <span>绘制 Pattern</span>
+                <p>在设置页面背景时，使用 Pattern 这种平铺的效果是很常见的做法，其中使用 CSS 属性是最常规的了：body...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/pattern.jpg" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/06/23/GMTC-%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%A4%A7%E4%BC%9A%E8%AE%B0%E5%BD%95.html" class="read-next-link"></a>
+            <section>
+                <span>GMTC 前端技术大会记录</span>
+                <p>本周参加了为期两天的 GMTC 前端技术大会，在 PWA 专场上做了一个分享，也听了几场其他老师的演讲，在此记录一...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/gmtc/gmtc.jpg" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -61,11 +399,41 @@ let signaled = gl.getSyncParameter(sync, gl.SYNC_STATUS);</code></pre></div><p>�
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2020</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -109,11 +477,7 @@ let signaled = gl.getSyncParameter(sync, gl.SYNC_STATUS);</code></pre></div><p>�
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>

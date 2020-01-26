@@ -1,19 +1,194 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Vue + Custom Elements - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="Vue + Custom Elements"><meta name=keywords content="vue, WebComponents"><title>Vue + Custom Elements | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="Vue + Custom Elements"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="都知道 Polymer 以 WebComponents 为基础，其实 Vue 也有与之结合的插件，代码不多，最近抽空研究了一下。"><meta property=og:description content="都知道 Polymer 以 WebComponents 为基础，其实 Vue 也有与之结合的插件，代码不多，最近抽空研究了一下。"><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/01/Vue-+-Custom-Elements.html><meta property=og:url content=https://xiaoiver.github.io/coding/2018/05/01/Vue-+-Custom-Elements.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2018-05-01T00:00:00+08:00><script type=application/ld+json>{"description":"都知道 Polymer 以 WebComponents 为基础，其实 Vue 也有与之结合的插件，代码不多，最近抽空研究了一下。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/05/01/Vue-+-Custom-Elements.html","headline":"Vue + Custom Elements","dateModified":"2018-05-01T00:00:00+08:00","datePublished":"2018-05-01T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/05/01/Vue-+-Custom-Elements.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2018/05/01/Vue-+-Custom-Elements.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><body><!--[if lt IE 10]>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue + Custom Elements - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="Vue + Custom Elements">
+    <meta name="keywords"  content="vue, WebComponents">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>Vue + Custom Elements | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="Vue + Custom Elements" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="都知道 Polymer 以 WebComponents 为基础，其实 Vue 也有与之结合的插件，代码不多，最近抽空研究了一下。" />
+<meta property="og:description" content="都知道 Polymer 以 WebComponents 为基础，其实 Vue 也有与之结合的插件，代码不多，最近抽空研究了一下。" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2018/05/01/Vue-+-Custom-Elements.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2018/05/01/Vue-+-Custom-Elements.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-05-01T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"都知道 Polymer 以 WebComponents 为基础，其实 Vue 也有与之结合的插件，代码不多，最近抽空研究了一下。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2018/05/01/Vue-+-Custom-Elements.html","headline":"Vue + Custom Elements","dateModified":"2018-05-01T00:00:00+08:00","datePublished":"2018-05-01T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2018/05/01/Vue-+-Custom-Elements.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2018/05/01/Vue-+-Custom-Elements.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#vue class=post-tag>vue</a> <a href=https://xiaoiver.github.io/tags#WebComponents class=post-tag>WebComponents</a></div><h1>Vue + Custom Elements</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=18-05-01><i class="iconfont icon-date"></i>01 May 2018</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/vue-custom-element-logo-text.png') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><article class=markdown-body><p>都知道 Polymer 以 WebComponents 为基础，其实 Vue 也有与之结合的插件，代码不多，最近抽空研究了一下。<p>首先我们都知道 Web Components 由 4 个标准组成：<ul><li><a href=https://www.html5rocks.com/en/tutorials/webcomponents/imports/ >HTML imports</a><li><a href=https://www.html5rocks.com/en/tutorials/webcomponents/template/ >HTML template</a><li>Custom Elements<li>Shadow DOM</ul><p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/webcomponents.png alt="WebComponents 组成"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/webcomponents.png data-alt="WebComponents 组成"></div><em>WebComponents 组成</em><p></p><script>new Imager('.responsive-image__delayed', {
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#vue" class="post-tag">vue</a>
+            
+            <a href="https://xiaoiver.github.io/tags#WebComponents" class="post-tag">WebComponents</a>
+            
+            
+        </div>
+        <h1>Vue + Custom Elements</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="18-05-01"><i class="iconfont icon-date"></i>01 May 2018</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/vue-custom-element-logo-text.png') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <article class="markdown-body">
+        <p>都知道 Polymer 以 WebComponents 为基础，其实 Vue 也有与之结合的插件，代码不多，最近抽空研究了一下。</p>
+
+<p>首先我们都知道 Web Components 由 4 个标准组成：</p>
+<ul>
+  <li><a href="https://www.html5rocks.com/en/tutorials/webcomponents/imports/">HTML imports</a></li>
+  <li><a href="https://www.html5rocks.com/en/tutorials/webcomponents/template/">HTML template</a></li>
+  <li>Custom Elements</li>
+  <li>Shadow DOM</li>
+</ul>
+
+<p class="responsive-image">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/webcomponents.png" alt="WebComponents 组成" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/webcomponents.png" data-alt="WebComponents 组成">
+    </div>
+    <em>WebComponents 组成</em>
+</p>
+
+<script>
+    new Imager('.responsive-image__delayed', {
         availableWidths: [480],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });</script><p>前两个标准算是基础部分，先介绍下 Custom Elements，值得一提的是这个标准本身也发生过重大修改，最新的版本是 v1。<h2 id=custom-elements-介绍>Custom Elements 介绍</h2><p>我们知道浏览器遇到不认识的标签会忽略，Custom Elements 可以帮助扩充浏览器的词汇表。<p>先来看一下用法，我们可以使用 ES6 的 class 语法声明一个自定义标签，然后使用全局 API 进行注册。这样在 HTML 中，我们就可以直接使用 <code class=highlighter-rouge>&lt;app-drawer&gt;</code> 自定义标签了：<div><pre class=line-numbers data-line=""><code class=language-javascript>class AppDrawer extends HTMLElement {...}
-window.customElements.define(&#39;app-drawer&#39;, AppDrawer);</code></pre></div><p>用法很简单，重点是标签类的内容。在深入之前我们不妨思考一个问题，那就是如何将 JS 中的变量修改反映到 HTML 上，反之亦然。 为什么要这么做呢，原因有两个。首先是双向绑定的需要，其次在 HTML 上添加属性便于实现样式的切换。<p>我们希望在 CSS 中通过 HTML 属性改变样式：<div><pre class=line-numbers data-line=""><code class=language-javascript>app-drawer[disabled] {
+    });
+</script>
+
+<p>前两个标准算是基础部分，先介绍下 Custom Elements，值得一提的是这个标准本身也发生过重大修改，最新的版本是 v1。</p>
+
+<h2 id="custom-elements-介绍">Custom Elements 介绍</h2>
+
+<p>我们知道浏览器遇到不认识的标签会忽略，Custom Elements 可以帮助扩充浏览器的词汇表。</p>
+
+<p>先来看一下用法，我们可以使用 ES6 的 class 语法声明一个自定义标签，然后使用全局 API 进行注册。这样在 HTML 中，我们就可以直接使用 <code class="highlighter-rouge">&lt;app-drawer&gt;</code> 自定义标签了：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">class AppDrawer extends HTMLElement {...}
+window.customElements.define(&#39;app-drawer&#39;, AppDrawer);</code></pre>
+</div>
+
+<p>用法很简单，重点是标签类的内容。在深入之前我们不妨思考一个问题，那就是如何将 JS 中的变量修改反映到 HTML 上，反之亦然。
+为什么要这么做呢，原因有两个。首先是双向绑定的需要，其次在 HTML 上添加属性便于实现样式的切换。</p>
+
+<p>我们希望在 CSS 中通过 HTML 属性改变样式：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">app-drawer[disabled] {
     opacity: 0.5;
     pointer-events: none;
-}</code></pre></div><p>带着这个问题我们看看 API 都提供了哪些功能。<h3 id=生命周期钩子>生命周期钩子</h3><p>在自定义元素中，提供了若干生命周期钩子供我们扩展，其中包括：<ul><li>constructor<li>connectedCallback/disconnectedCallback 插入/移除 DOM<li>attributeChangedCallback 属性添加、移除、更新或替换</ul><p>使用这些钩子我们就能完成 HTML 属性和 JS 变量的绑定。<h3 id=映射-html-property-到-js-attribute>映射 HTML property 到 JS attribute</h3><p>首先，在 JS 中可以通过同名变量 getter/setter 设置 HTML 属性，类似 Vue 中的计算属性。<div><pre class=line-numbers data-line=""><code class=language-javascript>get disabled() {
+}</code></pre>
+</div>
+
+<p>带着这个问题我们看看 API 都提供了哪些功能。</p>
+
+<h3 id="生命周期钩子">生命周期钩子</h3>
+
+<p>在自定义元素中，提供了若干生命周期钩子供我们扩展，其中包括：</p>
+<ul>
+  <li>constructor</li>
+  <li>connectedCallback/disconnectedCallback 插入/移除 DOM</li>
+  <li>attributeChangedCallback 属性添加、移除、更新或替换</li>
+</ul>
+
+<p>使用这些钩子我们就能完成 HTML 属性和 JS 变量的绑定。</p>
+
+<h3 id="映射-html-property-到-js-attribute">映射 HTML property 到 JS attribute</h3>
+
+<p>首先，在 JS 中可以通过同名变量 getter/setter 设置 HTML 属性，类似 Vue 中的计算属性。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">get disabled() {
     return this.hasAttribute(&#39;disabled&#39;);
 }
 
@@ -24,17 +199,62 @@ set disabled(val) {
         this.removeAttribute(&#39;disabled&#39;);
     }
     // this.toggleDrawer();
-}</code></pre></div><p>反过来从 HTML 属性到 JS 变量就需要依靠之前的 <code class=highlighter-rouge>attributeChangedCallback</code> 钩子了。要触发这个钩子，必须先声明要监听的 HTML 属性，类似 Vue 中使用 <code class=highlighter-rouge>data()</code> 声明响应式数据：<div><pre class=line-numbers data-line=""><code class=language-javascript>static get observedAttributes() {
+}</code></pre>
+</div>
+
+<p>反过来从 HTML 属性到 JS 变量就需要依靠之前的 <code class="highlighter-rouge">attributeChangedCallback</code> 钩子了。要触发这个钩子，必须先声明要监听的 HTML 属性，类似 Vue 中使用 <code class="highlighter-rouge">data()</code> 声明响应式数据：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">static get observedAttributes() {
     return [&#39;disabled&#39;, &#39;open&#39;];
-}</code></pre></div><p>然后在钩子中就可以将 HTML 属性的变化值同步到 JS 变量中了：<div><pre class=line-numbers data-line=""><code class=language-javascript>attributeChangedCallback(name, oldValue, newValue) {}</code></pre></div><h3 id=自定义元素内容>自定义元素内容</h3><p>有了数据绑定机制，自定义元素的内容应该如何设置呢？<p>首先想到，由于 <code class=highlighter-rouge>this</code> 可以访问 DOM API，所以可以在 <code class=highlighter-rouge>connectedCallback</code> 钩子中直接插入内容：<div><pre class=line-numbers data-line=""><code class=language-javascript>connectedCallback() {
+}</code></pre>
+</div>
+
+<p>然后在钩子中就可以将 HTML 属性的变化值同步到 JS 变量中了：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">attributeChangedCallback(name, oldValue, newValue) {}</code></pre>
+</div>
+
+<h3 id="自定义元素内容">自定义元素内容</h3>
+
+<p>有了数据绑定机制，自定义元素的内容应该如何设置呢？</p>
+
+<p>首先想到，由于 <code class="highlighter-rouge">this</code> 可以访问 DOM API，所以可以在 <code class="highlighter-rouge">connectedCallback</code> 钩子中直接插入内容：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">connectedCallback() {
     this.innerHTML = &quot;&lt;b&gt;I&#39;m an x-foo-with-markup!&lt;/b&gt;&quot;;
-}</code></pre></div><h2 id=vue--custom-elements>Vue + Custom Elements</h2><p>从前面的介绍我们能看出来，虽然提供了 HTML 属性到 JS 变量的映射机制，但是 HTML template 并没有双向绑定语法，在使用时还是免不了大量 DOM 操作。<p>Polymer 为了解决这些问题做了大量的封装。Vue 的一个插件 <a href=https://github.com/karol-f/vue-custom-element>vue-custom-element</a> 也能帮助我们更加便捷地使用 Custom Elements。 另外，我们之前省略了 Shadow DOM 在组件封装上的好处。<p class=responsive-image><img class=responsive-image__placeholder src=/assets/img/resized/480/vue-custom-element-why.png alt="Vue + Custom Elements"><div class=responsive-image__delayed data-src=/assets/img/resized/{width}/vue-custom-element-why.png data-alt="Vue + Custom Elements"></div><em>Vue + Custom Elements</em><p></p><script>new Imager('.responsive-image__delayed', {
+}</code></pre>
+</div>
+
+<h2 id="vue--custom-elements">Vue + Custom Elements</h2>
+
+<p>从前面的介绍我们能看出来，虽然提供了 HTML 属性到 JS 变量的映射机制，但是 HTML template 并没有双向绑定语法，在使用时还是免不了大量 DOM 操作。</p>
+
+<p>Polymer 为了解决这些问题做了大量的封装。Vue 的一个插件 <a href="https://github.com/karol-f/vue-custom-element">vue-custom-element</a> 也能帮助我们更加便捷地使用 Custom Elements。
+另外，我们之前省略了 Shadow DOM 在组件封装上的好处。</p>
+
+<p class="responsive-image">
+    <img class="responsive-image__placeholder" src="/assets/img/resized/480/vue-custom-element-why.png" alt="Vue + Custom Elements" />
+    <div class="responsive-image__delayed" data-src="/assets/img/resized/{width}/vue-custom-element-why.png" data-alt="Vue + Custom Elements">
+    </div>
+    <em>Vue + Custom Elements</em>
+</p>
+
+<script>
+    new Imager('.responsive-image__delayed', {
         availableWidths: [480, 800, 1400],
         onImagesReplaced: function() {
             $('.responsive-image__placeholder').hide();
 
         }
-    });</script><h3 id=使用方法>使用方法</h3><p>用法有点类似将 <code class=highlighter-rouge>.vue</code> 中的部分模版挪到 HTML 中直接使用，而且由于不存在挂载点，也不需要手动执行 <code class=highlighter-rouge>$mount()</code> 操作。 另外，将 <code class=highlighter-rouge>props</code> 属性绑定到了 DOM 上，修改可以直接触发 HTML 内容改变。<div><pre class=line-numbers data-line=""><code class=language-javascript>&lt;widget-vue prop1=&quot;1&quot; prop2=&quot;string&quot; prop3=&quot;true&quot;&gt;&lt;/widget-vue&gt;
+    });
+</script>
+
+<h3 id="使用方法">使用方法</h3>
+
+<p>用法有点类似将 <code class="highlighter-rouge">.vue</code> 中的部分模版挪到 HTML 中直接使用，而且由于不存在挂载点，也不需要手动执行 <code class="highlighter-rouge">$mount()</code> 操作。
+另外，将 <code class="highlighter-rouge">props</code> 属性绑定到了 DOM 上，修改可以直接触发 HTML 内容改变。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">&lt;widget-vue prop1=&quot;1&quot; prop2=&quot;string&quot; prop3=&quot;true&quot;&gt;&lt;/widget-vue&gt;
 
 Vue.customElement(&#39;widget-vue&#39;, {
     props: [
@@ -49,7 +269,18 @@ Vue.customElement(&#39;widget-vue&#39;, {
 });
 
 document.querySelector(&#39;widget-vue&#39;).prop2 // get prop value
-document.querySelector(&#39;widget-vue&#39;).prop2 = &#39;another string&#39; // set prop value</code></pre></div><p>来看看内部对于 Custom Elements 的封装细节吧。<h3 id=注册-vue-插件>注册 Vue 插件</h3><p>从上面的使用方式上可以看出，将 Vue 组件的实例化融合到了 Custom Elements 的生命周期中。<p>首先是 Vue 插件化的安装方式，在 Vue 对象上挂载了全局性的注册方法 <code class=highlighter-rouge>customElement()</code>：<div><pre class=line-numbers data-line=""><code class=language-javascript>function install(Vue) {
+document.querySelector(&#39;widget-vue&#39;).prop2 = &#39;another string&#39; // set prop value</code></pre>
+</div>
+
+<p>来看看内部对于 Custom Elements 的封装细节吧。</p>
+
+<h3 id="注册-vue-插件">注册 Vue 插件</h3>
+
+<p>从上面的使用方式上可以看出，将 Vue 组件的实例化融合到了 Custom Elements 的生命周期中。</p>
+
+<p>首先是 Vue 插件化的安装方式，在 Vue 对象上挂载了全局性的注册方法 <code class="highlighter-rouge">customElement()</code>：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">function install(Vue) {
     Vue.customElement = function vueCustomElement(tag, componentDefinition, options = {}) {
         const CustomElement = registerCustomElement(tag, {
             constructorCallback() {}
@@ -60,10 +291,23 @@ document.querySelector(&#39;widget-vue&#39;).prop2 = &#39;another string&#39; //
         })
         return CustomElement;
     }
-}</code></pre></div><p>在创建 Custom Elements 工厂方法中，使用了标准的 API，将各个生命周期钩子应用上去。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/vue-custom-element.js
+}</code></pre>
+</div>
+
+<p>在创建 Custom Elements 工厂方法中，使用了标准的 API，将各个生命周期钩子应用上去。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/vue-custom-element.js
 
 class CustomElement extends HTMLElement {}
-customElements.define(tag, CustomElement);</code></pre></div><h3 id=获取属性>获取属性</h3><p>首先根据开发者声明的 props 属性，需要进行 camelCase 到连词符形式的转换。这是由于 HTML 中的属性需要连词符形式。 另外，由于 HTML 中属性都是以字符串形式存在，需要推断出真实的类型存储在 types 中。<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/utils/props.js
+customElements.define(tag, CustomElement);</code></pre>
+</div>
+
+<h3 id="获取属性">获取属性</h3>
+
+<p>首先根据开发者声明的 props 属性，需要进行 camelCase 到连词符形式的转换。这是由于 HTML 中的属性需要连词符形式。
+另外，由于 HTML 中属性都是以字符串形式存在，需要推断出真实的类型存储在 types 中。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/utils/props.js
 
 export function getProps(componentDefinition = {}) {
     const props = {
@@ -81,7 +325,12 @@ export function getProps(componentDefinition = {}) {
     });
 
     return props;
-}</code></pre></div><p>从 HTML 中解析 props 属性对应的初始值：<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/utils/props.js
+}</code></pre>
+</div>
+
+<p>从 HTML 中解析 props 属性对应的初始值：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/utils/props.js
 
 export function getPropsData(element, componentDefinition, props) {
     const propsData = componentDefinition.propsData || {};
@@ -101,14 +350,29 @@ export function getPropsData(element, componentDefinition, props) {
     });
 
     return propsData;
-}</code></pre></div><h3 id=自定义事件>自定义事件</h3><p>在 Vue 的生命周期中，我们扩展了 <code class=highlighter-rouge>$emit()</code> 方法，在 Vue 原有父子组件事件传递机制的基础上，增加了自定义事件的触发：<div><pre class=line-numbers data-line=""><code class=language-javascript>// src/utils/createVueInstance.js
+}</code></pre>
+</div>
+
+<h3 id="自定义事件">自定义事件</h3>
+
+<p>在 Vue 的生命周期中，我们扩展了 <code class="highlighter-rouge">$emit()</code> 方法，在 Vue 原有父子组件事件传递机制的基础上，增加了自定义事件的触发：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/utils/createVueInstance.js
 
 function beforeCreate() {
     this.$emit = function emit(...args) {
         customEmit(element, ...args);
         this.__proto__ &amp;&amp; this.__proto__.$emit.call(this, ...args);
     };
-}</code></pre></div><h3 id=实例化-vue>实例化 Vue</h3><p>在浏览器检测到使用的 Custom Elements 时，执行 <code class=highlighter-rouge>connectedCallback</code> 钩子。 在这里我们完成了对应的 Vue 组件的实例化。另外，同样支持异步组件。<div><pre class=line-numbers data-line=""><code class=language-javascript>connectedCallback() {
+}</code></pre>
+</div>
+
+<h3 id="实例化-vue">实例化 Vue</h3>
+
+<p>在浏览器检测到使用的 Custom Elements 时，执行 <code class="highlighter-rouge">connectedCallback</code> 钩子。
+在这里我们完成了对应的 Vue 组件的实例化。另外，同样支持异步组件。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">connectedCallback() {
     const asyncComponentPromise = isAsyncComponent
         &amp;&amp; componentDefinition();
     const isAsyncComponentPromise = asyncComponentPromise
@@ -127,7 +391,17 @@ function beforeCreate() {
     }
 
     this.__detached__ = false;
-}</code></pre></div><p>在 Vue 实例的配置对象中，有几点需要注意：<ol><li>使用之前从 HTML 中解析好的属性初始值，传入 <a href=https://vuejs.org/v2/api/#propsData>propsData</a><li>render 函数中使用 <code class=highlighter-rouge>getSlots()</code> 获取子节点内容<li>Vue 实例存储在 DOM 节点的 <code class=highlighter-rouge>__vue_custom_element__</code> 属性上</ol><div><pre class=line-numbers data-line=""><code class=language-javascript>// src/utils/createVueInstance.js
+}</code></pre>
+</div>
+
+<p>在 Vue 实例的配置对象中，有几点需要注意：</p>
+<ol>
+  <li>使用之前从 HTML 中解析好的属性初始值，传入 <a href="https://vuejs.org/v2/api/#propsData">propsData</a></li>
+  <li>render 函数中使用 <code class="highlighter-rouge">getSlots()</code> 获取子节点内容</li>
+  <li>Vue 实例存储在 DOM 节点的 <code class="highlighter-rouge">__vue_custom_element__</code> 属性上</li>
+</ol>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// src/utils/createVueInstance.js
 
 rootElement = {
     propsData,
@@ -155,20 +429,44 @@ rootElement = {
     }
 };
 // 实例化
-element.__vue_custom_element__ = new Vue(rootElement);</code></pre></div><p>后续做一些收尾工作,包括：<ol><li>让 props 响应式<li>移除掉 DOM 元素上的 <code class=highlighter-rouge>vce-cloak</code>，此前通过样式控制未解析完成的自定义元素不可见<li>添加 <code class=highlighter-rouge>vce-ready</code> 标记并触发事件</ol><div><pre class=line-numbers data-line=""><code class=language-javascript>reactiveProps(element, props);
+element.__vue_custom_element__ = new Vue(rootElement);</code></pre>
+</div>
+
+<p>后续做一些收尾工作,包括：</p>
+<ol>
+  <li>让 props 响应式</li>
+  <li>移除掉 DOM 元素上的 <code class="highlighter-rouge">vce-cloak</code>，此前通过样式控制未解析完成的自定义元素不可见</li>
+  <li>添加 <code class="highlighter-rouge">vce-ready</code> 标记并触发事件</li>
+</ol>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">reactiveProps(element, props);
 
 element.__vue_custom_element_props__ = props;
 // 省略 Shadow DOM 的挂载
 element.removeAttribute(&#39;vce-cloak&#39;);
 element.setAttribute(&#39;vce-ready&#39;, &#39;&#39;);
-customEmit(element, &#39;vce-ready&#39;);</code></pre></div><h3 id=响应式>响应式</h3><p>为了实现修改 DOM 属性到 Vue props 的关联，前面介绍过 Custom Elements 的监听 HTML 属性方式。 这里修改 Vue 实例上的属性，完成重绘。<div><pre class=line-numbers data-line=""><code class=language-javascript>attributeChangedCallback(name, oldValue, value) {
+customEmit(element, &#39;vce-ready&#39;);</code></pre>
+</div>
+
+<h3 id="响应式">响应式</h3>
+
+<p>为了实现修改 DOM 属性到 Vue props 的关联，前面介绍过 Custom Elements 的监听 HTML 属性方式。
+这里修改 Vue 实例上的属性，完成重绘。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">attributeChangedCallback(name, oldValue, value) {
     if (this.__vue_custom_element__ &amp;&amp; typeof value !== &#39;undefined&#39;) {
         const nameCamelCase = camelize(name);
         const type = this.__vue_custom_element_props__.types[nameCamelCase];
         this.__vue_custom_element__[nameCamelCase] = convertAttributeValue(value, type);
     }
 },
-observedAttributes: props.hyphenate</code></pre></div><p>为了便捷地使用 DOM 属性，例如这样：<code class=highlighter-rouge>document.querySelector('widget-vue1').prop1 = 'new Value'</code>。 需要使用 getter/setter 代理 DOM 属性到 Vue props 上：<div><pre class=line-numbers data-line=""><code class=language-javascript>export function reactiveProps(element, props) {
+observedAttributes: props.hyphenate</code></pre>
+</div>
+
+<p>为了便捷地使用 DOM 属性，例如这样：<code class="highlighter-rouge">document.querySelector('widget-vue1').prop1 = 'new Value'</code>。
+需要使用 getter/setter 代理 DOM 属性到 Vue props 上：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">export function reactiveProps(element, props) {
     props.camelCase.forEach((name, index) =&gt; {
         Object.defineProperty(element, name, {
             get() {
@@ -186,7 +484,22 @@ observedAttributes: props.hyphenate</code></pre></div><p>为了便捷地使用 D
             }
         });
     });
-}</code></pre></div><p>另一方面，props 修改也需要反映到 HTML 属性上。有两种方式:<ol><li>使用之前提到过的 <code class=highlighter-rouge>$emit()</code> 触发自定义事件，然后在 DOM 中监听事件完成 HTML 属性的设置<li>使用 <code class=highlighter-rouge>$el.prop1</code>，由于上面已经完成了 DOM 属性的代理，在 setter 中会自动调用 <code class=highlighter-rouge>setAttribute()</code> 完成设置</ol><h3 id=slot>Slot</h3><p>最后我们来看看使用 Vue render 函数时，创建子元素的过程。<p>对于文本节点，使用 <code class=highlighter-rouge>&lt;span&gt;</code> 包裹。而对于其他类型节点，保留原本的标签名和 DOM 属性，如果有 slot 需要从 attrs 中挑出来放到 <code class=highlighter-rouge>createElement()</code> 的参数选项上。<div><pre class=line-numbers data-line=""><code class=language-javascript>export function getSlots(children = [], createElement) {
+}</code></pre>
+</div>
+
+<p>另一方面，props 修改也需要反映到 HTML 属性上。有两种方式:</p>
+<ol>
+  <li>使用之前提到过的 <code class="highlighter-rouge">$emit()</code> 触发自定义事件，然后在 DOM 中监听事件完成 HTML 属性的设置</li>
+  <li>使用 <code class="highlighter-rouge">$el.prop1</code>，由于上面已经完成了 DOM 属性的代理，在 setter 中会自动调用 <code class="highlighter-rouge">setAttribute()</code> 完成设置</li>
+</ol>
+
+<h3 id="slot">Slot</h3>
+
+<p>最后我们来看看使用 Vue render 函数时，创建子元素的过程。</p>
+
+<p>对于文本节点，使用 <code class="highlighter-rouge">&lt;span&gt;</code> 包裹。而对于其他类型节点，保留原本的标签名和 DOM 属性，如果有 slot 需要从 attrs 中挑出来放到 <code class="highlighter-rouge">createElement()</code> 的参数选项上。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">export function getSlots(children = [], createElement) {
     const slots = [];
     toArray(children).forEach((child) =&gt; {
         // 处理文本节点
@@ -213,7 +526,12 @@ observedAttributes: props.hyphenate</code></pre></div><p>为了便捷地使用 D
         }
     });
     return slots;
-}</code></pre></div><p>遇到包含 <code class=highlighter-rouge>vue-slot</code> 属性的节点就认为是 slot。<div><pre class=line-numbers data-line=""><code class=language-javascript>export function getAttributes(children) {
+}</code></pre>
+</div>
+
+<p>遇到包含 <code class="highlighter-rouge">vue-slot</code> 属性的节点就认为是 slot。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">export function getAttributes(children) {
     const attributes = {};
 
     toArray(children.attributes).forEach((attribute) =&gt; {
@@ -222,7 +540,95 @@ observedAttributes: props.hyphenate</code></pre></div><p>为了便捷地使用 D
     });
 
     return attributes;
-}</code></pre></div><p>从这里可以看出，遇到 Vue 不认识的组件标签，也会原样输出。这里在开发模式下就会出现 Warning。 这个<a href=https://github.com/karol-f/vue-custom-element#caveats>问题</a>在插件中也有说明，可以使用 <a href=https://vuejs.org/v2/api/#ignoredElements>ignoredElements</a> 忽略。<h2 id=参考资料>参考资料</h2><ul><li><a href="https://caniuse.com/#feat=custom-elementsv1">Custom Elements v1 支持度</a> iOS 10+<li><a href=https://developers.google.com/web/fundamentals/web-components/customelements>Custom Elements v1 概览</a></ul></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2018/05/03/%E5%9C%A8-PWA-%E4%B8%AD%E4%BD%BF%E7%94%A8-App-Shell-%E6%A8%A1%E5%9E%8B.html class=read-next-link></a><section><span>在 PWA 中使用 App Shell 模型</span><p>在构建 PWA 应用时，使用 App Shell 模型能够在视觉和首屏加载速度方面带来用户体验的提升。另外，在配合...</section><div class=filter></div><img src=/assets/img/pwa-appshell.png alt=""></div><div class=read-next-item><a href=/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html class=read-next-link></a><section><span>Vue 渲染机制（三）</span><p>之前我们已经生成了 VNode，将 VNode 渲染成真实 DOM 的工作在 __patch__() 中进行：</section><div class=filter></div><img src=/assets/img/vue-render.png alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+}</code></pre>
+</div>
+
+<p>从这里可以看出，遇到 Vue 不认识的组件标签，也会原样输出。这里在开发模式下就会出现 Warning。
+这个<a href="https://github.com/karol-f/vue-custom-element#caveats">问题</a>在插件中也有说明，可以使用 <a href="https://vuejs.org/v2/api/#ignoredElements"> ignoredElements</a> 忽略。</p>
+
+<h2 id="参考资料">参考资料</h2>
+
+<ul>
+  <li><a href="https://caniuse.com/#feat=custom-elementsv1">Custom Elements v1 支持度</a> iOS 10+</li>
+  <li><a href="https://developers.google.com/web/fundamentals/web-components/customelements">Custom Elements v1 概览</a></li>
+</ul>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/05/03/%E5%9C%A8-PWA-%E4%B8%AD%E4%BD%BF%E7%94%A8-App-Shell-%E6%A8%A1%E5%9E%8B.html" class="read-next-link"></a>
+            <section>
+                <span>在 PWA 中使用 App Shell 模型</span>
+                <p>在构建 PWA 应用时，使用 App Shell 模型能够在视觉和首屏加载速度方面带来用户体验的提升。另外，在配合...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/pwa-appshell.png" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2018/04/30/Vue-%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6-%E4%B8%89.html" class="read-next-link"></a>
+            <section>
+                <span>Vue 渲染机制（三）</span>
+                <p>之前我们已经生成了 VNode，将 VNode 渲染成真实 DOM 的工作在 __patch__() 中进行：</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/vue-render.png" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -232,11 +638,41 @@ observedAttributes: props.hyphenate</code></pre></div><p>为了便捷地使用 D
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2020</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -280,11 +716,7 @@ observedAttributes: props.hyphenate</code></pre></div><p>为了便捷地使用 D
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>

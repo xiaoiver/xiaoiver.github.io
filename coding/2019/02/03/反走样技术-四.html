@@ -1,7 +1,68 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>反走样技术（四） - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content=反走样技术（四）><meta name=keywords content=WebGL><title>反走样技术（四） | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content=反走样技术（四）><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="现在我们已经了解了基于形态学的反走样技术 MLAA/SMAA 和 FXAA，也了解了拥有硬件支持的 MSAA。 严格来说 TAA(Temporal Anti-Aliasing) 并不能算一个具体的算法，而是更像一个统一的算法框架。和 SSAA 一样，TAA 也能够同时减轻几何走样和着色走样的问题。"><meta property=og:description content="现在我们已经了解了基于形态学的反走样技术 MLAA/SMAA 和 FXAA，也了解了拥有硬件支持的 MSAA。 严格来说 TAA(Temporal Anti-Aliasing) 并不能算一个具体的算法，而是更像一个统一的算法框架。和 SSAA 一样，TAA 也能够同时减轻几何走样和着色走样的问题。"><link rel=canonical href=https://xiaoiver.github.io/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html><meta property=og:url content=https://xiaoiver.github.io/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2019-02-03T00:00:00+08:00><script type=application/ld+json>{"description":"现在我们已经了解了基于形态学的反走样技术 MLAA/SMAA 和 FXAA，也了解了拥有硬件支持的 MSAA。 严格来说 TAA(Temporal Anti-Aliasing) 并不能算一个具体的算法，而是更像一个统一的算法框架。和 SSAA 一样，TAA 也能够同时减轻几何走样和着色走样的问题。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html","headline":"反走样技术（四）","dateModified":"2019-02-03T00:00:00+08:00","datePublished":"2019-02-03T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反走样技术（四） - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="反走样技术（四）">
+    <meta name="keywords"  content="WebGL">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>反走样技术（四） | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="反走样技术（四）" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="现在我们已经了解了基于形态学的反走样技术 MLAA/SMAA 和 FXAA，也了解了拥有硬件支持的 MSAA。 严格来说 TAA(Temporal Anti-Aliasing) 并不能算一个具体的算法，而是更像一个统一的算法框架。和 SSAA 一样，TAA 也能够同时减轻几何走样和着色走样的问题。" />
+<meta property="og:description" content="现在我们已经了解了基于形态学的反走样技术 MLAA/SMAA 和 FXAA，也了解了拥有硬件支持的 MSAA。 严格来说 TAA(Temporal Anti-Aliasing) 并不能算一个具体的算法，而是更像一个统一的算法框架。和 SSAA 一样，TAA 也能够同时减轻几何走样和着色走样的问题。" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-02-03T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"现在我们已经了解了基于形态学的反走样技术 MLAA/SMAA 和 FXAA，也了解了拥有硬件支持的 MSAA。 严格来说 TAA(Temporal Anti-Aliasing) 并不能算一个具体的算法，而是更像一个统一的算法框架。和 SSAA 一样，TAA 也能够同时减轻几何走样和着色走样的问题。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html","headline":"反走样技术（四）","dateModified":"2019-02-03T00:00:00+08:00","datePublished":"2019-02-03T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2019/02/03/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E5%9B%9B.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+    <script src="/assets/js/glsl-canvas.min.js"></script>
+    <script>
+        function initArrayBuffer(gl, program, attribute, data, type, num) {
             // Create a buffer object
             var buffer = gl.createBuffer();
             if (!buffer) {
@@ -24,14 +85,177 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             return true;
-        }</script><body><!--[if lt IE 10]>
+        }
+    </script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>反走样技术（四）</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=19-02-03><i class="iconfont icon-date"></i>03 Feb 2019</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/quaternion.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>TAA</h2><article class=markdown-body><p>现在我们已经了解了基于形态学的反走样技术 MLAA/SMAA 和 FXAA，也了解了拥有硬件支持的 MSAA。 严格来说 <strong>TAA(Temporal Anti-Aliasing)</strong> 并不能算一个具体的算法，而是更像一个统一的算法框架。和 SSAA 一样，TAA 也能够同时减轻几何走样和着色走样的问题。<p><img src=/assets/img/webgl/taa.png alt=image.png><h2 id=算法思路>算法思路</h2><blockquote><p>因为每个像素需要的样本被<strong>分摊在了时间轴</strong>上，因此实际上每帧我们都只需渲染一个新的样本，然后将它和其他历史样本混合即可。考虑这样的情况：当整个场景完全不动的时候，每次我们获取的子样本位置都一样，那不论经过多少次混合，最终混合后的像素仍然是走样的，为此，我们需要在光栅化G-Buffer的阶段，在Projection Matrix之后再加上一个Jittered Matrix。这个Jitttered Matrix会根据一个样本分布的pattern对当前采样位置进行一个微小的偏移，保证每帧样本分布的位置都略微有所不同。这样经过混合即可产生反走样的效果。</blockquote><h2 id=webgl-实现>WebGL 实现</h2><p><a href=https://threejs.org/examples/#webgl_postprocessing_taa>Three.js TAA</a><br><a href=https://github.com/mrdoob/three.js/blob/master/examples/js/postprocessing/TAARenderPass.js>TAARenderPass.js</a><p>在这个例子中，物体发生运动时采用 SSAA，只有在静止时才使用 TAA：<div><pre class=line-numbers data-line=""><code class=language-javascript>if (!this.accumulate) {
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#WebGL" class="post-tag">WebGL</a>
+            
+            
+        </div>
+        <h1>反走样技术（四）</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="19-02-03"><i class="iconfont icon-date"></i>03 Feb 2019</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/webgl/quaternion.jpg') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <h2 class="post-subtitle">TAA</h2>
+    
+    <article class="markdown-body">
+        <p>现在我们已经了解了基于形态学的反走样技术 MLAA/SMAA 和 FXAA，也了解了拥有硬件支持的 MSAA。
+严格来说 <strong>TAA(Temporal Anti-Aliasing)</strong> 并不能算一个具体的算法，而是更像一个统一的算法框架。和 SSAA 一样，TAA 也能够同时减轻几何走样和着色走样的问题。</p>
+
+<p><img src="/assets/img/webgl/taa.png" alt="image.png" /></p>
+
+<h2 id="算法思路">算法思路</h2>
+
+<blockquote>
+  <p>因为每个像素需要的样本被<strong>分摊在了时间轴</strong>上，因此实际上每帧我们都只需渲染一个新的样本，然后将它和其他历史样本混合即可。考虑这样的情况：当整个场景完全不动的时候，每次我们获取的子样本位置都一样，那不论经过多少次混合，最终混合后的像素仍然是走样的，为此，我们需要在光栅化G-Buffer的阶段，在Projection Matrix之后再加上一个Jittered Matrix。这个Jitttered Matrix会根据一个样本分布的pattern对当前采样位置进行一个微小的偏移，保证每帧样本分布的位置都略微有所不同。这样经过混合即可产生反走样的效果。</p>
+</blockquote>
+
+<h2 id="webgl-实现">WebGL 实现</h2>
+<p><a href="https://threejs.org/examples/#webgl_postprocessing_taa">Three.js TAA</a><br />
+<a href="https://github.com/mrdoob/three.js/blob/master/examples/js/postprocessing/TAARenderPass.js">TAARenderPass.js</a></p>
+
+<p>在这个例子中，物体发生运动时采用 SSAA，只有在静止时才使用 TAA：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">if (!this.accumulate) {
 	THREE.SSAARenderPass.prototype.render.call( this, renderer, writeBuffer, readBuffer, deltaTime );
 	this.accumulateIndex = - 1;
 	return;
-}</code></pre></div><p>采样方式也和 SSAA 一样，使用抖动采样：<div><pre class=line-numbers data-line=""><code class=language-javascript>THREE.TAARenderPass.JitterVectors = THREE.SSAARenderPass.JitterVectors;
-var jitterOffsets = THREE.TAARenderPass.JitterVectors[ 5 ];</code></pre></div></article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2019/02/05/HDR-Tone-Mapping.html class=read-next-link></a><section><span>HDR Tone Mapping</span><p>「Photographic Tone Reproduction for Digital Images」🔗「Grad...</section><div class=filter></div><img src=/assets/img/webgl/hdr1.png alt=""></div><div class=read-next-item><a href=/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html class=read-next-link></a><section><span>反走样技术（三）</span><p>前两篇关于几何反走样 MLAA/SMAA 和 FXAA 都是基于 post-processing 后处理完成的。在...</section><div class=filter></div><img src=/assets/img/webgl/quaternion.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+}</code></pre>
+</div>
+
+<p>采样方式也和 SSAA 一样，使用抖动采样：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">THREE.TAARenderPass.JitterVectors = THREE.SSAARenderPass.JitterVectors;
+var jitterOffsets = THREE.TAARenderPass.JitterVectors[ 5 ];</code></pre>
+</div>
+
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2019/02/05/HDR-Tone-Mapping.html" class="read-next-link"></a>
+            <section>
+                <span>HDR Tone Mapping</span>
+                <p>「Photographic Tone Reproduction for Digital Images」🔗「Grad...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/hdr1.png" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2019/02/02/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%89.html" class="read-next-link"></a>
+            <section>
+                <span>反走样技术（三）</span>
+                <p>前两篇关于几何反走样 MLAA/SMAA 和 FXAA 都是基于 post-processing 后处理完成的。在...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/quaternion.jpg" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -41,11 +265,41 @@ var jitterOffsets = THREE.TAARenderPass.JitterVectors[ 5 ];</code></pre></div></
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2020</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -89,11 +343,7 @@ var jitterOffsets = THREE.TAARenderPass.JitterVectors[ 5 ];</code></pre></div></
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>

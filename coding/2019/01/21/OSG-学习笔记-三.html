@@ -1,7 +1,68 @@
-<!DOCTYPE html><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>OSG 学习笔记（三） - xiaOp的博客</title><meta name=author content=潘宇琪><meta name=description content="OSG 学习笔记（三）"><meta name=keywords content=WebGL><title>OSG 学习笔记（三） | xiaOp的博客</title><meta name=generator content="Jekyll v3.6.2"><meta property=og:title content="OSG 学习笔记（三）"><meta name=author content=xiaOp><meta property=og:locale content=en_US><meta name=description content="在之前的文章中我们已经了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关系，也对整个渲染流程有了大致了解。 在这篇文章中我们将深入底层核心模块 Program &amp; Shader 的创建。"><meta property=og:description content="在之前的文章中我们已经了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关系，也对整个渲染流程有了大致了解。 在这篇文章中我们将深入底层核心模块 Program &amp; Shader 的创建。"><link rel=canonical href=https://xiaoiver.github.io/coding/2019/01/21/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%89.html><meta property=og:url content=https://xiaoiver.github.io/coding/2019/01/21/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%89.html><meta property=og:site_name content=xiaOp的博客><meta property=og:type content=article><meta property=article:published_time content=2019-01-21T00:00:00+08:00><script type=application/ld+json>{"description":"在之前的文章中我们已经了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关系，也对整个渲染流程有了大致了解。 在这篇文章中我们将深入底层核心模块 Program &amp; Shader 的创建。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2019/01/21/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%89.html","headline":"OSG 学习笔记（三）","dateModified":"2019-01-21T00:00:00+08:00","datePublished":"2019-01-21T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2019/01/21/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%89.html"},"@context":"http://schema.org"}</script><meta name=theme-color content=#4acaa8><meta name=msapplication-TileColor content=#4acaa8><meta name=msapplication-TileImage content=/assets/img/manifest/ms-icon-144x144.png><link rel=apple-touch-icon sizes=57x57 href=/assets/img/manifest/apple-icon-57x57.png><link rel=apple-touch-icon sizes=60x60 href=/assets/img/manifest/apple-icon-60x60.png><link rel=apple-touch-icon sizes=72x72 href=/assets/img/manifest/apple-icon-72x72.png><link rel=apple-touch-icon sizes=76x76 href=/assets/img/manifest/apple-icon-76x76.png><link rel=apple-touch-icon sizes=114x114 href=/assets/img/manifest/apple-icon-114x114.png><link rel=apple-touch-icon sizes=120x120 href=/assets/img/manifest/apple-icon-120x120.png><link rel=apple-touch-icon sizes=144x144 href=/assets/img/manifest/apple-icon-144x144.png><link rel=apple-touch-icon sizes=152x152 href=/assets/img/manifest/apple-icon-152x152.png><link rel=apple-touch-icon sizes=180x180 href=/assets/img/manifest/apple-icon-180x180.png><link rel=icon type=image/png sizes=192x192 href=/assets/img/manifest/android-icon-192x192.png><link rel=icon type=image/png sizes=32x32 href=/assets/img/manifest/favicon-32x32.png><link rel=icon type=image/png sizes=96x96 href=/assets/img/manifest/favicon-96x96.png><link rel=icon type=image/png sizes=16x16 href=/assets/img/manifest/favicon-16x16.png><link rel="shortcut icon" href=/assets/img/manifest/favicon.ico type=image/x-icon><link rel=canonical href=https://xiaoiver.github.io/coding/2019/01/21/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%89.html><link rel=manifest href=/manifest.json><link rel=stylesheet href=//cdn.staticfile.org/normalize/6.0.0/normalize.min.css><link rel=stylesheet href=//at.alicdn.com/t/font_roc50gemkxpw4s4i.css><link rel=stylesheet href=/assets/css/github-markdown.css><link rel=stylesheet href=/assets/css/prism.css><link rel=stylesheet href=/assets/css/share.min.css><link rel=stylesheet href=/assets/css/app.min.css><link rel=stylesheet href=/assets/css/post.min.css><script async src="https://www.googletagmanager.com/gtag/js?id=UA-120929691-1"></script><script>window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-120929691-1');</script><script src=https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js></script><script src=/assets/js/Imager.min.js></script><script src=/assets/js/glsl-canvas.min.js></script><script>function initArrayBuffer(gl, program, attribute, data, type, num) {
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSG 学习笔记（三） - xiaOp的博客</title>
+    <meta name="author"  content="潘宇琪">
+    <meta name="description" content="OSG 学习笔记（三）">
+    <meta name="keywords"  content="WebGL">
+
+    <!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>OSG 学习笔记（三） | xiaOp的博客</title>
+<meta name="generator" content="Jekyll v3.6.2" />
+<meta property="og:title" content="OSG 学习笔记（三）" />
+<meta name="author" content="xiaOp" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="在之前的文章中我们已经了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关系，也对整个渲染流程有了大致了解。 在这篇文章中我们将深入底层核心模块 Program &amp; Shader 的创建。" />
+<meta property="og:description" content="在之前的文章中我们已经了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关系，也对整个渲染流程有了大致了解。 在这篇文章中我们将深入底层核心模块 Program &amp; Shader 的创建。" />
+<link rel="canonical" href="https://xiaoiver.github.io/coding/2019/01/21/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%89.html" />
+<meta property="og:url" content="https://xiaoiver.github.io/coding/2019/01/21/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%89.html" />
+<meta property="og:site_name" content="xiaOp的博客" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-01-21T00:00:00+08:00" />
+<script type="application/ld+json">
+{"description":"在之前的文章中我们已经了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关系，也对整个渲染流程有了大致了解。 在这篇文章中我们将深入底层核心模块 Program &amp; Shader 的创建。","author":{"@type":"Person","name":"xiaOp"},"@type":"BlogPosting","url":"https://xiaoiver.github.io/coding/2019/01/21/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%89.html","headline":"OSG 学习笔记（三）","dateModified":"2019-01-21T00:00:00+08:00","datePublished":"2019-01-21T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://xiaoiver.github.io/coding/2019/01/21/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%89.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <meta name="theme-color" content="#4acaa8">
+    <meta name="msapplication-TileColor" content="#4acaa8">
+    <meta name="msapplication-TileImage" content="/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://xiaoiver.github.io/coding/2019/01/21/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%89.html">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="/assets/css/post.min.css">
+
+    
+
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/assets/js/Imager.min.js"></script>
+    
+    <script src="/assets/js/glsl-canvas.min.js"></script>
+    <script>
+        function initArrayBuffer(gl, program, attribute, data, type, num) {
             // Create a buffer object
             var buffer = gl.createBuffer();
             if (!buffer) {
@@ -24,15 +85,94 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
             return true;
-        }</script><body><!--[if lt IE 10]>
+        }
+    </script>
+    
+</head>
+
+<body>
+    <!--[if lt IE 10]>
 <div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
-<![endif]--> <input id=nm-switch type=hidden value=false><header class=g-header><div class=g-logo><a href=/ ></a></div><i id=menu-toggle class="iconfont icon-menu"></i><nav class=g-nav><ul><li><a href=/ >home</a><li><a href=/tags.html>tags</a><li><a href=/collectives.html>collectives</a></ul></nav></header><header class="g-banner post-header post-pattern-circuitBoard bgcolor-default" data-theme=default><div class=post-wrapper><div class=post-tags><a href=https://xiaoiver.github.io/tags#WebGL class=post-tag>WebGL</a></div><h1>OSG 学习笔记（三）</h1><div class=post-meta><span class=post-meta-item><i class="iconfont icon-author"></i><a href=https://xiaoiver.github.io target=_blank rel=author>xiaOp</a></span> <time class=post-meta-item datetime=19-01-21><i class="iconfont icon-date"></i>21 Jan 2019</time></div></div><div class=filter></div><div class=post-cover style="background: url('/assets/img/webgl/openscenegraph-course.jpg') center no-repeat; background-size: cover"></div></header><div class=post-content><div class=catalog-container><div class=side-catalog><h3 class=catalog-title><a class=catalog-toggle href=#>CATALOG</a></h3><ul class=catalog-body></ul></div></div><h2 class=post-subtitle>Shader & Program</h2><article class=markdown-body><p>在之前的文章中我们已经了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关系，也对整个渲染流程有了大致了解。 在这篇文章中我们将深入底层核心模块 Program &amp; Shader 的创建。<h2 id=state-的初始化>State 的初始化</h2><p>在 Render 初始化时，会向全局状态机 State 传入一个 Shader 生成器 Proxy：<div><pre class=line-numbers data-line=""><code class=language-javascript>// Render.js
-this._state = new State(new osgShader.ShaderGeneratorProxy());</code></pre></div><p>在这个 Proxy 中，内置了一组 Shader 生成器，这里仅列举默认和阴影两个：<div><pre class=line-numbers data-line=""><code class=language-javascript>var ShaderGeneratorProxy = function() {
+<![endif]-->
+<input id="nm-switch" type="hidden" value="false">
+
+<header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+            <li><a href="/collectives.html">collectives</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+<header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+        <div class="post-tags">
+            
+            
+            <a href="https://xiaoiver.github.io/tags#WebGL" class="post-tag">WebGL</a>
+            
+            
+        </div>
+        <h1>OSG 学习笔记（三）</h1>
+        <div class="post-meta">
+            <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://xiaoiver.github.io" target="_blank" rel="author">xiaOp</a></span>
+            <time class="post-meta-item" datetime="19-01-21"><i class="iconfont icon-date"></i>21 Jan 2019</time>
+        </div>
+    </div>
+    
+    <div class="filter"></div>
+    <div class="post-cover" style="background: url('/assets/img/webgl/openscenegraph-course.jpg') center no-repeat; background-size: cover;">
+    
+</header>
+
+<div class="post-content">
+    <div class="catalog-container">
+        <div class="side-catalog">
+            <h3 class="catalog-title">
+                <a class="catalog-toggle" href="#">CATALOG</a>
+            </h3>
+            <ul class="catalog-body"></ul>
+        </div>
+    </div>
+    
+    <h2 class="post-subtitle">Shader & Program</h2>
+    
+    <article class="markdown-body">
+        <p>在之前的文章中我们已经了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关系，也对整个渲染流程有了大致了解。
+在这篇文章中我们将深入底层核心模块 Program &amp; Shader 的创建。</p>
+
+<h2 id="state-的初始化">State 的初始化</h2>
+
+<p>在 Render 初始化时，会向全局状态机 State 传入一个 Shader 生成器 Proxy：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// Render.js
+this._state = new State(new osgShader.ShaderGeneratorProxy());</code></pre>
+</div>
+
+<p>在这个 Proxy 中，内置了一组 Shader 生成器，这里仅列举默认和阴影两个：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">var ShaderGeneratorProxy = function() {
     // object of shader generators
     this._generators = {};
     this.addShaderGenerator(&#39;default&#39;, new ShaderGenerator());
     this.addShaderGenerator(&#39;ShadowCast&#39;, new ShadowCastShaderGenerator());
-}</code></pre></div><p>在上一篇中提到 RenderLeaf 的 render 方法会调用全局状态机 State 的 applyStateSet 方法：<div><pre class=line-numbers data-line=""><code class=language-javascript>// State.js
+}</code></pre>
+</div>
+
+<p>在上一篇中提到 RenderLeaf 的 render 方法会调用全局状态机 State 的 applyStateSet 方法：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// State.js
 applyStateSet: function(stateset) {
     var previousProgram = this.getLastProgramApplied();
 
@@ -56,7 +196,12 @@ applyStateSet: function(stateset) {
         // will cache uniform and apply them with the program
         this._applyGeneratedProgramUniforms(generatedProgram, stateset);
     }
-},</code></pre></div><p>为了避免连续重复应用相同的状态改变，需要记录上一次应用的状态：<div><pre class=line-numbers data-line=""><code class=language-javascript>_applyAttributeStack: function(attribute, attributeStack) {
+},</code></pre>
+</div>
+
+<p>为了避免连续重复应用相同的状态改变，需要记录上一次应用的状态：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">_applyAttributeStack: function(attribute, attributeStack) {
     if (attributeStack._lastApplied === attribute) return false;
 
     // 实际应用
@@ -64,7 +209,16 @@ applyStateSet: function(stateset) {
 
     attributeStack._lastApplied = attribute;
     return true;
-},</code></pre></div><h2 id=创建-program>创建 Program</h2><p>这里可以看出 OSG 中十分注意利用闭包缓存临时变量，减少对象分配。 值得注意的是，如果全局状态机中的状态没有改变，就不应该重新生成 Program。 这就要求对 State 生成 hash，只有当缓存中没有与之对应的 Program 才需要重新生成：<div><pre class=line-numbers data-line=""><code class=language-javascript>// ShaderGenerator.js
+},</code></pre>
+</div>
+
+<h2 id="创建-program">创建 Program</h2>
+
+<p>这里可以看出 OSG 中十分注意利用闭包缓存临时变量，减少对象分配。
+值得注意的是，如果全局状态机中的状态没有改变，就不应该重新生成 Program。
+这就要求对 State 生成 hash，只有当缓存中没有与之对应的 Program 才需要重新生成：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// ShaderGenerator.js
 getOrCreateProgram: (function() {
     // 缓存
     var textureAttributes = [];
@@ -87,7 +241,15 @@ getOrCreateProgram: (function() {
 
         return program;
     };
-})(),</code></pre></div><h3 id=根据属性生成-hash>根据属性生成 hash</h3><p>那么如何保证相同的状态属性生成 hash 不变，并且不受不同顺序的影响呢？ 这里就需要预先规定所有可能出现属性的顺序，才能保证最终拼接而成的 hash 一致：<div><pre class=line-numbers data-line=""><code class=language-javascript>// ShaderGenerator.js
+})(),</code></pre>
+</div>
+
+<h3 id="根据属性生成-hash">根据属性生成 hash</h3>
+
+<p>那么如何保证相同的状态属性生成 hash 不变，并且不受不同顺序的影响呢？
+这里就需要预先规定所有可能出现属性的顺序，才能保证最终拼接而成的 hash 一致：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// ShaderGenerator.js
 getActiveAttributeListCache: function(state) {
     var hash = &#39;&#39;;
 
@@ -108,7 +270,12 @@ getActiveAttributeListCache: function(state) {
     }
 
     return hash;
-},</code></pre></div><p>这里是 Compiler 中初始化的属性顺序列表，可见 OSG 中最多支持 8 个光源：<div><pre class=line-numbers data-line=""><code class=language-javascript>// Compiler.js
+},</code></pre>
+</div>
+
+<p>这里是 Compiler 中初始化的属性顺序列表，可见 OSG 中最多支持 8 个光源：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// Compiler.js
 Compiler.setStateAttributeConfig(Compiler, {
     attribute: [
         &#39;Light0&#39;,
@@ -130,7 +297,12 @@ Compiler.setStateAttributeConfig(Compiler, {
         &#39;Skinning&#39;
     ],
     textureAttribute: [&#39;Texture&#39;]
-});</code></pre></div><p>我们以 Light 属性为例，添加一个平行光后，生成的 hash 就是 <code class=highlighter-rouge>Light0DIRECTIONtrue</code>：<div><pre class=line-numbers data-line=""><code class=language-javascript>// Light.js
+});</code></pre>
+</div>
+
+<p>我们以 Light 属性为例，添加一个平行光后，生成的 hash 就是 <code class="highlighter-rouge">Light0DIRECTIONtrue</code>：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// Light.js
 getHash: function() {
     if (!this._dirtyHash) return this._hash;
 
@@ -141,7 +313,14 @@ getHash: function() {
 _computeInternalHash: function() {
     // Light0DIRECTIONtrue
     return this.getTypeMember() + this.getLightType() + this.isEnabled().toString();
-},</code></pre></div><h2 id=创建-compiler>创建 Compiler</h2><p>这里有一个小问题 <code class=highlighter-rouge>getActiveAttributeList()</code> 内部仍旧进行了上述 hash 的拼接，但 OSG 中并没有使用到，其实是多余的操作。<div><pre class=line-numbers data-line=""><code class=language-javascript>_createProgram: function(hash, state, attributes, textureAttributes) {
+},</code></pre>
+</div>
+
+<h2 id="创建-compiler">创建 Compiler</h2>
+
+<p>这里有一个小问题 <code class="highlighter-rouge">getActiveAttributeList()</code> 内部仍旧进行了上述 hash 的拼接，但 OSG 中并没有使用到，其实是多余的操作。</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">_createProgram: function(hash, state, attributes, textureAttributes) {
     attributes.length = 0;
     textureAttributes.length = 0;
 
@@ -171,7 +350,12 @@ _computeInternalHash: function() {
     program.apply(state);
 
     return program;
-},</code></pre></div><p>首先来看 Compiler 的创建，对于传入的属性列表进行了分类：<div><pre class=line-numbers data-line=""><code class=language-javascript>// Compiler.js
+},</code></pre>
+</div>
+
+<p>首先来看 Compiler 的创建，对于传入的属性列表进行了分类：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// Compiler.js
 initAttributes: function() {
     var attributes = this._attributes;
     var lights = this._lights;
@@ -187,20 +371,37 @@ initAttributes: function() {
             shadows.push(attributes[i]);
         } // 省略其他类型的属性
     }
-},</code></pre></div><p>对于纹理属性的初始化也是类似，这里就省略了。<p>编译需要构建语法树，其中委托了 nodeFactory 工厂进行节点的创建工作：<div><pre class=line-numbers data-line=""><code class=language-javascript>// Compiler.js
+},</code></pre>
+</div>
+
+<p>对于纹理属性的初始化也是类似，这里就省略了。</p>
+
+<p>编译需要构建语法树，其中委托了 nodeFactory 工厂进行节点的创建工作：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// Compiler.js
 getNode: function(/*name, arg1, etc*/) {
     var n = factory.getNode.apply(factory, arguments);
     var cacheID = n.getID();
     this._activeNodeMap[cacheID] = n;
     return n;
-},</code></pre></div><p>而 nodeFactory 本身是一个单例，会根据节点名称调用对应的构造函数（注册在 _nodes 中）：<div><pre class=line-numbers data-line=""><code class=language-javascript>// nodeFactory.js
+},</code></pre>
+</div>
+
+<p>而 nodeFactory 本身是一个单例，会根据节点名称调用对应的构造函数（注册在 _nodes 中）：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// nodeFactory.js
 getNode: function(name) {
     // _nodes: Map
     var Constructor = this._nodes.get(name);
     var instance = window.Object.create(Constructor.prototype);
     Constructor.apply(instance, Array.prototype.slice.call(arguments, 1));
     return instance;
-}</code></pre></div><p>nodeFactory 在初始化时注册了一系列内置：<div><pre class=line-numbers data-line=""><code class=language-javascript>// nodeFactory.js
+}</code></pre>
+</div>
+
+<p>nodeFactory 在初始化时注册了一系列内置：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// nodeFactory.js
 var Factory = function() {
     this._nodes = new window.Map();
 
@@ -217,7 +418,19 @@ var Factory = function() {
 
     this.registerNodes(data);
     this.registerNodes(operations);
-};</code></pre></div><p>那么如何将 glsl 通过语法分析构建出语法树呢？<h2 id=语法树>语法树</h2><p>其实就是一个对 GLSL 进行语法分析生成 AST 最后再生成 GLSL 的过程。glslify Clay.gl 也都是这么做的。<p>首先来看一个例子感受一下从 glsl 文本转换成最终语法树的效果。 可以看到基本的函数名（首字母大写），输入和输出都是一一对应的：<div><pre class=line-numbers data-line=""><code class=language-javascript>---- glsl ----
+};</code></pre>
+</div>
+
+<p>那么如何将 glsl 通过语法分析构建出语法树呢？</p>
+
+<h2 id="语法树">语法树</h2>
+
+<p>其实就是一个对 GLSL 进行语法分析生成 AST 最后再生成 GLSL 的过程。glslify Clay.gl 也都是这么做的。</p>
+
+<p>首先来看一个例子感受一下从 glsl 文本转换成最终语法树的效果。
+可以看到基本的函数名（首字母大写），输入和输出都是一一对应的：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">---- glsl ----
 #pragma DECLARE_FUNCTION
 vec3 myFunc(const in float myVarIn, out float myVarOut) {
     // do stuffs
@@ -230,7 +443,12 @@ this.getNode(&#39;MyFunc&#39;)
     .outputs({
         result: var2,
         myVarOut: var3
-    });</code></pre></div><p>在一个更复杂的例子中可以看出，函数名、输入和输出都是可以重载的：<div><pre class=line-numbers data-line=""><code class=language-javascript>---- glsl ----
+    });</code></pre>
+</div>
+
+<p>在一个更复杂的例子中可以看出，函数名、输入和输出都是可以重载的：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">---- glsl ----
 #pragma DECLARE_FUNCTION NODE_NAME:myFuncTiti result:resOut myVarIn:totoIn optVariable:optVar DERIVATIVES:enable
 vec3 myFunc(const in float myVarIn, out float myVarOut, OPT_ARG_optVariable) {
     // do stuffs
@@ -245,24 +463,53 @@ this.getNode(&#39;myFuncTiti&#39;)
         resOut: var4,
         myVarOut: var5
     })
-    .addDefines([&#39;#define TOTO&#39;]);</code></pre></div><p>接下来我们来看一下节点的定义。<h3 id=方法声明节点定义>方法声明节点定义</h3><p>语法树节点最重要的就是输入和输出了：<div><pre class=line-numbers data-line=""><code class=language-javascript>var Node = function() {
+    .addDefines([&#39;#define TOTO&#39;]);</code></pre>
+</div>
+
+<p>接下来我们来看一下节点的定义。</p>
+
+<h3 id="方法声明节点定义">方法声明节点定义</h3>
+
+<p>语法树节点最重要的就是输入和输出了：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">var Node = function() {
     this._name = &#39;AbstractNode&#39;;
     this._inputs = [];
     this._outputs = null;
-}</code></pre></div><p>对于输入支持以下三种形式：<div><pre class=line-numbers data-line=""><code class=language-javascript>// accepts inputs like that:
+}</code></pre>
+</div>
+
+<p>对于输入支持以下三种形式：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// accepts inputs like that:
 // inputs( [ a, b, c , d] )
 // inputs( { a: x, b: y } )
 // inputs( a, b, c, d )
 inputs: function() {
     // 省略具体实现
-},</code></pre></div><p>另外实际使用中的 NodeCustom 继承自 Node 并进行了扩展，包括开启扩展和定义，在上面的那个复杂例子中可以看到 addDefines 的用法：<div><pre class=line-numbers data-line=""><code class=language-javascript>addExtensions: function(exts) {
+},</code></pre>
+</div>
+
+<p>另外实际使用中的 NodeCustom 继承自 Node 并进行了扩展，包括开启扩展和定义，在上面的那个复杂例子中可以看到 addDefines 的用法：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">addExtensions: function(exts) {
     this._extensions.push.apply(this._extensions, exts);
     return this;
 },
 addDefines: function(defines) {
     this._defines.push.apply(this._defines, defines);
     return this;
-},</code></pre></div><p>有了节点的定义，下面来看如何解析原始的 glsl 文本。<h3 id=内置变量节点定义>内置变量节点定义</h3><p>除了用户自定义的方法声明，glsl 中还包含例如 attribute、varying、const、uniform 以及一些特殊变量的声明。 它们的共同基类定义如下：<div><pre class=line-numbers data-line=""><code class=language-javascript>// osgShader/node/data.js
+},</code></pre>
+</div>
+
+<p>有了节点的定义，下面来看如何解析原始的 glsl 文本。</p>
+
+<h3 id="内置变量节点定义">内置变量节点定义</h3>
+
+<p>除了用户自定义的方法声明，glsl 中还包含例如 attribute、varying、const、uniform 以及一些特殊变量的声明。
+它们的共同基类定义如下：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// osgShader/node/data.js
 var Variable = function(type, prefix) {
     Node.call(this);
     this._name = &#39;Variable&#39;;
@@ -282,7 +529,12 @@ utils.createPrototypeObject(
         setValue: function(value) {
             this._value = value;
             return this;
-        },</code></pre></div><p>完整变量如下：<div><pre class=line-numbers data-line=""><code class=language-javascript>export default {
+        },</code></pre>
+</div>
+
+<p>完整变量如下：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">export default {
     Output: Output,
     glPointSize: glPointSize,
     glPosition: glPosition,
@@ -294,9 +546,21 @@ utils.createPrototypeObject(
     Varying: Varying,
     Uniform: Uniform,
     Define: Define
-};</code></pre></div><h3 id=变量操作定义>变量操作定义</h3><p>支持以下两种语法，最终生成的 glsl 语句如下：<div><pre class=line-numbers data-line=""><code class=language-javascript>// new Add( output, input0, input1, ... )
+};</code></pre>
+</div>
+
+<h3 id="变量操作定义">变量操作定义</h3>
+
+<p>支持以下两种语法，最终生成的 glsl 语句如下：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// new Add( output, input0, input1, ... )
 // new Add( output, [ inputs ] )
-// glsl code output = input0 + input1 +...</code></pre></div><p>我们以加法为例，通过输入、输出变量拼接成最终的 GLSL 语句：<div><pre class=line-numbers data-line=""><code class=language-javascript>// osgShader/node/operations.js
+// glsl code output = input0 + input1 +...</code></pre>
+</div>
+
+<p>我们以加法为例，通过输入、输出变量拼接成最终的 GLSL 语句：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// osgShader/node/operations.js
 type: &#39;Add&#39;,
 operator: &#39;+&#39;,
 computeShader: function() {
@@ -325,7 +589,12 @@ computeShader: function() {
     }
     str += &#39;;&#39;;
     return str;
-}</code></pre></div><p>这里需要注意对于第一个输入变量的处理，但我认为对于后续每个变量都应该做 float 转成 vec 的处理，而不仅仅是第一个：<div><pre class=line-numbers data-line=""><code class=language-javascript>// osgShader/node/operations.js
+}</code></pre>
+</div>
+
+<p>这里需要注意对于第一个输入变量的处理，但我认为对于后续每个变量都应该做 float 转成 vec 的处理，而不仅仅是第一个：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// osgShader/node/operations.js
 _getFirstVariableCast: function() {
     var variable = this._inputs[0].getVariable();
     var inType = this._inputs[0].getType();
@@ -341,7 +610,12 @@ _getFirstVariableCast: function() {
     if (outType === &#39;vec2&#39;) return variable + &#39;.rg&#39;;
     if (outType === &#39;float&#39;) return variable + &#39;.r&#39;;
     return variable;
-},</code></pre></div><p>基于加法，乘法和变量赋值就很简单了：<div><pre class=line-numbers data-line=""><code class=language-javascript>// glsl code output = input0 * input1 * ...
+},</code></pre>
+</div>
+
+<p>基于加法，乘法和变量赋值就很简单了：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// glsl code output = input0 * input1 * ...
 var Mult = function() {
     Add.call(this);
 };
@@ -362,7 +636,14 @@ utils.createPrototypeObject(
     utils.objectInherit(Add.prototype, {
         type: &#39;SetFromNode&#39;
     }),
-);</code></pre></div><h3 id=解析-glsl-文本>解析 glsl 文本</h3><p>shaderLib 暴露了 OSG 内置的 glsl：<div><pre class=line-numbers data-line=""><code class=language-javascript>import common from &#39;osgShader/node/common.glsl&#39;;
+);</code></pre>
+</div>
+
+<h3 id="解析-glsl-文本">解析 glsl 文本</h3>
+
+<p>shaderLib 暴露了 OSG 内置的 glsl：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">import common from &#39;osgShader/node/common.glsl&#39;;
 import functions from &#39;osgShader/node/functions.glsl&#39;;
 import lightCommon from &#39;osgShader/node/lightCommon.glsl&#39;;
 import lights from &#39;osgShader/node/lights.glsl&#39;;
@@ -372,17 +653,32 @@ export default {
     &#39;functions.glsl&#39;: functions,
     &#39;lightCommon.glsl&#39;: lightCommon,
     &#39;lights.glsl&#39;: lights,
-};</code></pre></div><p>在 OSG.js 中对于 glsl 配置了 raw-loader 进行处理，即当作普通文本读取：<div><pre class=line-numbers data-line=""><code class=language-javascript>module: {
+};</code></pre>
+</div>
+
+<p>在 OSG.js 中对于 glsl 配置了 raw-loader 进行处理，即当作普通文本读取：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">module: {
     loaders: [
         {
             test: /\.(frag|vert|glsl)$/,
             loader: &#39;raw-loader&#39;
         }
     ]
-},</code></pre></div><p>我们以 functions.glsl 为例，这里截取一部分：<div><pre class=line-numbers data-line=""><code class=language-glsl>#pragma DECLARE_FUNCTION
+},</code></pre>
+</div>
+
+<p>我们以 functions.glsl 为例，这里截取一部分：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-glsl">#pragma DECLARE_FUNCTION
 float linearTosRGB(const in float color) { return LIN_SRGB(color); }
 #pragma DECLARE_FUNCTION
-vec3 linearTosRGB(const in vec3 color) { return vec3(LIN_SRGB(color.r), LIN_SRGB(color.g), LIN_SRGB(color.b)); }</code></pre></div><p>在解析出每一个方法后，还需要进一步提取方法签名，因为其中涉及到重载机制：<div><pre class=line-numbers data-line=""><code class=language-javascript>// osgShader/utils.js
+vec3 linearTosRGB(const in vec3 color) { return vec3(LIN_SRGB(color.r), LIN_SRGB(color.g), LIN_SRGB(color.b)); }</code></pre>
+</div>
+
+<p>在解析出每一个方法后，还需要进一步提取方法签名，因为其中涉及到重载机制：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// osgShader/utils.js
 var extractFunctions = function(shaderLib, fileName) {
     // 提取 function 声明
     var signatures = shaderLib[fileName].split(/#pragma DECLARE_FUNCTION(.*)[\r\n|\r|\n]/);
@@ -399,7 +695,12 @@ var extractFunctions = function(shaderLib, fileName) {
         shaderNodeClassGlobal[nodeName] = shaderNode;
     }
     return shaderNodeClassLocal;
-};</code></pre></div><p>具体解析方法签名的过程就省略了，只需要关注解析结果：<div><pre class=line-numbers data-line=""><code class=language-javascript>// osgShader/utils.js
+};</code></pre>
+</div>
+
+<p>具体解析方法签名的过程就省略了，只需要关注解析结果：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// osgShader/utils.js
 // extractSignature
 return {
     nodeName: nodeName,
@@ -411,7 +712,12 @@ return {
         inputs: inputs,
         extensions: extensions
     }
-};</code></pre></div><p>拿到签名之后就可以创建节点了，这里返回的是节点的构造函数：<div><pre class=line-numbers data-line=""><code class=language-javascript>// osgShader/utils.js
+};</code></pre>
+</div>
+
+<p>拿到签名之后就可以创建节点了，这里返回的是节点的构造函数：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// osgShader/utils.js
 var createNode = function(res, fileName) {
     var NodeCustom = function() {
         Node.call(this);
@@ -429,7 +735,14 @@ var createNode = function(res, fileName) {
     //...
 
     return NodeCustom;
-}</code></pre></div><h2 id=代码生成>代码生成</h2><p>有了语法树中各类节点的定义，在 Compiler 中就可以进行这些节点的创建工作，例如创建一个 const 节点：<div><pre class=line-numbers data-line=""><code class=language-javascript>// Compiler.js
+}</code></pre>
+</div>
+
+<h2 id="代码生成">代码生成</h2>
+
+<p>有了语法树中各类节点的定义，在 Compiler 中就可以进行这些节点的创建工作，例如创建一个 const 节点：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// Compiler.js
 getOrCreateConstant: function(type, varname) {
     var nameID = varname;
     var exist = this._variables[nameID];
@@ -439,7 +752,12 @@ getOrCreateConstant: function(type, varname) {
     var v = this.getNode(&#39;Constant&#39;, type, nameID);
     this._variables[nameID] = v;
     return v;
-},</code></pre></div><p>接下来我们来看看 vs 和 fs 的生成，由于 Compiler 分别继承了 CompilerVertex 和 CompilerFragment，这部分会交由它们完成：<div><pre class=line-numbers data-line=""><code class=language-javascript>// CompilerVertex.js
+},</code></pre>
+</div>
+
+<p>接下来我们来看看 vs 和 fs 的生成，由于 Compiler 分别继承了 CompilerVertex 和 CompilerFragment，这部分会交由它们完成：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// CompilerVertex.js
 _createVertexShader: function() {
     // 添加声明
     var roots = this.declareVertexMain();
@@ -449,7 +767,14 @@ _createVertexShader: function() {
     // 继续编译
     var shader = this.createShaderFromGraphs(roots);
     return shader;
-},</code></pre></div><h3 id=变量和函数声明>变量和函数声明</h3><p>对于 vs 的创建，首先在头部添加：<div><pre class=line-numbers data-line=""><code class=language-javascript>declareVertexMain: function() {
+},</code></pre>
+</div>
+
+<h3 id="变量和函数声明">变量和函数声明</h3>
+
+<p>对于 vs 的创建，首先在头部添加：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">declareVertexMain: function() {
     // 声明 glPointSize
     var roots = [this.declarePointSize(), this.declareVertexPosition()];
 
@@ -457,7 +782,12 @@ _createVertexShader: function() {
     this.declareVertexVaryings(roots);
 
     return roots;
-},</code></pre></div><p>对于 glPointSize 的赋值，这里用到了 InlineCode 这种自定义操作的节点类型。：<div><pre class=line-numbers data-line=""><code class=language-javascript>declarePointSize: function() {
+},</code></pre>
+</div>
+
+<p>对于 glPointSize 的赋值，这里用到了 InlineCode 这种自定义操作的节点类型。：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">declarePointSize: function() {
     // 1. 获取 glPointSize 节点
     var glPointSize = this.getNode(&#39;glPointSize&#39;);
     // 2. 如果不开启，则默认 glPointSize = float(1.0);
@@ -479,7 +809,12 @@ _createVertexShader: function() {
         });
 
     return glPointSize;
-},</code></pre></div><p>再来看 glPosition 的计算，使用 uProjectionMatrix 进行计算：<div><pre class=line-numbers data-line=""><code class=language-javascript>declareScreenVertex: function(glPosition) {
+},</code></pre>
+</div>
+
+<p>再来看 glPosition 的计算，使用 uProjectionMatrix 进行计算：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">declareScreenVertex: function(glPosition) {
     // glsl code output = matrix * vector4(vec.xyz, 1)
     this.getNode(&#39;MatrixMultPosition&#39;)
         .inputs({
@@ -489,7 +824,12 @@ _createVertexShader: function() {
         .outputs({
             vec: glPosition
         });
-},</code></pre></div><p>最后是 varying 的赋值：<div><pre class=line-numbers data-line=""><code class=language-javascript>declareVertexVaryings: function(roots) {
+},</code></pre>
+</div>
+
+<p>最后是 varying 的赋值：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">declareVertexVaryings: function(roots) {
     var varyings = this._varyings;
     // vModelVertex = uModelVertex
     if (varyings.vModelVertex) {
@@ -497,48 +837,111 @@ _createVertexShader: function() {
             .inputs(this.getOrCreateModelVertex())
             .outputs(varyings.vModelVertex);
     }
-}</code></pre></div><h3 id=主体部分>主体部分</h3><p>主要在 createShaderFromGraphs 中完成：<div><pre class=line-numbers data-line=""><code class=language-javascript>// defines and extensions are added by process shader
+}</code></pre>
+</div>
+
+<h3 id="主体部分">主体部分</h3>
+
+<p>主要在 createShaderFromGraphs 中完成：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// defines and extensions are added by process shader
 var extensions = this.evaluateExtensions(roots);
 var defines = this.evaluateDefines(roots);
 
 // 收集节点中所有的 extensions
 evaluateExtensions: function(roots) {
     return this.evaluateAndGatherField(roots, &#39;getExtensions&#39;);
-},</code></pre></div><p>遍历语法树，收集每个节点的 <code class=highlighter-rouge>extensions/defines</code> 保存在 <code class=highlighter-rouge>_text</code> 数组中：<div><pre class=line-numbers data-line=""><code class=language-javascript>evaluateAndGatherField: function(nodes, field) {
+},</code></pre>
+</div>
+
+<p>遍历语法树，收集每个节点的 <code class="highlighter-rouge">extensions/defines</code> 保存在 <code class="highlighter-rouge">_text</code> 数组中：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">evaluateAndGatherField: function(nodes, field) {
     var func = this._getAndInitFunctor(this._functorEvaluateAndGatherField.bind(this, field));
     for (var j = 0, jl = nodes.length; j &lt; jl; j++) {
         this.traverse(func, nodes[j]);
     }
     return func._text;
-},</code></pre></div><p>接下来是拼接全局变量声明，遍历节点调用 <code class=highlighter-rouge>globalDeclaration</code>，然后使用字符串数组的默认排序，以 uniform 为例：<div><pre class=line-numbers data-line=""><code class=language-javascript>globalDeclaration: function() {
+},</code></pre>
+</div>
+
+<p>接下来是拼接全局变量声明，遍历节点调用 <code class="highlighter-rouge">globalDeclaration</code>，然后使用字符串数组的默认排序，以 uniform 为例：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">globalDeclaration: function() {
     if (this._size) {
         return sprintf(&#39;uniform %s %s[%s];&#39;, [this._type, this.getVariable(), this._size]);
     } else {
         return sprintf(&#39;uniform %s %s;&#39;, [this._type, this.getVariable()]);
     }
-}</code></pre></div><p>然后拼接全局方法声明，和变量声明类似，这里就省略了。<p>然后是 main 方法，包括内部的变量声明：<div><pre class=line-numbers data-line=""><code class=language-javascript>shaderStack.push(&#39;void main() {&#39;);
+}</code></pre>
+</div>
+
+<p>然后拼接全局方法声明，和变量声明类似，这里就省略了。</p>
+
+<p>然后是 main 方法，包括内部的变量声明：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">shaderStack.push(&#39;void main() {&#39;);
 if (variables.length !== 0) {
     shaderStack.push(&#39;// vars\n&#39;);
     shaderStack.push(variables.join(&#39; &#39;));
     shaderStack.push(&#39;\n// end vars\n&#39;);
 }
 // 省略 main 内部语句拼接
-shaderStack.push(&#39;}&#39;);</code></pre></div><p>遍历节点，调用 <code class=highlighter-rouge>computeShader</code> 得到 main 方法内部的语句，这部分在操作节点中已经介绍过了。 至此 shader 的 glsl 主体文本已经拼接完成了，接下来需要完成一些模块化相关的工作。<h3 id=模块化>模块化</h3><p>defines/extension 的处理，包括模块化（include）的处理都交由 Processor 完成：<div><pre class=line-numbers data-line=""><code class=language-javascript>// Process defines, add precision, resolve include pragma
+shaderStack.push(&#39;}&#39;);</code></pre>
+</div>
+
+<p>遍历节点，调用 <code class="highlighter-rouge">computeShader</code> 得到 main 方法内部的语句，这部分在操作节点中已经介绍过了。
+至此 shader 的 glsl 主体文本已经拼接完成了，接下来需要完成一些模块化相关的工作。</p>
+
+<h3 id="模块化">模块化</h3>
+
+<p>defines/extension 的处理，包括模块化（include）的处理都交由 Processor 完成：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// Process defines, add precision, resolve include pragma
 var shader = this._shaderProcessor.processShader(
     shaderStr,
     defines,
     extensions,
     this._fragmentShaderMode ? &#39;fragment&#39; : &#39;vertex&#39;
-);</code></pre></div><p>首先进行 defines/extension 的去重：<div><pre class=line-numbers data-line=""><code class=language-javascript>defines = this._getSortedUnique(defines);
-extensions = this._getSortedUnique(extensions);</code></pre></div><p>对于 include 语句可以分成简单和根据 define 条件判断两种。 关于后者，不同于一些 3D 引擎使用 <code class=highlighter-rouge>#ifdef/#endif</code> 包裹一并输出到最终的 glsl 中，OSG 的做法是在生成代码时就进行判断，不符合的代码则不会输出。 另外，为了避免重复 include 以及循环依赖问题，会记录当前已经引入的 glsl 片段名：<div><pre class=line-numbers data-line=""><code class=language-javascript>// pure include is
+);</code></pre>
+</div>
+
+<p>首先进行 defines/extension 的去重：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">defines = this._getSortedUnique(defines);
+extensions = this._getSortedUnique(extensions);</code></pre>
+</div>
+
+<p>对于 include 语句可以分成简单和根据 define 条件判断两种。
+关于后者，不同于一些 3D 引擎使用 <code class="highlighter-rouge">#ifdef/#endif</code> 包裹一并输出到最终的 glsl 中，OSG 的做法是在生成代码时就进行判断，不符合的代码则不会输出。
+另外，为了避免重复 include 以及循环依赖问题，会记录当前已经引入的 glsl 片段名：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// pure include is
 // \#pragma include &quot;name&quot;;
 
 // conditionnal include is name included if _PCF defined
-// \#pragma include &quot;name&quot; &quot;_PCF&quot;;</code></pre></div><p>由于之前用于分割函数声明的标记是非标准的，因此需要去除。这里通过注释的方式简单去除：<div><pre class=line-numbers data-line=""><code class=language-javascript>strCore = strCore.replace(/#pragma DECLARE_FUNCTION/g, &#39;//#pragma DECLARE_FUNCTION&#39;);</code></pre></div><h3 id=glsl-转译>GLSL 转译</h3><p>下一步是 WebGL 性能优化中很重要的一步，就是如果当前环境支持 WebGL2，需要进行 glsl 100 到 glsl 330 es 的转译：<div><pre class=line-numbers data-line=""><code class=language-javascript>if (convertToWebGL2) {
+// \#pragma include &quot;name&quot; &quot;_PCF&quot;;</code></pre>
+</div>
+
+<p>由于之前用于分割函数声明的标记是非标准的，因此需要去除。这里通过注释的方式简单去除：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">strCore = strCore.replace(/#pragma DECLARE_FUNCTION/g, &#39;//#pragma DECLARE_FUNCTION&#39;);</code></pre>
+</div>
+
+<h3 id="glsl-转译">GLSL 转译</h3>
+
+<p>下一步是 WebGL 性能优化中很重要的一步，就是如果当前环境支持 WebGL2，需要进行 glsl 100 到 glsl 330 es 的转译：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">if (convertToWebGL2) {
     strExtensions = this._convertExtensionsToWebGL2(strExtensions);
     strDefines = this._convertToWebGL2(strDefines, isFragment);
     strCore = this._convertToWebGL2(strCore, isFragment);
-}</code></pre></div><p>首先是对于 extension 的处理。对于 WebGL2 已经内置支持的原 WebGL1 扩展，首先需要移除 <code class=highlighter-rouge>#extension GL_OES_standard_derivatives : enable</code>。然后转成 define 并加上前缀，例如 <code class=highlighter-rouge>#define core_GL_EXT_shader_texture_lod</code>：<div><pre class=line-numbers data-line=""><code class=language-javascript>_convertExtensionsToWebGL2: (function() {
+}</code></pre>
+</div>
+
+<p>首先是对于 extension 的处理。对于 WebGL2 已经内置支持的原 WebGL1 扩展，首先需要移除 <code class="highlighter-rouge">#extension GL_OES_standard_derivatives : enable</code>。然后转成 define 并加上前缀，例如 <code class="highlighter-rouge">#define core_GL_EXT_shader_texture_lod</code>：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">_convertExtensionsToWebGL2: (function() {
     var cbRenamer = function(match, extension) {
         return &#39;core_&#39; + extension;
     };
@@ -557,11 +960,26 @@ extensions = this._getSortedUnique(extensions);</code></pre></div><p>对于 incl
         strShader = strShader.replace(renamer, cbRenamer);
         return strShader;
     };
-})(),</code></pre></div><p>然后转译 define 和主体，通过字符串替换。例如 <code class=highlighter-rouge>attribute -&gt; in</code>：<div><pre class=line-numbers data-line=""><code class=language-javascript>strShader = strShader.replace(/attribute\s+/g, &#39;in &#39;);
+})(),</code></pre>
+</div>
+
+<p>然后转译 define 和主体，通过字符串替换。例如 <code class="highlighter-rouge">attribute -&gt; in</code>：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">strShader = strShader.replace(/attribute\s+/g, &#39;in &#39;);
 strShader = strShader.replace(/varying\s+/g, isFragment ? &#39;in &#39; : &#39;out &#39;);
 strShader = strShader.replace(/(texture2D|textureCube)\s*\(/g, &#39;texture(&#39;);
-strShader = strShader.replace(/(textureCubeLodEXT)\s*\(/g, &#39;textureLod(&#39;);</code></pre></div><p>特别的，对于 fs 中的 <code class=highlighter-rouge>gl_FragColor</code>：<div><pre class=line-numbers data-line=""><code class=language-javascript>if (!frags.length) frags.push(&#39;out vec4 glFragColor_0;&#39;);
-strShader = strShader.replace(/gl_FragColor/g, &#39;glFragColor_0&#39;);</code></pre></div><p>对于 Multi render target 的支持，将原本开启 <a href=https://developer.mozilla.org/en-US/docs/Web/API/WEBGL_draw_buffers>WEBGL_draw_buffers</a> 扩展的 glsl 100 写法进行改写：<div><pre class=line-numbers data-line=""><code class=language-javascript>var frags = [];
+strShader = strShader.replace(/(textureCubeLodEXT)\s*\(/g, &#39;textureLod(&#39;);</code></pre>
+</div>
+
+<p>特别的，对于 fs 中的 <code class="highlighter-rouge">gl_FragColor</code>：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">if (!frags.length) frags.push(&#39;out vec4 glFragColor_0;&#39;);
+strShader = strShader.replace(/gl_FragColor/g, &#39;glFragColor_0&#39;);</code></pre>
+</div>
+
+<p>对于 Multi render target 的支持，将原本开启 <a href="https://developer.mozilla.org/en-US/docs/Web/API/WEBGL_draw_buffers">WEBGL_draw_buffers</a> 扩展的 glsl 100 写法进行改写：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">var frags = [];
 var replaceMRT = function(match, number) {
     var varName = &#39;glFragData_&#39; + number;
     frags[number] = &#39;layout(location = &#39; + number + &#39;) out vec4 &#39; + varName + &#39;;&#39;;
@@ -569,14 +987,118 @@ var replaceMRT = function(match, number) {
 };
 // gl_FragData[0] = vec4(0.25);
 // gl_FragData[1] = vec4(0.5);
-strShader = strShader.replace(/gl_FragData\s*\[\s*(\d+)\s*\]/g, replaceMRT);</code></pre></div><p>如果没有指定精度，需要使用默认精度：<div><pre class=line-numbers data-line=""><code class=language-javascript>_precisionR: /precision\s+(high|low|medium)p\s+float/,
+strShader = strShader.replace(/gl_FragData\s*\[\s*(\d+)\s*\]/g, replaceMRT);</code></pre>
+</div>
+
+<p>如果没有指定精度，需要使用默认精度：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">_precisionR: /precision\s+(high|low|medium)p\s+float/,
 _globalDefaultprecision: `
     #ifdef GL_FRAGMENT_PRECISION_HIGH\n precision highp float;
     #else
     precision mediump float;
-    #endif`,</code></pre></div><p>最后在拼接转译后的代码时，需要注意各部分的顺序，尤其是 extension：<div><pre class=line-numbers data-line=""><code class=language-javascript>// See https://khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf
+    #endif`,</code></pre>
+</div>
+
+<p>最后在拼接转译后的代码时，需要注意各部分的顺序，尤其是 extension：</p>
+<div>
+<pre class="line-numbers" data-line=""><code class="language-javascript">// See https://khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf
 // (p14-15: extension before any non-processor token)
-return strVersion + strExtensions + strPrecision + strDefines + strCore;</code></pre></div><h2 id=一些问题>一些问题</h2><p>OSG.js shader 中还存在 <code class=highlighter-rouge>#ifdef GL_ES</code>，但是按照 <a href=https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/WebGL_best_practices>WebGL best practices </a>，这个判断其实是无意义的：<blockquote><p>You should never use #ifdef GL_ES in your WebGL shaders; although some early examples used this, it’s not necessary, since this condition is always true in WebGL shaders.</blockquote><h2 id=总结>总结</h2><p>ShaderLib 在任何 3D 引擎中都是至关重要的，它提供的模块化和 glsl 转译功能不光是引擎内部需要使用，开发者在自定义 Shader 时也需要便捷地引用。 OSG.js 采用的是完整的 AST 解析方案，与此类似的还有 Clay.gl。<p>在下一篇文章中我们将从一些关键特性的角度分析源码，例如视锥裁剪、LOD 等。 这些特性在地理信息展示场景下会发挥至关重要的作用。</article><div class=social-share-wrapper><div class=social-share></div></div></div><section class=author-detail><section class="post-footer-item author-card"><div class=avatar><img src=https://xiaoiver.github.io/assets/img/avatar.jpg alt=""></div><div class=author-name rel=author>潘宇琪</div><div class=bio><p>分享写代码，听音乐，看电影的心得</div><ul class=sns-links><li><a href=//github.com/xiaoiver target=_blank><i class="iconfont icon-github"></i></a><li><a href=//www.douban.com/people/150275082/ target=_blank><i class="iconfont icon-douban"></i></a><li><a href=//www.zhihu.com/people/pan-yu-qi-20/activities target=_blank><i class="iconfont icon-zhihu"></i></a></ul></section><section class="post-footer-item read-next"><div class=read-next-item><a href=/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html class=read-next-link></a><section><span>反走样技术（一）</span><p>最近在学习一些通用的 postprocessing 技术，看到 Three.js 中的 SMAA 实现。结合知乎上...</section><div class=filter></div><img src=/assets/img/webgl/quaternion.jpg alt=""></div><div class=read-next-item><a href=/coding/2019/01/20/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C.html class=read-next-link></a><section><span>OSG 学习笔记（二）</span><p>在上一篇文章中我们了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关系。</section><div class=filter></div><img src=/assets/img/webgl/openscenegraph-course.jpg alt=""></div></section><section class="post-footer-item comment"><hr><div class=container id=lv-container data-id=city data-uid=MTAyMC8zMDQyNy82OTgx><script>(function(d, s) {
+return strVersion + strExtensions + strPrecision + strDefines + strCore;</code></pre>
+</div>
+
+<h2 id="一些问题">一些问题</h2>
+
+<p>OSG.js shader 中还存在 <code class="highlighter-rouge">#ifdef GL_ES</code>，但是按照 <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/WebGL_best_practices">WebGL best practices
+</a>，这个判断其实是无意义的：</p>
+<blockquote>
+  <p>You should never use #ifdef GL_ES in your WebGL shaders; although some early examples used this, it’s not necessary, since this condition is always true in WebGL shaders.</p>
+</blockquote>
+
+<h2 id="总结">总结</h2>
+
+<p>ShaderLib 在任何 3D 引擎中都是至关重要的，它提供的模块化和 glsl 转译功能不光是引擎内部需要使用，开发者在自定义 Shader 时也需要便捷地引用。
+OSG.js 采用的是完整的 AST 解析方案，与此类似的还有 Clay.gl。</p>
+
+<p>在下一篇文章中我们将从一些关键特性的角度分析源码，例如视锥裁剪、LOD 等。
+这些特性在地理信息展示场景下会发挥至关重要的作用。</p>
+
+    </article>
+    
+    <div class="social-share-wrapper">
+        <div class="social-share"></div>
+    </div>
+    
+</div>
+
+<section class="author-detail">
+    <section class="post-footer-item author-card">
+        <div class="avatar">
+            <img src="https://xiaoiver.github.io/assets/img/avatar.jpg" alt="">
+        </div>
+        <div class="author-name" rel="author">潘宇琪</div>
+        <div class="bio">
+            <p>分享写代码，听音乐，看电影的心得</p>
+        </div>
+        
+        <ul class="sns-links">
+            
+            <li>
+                <a href="//github.com/xiaoiver" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.douban.com/people/150275082/" target="_blank">
+                    <i class="iconfont icon-douban"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="//www.zhihu.com/people/pan-yu-qi-20/activities" target="_blank">
+                    <i class="iconfont icon-zhihu"></i>
+                </a>
+            </li>
+            
+        </ul>
+        
+    </section>
+    <section class="post-footer-item read-next">
+        
+        <div class="read-next-item">
+            <a href="/coding/2019/01/31/%E5%8F%8D%E8%B5%B0%E6%A0%B7%E6%8A%80%E6%9C%AF-%E4%B8%80.html" class="read-next-link"></a>
+            <section>
+                <span>反走样技术（一）</span>
+                <p>最近在学习一些通用的 postprocessing 技术，看到 Three.js 中的 SMAA 实现。结合知乎上...</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/quaternion.jpg" alt="">
+            
+        </div>
+        
+        
+        <div class="read-next-item">
+            <a href="/coding/2019/01/20/OSG-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C.html" class="read-next-link"></a>
+            <section>
+                <span>OSG 学习笔记（二）</span>
+                <p>在上一篇文章中我们了解了 State 全局状态机，StateSet 状态集以及 StateGraph 之间的关系。</p>
+            </section>
+            
+            <div class="filter"></div>
+            <img src="/assets/img/webgl/openscenegraph-course.jpg" alt="">
+            
+        </div>
+        
+    </section>
+    <section class="post-footer-item comment">
+        
+<hr>
+<!-- 来必力City版安装代码 -->
+<div class="container" id="lv-container" data-id="city" data-uid="MTAyMC8zMDQyNy82OTgx">
+    <script type="text/javascript">
+   (function(d, s) {
        var j, e = d.getElementsByTagName(s)[0];
 
        if (typeof LivereTower === 'function') { return; }
@@ -586,11 +1108,41 @@ return strVersion + strExtensions + strPrecision + strDefines + strCore;</code><
        j.async = true;
 
        e.parentNode.insertBefore(j, e);
-   })(document, 'script');</script><noscript>为正常使用来必力评论功能请激活JavaScript</noscript></div></section></section><footer class=g-footer><section>xiaOp的博客 © 2019</section><section>Powered by <a href=//jekyllrb.com>Jekyll</a> | <a href=https://github.com/kaeyleo/jekyll-theme-H2O>Theme H2O</a></section></footer><div class=update-toast><span class=update-toast-text>站点发生更新，请手动刷新</span> <span class=update-toast-refresh-btn></span></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script src=/assets/js/social-share.min.js></script><script>socialShare('.social-share', {
+   })(document, 'script');
+    </script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+
+
+    </section>
+</section>
+
+<footer class="g-footer">
+    <section>xiaOp的博客 © 2020</section>
+    <section>Powered by <a href="//jekyllrb.com">Jekyll</a> | <a href="https://github.com/kaeyleo/jekyll-theme-H2O">Theme H2O</a></section>
+</footer>
+
+<div class="update-toast">
+    <span class="update-toast-text">站点发生更新，请手动刷新</span>
+    <span class="update-toast-refresh-btn"></span>
+</div>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script src="/assets/js/social-share.min.js"></script>
+<script>
+    socialShare('.social-share', {
         sites: ['wechat','weibo','douban','twitter'],
         wechatQrcodeTitle: "分享到微信朋友圈",
         wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
-    });</script><script src=/assets/js/prism.min.js></script><script src=/assets/js/index.min.js></script><script src=/assets/js/jquery.nav.js></script><script>function generateCatalog (selector) {
+    });
+</script>
+<script src="/assets/js/prism.min.js"></script>
+<script src="/assets/js/index.min.js"></script>
+<script src="/assets/js/jquery.nav.js"></script>
+<script>
+    function generateCatalog (selector) {
         // init
         var P = $('.markdown-body'),a,n,t,l,i,c;
         a = P.find('h1,h2,h3,h4,h5,h6');
@@ -634,11 +1186,7 @@ return strVersion + strExtensions + strPrecision + strDefines + strCore;</code><
         end: null,
         scrollChange: null,
         padding: 80
-    });</script><script>window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };</script>
+    });
+</script>
+</body>
+</html>
